@@ -1,0 +1,57 @@
+export enum JobType {
+  YOUTUBE_SYNC_INCREMENTAL = 'YOUTUBE_SYNC_INCREMENTAL',
+  YOUTUBE_SYNC_FULL = 'YOUTUBE_SYNC_FULL',
+  AI_PROCESSING = 'AI_PROCESSING',
+  SEO_GENERATION = 'SEO_GENERATION',
+  PDF_GENERATION = 'PDF_GENERATION',
+  SEARCH_INDEX = 'SEARCH_INDEX',
+  COLLECTION_REFRESH = 'COLLECTION_REFRESH',
+  CACHE_CLEANUP = 'CACHE_CLEANUP',
+  ANALYTICS_AGGREGATION = 'ANALYTICS_AGGREGATION',
+  HEALTH_CHECK = 'HEALTH_CHECK',
+  BACKUP = 'BACKUP',
+}
+
+export enum JobState {
+  QUEUED = 'QUEUED',
+  RUNNING = 'RUNNING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  RETRYING = 'RETRYING',
+  CANCELLED = 'CANCELLED',
+  PAUSED = 'PAUSED',
+}
+
+export enum JobPriority {
+  HIGH = 1,
+  MEDIUM = 2,
+  LOW = 3,
+}
+
+export interface IJobPayload {
+  id: string;
+  type: JobType;
+  payload: any;
+  priority: JobPriority;
+  retries: number;
+  maxRetries: number;
+  state: JobState;
+  createdAt: Date;
+  startedAt?: Date;
+  completedAt?: Date;
+  error?: string;
+  stackTrace?: string;
+}
+
+export enum PlatformEvent {
+  VIDEO_IMPORTED = 'VIDEO_IMPORTED',
+  AI_COMPLETED = 'AI_COMPLETED',
+  AI_FAILED = 'AI_FAILED',
+  SEO_GENERATED = 'SEO_GENERATED',
+  PDF_GENERATED = 'PDF_GENERATED',
+  PDF_FAILED = 'PDF_FAILED',
+  SEARCH_INDEXED = 'SEARCH_INDEXED',
+  COLLECTION_UPDATED = 'COLLECTION_UPDATED',
+  SYNC_COMPLETED = 'SYNC_COMPLETED',
+  SYNC_FAILED = 'SYNC_FAILED',
+}
