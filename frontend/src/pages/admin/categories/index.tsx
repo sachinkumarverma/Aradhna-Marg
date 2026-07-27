@@ -107,7 +107,7 @@ export const AdminCategories = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         {/* Toolbar */}
         <div className="p-4 border-b border-gray-100 flex flex-wrap gap-4 items-center justify-between bg-gray-50/50">
           <SearchInput
@@ -235,7 +235,7 @@ export const AdminCategories = () => {
           <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             
             {/* Header */}
-            <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
+            <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
               <div className="flex items-center gap-4">
                 <button type="button" onClick={closeDrawer} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                   <ArrowLeft className="w-5 h-5 text-gray-600" />
@@ -271,7 +271,7 @@ export const AdminCategories = () => {
                   
                   {/* LEFT COLUMN: Main Content */}
                   <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
                       <div className="space-y-1.5">
                         <label className="text-sm font-semibold text-gray-800">Category Name *</label>
                         <input 
@@ -292,8 +292,8 @@ export const AdminCategories = () => {
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                      <div className="p-6 font-bold text-gray-900 bg-gray-50/50 border-b">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                      <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b">
                         Advanced SEO
                       </div>
                       <div className="p-6 space-y-4">
@@ -319,7 +319,7 @@ export const AdminCategories = () => {
                   {/* RIGHT COLUMN: Settings & Metadata */}
                   <div className="space-y-6">
                     
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
                       <h3 className="font-bold text-gray-900 border-b pb-3">Settings</h3>
                       
                       <div className="space-y-1.5">
@@ -354,7 +354,7 @@ export const AdminCategories = () => {
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
                       <h3 className="font-bold text-gray-900 border-b pb-3">Media</h3>
                       
                       <div className="space-y-4">

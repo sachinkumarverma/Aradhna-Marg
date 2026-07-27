@@ -109,7 +109,7 @@ export const AdminMedia = () => {
       </div>
 
       {/* Action Bar */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-wrap gap-4 justify-between items-center">
+      <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex flex-wrap gap-4 justify-between items-center">
         <div className="flex items-center gap-4 flex-1 min-w-[300px]">
           <SearchInput
             placeholder="Search files..."
@@ -153,7 +153,7 @@ export const AdminMedia = () => {
       {/* Upload Zone */}
       <div 
         {...getRootProps()} 
-        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
           isDragActive ? 'border-saffron bg-saffron/5' : 'border-gray-300 hover:border-gray-400 bg-gray-50'
         }`}
       >
@@ -175,7 +175,7 @@ export const AdminMedia = () => {
                 {folders.map((folder: any) => (
                   <div 
                     key={folder.id} 
-                    className="group bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:shadow-md cursor-pointer transition-shadow"
+                    className="group bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md cursor-pointer transition-shadow"
                     onClick={() => setCurrentFolderId(folder.id)}
                   >
                     <div className="flex items-center gap-3 overflow-hidden">
@@ -202,7 +202,7 @@ export const AdminMedia = () => {
               {viewMode === 'grid' ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {files.map((file: any) => (
-                    <div key={file.id} className="group bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow relative">
+                    <div key={file.id} className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow relative">
                       <div className="aspect-square bg-gray-100 flex items-center justify-center p-2 relative">
                         {file.thumbnailUrl ? (
                           <img src={file.thumbnailUrl} alt={file.fileName} className="w-full h-full object-cover rounded" />
@@ -229,7 +229,7 @@ export const AdminMedia = () => {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 border-b">
                       <tr>

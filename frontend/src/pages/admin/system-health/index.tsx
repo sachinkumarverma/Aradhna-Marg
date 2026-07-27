@@ -45,7 +45,7 @@ export function AdminSystemHealth() {
       {/* Service Status Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* API Server */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -62,7 +62,7 @@ export function AdminSystemHealth() {
         </div>
 
         {/* Database (Supabase) */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
@@ -79,7 +79,7 @@ export function AdminSystemHealth() {
         </div>
 
         {/* Server Uptime */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
@@ -96,7 +96,7 @@ export function AdminSystemHealth() {
       </div>
 
       {/* System Metrics */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+      <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
             <Settings className="w-5 h-5 text-slate-600" />

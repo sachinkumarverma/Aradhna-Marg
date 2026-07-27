@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { apiClient } from '../../../api/client';
 import { Select } from '../../../components/ui/Select';
-import { Settings, Save, AlertCircle, RefreshCw, Server, ShieldCheck, ShieldAlert, UploadCloud } from 'lucide-react';
+import { Settings, Save, AlertCircle, RefreshCw, Server, ShieldCheck, ShieldAlert, UploadCloud, X } from 'lucide-react';
 import { supabase } from '../../../api/supabase';
 
 const TABS = [
@@ -17,6 +17,9 @@ export const AdminSettings: React.FC = () => {
   const queryClient = useQueryClient();
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingFavicon, setUploadingFavicon] = useState(false);
+  
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [faviconFile, setFaviconFile] = useState<File | null>(null);
 
   // 1. Load Data
   const { data, isLoading, isError, refetch } = useQuery({
@@ -39,7 +42,7 @@ export const AdminSettings: React.FC = () => {
   });
 
   // 2. React Hook Form Setup
-  const { register, handleSubmit, formState: { isDirty, isSubmitting }, reset, setValue, control } = useForm({
+  const { register, handleSubmit, formState: { isDirty, isSubmitting }, reset, setValue, control, watch } = useForm({
     defaultValues: data || {},
     values: data || {},
   });
@@ -55,49 +58,58 @@ export const AdminSettings: React.FC = () => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
 
-  // File Upload Handlers
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, fieldName: 'siteLogo' | 'favicon') => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, fieldName: 'siteLogo' | 'favicon') => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (fieldName === 'siteLogo') setUploadingLogo(true);
-    if (fieldName === 'favicon') setUploadingFavicon(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${fieldName}-${Date.now()}.${fileExt}`;
-      const filePath = `settings/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('public')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('public')
-        .getPublicUrl(filePath);
-
-      setValue(fieldName, publicUrl, { shouldDirty: true });
-      toast.success(`${fieldName === 'siteLogo' ? 'Logo' : 'Favicon'} uploaded successfully`);
-    } catch (error: any) {
-      toast.error(error.message || 'Error uploading file');
-    } finally {
-      if (fieldName === 'siteLogo') setUploadingLogo(false);
-      if (fieldName === 'favicon') setUploadingFavicon(false);
+    const url = URL.createObjectURL(file);
+    if (fieldName === 'siteLogo') {
+      setLogoFile(file);
+    } else {
+      setFaviconFile(file);
     }
+    setValue(fieldName, url, { shouldDirty: true });
   };
 
   // 3. Save Mutation
   const updateMutation = useMutation({
     mutationFn: async (formData: any) => {
-      const res = await apiClient.put('/settings', formData);
+      let updatedData = { ...formData };
+      
+      // Handle uploads on save
+      if (logoFile) {
+        setUploadingLogo(true);
+        const fileExt = logoFile.name.split('.').pop();
+        const fileName = `siteLogo-${Date.now()}.${fileExt}`;
+        const { error, data: uploadData } = await supabase.storage.from('public').upload(`settings/${fileName}`, logoFile);
+        setUploadingLogo(false);
+        if (!error && uploadData) {
+          const { data: { publicUrl } } = supabase.storage.from('public').getPublicUrl(`settings/${fileName}`);
+          updatedData.siteLogo = publicUrl;
+        }
+      }
+      
+      if (faviconFile) {
+        setUploadingFavicon(true);
+        const fileExt = faviconFile.name.split('.').pop();
+        const fileName = `favicon-${Date.now()}.${fileExt}`;
+        const { error, data: uploadData } = await supabase.storage.from('public').upload(`settings/${fileName}`, faviconFile);
+        setUploadingFavicon(false);
+        if (!error && uploadData) {
+          const { data: { publicUrl } } = supabase.storage.from('public').getPublicUrl(`settings/${fileName}`);
+          updatedData.favicon = publicUrl;
+        }
+      }
+
+      const res = await apiClient.put('/settings', updatedData);
       return res.data.data;
     },
     onSuccess: (newData) => {
       toast.success('Settings updated successfully!');
       queryClient.setQueryData(['admin-settings'], newData);
       reset(newData);
+      setLogoFile(null);
+      setFaviconFile(null);
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Failed to update settings');
@@ -119,7 +131,7 @@ export const AdminSettings: React.FC = () => {
 
   if (isError) {
     return (
-      <div className="bg-red-50 p-6 rounded-xl border border-red-100 flex items-start gap-4">
+      <div className="bg-red-50 p-6 rounded-lg border border-red-100 flex items-start gap-4">
         <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
         <div>
           <h3 className="text-red-800 font-semibold mb-1">Error Loading Settings</h3>
@@ -155,7 +167,7 @@ export const AdminSettings: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col md:flex-row overflow-hidden">
         {/* Sidebar Tabs */}
         <div className="md:w-64 border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/50 p-4 shrink-0 flex flex-row md:flex-col overflow-x-auto">
           {TABS.map(tab => (
@@ -198,76 +210,77 @@ export const AdminSettings: React.FC = () => {
                   {/* Logo Upload */}
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">Logo Upload</label>
-                    <div className="flex items-center gap-3">
-                      {data?.siteLogo && <img src={data.siteLogo} alt="Logo" className="h-10 w-10 rounded object-cover border" />}
-                      <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        {uploadingLogo ? <RefreshCw className="w-4 h-4 animate-spin text-gray-500" /> : <UploadCloud className="w-4 h-4 text-gray-500" />}
-                        <span className="text-sm text-gray-600">Upload Image</span>
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'siteLogo')} disabled={uploadingLogo} />
-                      </label>
-                    </div>
+                    {watch('siteLogo') ? (
+                      <div className="relative rounded-lg overflow-hidden border border-gray-200 group h-[200px] w-full max-w-sm">
+                        <img src={watch('siteLogo')} alt="Logo Preview" className="w-full h-full object-cover bg-gray-50" />
+                        <div className="absolute top-3 right-3 flex gap-2">
+                          <button 
+                            type="button" 
+                            onClick={() => window.open(watch('siteLogo'), '_blank')}
+                            className="p-2 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
+                          >
+                            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => {
+                              setValue('siteLogo', '', { shouldDirty: true });
+                              setLogoFile(null);
+                            }} 
+                            className="p-2 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[200px] w-full max-w-sm">
+                        <input type="file" accept="image/*" className="hidden" id="site-logo-upload" onChange={(e) => handleFileUpload(e, 'siteLogo')} disabled={uploadingLogo} />
+                        <label htmlFor="site-logo-upload" className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
+                          {uploadingLogo ? <RefreshCw className="w-8 h-8 animate-spin text-saffron mb-3" /> : <UploadCloud className="w-8 h-8 text-gray-400 group-hover:text-saffron mb-3" />}
+                          <p className="text-sm text-gray-600 font-medium">Click to upload Logo</p>
+                        </label>
+                      </div>
+                    )}
                   </div>
 
                   {/* Favicon Upload */}
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">Favicon Upload</label>
-                    <div className="flex items-center gap-3">
-                      {data?.favicon && <img src={data.favicon} alt="Favicon" className="h-10 w-10 rounded object-cover border" />}
-                      <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        {uploadingFavicon ? <RefreshCw className="w-4 h-4 animate-spin text-gray-500" /> : <UploadCloud className="w-4 h-4 text-gray-500" />}
-                        <span className="text-sm text-gray-600">Upload Image</span>
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'favicon')} disabled={uploadingFavicon} />
-                      </label>
-                    </div>
+                    {watch('favicon') ? (
+                      <div className="relative rounded-lg overflow-hidden border border-gray-200 group h-[200px] w-full max-w-sm">
+                        <img src={watch('favicon')} alt="Favicon Preview" className="w-full h-full object-cover bg-gray-50" />
+                        <div className="absolute top-3 right-3 flex gap-2">
+                          <button 
+                            type="button" 
+                            onClick={() => window.open(watch('favicon'), '_blank')}
+                            className="p-2 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
+                          >
+                            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => {
+                              setValue('favicon', '', { shouldDirty: true });
+                              setFaviconFile(null);
+                            }} 
+                            className="p-2 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[200px] w-full max-w-sm">
+                        <input type="file" accept="image/*" className="hidden" id="favicon-upload" onChange={(e) => handleFileUpload(e, 'favicon')} disabled={uploadingFavicon} />
+                        <label htmlFor="favicon-upload" className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
+                          {uploadingFavicon ? <RefreshCw className="w-8 h-8 animate-spin text-saffron mb-3" /> : <UploadCloud className="w-8 h-8 text-gray-400 group-hover:text-saffron mb-3" />}
+                          <p className="text-sm text-gray-600 font-medium">Click to upload Favicon</p>
+                        </label>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Default Language</label>
-                    <Controller
-                      name="defaultLanguage"
-                      control={control}
-                      defaultValue="en"
-                      render={({ field }) => (
-                        <Select
-                          value={field.value}
-                          onChange={field.onChange}
-                          options={[
-                            { label: 'English', value: 'en' },
-                            { label: 'Hindi', value: 'hi' }
-                          ]}
-                          searchable={false}
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Default Theme</label>
-                    <Controller
-                      name="defaultTheme"
-                      control={control}
-                      defaultValue="light"
-                      render={({ field }) => (
-                        <Select
-                          value={field.value}
-                          onChange={field.onChange}
-                          options={[
-                            { label: 'Light', value: 'light' },
-                            { label: 'Dark', value: 'dark' },
-                            { label: 'System', value: 'system' }
-                          ]}
-                          searchable={false}
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Timezone</label>
-                    <input {...register('timezone')} placeholder="UTC" className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Date Format</label>
-                    <input {...register('dateFormat')} placeholder="MM/DD/YYYY" className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
-                  </div>
                 </div>
               </div>
             )}
@@ -279,14 +292,6 @@ export const AdminSettings: React.FC = () => {
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">Email Address</label>
                     <input {...register('contactEmail')} type="email" className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Phone Number</label>
-                    <input {...register('contactPhone')} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">WhatsApp Number</label>
-                    <input {...register('whatsappNumber')} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
                   </div>
                   <div className="space-y-1.5 md:col-span-2">
                     <label className="text-sm font-medium text-gray-700">Physical Address</label>
@@ -315,10 +320,6 @@ export const AdminSettings: React.FC = () => {
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">Twitter URL</label>
                     <input {...register('twitterUrl')} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">LinkedIn URL</label>
-                    <input {...register('linkedinUrl')} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
                   </div>
                 </div>
               </div>
@@ -396,22 +397,6 @@ export const AdminSettings: React.FC = () => {
                     <label className="text-sm font-medium text-gray-700">Global Meta Description</label>
                     <textarea {...register('seoMetaDescription')} rows={3} className="w-full px-3 py-2 border rounded-lg" />
                   </div>
-                  <div className="space-y-1.5 md:col-span-2">
-                    <label className="text-sm font-medium text-gray-700">Global Meta Keywords</label>
-                    <input {...register('seoMetaKeywords')} className="w-full px-3 py-2 border rounded-lg" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Robots Directive</label>
-                    <input {...register('seoRobots')} className="w-full px-3 py-2 border rounded-lg" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Canonical Domain</label>
-                    <input {...register('seoCanonicalDomain')} className="w-full px-3 py-2 border rounded-lg" />
-                  </div>
-                  <div className="space-y-1.5 md:col-span-2">
-                    <label className="text-sm font-medium text-gray-700">Default OpenGraph Image URL</label>
-                    <input {...register('seoOgImage')} className="w-full px-3 py-2 border rounded-lg" />
-                  </div>
                 </div>
               </div>
             )}
@@ -482,30 +467,6 @@ export const AdminSettings: React.FC = () => {
                     <div>
                       <p className="text-sm font-bold text-gray-900">Maintenance Mode</p>
                       <p className="text-xs text-gray-500">Take the public site offline</p>
-                    </div>
-                  </label>
-                  <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer">
-                    <input type="checkbox" {...register('enableCache')} className="w-4 h-4 text-saffron rounded" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Enable Caching</p>
-                    </div>
-                  </label>
-                  <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer">
-                    <input type="checkbox" {...register('enablePdfGeneration')} className="w-4 h-4 text-saffron rounded" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">PDF Generation</p>
-                    </div>
-                  </label>
-                  <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer opacity-70">
-                    <input type="checkbox" {...register('enableRegistration')} disabled className="w-4 h-4" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">User Registration (Future)</p>
-                    </div>
-                  </label>
-                  <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer opacity-70">
-                    <input type="checkbox" {...register('enableComments')} disabled className="w-4 h-4" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Comments System (Future)</p>
                     </div>
                   </label>
                 </div>

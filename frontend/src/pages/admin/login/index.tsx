@@ -81,7 +81,7 @@ export const AdminLogin: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
+                className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
                 placeholder="admin@aradhnamarg.com"
               />
             </div>
@@ -93,7 +93,7 @@ export const AdminLogin: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
+                className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
                 placeholder="••••••••"
               />
             </div>
@@ -106,7 +106,7 @@ export const AdminLogin: React.FC = () => {
 
             <Button 
               type="submit" 
-              className="w-full h-12 bg-saffron hover:bg-[#d96a1a] text-white font-bold rounded-xl shadow-md flex justify-center items-center"
+              className="w-full h-12 bg-saffron hover:bg-[#d96a1a] text-white font-bold rounded-lg shadow-md flex justify-center items-center"
               disabled={loading}
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Secure Login'}

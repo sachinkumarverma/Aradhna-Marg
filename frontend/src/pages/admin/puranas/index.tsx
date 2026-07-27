@@ -111,7 +111,7 @@ export const AdminPuranas: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
         <SearchInput 
           placeholder="Search by title or description..."
           value={search}

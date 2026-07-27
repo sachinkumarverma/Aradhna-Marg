@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Activity, CheckCircle2, XCircle, RefreshCw, Server, Database, Cloud, Youtube, Bot, Clock } from 'lucide-react';
-import { apiClient } from '../../../api/client';
+import { Activity, CheckCircle2, XCircle, RefreshCw, Server, Database, Cloud, PlaySquare, Bot, Clock } from 'lucide-react';
+import { apiClient } from '../../api/client';
 import { format } from 'date-fns';
 
 export const AdminSystemHealth: React.FC = () => {
@@ -20,7 +20,7 @@ export const AdminSystemHealth: React.FC = () => {
   };
 
   const ServiceCard = ({ title, icon: Icon, status }: { title: string, icon: any, status?: string }) => (
-    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+    <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm flex items-center justify-between">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-gray-50 rounded-lg">
           <Icon className="w-5 h-5 text-gray-600" />
@@ -51,7 +51,7 @@ export const AdminSystemHealth: React.FC = () => {
         <button 
           onClick={() => refetch()}
           disabled={isFetching}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium shadow-sm disabled:opacity-40"
+          className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-lg hover:bg-saffron/90 transition-colors font-medium shadow-sm disabled:opacity-40"
         >
           <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
           Refresh
@@ -59,7 +59,7 @@ export const AdminSystemHealth: React.FC = () => {
       </div>
 
       {isError && (
-        <div className="bg-red-50 border border-red-200 p-4 rounded-xl text-red-700 text-sm font-medium">
+        <div className="bg-red-50 border border-red-200 p-4 rounded-lg text-red-700 text-sm font-medium">
           Failed to fetch system health data. Please check your connection to the API server.
         </div>
       )}
@@ -68,7 +68,7 @@ export const AdminSystemHealth: React.FC = () => {
         <ServiceCard title="API Server" icon={Server} status={isLoading ? undefined : data?.api_status} />
         <ServiceCard title="Supabase DB" icon={Database} status={isLoading ? undefined : data?.database_status} />
         <ServiceCard title="Supabase Storage" icon={Cloud} status={isLoading ? undefined : data?.storage_status} />
-        <ServiceCard title="YouTube API" icon={Youtube} status={isLoading ? undefined : data?.youtube_api_status} />
+        <ServiceCard title="YouTube API" icon={PlaySquare} status={isLoading ? undefined : data?.youtube_api_status} />
         <ServiceCard title="Groq AI" icon={Bot} status={isLoading ? undefined : data?.groq_ai_status} />
         <ServiceCard title="Cron Jobs" icon={Clock} status={isLoading ? undefined : data?.cron_jobs_status} />
       </div>
@@ -76,7 +76,7 @@ export const AdminSystemHealth: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         
         {/* Last Checked */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Last Checked</h3>
           {data ? (
             <div>
@@ -89,7 +89,7 @@ export const AdminSystemHealth: React.FC = () => {
         </div>
 
         {/* Environment */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Environment</h3>
           {data ? (
             <div>
@@ -102,7 +102,7 @@ export const AdminSystemHealth: React.FC = () => {
         </div>
 
         {/* Version Info */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Version Information</h3>
           {data ? (
             <div className="space-y-2">

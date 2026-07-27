@@ -134,7 +134,7 @@ export const AdminBhajanForm = () => {
       <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
           <div className="flex items-center gap-4">
             <button type="button" onClick={handleClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
               <ArrowLeft className="w-5 h-5 text-gray-600" />
@@ -185,7 +185,7 @@ export const AdminBhajanForm = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT COLUMN: Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-800">Bhajan Title *</label>
               <input
@@ -218,8 +218,8 @@ export const AdminBhajanForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 font-bold text-gray-900 bg-gray-50/50 border-b">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b">
               Advanced SEO
             </div>
             
@@ -256,7 +256,7 @@ export const AdminBhajanForm = () => {
         {/* RIGHT COLUMN: Settings & Metadata */}
         <div className="space-y-6">
           
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Classification</h3>
             
             <div className="space-y-1.5">
@@ -298,7 +298,7 @@ export const AdminBhajanForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Publishing</h3>
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-700">Status</label>
@@ -321,7 +321,7 @@ export const AdminBhajanForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Video Configuration</h3>
             
             <div className="space-y-3">

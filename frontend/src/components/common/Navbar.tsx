@@ -67,8 +67,9 @@ export const Navbar: React.FC = () => {
                   <li key={link.name}>
                     <Link
                       to={link.path}
-                      className={`text-[14px] font-extrabold tracking-wide uppercase transition-colors ${location.pathname === link.path ? 'text-saffron' : 'text-slate-700 hover:text-saffron'
-                        }`}
+                      className={`text-[13.5px] font-bold tracking-[1.5px] uppercase transition-colors ${
+                        location.pathname === link.path ? 'text-[#d83515]' : 'text-[#14284b] hover:text-[#d83515]'
+                      }`}
                     >
                       {link.name}
                     </Link>

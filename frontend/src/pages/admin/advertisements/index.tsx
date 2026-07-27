@@ -21,7 +21,7 @@ export function AdminAdvertisements() {
         </button>
       </div>
 
-      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm mt-8">
+      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-lg border border-gray-100 shadow-sm mt-8">
         <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4">
           <span className="text-2xl">📢</span>
         </div>

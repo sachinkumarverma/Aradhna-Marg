@@ -150,7 +150,7 @@ export const AdminPuranForm = () => {
       <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
           <div className="flex items-center gap-4">
             <button type="button" onClick={handleClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
               <ArrowLeft className="w-5 h-5 text-gray-600" />
@@ -201,7 +201,7 @@ export const AdminPuranForm = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT COLUMN: Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-800">Title *</label>
               <input
@@ -218,11 +218,18 @@ export const AdminPuranForm = () => {
                 {coverPreview ? (
                   <div className="relative rounded-lg overflow-hidden border border-gray-200 group h-[200px]">
                     <img src={coverPreview} alt="Cover Preview" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute top-3 right-3 flex gap-2">
+                      <button 
+                        type="button" 
+                        onClick={() => window.open(coverPreview, '_blank')}
+                        className="p-2 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
                       <button 
                         type="button" 
                         onClick={() => { setCoverFile(null); setCoverPreview(null); setValue('cover_image', ''); }} 
-                        className="p-2 bg-white text-red-500 rounded-full hover:bg-gray-100 shadow-lg"
+                        className="p-2 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
                       >
                         <X className="w-5 h-5" />
                       </button>
@@ -254,11 +261,18 @@ export const AdminPuranForm = () => {
                     <span className="text-sm font-medium text-red-700 px-4 text-center truncate w-full">
                       {pdfFile ? pdfFile.name : 'PDF Uploaded'}
                     </span>
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute top-3 right-3 flex gap-2">
+                      <button 
+                        type="button" 
+                        onClick={() => window.open(pdfFile ? URL.createObjectURL(pdfFile) : watch('pdf_file'), '_blank')}
+                        className="p-2 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
                       <button 
                         type="button" 
                         onClick={() => { setPdfFile(null); setValue('pdf_file', ''); }} 
-                        className="p-2 bg-white text-red-500 rounded-full hover:bg-gray-100 shadow-lg"
+                        className="p-2 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
                       >
                         <X className="w-5 h-5" />
                       </button>
@@ -303,8 +317,8 @@ export const AdminPuranForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 font-bold text-gray-900 bg-gray-50/50 border-b">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b">
               Advanced SEO
             </div>
             
@@ -331,7 +345,7 @@ export const AdminPuranForm = () => {
         {/* RIGHT COLUMN: Settings & Metadata */}
         <div className="space-y-6">
           
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Publishing Details</h3>
             
             <div className="space-y-1.5">
