@@ -30,6 +30,7 @@ export const AdminArticleForm = () => {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid } } = useForm({
     mode: 'onChange',
@@ -151,16 +152,12 @@ export const AdminArticleForm = () => {
   };
 
   const handlePreview = () => {
-    const title = watch('title');
-    if (!title) {
-      toast.error('Please enter a title to preview');
-      return;
-    }
-    const currentSlug = isEditing && articleQuery.data?.slug ? articleQuery.data.slug : generateSlug(title);
-    window.open(`/articles/${currentSlug}`, '_blank');
+    setShowPreview(true);
   };
 
-  return createPortal(
+  return (
+    <>
+      {createPortal(
     <div className="fixed inset-0 z-[100] flex justify-end">
       <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={handleClose} />
       <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
@@ -424,6 +421,8 @@ export const AdminArticleForm = () => {
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Relations</h3>
+            
+            <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-700">Related Bhajans</label>
               <Controller
                 name="bhajans"
@@ -450,10 +449,55 @@ export const AdminArticleForm = () => {
               />
             </div>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
       </div>
     </div>,
     document.body
+  )}
+
+  {showPreview && createPortal(
+    <div className="fixed inset-0 z-[110] bg-black/60 flex justify-center items-center backdrop-blur-sm p-4 md:p-10 animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl w-full max-w-4xl h-full flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50 shrink-0">
+          <div className="flex items-center gap-2 text-saffron">
+            <Eye className="w-5 h-5" />
+            <h3 className="font-bold text-lg">Live Preview</h3>
+          </div>
+          <button 
+            type="button"
+            onClick={() => setShowPreview(false)} 
+            className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
+          >
+            <X className="w-5 h-5"/>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-cream">
+          <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-sm border border-gray-100">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-darkBrown mb-6 font-serif">{watch('title') || 'Untitled Article'}</h1>
+            {watch('excerpt') && (
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed italic border-l-4 border-saffron pl-4">
+                {watch('excerpt')}
+              </p>
+            )}
+            
+            {coverPreview && (
+              <div className="mb-10 rounded-xl overflow-hidden shadow-md">
+                <img src={coverPreview} alt="Cover" className="w-full h-auto object-cover max-h-[400px]" />
+              </div>
+            )}
+            
+            <div 
+              className="prose prose-lg max-w-none text-gray-800 leading-loose [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-darkBrown [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-darkBrown [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_a]:text-saffron [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_blockquote]:border-l-4 [&_blockquote]:border-saffron [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:my-6 [&_img]:rounded-xl [&_img]:shadow-md" 
+              dangerouslySetInnerHTML={{ __html: watch('content') || '<p class="text-gray-400 italic">Start writing your article to see the preview here...</p>' }} 
+            />
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )}
+  </>
   );
 };

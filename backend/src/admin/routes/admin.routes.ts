@@ -3,6 +3,7 @@ import { dashboardController } from '../controllers/dashboard.controller';
 import { adminBhajanController } from '../controllers/bhajan.controller';
 import { adminArticleController } from '../controllers/article.controller';
 import { adminPuranController } from '../controllers/puran.controller';
+import { adminFestivalController } from '../controllers/festival.controller';
 import { requireAdmin } from '../../middlewares/auth';
 
 const router = Router();
@@ -37,6 +38,15 @@ router.post('/puranas', adminPuranController.create);
 router.get('/puranas/:id', adminPuranController.getById);
 router.put('/puranas/:id', adminPuranController.update);
 router.delete('/puranas/:id', adminPuranController.delete);
+
+// Festivals Management
+router.get('/festivals', adminFestivalController.list);
+router.post('/festivals/bulk', adminFestivalController.bulkAction);
+router.post('/festivals', adminFestivalController.create);
+router.get('/festivals/:id', adminFestivalController.getById);
+router.put('/festivals/:id', adminFestivalController.update);
+router.delete('/festivals/:id', adminFestivalController.delete);
+
 
 // Future endpoints:
 // router.use('/seo', seoController);

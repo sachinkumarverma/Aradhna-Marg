@@ -134,15 +134,6 @@ export const AdminPuranForm = () => {
     navigate('/admin/puranas');
   };
 
-  const handlePreview = () => {
-    const title = watch('title');
-    if (!title) {
-      toast.error('Please enter a title to preview');
-      return;
-    }
-    const currentSlug = isEditing && puranaQuery.data?.slug ? puranaQuery.data.slug : generateSlug(title);
-    window.open(`/puranas/${currentSlug}`, '_blank');
-  };
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex justify-end">
@@ -162,14 +153,7 @@ export const AdminPuranForm = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handlePreview}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm"
-            >
-              <Eye className="w-4 h-4" />
-              Live Preview
-            </button>
+
             <button
               type="button"
               onClick={() => {

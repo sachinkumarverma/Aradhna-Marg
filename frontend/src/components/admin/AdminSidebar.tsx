@@ -125,8 +125,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
           
           {/* Bottom user profile mock */}
           <div className="p-3 border-t border-gray-100 flex-shrink-0">
-            <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50">
-              <div className="w-8 h-8 rounded-full bg-gray-300"></div>
+            <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+              <img 
+                src="https://api.dicebear.com/7.x/micah/svg?seed=AdminUser&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4&backgroundType=gradientLinear" 
+                alt="Admin Avatar" 
+                className="w-10 h-10 rounded-full shadow-sm border-2 border-white bg-saffron/10" 
+              />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-[#00274c] truncate">Admin User</p>
                 <p className="text-xs text-gray-500 truncate">admin@aradhnamarg.com</p>

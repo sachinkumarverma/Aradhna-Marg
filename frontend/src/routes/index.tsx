@@ -41,7 +41,8 @@ const AdminYoutube = lazy(() => Promise.resolve({ default: () => <ComingSoon tit
 const AdminAI = lazy(() => Promise.resolve({ default: () => <ComingSoon title="AI Processing Pipeline" /> }));
 const AdminCategories = lazy(() => import('../pages/admin/categories').then(m => ({ default: m.AdminCategories })));
 const AdminDeities = lazy(() => import('../pages/admin/deities').then(m => ({ default: m.AdminDeities })));
-const AdminFestivals = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Festivals Manager" /> }));
+const AdminFestivals = lazy(() => import('../pages/admin/festivals').then(m => ({ default: m.AdminFestivals })));
+const AdminFestivalForm = lazy(() => import('../pages/admin/festivals/form').then(m => ({ default: m.AdminFestivalForm })));
 const AdminSEO = lazy(() => Promise.resolve({ default: () => <ComingSoon title="SEO Optimization Engine" /> }));
 const AdminMedia = lazy(() => import('../pages/admin/media').then(m => ({ default: m.AdminMedia })));
 const AdminSettings = lazy(() => import('../pages/admin/settings').then(m => ({ default: m.AdminSettings })));
@@ -185,7 +186,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'festivals',
-        element: <AdminFestivals />
+        element: <AdminFestivals />,
+        children: [
+          { path: 'new', element: <AdminFestivalForm /> },
+          { path: ':id/edit', element: <AdminFestivalForm /> }
+        ]
       },
       {
         path: 'categories',
