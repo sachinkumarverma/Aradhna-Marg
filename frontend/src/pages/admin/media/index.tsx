@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../../../api/client';
+import { SearchInput } from '../../../components/ui/SearchInput';
+import { apiClient } from '../../../api/client'; 
 import toast from 'react-hot-toast';
 import { 
   Folder, File, Image as ImageIcon, FileText, Music, 
@@ -110,16 +111,12 @@ export const AdminMedia = () => {
       {/* Action Bar */}
       <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-wrap gap-4 justify-between items-center">
         <div className="flex items-center gap-4 flex-1 min-w-[300px]">
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search files..." 
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 outline-none"
-            />
-          </div>
+          <SearchInput
+            placeholder="Search files..."
+            value={search}
+            onChange={setSearch}
+            className="flex-1 max-w-md"
+          />
           
           <button onClick={handleCreateFolder} className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
             <FolderPlus className="w-4 h-4" /> New Folder

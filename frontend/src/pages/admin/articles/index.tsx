@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Filter, Download, Trash2, Archive, CheckCircle } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '../../../components/admin/DataTable';
 import { Button } from '../../../components/ui/Button';
 import { Select } from '../../../components/ui/Select';
 import { SearchInput } from '../../../components/ui/SearchInput';
-import { apiClient } from '../../../api/client';
+import { apiClient } from '../../../api/client'; 
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
-export const AdminBhajans: React.FC = () => {
+export const AdminArticles: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -18,11 +18,11 @@ export const AdminBhajans: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [sort, setSort] = useState('newest');
 
-  // Fetch bhajans
+  // Fetch articles
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-bhajans', page, search, statusFilter, sort],
+    queryKey: ['admin-articles', page, search, statusFilter, sort],
     queryFn: async () => {
-      const res = await apiClient.get('/admin/bhajans', {
+      const res = await apiClient.get('/admin/articles', {
         params: { page, limit: 10, search, status: statusFilter, sort }
       });
       return res.data;
@@ -31,11 +31,11 @@ export const AdminBhajans: React.FC = () => {
 
   const bulkMutation = useMutation({
     mutationFn: async ({ ids, action }: { ids: string[], action: string }) => {
-      await apiClient.post('/admin/bhajans/bulk', { ids, action });
+      await apiClient.post('/admin/articles/bulk', { ids, action });
     },
     onSuccess: (_, variables) => {
       toast.success(`Successfully applied ${variables.action} to items`);
-      queryClient.invalidateQueries({ queryKey: ['admin-bhajans'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
     },
     onError: () => {
       toast.error('Failed to perform bulk action');
@@ -53,9 +53,19 @@ export const AdminBhajans: React.FC = () => {
     {
       header: 'Title',
       accessor: (row: any) => (
-        <div>
-          <p className="font-bold text-gray-900">{row.title}</p>
-          <p className="text-xs text-gray-500 truncate max-w-[200px]">/{row.slug}</p>
+        <div className="flex items-center gap-3">
+          {row.media_files?.url ? (
+            <img src={row.media_files.url} alt="" className="w-10 h-10 object-cover rounded-md border border-gray-200" />
+          ) : (
+            <div className="w-10 h-10 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs">No img</div>
+          )}
+          <div>
+            <p className="font-bold text-gray-900 flex items-center gap-2">
+              {row.title}
+              {row.featured && <span className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Featured</span>}
+            </p>
+            <p className="text-xs text-gray-500 truncate max-w-[200px]">/{row.slug}</p>
+          </div>
         </div>
       )
     },
@@ -64,8 +74,8 @@ export const AdminBhajans: React.FC = () => {
       accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.categories?.name || '-'}</span>
     },
     {
-      header: 'Deity',
-      accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.gods?.name || '-'}</span>
+      header: 'Author',
+      accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.authors?.name || '-'}</span>
     },
     {
       header: 'Status',
@@ -81,11 +91,11 @@ export const AdminBhajans: React.FC = () => {
     },
     {
       header: 'Views',
-      accessor: (row: any) => <span className="text-sm text-gray-600">{row.views?.toLocaleString() || 0}</span>
+      accessor: (row: any) => <span className="text-sm text-gray-600">{row.view_count?.toLocaleString() || 0}</span>
     },
     {
-      header: 'Created',
-      accessor: (row: any) => <span className="text-sm text-gray-500">{format(new Date(row.created_at), 'MMM dd, yyyy')}</span>
+      header: 'Published',
+      accessor: (row: any) => <span className="text-sm text-gray-500">{row.publish_date ? format(new Date(row.publish_date), 'MMM dd, yyyy') : '-'}</span>
     }
   ];
 
@@ -93,17 +103,17 @@ export const AdminBhajans: React.FC = () => {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Bhajans</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage and supervise all imported and generated content.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Articles</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage spiritual knowledge, stories, and lifestyle articles.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => navigate('/admin/bhajans/new')} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>Create Bhajan</Button>
+          <Button onClick={() => navigate('/admin/articles/new')} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>Create Article</Button>
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
         <SearchInput 
-          placeholder="Search by title, slug, lyrics..."
+          placeholder="Search articles..."
           value={search}
           onChange={setSearch}
         />
@@ -126,7 +136,6 @@ export const AdminBhajans: React.FC = () => {
             options={[
               { label: 'Newest First', value: 'newest' },
               { label: 'Oldest First', value: 'oldest' },
-              { label: 'Alphabetical A-Z', value: 'alphabetical' },
               { label: 'Most Views', value: 'views' }
             ]}
             className="w-40"
@@ -135,19 +144,19 @@ export const AdminBhajans: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 relative">
+      <div className="flex-1 min-h-[400px] relative">
         <DataTable 
           data={data?.data || []} 
           columns={columns} 
           isLoading={isLoading}
-          onEdit={(row) => navigate(`/admin/bhajans/${row.id}/edit`)}
+          onEdit={(row) => navigate(`/admin/articles/${row.id}/edit`)}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
         />
       </div>
 
-      <div className="flex items-center justify-between py-2 bg-white px-4 rounded-b-xl border-t border-gray-100">
+      <div className="flex items-center justify-between py-3 bg-white px-4 rounded-b-xl border border-gray-200 border-t-0 -mt-6 z-10 relative shadow-sm">
         <span className="text-sm text-gray-500">
-          Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10))}</span>
+          Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10)) || 1}</span>
         </span>
         <div className="flex gap-2">
           <Button 

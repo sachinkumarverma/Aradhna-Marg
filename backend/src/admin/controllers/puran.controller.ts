@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { sendSuccess } from '../../responses/apiResponse';
-import { bhajanService } from '../../services/BhajanService';
+import { puranService } from '../../services/PuranService';
 
-class AdminBhajanController {
+class AdminPuranController {
   public list = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { data, count } = await bhajanService.getList(req.query);
-      return sendSuccess(res, 'Bhajans fetched', {
+      const { data, count } = await puranService.getList(req.query);
+      return sendSuccess(res, 'Puranas fetched', {
         data,
         meta: { total: count, page: parseInt(req.query.page as string) || 1, limit: parseInt(req.query.limit as string) || 10 }
       });
@@ -17,8 +17,8 @@ class AdminBhajanController {
 
   public getById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await bhajanService.getById(req.params.id as string);
-      return sendSuccess(res, 'Bhajan fetched', data);
+      const data = await puranService.getById(req.params.id as string);
+      return sendSuccess(res, 'Purana fetched', data);
     } catch (error) {
       next(error);
     }
@@ -26,8 +26,8 @@ class AdminBhajanController {
 
   public create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await bhajanService.create(req.body);
-      return sendSuccess(res, 'Bhajan created', data);
+      const data = await puranService.create(req.body);
+      return sendSuccess(res, 'Purana created', data);
     } catch (error) {
       next(error);
     }
@@ -35,8 +35,8 @@ class AdminBhajanController {
 
   public update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await bhajanService.update(req.params.id as string, req.body);
-      return sendSuccess(res, 'Bhajan updated', data);
+      const data = await puranService.update(req.params.id as string, req.body);
+      return sendSuccess(res, 'Purana updated', data);
     } catch (error) {
       next(error);
     }
@@ -44,8 +44,8 @@ class AdminBhajanController {
 
   public delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await bhajanService.delete(req.params.id as string);
-      return sendSuccess(res, 'Bhajan deleted', null);
+      await puranService.delete(req.params.id as string);
+      return sendSuccess(res, 'Purana deleted', null);
     } catch (error) {
       next(error);
     }
@@ -57,7 +57,7 @@ class AdminBhajanController {
       if (!ids || !Array.isArray(ids) || ids.length === 0) {
         throw new Error('Invalid IDs array');
       }
-      await bhajanService.bulkAction(ids, action);
+      await puranService.bulkAction(ids, action);
       return sendSuccess(res, `Successfully triggered ${action} on ${ids.length} items`, {});
     } catch (error) {
       next(error);
@@ -65,4 +65,4 @@ class AdminBhajanController {
   };
 }
 
-export const adminBhajanController = new AdminBhajanController();
+export const adminPuranController = new AdminPuranController();

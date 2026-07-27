@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../../../api/client';
+import { SearchInput } from '../../../components/ui/SearchInput';
+import { apiClient } from '../../../api/client'; 
 import toast from 'react-hot-toast';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { Select } from '../../../components/ui/Select';
 import { 
   FolderTree, Plus, Search, Edit2, Trash2, 
   MoreVertical, RefreshCw, X, Save, Image as ImageIcon,
@@ -17,7 +20,7 @@ export const AdminCategories = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm();
+  const { register, handleSubmit, reset, setValue, control, formState: { errors, isSubmitting } } = useForm();
 
   // Fetch Categories
   const { data, isLoading } = useQuery({
@@ -107,22 +110,17 @@ export const AdminCategories = () => {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {/* Toolbar */}
         <div className="p-4 border-b border-gray-100 flex flex-wrap gap-4 items-center justify-between bg-gray-50/50">
-          <div className="relative w-full max-w-md">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search categories..." 
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(1); }}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 outline-none"
-            />
-          </div>
+          <SearchInput
+            placeholder="Search categories..."
+            value={search}
+            onChange={val => { setSearch(val); setPage(1); }}
+          />
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-gray-50 border-b border-gray-100">
+            <thead className="bg-white border-b border-gray-100">
               <tr>
                 <th className="px-6 py-4 font-semibold text-gray-600">Category</th>
                 <th className="px-6 py-4 font-semibold text-gray-600">Status</th>
@@ -231,119 +229,161 @@ export const AdminCategories = () => {
       </div>
 
       {/* Drawer */}
-      {isDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
+      {isDrawerOpen && createPortal(
+        <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeDrawer} />
-          <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-900">{editingId ? 'Edit Category' : 'New Category'}</h2>
-              <button onClick={closeDrawer} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full">
-                <X className="w-5 h-5" />
-              </button>
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
+              <div className="flex items-center gap-4">
+                <button type="button" onClick={closeDrawer} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                  <ArrowLeft className="w-5 h-5 text-gray-600" />
+                </button>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">{editingId ? 'Edit Category' : 'Create Category'}</h1>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={closeDrawer}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="category-form"
+                  disabled={saveMutation.isPending}
+                  className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-lg hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40"
+                >
+                  {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  {saveMutation.isPending ? 'Saving...' : 'Save'}
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6">
-              <form id="category-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Category Name *</label>
-                  <input 
-                    {...register('name', { required: true })} 
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 outline-none"
-                    placeholder="e.g. Morning Bhajans"
-                  />
-                </div>
+              <form id="category-form" onSubmit={handleSubmit(onSubmit)} className="h-full">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+                  
+                  {/* LEFT COLUMN: Main Content */}
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-800">Category Name *</label>
+                        <input 
+                          {...register('name', { required: true })} 
+                          className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                          placeholder="e.g. Morning Bhajans"
+                        />
+                      </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">URL Slug</label>
-                  <input 
-                    {...register('slug')} 
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 outline-none font-mono text-sm"
-                    placeholder="Auto-generated if left empty"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700">Description</label>
-                  <textarea 
-                    {...register('description')} 
-                    rows={3}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 outline-none"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Status</label>
-                    <select {...register('status')} className="w-full px-3 py-2 border rounded-lg bg-white outline-none">
-                      <option value="PUBLISHED">Published</option>
-                      <option value="DRAFT">Draft</option>
-                      <option value="ARCHIVED">Archived</option>
-                    </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">Display Order</label>
-                    <input 
-                      type="number"
-                      {...register('displayOrder')} 
-                      className="w-full px-3 py-2 border rounded-lg outline-none"
-                      defaultValue={0}
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Media (Optional)</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-700">Icon URL</label>
-                      <input {...register('iconUrl')} className="w-full px-3 py-2 border rounded-lg outline-none text-sm" />
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-800">Description</label>
+                        <textarea 
+                          {...register('description')} 
+                          rows={4}
+                          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm leading-relaxed"
+                          placeholder="Write a short description..."
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-700">Banner Image URL</label>
-                      <input {...register('imageUrl')} className="w-full px-3 py-2 border rounded-lg outline-none text-sm" />
+
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                      <div className="p-6 font-bold text-gray-900 bg-gray-50/50 border-b">
+                        Advanced SEO
+                      </div>
+                      <div className="p-6 space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">SEO Title</label>
+                          <input 
+                            {...register('seoTitle')} 
+                            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron" 
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">SEO Description</label>
+                          <textarea 
+                            {...register('seoDescription')} 
+                            rows={3} 
+                            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron" 
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="pt-4 border-t border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">SEO (Optional)</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-700">Meta Title</label>
-                      <input {...register('seoTitle')} className="w-full px-3 py-2 border rounded-lg outline-none text-sm" />
+                  {/* RIGHT COLUMN: Settings & Metadata */}
+                  <div className="space-y-6">
+                    
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+                      <h3 className="font-bold text-gray-900 border-b pb-3">Settings</h3>
+                      
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-700">Status</label>
+                        <Controller
+                          name="status"
+                          control={control}
+                          defaultValue="PUBLISHED"
+                          render={({ field }) => (
+                            <Select
+                              value={field.value}
+                              onChange={field.onChange}
+                              options={[
+                                { label: 'Published', value: 'PUBLISHED' },
+                                { label: 'Draft', value: 'DRAFT' },
+                                { label: 'Archived', value: 'ARCHIVED' }
+                              ]}
+                              searchable={false}
+                            />
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-700">Display Order</label>
+                        <input 
+                          type="number"
+                          {...register('displayOrder')} 
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                          defaultValue={0}
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-700">Meta Description</label>
-                      <textarea {...register('seoDescription')} rows={2} className="w-full px-3 py-2 border rounded-lg outline-none text-sm" />
+
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
+                      <h3 className="font-bold text-gray-900 border-b pb-3">Media</h3>
+                      
+                      <div className="space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">Icon URL</label>
+                          <input 
+                            {...register('iconUrl')} 
+                            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron" 
+                            placeholder="https://..."
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">Banner Image URL</label>
+                          <input 
+                            {...register('imageUrl')} 
+                            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron" 
+                            placeholder="https://..."
+                          />
+                        </div>
+                      </div>
                     </div>
+
                   </div>
                 </div>
-
               </form>
             </div>
-
-            <div className="p-6 border-t bg-gray-50 flex gap-3">
-              <button 
-                type="button"
-                onClick={closeDrawer}
-                className="flex-1 px-4 py-2 border border-gray-200 bg-white rounded-lg font-medium hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit"
-                form="category-form"
-                disabled={saveMutation.isPending}
-                className="flex-1 px-4 py-2 bg-saffron text-white rounded-lg font-medium hover:bg-saffron/90 flex items-center justify-center gap-2"
-              >
-                {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                Save
-              </button>
-            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

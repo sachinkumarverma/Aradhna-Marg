@@ -1,29 +1,30 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Filter, Download, Trash2, Archive, CheckCircle } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '../../../components/admin/DataTable';
 import { Button } from '../../../components/ui/Button';
 import { Select } from '../../../components/ui/Select';
 import { SearchInput } from '../../../components/ui/SearchInput';
-import { apiClient } from '../../../api/client';
+import { apiClient } from '../../../api/client'; 
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
-export const AdminBhajans: React.FC = () => {
+export const AdminPuranas: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
   const [sort, setSort] = useState('newest');
 
-  // Fetch bhajans
+  // Fetch puranas
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-bhajans', page, search, statusFilter, sort],
+    queryKey: ['admin-puranas', page, search, statusFilter, languageFilter, sort],
     queryFn: async () => {
-      const res = await apiClient.get('/admin/bhajans', {
-        params: { page, limit: 10, search, status: statusFilter, sort }
+      const res = await apiClient.get('/admin/puranas', {
+        params: { page, limit: 10, search, status: statusFilter, language: languageFilter, sort }
       });
       return res.data;
     }
@@ -31,11 +32,11 @@ export const AdminBhajans: React.FC = () => {
 
   const bulkMutation = useMutation({
     mutationFn: async ({ ids, action }: { ids: string[], action: string }) => {
-      await apiClient.post('/admin/bhajans/bulk', { ids, action });
+      await apiClient.post('/admin/puranas/bulk', { ids, action });
     },
     onSuccess: (_, variables) => {
       toast.success(`Successfully applied ${variables.action} to items`);
-      queryClient.invalidateQueries({ queryKey: ['admin-bhajans'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-puranas'] });
     },
     onError: () => {
       toast.error('Failed to perform bulk action');
@@ -53,19 +54,32 @@ export const AdminBhajans: React.FC = () => {
     {
       header: 'Title',
       accessor: (row: any) => (
-        <div>
-          <p className="font-bold text-gray-900">{row.title}</p>
-          <p className="text-xs text-gray-500 truncate max-w-[200px]">/{row.slug}</p>
+        <div className="flex items-center gap-3">
+          {row.cover_image ? (
+            <img src={row.cover_image} alt="" className="w-10 h-10 object-cover rounded-md border border-gray-200" />
+          ) : (
+            <div className="w-10 h-10 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs">No img</div>
+          )}
+          <div>
+            <p className="font-bold text-gray-900 flex items-center gap-2">
+              {row.title}
+            </p>
+            <p className="text-xs text-gray-500 truncate max-w-[200px]">/{row.slug}</p>
+          </div>
         </div>
       )
     },
     {
-      header: 'Category',
-      accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.categories?.name || '-'}</span>
+      header: 'Language',
+      accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.language || '-'}</span>
     },
     {
-      header: 'Deity',
-      accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.gods?.name || '-'}</span>
+      header: 'Downloads',
+      accessor: (row: any) => <span className="text-sm text-gray-600">{row.download_count?.toLocaleString() || 0}</span>
+    },
+    {
+      header: 'Views',
+      accessor: (row: any) => <span className="text-sm text-gray-600">{row.view_count?.toLocaleString() || 0}</span>
     },
     {
       header: 'Status',
@@ -80,12 +94,8 @@ export const AdminBhajans: React.FC = () => {
       )
     },
     {
-      header: 'Views',
-      accessor: (row: any) => <span className="text-sm text-gray-600">{row.views?.toLocaleString() || 0}</span>
-    },
-    {
-      header: 'Created',
-      accessor: (row: any) => <span className="text-sm text-gray-500">{format(new Date(row.created_at), 'MMM dd, yyyy')}</span>
+      header: 'Updated Date',
+      accessor: (row: any) => <span className="text-sm text-gray-500">{row.updated_at ? format(new Date(row.updated_at), 'MMM dd, yyyy') : '-'}</span>
     }
   ];
 
@@ -93,17 +103,17 @@ export const AdminBhajans: React.FC = () => {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Bhajans</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage and supervise all imported and generated content.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Puranas</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage document-based content like PDFs and holy scriptures.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => navigate('/admin/bhajans/new')} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>Create Bhajan</Button>
+          <Button onClick={() => navigate('/admin/puranas/new')} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>Add Purana</Button>
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
         <SearchInput 
-          placeholder="Search by title, slug, lyrics..."
+          placeholder="Search by title or description..."
           value={search}
           onChange={setSearch}
         />
@@ -121,13 +131,27 @@ export const AdminBhajans: React.FC = () => {
             searchable={false}
           />
           <Select 
+            value={languageFilter} 
+            onChange={(val) => setLanguageFilter(val)}
+            options={[
+              { label: 'All Languages', value: '' },
+              { label: 'Hindi', value: 'Hindi' },
+              { label: 'English', value: 'English' },
+              { label: 'Sanskrit', value: 'Sanskrit' },
+              { label: 'Gujarati', value: 'Gujarati' }
+            ]}
+            className="w-40"
+            searchable={false}
+          />
+          <Select 
             value={sort} 
             onChange={(val) => setSort(val)}
             options={[
               { label: 'Newest First', value: 'newest' },
               { label: 'Oldest First', value: 'oldest' },
-              { label: 'Alphabetical A-Z', value: 'alphabetical' },
-              { label: 'Most Views', value: 'views' }
+              { label: 'Most Downloaded', value: 'downloads' },
+              { label: 'Most Viewed', value: 'views' },
+              { label: 'Alphabetical', value: 'alphabetical' }
             ]}
             className="w-40"
             searchable={false}
@@ -135,19 +159,19 @@ export const AdminBhajans: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 relative">
+      <div className="flex-1 min-h-[400px] relative">
         <DataTable 
           data={data?.data || []} 
           columns={columns} 
           isLoading={isLoading}
-          onEdit={(row) => navigate(`/admin/bhajans/${row.id}/edit`)}
+          onEdit={(row) => navigate(`/admin/puranas/${row.id}/edit`)}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
         />
       </div>
 
-      <div className="flex items-center justify-between py-2 bg-white px-4 rounded-b-xl border-t border-gray-100">
+      <div className="flex items-center justify-between py-3 bg-white px-4 rounded-b-xl border border-gray-200 border-t-0 -mt-6 z-10 relative shadow-sm">
         <span className="text-sm text-gray-500">
-          Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10))}</span>
+          Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10)) || 1}</span>
         </span>
         <div className="flex gap-2">
           <Button 

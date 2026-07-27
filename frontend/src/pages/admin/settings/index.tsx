@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { apiClient } from '../../../api/client';
+import { Select } from '../../../components/ui/Select';
 import { Settings, Save, AlertCircle, RefreshCw, Server, ShieldCheck, ShieldAlert, UploadCloud } from 'lucide-react';
 import { supabase } from '../../../api/supabase';
 
 const TABS = [
   'General', 'Contact', 'Social Media', 'YouTube Automation', 
-  'SEO', 'Analytics', 'Advertisement', 'System', 'System Health'
+  'SEO', 'Analytics', 'Advertisement', 'System'
 ];
 
 export const AdminSettings: React.FC = () => {
@@ -38,7 +39,7 @@ export const AdminSettings: React.FC = () => {
   });
 
   // 2. React Hook Form Setup
-  const { register, handleSubmit, formState: { isDirty, isSubmitting }, reset, setValue } = useForm({
+  const { register, handleSubmit, formState: { isDirty, isSubmitting }, reset, setValue, control } = useForm({
     defaultValues: data || {},
     values: data || {},
   });
@@ -222,18 +223,42 @@ export const AdminSettings: React.FC = () => {
 
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">Default Language</label>
-                    <select {...register('defaultLanguage')} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none bg-white">
-                      <option value="en">English</option>
-                      <option value="hi">Hindi</option>
-                    </select>
+                    <Controller
+                      name="defaultLanguage"
+                      control={control}
+                      defaultValue="en"
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onChange={field.onChange}
+                          options={[
+                            { label: 'English', value: 'en' },
+                            { label: 'Hindi', value: 'hi' }
+                          ]}
+                          searchable={false}
+                        />
+                      )}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">Default Theme</label>
-                    <select {...register('defaultTheme')} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none bg-white">
-                      <option value="light">Light</option>
-                      <option value="dark">Dark</option>
-                      <option value="system">System</option>
-                    </select>
+                    <Controller
+                      name="defaultTheme"
+                      control={control}
+                      defaultValue="light"
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onChange={field.onChange}
+                          options={[
+                            { label: 'Light', value: 'light' },
+                            { label: 'Dark', value: 'dark' },
+                            { label: 'System', value: 'system' }
+                          ]}
+                          searchable={false}
+                        />
+                      )}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">Timezone</label>
@@ -331,11 +356,23 @@ export const AdminSettings: React.FC = () => {
 
                     <div className="pt-2 border-t border-gray-200">
                       <label className="text-sm font-medium text-gray-700 block mb-1.5">Sync Interval</label>
-                      <select {...register('youtubeSyncInterval')} className="w-full px-3 py-2 border rounded-lg bg-white outline-none">
-                        <option value="hourly">Hourly</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                      </select>
+                      <Controller
+                        name="youtubeSyncInterval"
+                        control={control}
+                        defaultValue="daily"
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onChange={field.onChange}
+                            options={[
+                              { label: 'Hourly', value: 'hourly' },
+                              { label: 'Daily', value: 'daily' },
+                              { label: 'Weekly', value: 'weekly' }
+                            ]}
+                            searchable={false}
+                          />
+                        )}
+                      />
                     </div>
 
                     <div className="pt-2 border-t border-gray-200 space-y-2">
@@ -475,54 +512,6 @@ export const AdminSettings: React.FC = () => {
               </div>
             )}
 
-            {activeTab === 'System Health' && (
-              <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
-                <h3 className="text-lg font-semibold border-b pb-2">System Health Status</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  
-                  <div className="p-4 border rounded-lg bg-gray-50 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Server className="w-5 h-5 text-gray-500" />
-                      <span className="font-medium text-gray-700">Supabase DB</span>
-                    </div>
-                    {systemHealth.supabase === 'Connected' ? <ShieldCheck className="w-5 h-5 text-green-500" /> : <ShieldAlert className="w-5 h-5 text-red-500" />}
-                  </div>
-
-                  <div className="p-4 border rounded-lg bg-gray-50 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Server className="w-5 h-5 text-gray-500" />
-                      <span className="font-medium text-gray-700">Supabase Storage</span>
-                    </div>
-                    {systemHealth.supabaseStorage === 'Connected' ? <ShieldCheck className="w-5 h-5 text-green-500" /> : <ShieldAlert className="w-5 h-5 text-red-500" />}
-                  </div>
-
-                  <div className="p-4 border rounded-lg bg-gray-50 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Server className="w-5 h-5 text-gray-500" />
-                      <span className="font-medium text-gray-700">YouTube API</span>
-                    </div>
-                    {systemHealth.youtubeApi === 'Connected' ? <ShieldCheck className="w-5 h-5 text-green-500" /> : <ShieldAlert className="w-5 h-5 text-red-500" />}
-                  </div>
-
-                  <div className="p-4 border rounded-lg bg-gray-50 flex flex-col gap-1 mt-4 md:col-span-2">
-                    <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Recent Activity</h4>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Background Jobs</span>
-                      <span className="text-green-600 font-medium">{systemHealth.backgroundJobs}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Search Index</span>
-                      <span className="text-green-600 font-medium">{systemHealth.searchIndex}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Last YouTube Sync</span>
-                      <span className="text-gray-900">{systemHealth.lastYoutubeSync}</span>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            )}
           </form>
         </div>
       </div>

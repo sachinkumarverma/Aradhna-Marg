@@ -2,27 +2,38 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, Music2, PlaySquare, BrainCircuit, 
-  Settings, FolderTree, Sparkles, Image, Settings2, FileText
+  Settings, FolderTree, Sparkles, Image, Settings2, FileText,
+  BookOpen, CalendarDays, Users, Tags, Search, Megaphone, Activity
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-const MAIN_NAV = [
-  { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-  { name: 'Bhajans', path: '/admin/bhajans', icon: Music2 },
-  { name: 'YouTube Sync', path: '/admin/youtube', icon: PlaySquare },
-  { name: 'AI Processing', path: '/admin/ai', icon: BrainCircuit },
+const DASHBOARD_NAV = [
+  { name: 'DASHBOARD', path: '/admin', icon: LayoutDashboard },
 ];
 
-const TAXONOMY_NAV = [
-  { name: 'Categories', path: '/admin/categories', icon: FolderTree },
-  { name: 'Deities', path: '/admin/gods', icon: Sparkles },
-  { name: 'Festivals', path: '/admin/festivals', icon: Sparkles },
+const CONTENT_NAV = [
+  { name: 'BHAJANS', path: '/admin/bhajans', icon: Music2 },
+  { name: 'ARTICLES', path: '/admin/articles', icon: FileText },
+  { name: 'PURANAS', path: '/admin/puranas', icon: BookOpen },
+  { name: 'FESTIVALS', path: '/admin/festivals', icon: CalendarDays },
+];
+
+const ORGANIZE_NAV = [
+  { name: 'CATEGORIES', path: '/admin/categories', icon: FolderTree },
+  { name: 'DEITIES', path: '/admin/deities', icon: Sparkles },
+  { name: 'AUTHORS', path: '/admin/authors', icon: Users },
+  { name: 'TAGS', path: '/admin/tags', icon: Tags },
+];
+
+const AUTOMATION_NAV = [
+  { name: 'YOUTUBE SYNC', path: '/admin/youtube', icon: PlaySquare },
+  { name: 'AI PROCESSING', path: '/admin/ai', icon: BrainCircuit },
+  { name: 'SEO ENGINE', path: '/admin/seo', icon: Search },
 ];
 
 const SYSTEM_NAV = [
-  { name: 'SEO Engine', path: '/admin/seo', icon: FileText },
-  { name: 'Media Library', path: '/admin/media', icon: Image },
-  { name: 'Settings', path: '/admin/settings', icon: Settings },
+  { name: 'SETTINGS', path: '/admin/settings', icon: Settings },
+  { name: 'SYSTEM HEALTH', path: '/admin/system-health', icon: Activity },
 ];
 
 interface AdminSidebarProps {
@@ -32,8 +43,8 @@ interface AdminSidebarProps {
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClose }) => {
   
-  const renderLinks = (links: typeof MAIN_NAV) => (
-    <ul className="space-y-1">
+  const renderLinks = (links: typeof DASHBOARD_NAV) => (
+    <ul className="space-y-0.5">
       {links.map((link) => (
         <li key={link.name}>
           <NavLink
@@ -41,13 +52,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
             end={link.path === '/admin'}
             onClick={onClose}
             className={({ isActive }) => cn(
-              "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+              "flex items-center gap-3 px-3 py-2 rounded-lg text-[14px] font-bold transition-all duration-200",
               isActive 
-                ? "bg-saffron text-white shadow-md shadow-saffron/20" 
-                : "text-gray-600 hover:bg-gray-100 hover:text-darkBrown"
+                ? "bg-[#ff3b00] text-white shadow-md shadow-red-500/20" 
+                : "text-[#00274c] hover:bg-gray-100 hover:text-[#d9480f]"
             )}
           >
-            <link.icon className="w-5 h-5" />
+            <link.icon className="w-5 h-5 stroke-[2]" />
             {link.name}
           </NavLink>
         </li>
@@ -71,41 +82,53 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
       )}
 
       <aside className={sidebarClasses}>
-        <div className="h-full flex flex-col overflow-y-auto">
+        <div className="h-full flex flex-col">
           {/* Header */}
-          <div className="px-6 py-3.5 border-b border-gray-100">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shadow-sm flex-shrink-0">
+          <div className="px-6 h-16 border-b border-gray-100 flex-shrink-0 flex items-center">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0">
                 <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="font-bold text-lg text-darkBrown tracking-tight">Admin Portal</span>
+              <span className="font-serif text-xl font-bold tracking-wide whitespace-nowrap">
+                <span className="text-[#00274c]">ADMIN </span>
+                <span className="text-[#ff3b00]">PORTAL</span>
+              </span>
             </div>
           </div>
 
           {/* Navigation */}
-          <div className="px-4 py-6 flex-1 space-y-8">
+          <div className="px-4 py-6 flex-1 space-y-5 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
             <div>
-              <h3 className="px-3 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Core</h3>
-              {renderLinks(MAIN_NAV)}
+              {renderLinks(DASHBOARD_NAV)}
             </div>
 
             <div>
-              <h3 className="px-3 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Taxonomy</h3>
-              {renderLinks(TAXONOMY_NAV)}
+              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Content</h3>
+              {renderLinks(CONTENT_NAV)}
             </div>
 
             <div>
-              <h3 className="px-3 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">System</h3>
+              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Organize</h3>
+              {renderLinks(ORGANIZE_NAV)}
+            </div>
+
+            <div>
+              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Automation</h3>
+              {renderLinks(AUTOMATION_NAV)}
+            </div>
+
+            <div>
+              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">System</h3>
               {renderLinks(SYSTEM_NAV)}
             </div>
           </div>
           
           {/* Bottom user profile mock */}
-          <div className="p-3 border-t border-gray-100">
-            <div className="flex items-center gap-3 px-3 py-1 rounded-lg bg-gray-50">
+          <div className="p-3 border-t border-gray-100 flex-shrink-0">
+            <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50">
               <div className="w-8 h-8 rounded-full bg-gray-300"></div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-darkBrown truncate">Admin User</p>
+                <p className="text-sm font-bold text-[#00274c] truncate">Admin User</p>
                 <p className="text-xs text-gray-500 truncate">admin@aradhnamarg.com</p>
               </div>
             </div>

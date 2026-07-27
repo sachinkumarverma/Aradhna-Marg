@@ -9,6 +9,7 @@ import { CollectionDetails } from '../pages/collections/CollectionDetails';
 import { AdminLayout } from '../layouts/admin/AdminLayout';
 import { AdminDashboard } from '../pages/admin/dashboard';
 import { AdminBhajans } from '../pages/admin/bhajans';
+import { AdminBhajanForm } from '../pages/admin/bhajans/form';
 
 import { VideosList } from '../pages/videos';
 import { AdminLogin } from '../pages/admin/login';
@@ -33,16 +34,25 @@ const BhajansList = lazy(() => Promise.resolve({ default: () => <ComingSoon titl
 const Categories = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Categories Directory" /> }));
 const Gods = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Deities Directory" /> }));
 const Festivals = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Festivals Directory" /> }));
+const PuranDetail = lazy(() => import('../pages/puranas/detail').then(m => ({ default: m.PuranDetail })));
 
 // Lazy loaded placeholders for future pages (Admin)
 const AdminYoutube = lazy(() => Promise.resolve({ default: () => <ComingSoon title="YouTube Sync Module" /> }));
 const AdminAI = lazy(() => Promise.resolve({ default: () => <ComingSoon title="AI Processing Pipeline" /> }));
 const AdminCategories = lazy(() => import('../pages/admin/categories').then(m => ({ default: m.AdminCategories })));
-const AdminGods = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Deities Manager" /> }));
+const AdminDeities = lazy(() => import('../pages/admin/deities').then(m => ({ default: m.AdminDeities })));
 const AdminFestivals = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Festivals Manager" /> }));
 const AdminSEO = lazy(() => Promise.resolve({ default: () => <ComingSoon title="SEO Optimization Engine" /> }));
 const AdminMedia = lazy(() => import('../pages/admin/media').then(m => ({ default: m.AdminMedia })));
 const AdminSettings = lazy(() => import('../pages/admin/settings').then(m => ({ default: m.AdminSettings })));
+const AdminArticles = lazy(() => import('../pages/admin/articles').then(m => ({ default: m.AdminArticles })));
+const AdminArticleForm = lazy(() => import('../pages/admin/articles/form').then(m => ({ default: m.AdminArticleForm })));
+const AdminPuranas = lazy(() => import('../pages/admin/puranas').then(m => ({ default: m.AdminPuranas })));
+const AdminPuranForm = lazy(() => import('../pages/admin/puranas/form').then(m => ({ default: m.AdminPuranForm })));
+const AdminAuthors = lazy(() => import('../pages/admin/authors').then(m => ({ default: m.AdminAuthors })));
+const AdminTags = lazy(() => import('../pages/admin/tags').then(m => ({ default: m.AdminTags })));
+const AdminAdvertisements = lazy(() => import('../pages/admin/advertisements').then(m => ({ default: m.AdminAdvertisements })));
+const AdminSystemHealth = lazy(() => import('../pages/admin/system-health').then(m => ({ default: m.AdminSystemHealth })));
 
 const NotFoundPage = () => (
   <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
@@ -128,6 +138,10 @@ const router = createBrowserRouter([
         element: <CollectionDetails />,
       },
       {
+        path: 'puranas/:slug',
+        element: <PuranDetail />
+      },
+      {
         path: '*',
         element: <NotFoundPage />,
       }
@@ -147,7 +161,47 @@ const router = createBrowserRouter([
       },
       {
         path: 'bhajans',
-        element: <AdminBhajans />
+        element: <AdminBhajans />,
+        children: [
+          { path: 'new', element: <AdminBhajanForm /> },
+          { path: ':id/edit', element: <AdminBhajanForm /> }
+        ]
+      },
+      {
+        path: 'articles',
+        element: <AdminArticles />,
+        children: [
+          { path: 'new', element: <AdminArticleForm /> },
+          { path: ':id/edit', element: <AdminArticleForm /> }
+        ]
+      },
+      {
+        path: 'puranas',
+        element: <AdminPuranas />,
+        children: [
+          { path: 'new', element: <AdminPuranForm /> },
+          { path: ':id/edit', element: <AdminPuranForm /> }
+        ]
+      },
+      {
+        path: 'festivals',
+        element: <AdminFestivals />
+      },
+      {
+        path: 'categories',
+        element: <AdminCategories />
+      },
+      {
+        path: 'deities',
+        element: <AdminDeities />
+      },
+      {
+        path: 'authors',
+        element: <AdminAuthors />
+      },
+      {
+        path: 'tags',
+        element: <AdminTags />
       },
       {
         path: 'youtube',
@@ -158,18 +212,6 @@ const router = createBrowserRouter([
         element: <AdminAI />
       },
       {
-        path: 'categories',
-        element: <AdminCategories />
-      },
-      {
-        path: 'gods',
-        element: <AdminGods />
-      },
-      {
-        path: 'festivals',
-        element: <AdminFestivals />
-      },
-      {
         path: 'seo',
         element: <AdminSEO />
       },
@@ -178,8 +220,16 @@ const router = createBrowserRouter([
         element: <AdminMedia />
       },
       {
+        path: 'advertisements',
+        element: <AdminAdvertisements />
+      },
+      {
         path: 'settings',
         element: <AdminSettings />
+      },
+      {
+        path: 'system-health',
+        element: <AdminSystemHealth />
       },
       {
         path: '*',

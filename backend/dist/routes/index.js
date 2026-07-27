@@ -12,6 +12,7 @@ const youtube_routes_1 = __importDefault(require("../youtube/routes/youtube.rout
 const search_routes_1 = __importDefault(require("../search/routes/search.routes"));
 const settings_routes_1 = __importDefault(require("./settings.routes"));
 const media_routes_1 = __importDefault(require("./media.routes"));
+const puranas_routes_1 = __importDefault(require("./puranas.routes"));
 const router = (0, express_1.Router)();
 // API Version 1
 router.use('/v1/health', health_1.default);
@@ -22,5 +23,6 @@ router.use('/v1/admin', admin_routes_1.default);
 router.use('/v1/admin/youtube', youtube_routes_1.default); // Could also be nested inside adminRoutes in a refactor
 router.use('/v1/admin/media', media_routes_1.default);
 router.use('/v1/search', search_routes_1.default);
+router.use('/v1/puranas', puranas_routes_1.default);
 router.use('/settings', settings_routes_1.default);
 exports.default = router;
