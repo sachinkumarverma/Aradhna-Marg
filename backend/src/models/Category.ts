@@ -9,6 +9,8 @@ export interface Category {
   seoDescription?: string;
   displayOrder: number;
   status: 'PUBLISHED' | 'DRAFT' | 'ARCHIVED';
+  showInNavigation?: boolean;
+  isFeatured?: boolean;
   createdAt: string;
   updatedAt: string;
   bhajanCount?: number;
@@ -24,6 +26,8 @@ export interface CreateCategoryDTO {
   seoDescription?: string;
   displayOrder?: number;
   status?: 'PUBLISHED' | 'DRAFT' | 'ARCHIVED';
+  showInNavigation?: boolean;
+  isFeatured?: boolean;
 }
 
 export interface UpdateCategoryDTO extends Partial<CreateCategoryDTO> {}

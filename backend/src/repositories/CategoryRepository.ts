@@ -17,6 +17,8 @@ export class CategoryRepository {
       seoDescription: row.seo_description,
       displayOrder: row.display_order,
       status: row.status,
+      showInNavigation: row.show_in_navigation,
+      isFeatured: row.is_featured,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       bhajanCount: row.bhajan_count || 0
@@ -34,6 +36,8 @@ export class CategoryRepository {
     if (dto.seoDescription !== undefined) dbData.seo_description = dto.seoDescription;
     if (dto.displayOrder !== undefined) dbData.display_order = dto.displayOrder;
     if (dto.status !== undefined) dbData.status = dto.status;
+    if (dto.showInNavigation !== undefined) dbData.show_in_navigation = dto.showInNavigation;
+    if (dto.isFeatured !== undefined) dbData.is_featured = dto.isFeatured;
     return dbData;
   }
 

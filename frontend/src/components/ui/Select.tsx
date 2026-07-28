@@ -5,6 +5,7 @@ import { cn } from '../../utils/cn';
 export interface SelectOption {
   label: string;
   value: string;
+  icon?: React.ReactNode;
 }
 
 interface SelectProps {
@@ -56,7 +57,8 @@ export const Select: React.FC<SelectProps> = ({
         )}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className={cn('truncate', !selectedOption && 'text-gray-400')}>
+        <span className={cn('flex items-center gap-2 truncate', !selectedOption && 'text-gray-400')}>
+          {selectedOption?.icon && <span className="w-4 h-4 flex items-center justify-center">{selectedOption.icon}</span>}
           {selectedOption ? selectedOption.label : placeholder}
         </span>
         <ChevronDown className={cn('w-4 h-4 text-gray-400 transition-transform', isOpen && 'rotate-180')} />
@@ -95,7 +97,10 @@ export const Select: React.FC<SelectProps> = ({
                     setSearch('');
                   }}
                 >
-                  <span className="truncate">{opt.label}</span>
+                  <div className="flex items-center gap-2 truncate">
+                    {opt.icon && <span className={cn("w-4 h-4 flex items-center justify-center", value === opt.value ? 'text-saffron' : 'text-gray-500')}>{opt.icon}</span>}
+                    <span>{opt.label}</span>
+                  </div>
                   {value === opt.value && <Check className="w-4 h-4" />}
                 </div>
               ))

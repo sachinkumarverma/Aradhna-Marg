@@ -1,4 +1,4 @@
-import { supabase } from '../../config/supabase';
+import { supabase } from '../../database/supabase';
 import { Deity, CreateDeityDTO, UpdateDeityDTO } from '../../models/Deity';
 
 export class DeityRepository {
