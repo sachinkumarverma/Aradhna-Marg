@@ -7,6 +7,7 @@ import { adminFestivalController } from '../controllers/festival.controller';
 import { adminTagController } from '../controllers/tag.controller';
 import { adminAuthorController } from '../controllers/author.controller';
 import { adminDeityController } from '../controllers/deity.controller';
+import { adminAiController } from '../controllers/ai.controller';
 import { requireAdmin } from '../../middlewares/auth';
 
 const router = Router();
@@ -76,7 +77,14 @@ router.delete('/deities/:id', adminDeityController.delete);
 
 // Future endpoints:
 // router.use('/seo', seoController);
-// router.use('/ai', aiController);
 // router.use('/jobs', jobsController);
+
+// AI Processing Pipeline
+router.get('/ai/jobs', adminAiController.list);
+router.get('/ai/stats', adminAiController.getStats);
+router.post('/ai/queue', adminAiController.queueJob);
+router.post('/ai/jobs/:id/retry', adminAiController.retryJob);
+router.post('/ai/jobs/:id/cancel', adminAiController.cancelJob);
+router.delete('/ai/jobs/:id', adminAiController.deleteJob);
 
 export default router;

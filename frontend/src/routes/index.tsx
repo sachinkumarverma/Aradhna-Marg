@@ -37,13 +37,13 @@ const Festivals = lazy(() => Promise.resolve({ default: () => <ComingSoon title=
 const PuranDetail = lazy(() => import('../pages/puranas/detail').then(m => ({ default: m.PuranDetail })));
 
 // Lazy loaded placeholders for future pages (Admin)
-const AdminYoutube = lazy(() => Promise.resolve({ default: () => <ComingSoon title="YouTube Sync Module" /> }));
-const AdminAI = lazy(() => Promise.resolve({ default: () => <ComingSoon title="AI Processing Pipeline" /> }));
+const AdminYoutube = lazy(() => import('../pages/admin/youtube').then(m => ({ default: m.AdminYoutube })));
+const AdminAI = lazy(() => import('../pages/admin/ai').then(m => ({ default: m.AdminAI })));
 const AdminCategories = lazy(() => import('../pages/admin/categories').then(m => ({ default: m.AdminCategories })));
 const AdminDeities = lazy(() => import('../pages/admin/deities').then(m => ({ default: m.AdminDeities })));
 const AdminFestivals = lazy(() => import('../pages/admin/festivals').then(m => ({ default: m.AdminFestivals })));
 const AdminFestivalForm = lazy(() => import('../pages/admin/festivals/form').then(m => ({ default: m.AdminFestivalForm })));
-const AdminSEO = lazy(() => Promise.resolve({ default: () => <ComingSoon title="SEO Optimization Engine" /> }));
+const AdminSEO = lazy(() => import('../pages/admin/seo').then(m => ({ default: m.AdminSEO })));
 const AdminMedia = lazy(() => import('../pages/admin/media').then(m => ({ default: m.AdminMedia })));
 const AdminSettings = lazy(() => import('../pages/admin/settings').then(m => ({ default: m.AdminSettings })));
 const AdminArticles = lazy(() => import('../pages/admin/articles').then(m => ({ default: m.AdminArticles })));

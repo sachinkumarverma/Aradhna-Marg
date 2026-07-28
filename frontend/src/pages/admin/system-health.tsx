@@ -94,7 +94,10 @@ export const AdminSystemHealth: React.FC = () => {
           {data ? (
             <div>
               <p className="text-xl font-bold text-gray-900">{data.environment}</p>
-              <p className="text-gray-500">Uptime: {Math.floor(data.uptime_seconds / 3600)}h {Math.floor((data.uptime_seconds % 3600) / 60)}m</p>
+              <div className="mt-1 space-y-0.5">
+                <p className="text-sm text-gray-500">Uptime: {Math.floor(data.uptime_seconds / 3600)}h {Math.floor((data.uptime_seconds % 3600) / 60)}m</p>
+                <p className="text-sm text-gray-500">Started: {format(new Date(new Date(data.server_time).getTime() - (data.uptime_seconds * 1000)), 'dd MMM, h:mm:ss a')}</p>
+              </div>
             </div>
           ) : (
             <div className="h-14 flex items-center text-gray-400">Loading...</div>

@@ -9,6 +9,7 @@ import searchRoutes from '../search/routes/search.routes';
 import searchRoutes from '../search/routes/search.routes';
 import settingsRoutes from './settings.routes';
 import puranaRoutes from './puranas.routes';
+import seoRoutes from './seo.routes';
 
 const router = Router();
 
@@ -18,10 +19,13 @@ router.use('/v1/health', healthRoutes);
 // router.use('/v1/bhajans', bhajanRoutes);
 router.use('/v1/categories', categoryRoutes);
 router.use('/v1/admin/categories', categoryRoutes);
+router.use('/admin', adminRoutes);
 router.use('/v1/admin', adminRoutes);
 router.use('/v1/admin/youtube', youtubeRoutes); // Could also be nested inside adminRoutes in a refactor
 router.use('/v1/search', searchRoutes);
 router.use('/v1/puranas', puranaRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/v1/settings', settingsRoutes);
+router.use('/v1/seo', seoRoutes);
 
 export default router;

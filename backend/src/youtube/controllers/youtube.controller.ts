@@ -1,32 +1,36 @@
 import { Request, Response, NextFunction } from 'express';
-import { youtubeSyncService } from '../services/YoutubeSyncService';
 import { sendSuccess } from '../../responses/apiResponse';
+import { youtubeService } from '../services/youtube.service';
 
-class YoutubeController {
-  
-  public triggerSync = async (req: Request, res: Response, next: NextFunction) => {
+export class YoutubeController {
+  async getVideos(req: Request, res: Response, next: NextFunction) {
     try {
-      const { channelId, fullSync } = req.body;
-      
-      // Async trigger, do not await the entire sync in the HTTP cycle
-      // In production, you would fetch last sync time if fullSync is false
-      youtubeSyncService.syncChannel(channelId, fullSync ? undefined : new Date(Date.now() - 86400000).toISOString()).catch(next);
-      
-      return sendSuccess(res, 'YouTube synchronization started in the background.', { channelId, fullSync });
+      const search = req.query.search as string;
+      const status = req.query.status as string;
+      const videos = await youtubeService.getVideos(search, status);
+      return sendSuccess(res, 'Videos retrieved', videos);
     } catch (error) {
       next(error);
     }
-  };
+  }
 
-  public getStatus = async (req: Request, res: Response, next: NextFunction) => {
+  async getStats(req: Request, res: Response, next: NextFunction) {
     try {
-      // Fetch latest sync status from DB
-      return sendSuccess(res, 'Status fetched', { status: 'IDLE', lastSync: new Date() });
+      const stats = await youtubeService.getStats();
+      return sendSuccess(res, 'Stats retrieved', stats);
     } catch (error) {
       next(error);
     }
-  };
+  }
 
+  async syncNow(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await youtubeService.syncNow();
+      return sendSuccess(res, 'Sync triggered successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const youtubeController = new YoutubeController();
