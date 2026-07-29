@@ -87,33 +87,35 @@ export const AdminSEO = () => {
   ];
 
   return (
-    <div className="flex-1 space-y-6 max-w-6xl mx-auto w-full">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Search className="w-6 h-6 text-saffron" />
-            SEO Management
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">Monitor, audit, and manage global search engine optimization.</p>
+    <div className="space-y-6 flex flex-col flex-1 pb-8">
+      <div className="space-y-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+              <Search className="w-6 h-6 text-saffron" />
+              SEO ENGINE
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">Monitor, audit, and manage global search engine optimization.</p>
+          </div>
         </div>
-      </div>
 
-      <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
-              activeTab === tab.id
-                ? "border-saffron text-saffron"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            )}
-          >
-            <tab.icon className="w-4 h-4" />
-            {tab.label}
-          </button>
-        ))}
+        <div className="flex overflow-x-auto scrollbar-hide">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+                activeTab === tab.id
+                  ? "border-saffron text-saffron"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              )}
+            >
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {activeTab === 'overview' && (
@@ -329,38 +331,40 @@ export const AdminSEO = () => {
       )}
 
       {activeTab === 'generator' && (
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center max-w-4xl mx-auto">
-          <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Search className="w-10 h-10 text-saffron" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Bulk SEO Tools</h2>
-          <p className="text-gray-500 mb-8">
-            Automatically generate missing SEO titles and meta descriptions for all content in the background. 
-            This process will <strong>never</strong> overwrite manually entered SEO values. It will generate values <strong>only when</strong> the SEO Title or Meta Description is empty.
-          </p>
-          
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-left space-y-4 mb-8">
-            <h4 className="font-semibold text-gray-900">Select content to generate:</h4>
-            <div className="grid grid-cols-2 gap-3">
-              {['Bhajans', 'Articles', 'Festivals', 'Puranas', 'Categories'].map(item => (
-                <label key={item} className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" defaultChecked className="text-saffron rounded border-gray-300 focus:ring-saffron" />
-                  <span className="text-sm font-medium text-gray-700">{item}</span>
-                </label>
-              ))}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
+            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Search className="w-10 h-10 text-saffron" />
             </div>
-          </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Bulk SEO Tools</h2>
+            <p className="text-gray-500 mb-8 max-w-2xl mx-auto">
+              Automatically generate missing SEO titles and meta descriptions for all content in the background. 
+              This process will <strong>never</strong> overwrite manually entered SEO values. It will generate values <strong>only when</strong> the SEO Title or Meta Description is empty.
+            </p>
+            
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-left space-y-4 mb-8">
+              <h4 className="font-semibold text-gray-900">Select content to generate:</h4>
+              <div className="grid grid-cols-2 gap-3">
+                {['Bhajans', 'Articles', 'Festivals', 'Puranas', 'Categories'].map(item => (
+                  <label key={item} className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" defaultChecked className="text-saffron rounded border-gray-300 focus:ring-saffron" />
+                    <span className="text-sm font-medium text-gray-700">{item}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-          <button onClick={handleGenerateBulk} className="px-6 py-3 bg-saffron text-white rounded-lg font-bold hover:bg-saffron/90 w-full shadow-sm text-lg flex items-center justify-center gap-2 transition-colors">
-            Start Bulk Generation Job
-          </button>
+            <button onClick={handleGenerateBulk} className="px-6 py-3 bg-saffron text-white rounded-lg font-bold hover:bg-saffron/90 w-full shadow-sm text-lg flex items-center justify-center gap-2 transition-colors">
+              Start Bulk Generation Job
+            </button>
+          </div>
           
-          <div className="mt-8 border-t border-gray-200 pt-6">
-            <h3 className="font-bold text-gray-900 mb-4 text-left">Background Job Status</h3>
-            <div className="bg-white border border-gray-200 rounded-lg divide-y divide-gray-100 text-left">
-              <div className="p-8 text-center text-gray-500">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <h3 className="font-bold text-gray-900 mb-4">Background Job Status</h3>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg divide-y divide-gray-100 text-center">
+              <div className="p-8 text-gray-500">
                 <Search className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                No SEO generation jobs have been executed yet.
+                <p className="text-sm">No SEO generation jobs have been executed yet.</p>
               </div>
               {/* Future statuses: Queued, Running, Completed, Failed */}
             </div>

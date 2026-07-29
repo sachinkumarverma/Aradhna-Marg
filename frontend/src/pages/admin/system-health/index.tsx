@@ -18,7 +18,7 @@ export function AdminSystemHealth() {
   };
 
   return (
-    <div className="flex-1 space-y-6">
+    <div className="space-y-6 flex flex-col h-full">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
@@ -26,7 +26,10 @@ export function AdminSystemHealth() {
             <Activity className="w-6 h-6 text-saffron" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">System Health</h1>
+            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2 uppercase">
+              <Activity className="w-6 h-6 text-saffron" />
+              SYSTEM HEALTH
+            </h1>
             <p className="text-sm text-slate-500 mt-0.5">
               Real-time status of backend services and database connections
             </p>

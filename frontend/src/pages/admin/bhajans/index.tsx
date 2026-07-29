@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Filter, Download, Trash2, Archive, CheckCircle } from 'lucide-react';
+import { Plus, Filter, Download, Trash2, Archive, CheckCircle, Music2 } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '../../../components/admin/DataTable';
 import { Button } from '../../../components/ui/Button';
@@ -93,7 +93,10 @@ export const AdminBhajans: React.FC = () => {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Bhajans</h1>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <Music2 className="w-6 h-6 text-saffron" />
+            BHAJANS
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Manage and supervise all imported and generated content.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -142,6 +145,8 @@ export const AdminBhajans: React.FC = () => {
           isLoading={isLoading}
           onEdit={(row) => navigate(`/admin/bhajans/${row.id}/edit`)}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
+          emptyIcon={Music2}
+          emptySubtext="Create your first bhajan."
         />
       </div>
 

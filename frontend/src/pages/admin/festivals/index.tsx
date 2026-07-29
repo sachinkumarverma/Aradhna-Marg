@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
+import { Plus, Calendar } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '../../../components/admin/DataTable';
 import { Button } from '../../../components/ui/Button';
@@ -95,7 +95,10 @@ export const AdminFestivals: React.FC = () => {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Festivals</h1>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <Calendar className="w-6 h-6 text-saffron" />
+            FESTIVALS
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Manage spiritual festivals, events, and their associated content.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -143,7 +146,9 @@ export const AdminFestivals: React.FC = () => {
           columns={columns} 
           isLoading={isLoading}
           onEdit={(row) => navigate(`/admin/festivals/${row.id}/edit`)}
-          onDelete={(row) => handleBulkAction('delete', [row.id])}
+          onDelete={(row) => handleBulkAction('DELETE', [row.id])}
+          emptyIcon={Calendar}
+          emptySubtext="Create your first festival."
         />
       </div>
 

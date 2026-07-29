@@ -4,7 +4,7 @@ import { apiClient } from '../../../api/client';
 import toast from 'react-hot-toast';
 import { 
   Bot, CheckCircle2, XCircle, Clock, Zap, Play, RotateCcw, Trash2, 
-  AlertCircle, FileText, Calendar, FolderTree, BookOpen, Music, RefreshCw
+  AlertCircle, FileText, Calendar, FolderTree, BookOpen, Music, RefreshCw, BrainCircuit
 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 
@@ -156,11 +156,14 @@ export function AdminAI() {
   ];
 
   return (
-    <div className="flex flex-col space-y-6 pb-8">
+    <div className="space-y-6 flex flex-col flex-1 pb-8">
       {/* Header & Stats Overview */}
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">AI Processing Pipeline</h1>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <BrainCircuit className="w-6 h-6 text-saffron" />
+            AI PROCESSING PIPELINE
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Automate repetitive content tasks with AI. Your API keys and configurations are securely managed by the server.</p>
         </div>
         
@@ -242,8 +245,8 @@ export function AdminAI() {
         {/* Content Assistant Tab */}
         {activeTab === 'assistant' && (
           <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Content Assistant</h2>
-            <p className="text-sm text-gray-500 mb-6">Select an AI action for individual content types. The system will queue a job to process the requested enhancements.</p>
+            <h2 className="text-lg font-semibold text-gray-900">Content Assistant</h2>
+            <p className="text-sm text-gray-500 mt-1 mb-6">Select an AI action for individual content types. The system will queue a job to process the requested enhancements.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {assistantCards.map(card => (
@@ -280,8 +283,8 @@ export function AdminAI() {
         {/* Bulk Processing Tab */}
         {activeTab === 'bulk' && (
           <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Bulk Processing Tools</h2>
-            <p className="text-sm text-gray-500 mb-6">Run AI operations across multiple records. The system will only process records where the target fields are currently empty (it will never overwrite manual content).</p>
+            <h2 className="text-lg font-semibold text-gray-900">Bulk Processing Tools</h2>
+            <p className="text-sm text-gray-500 mt-1 mb-6">Run AI operations across multiple records. The system will only process records where the target fields are currently empty (it will never overwrite manual content).</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[

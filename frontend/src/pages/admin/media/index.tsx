@@ -98,11 +98,11 @@ export const AdminMedia = () => {
   const isLoading = loadingFolders || loadingFiles;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-20 p-6">
+    <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ImageIcon className="w-6 h-6 text-saffron" /> Media Library
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <ImageIcon className="w-6 h-6 text-saffron" /> MEDIA LIBRARY
           </h1>
           <p className="text-sm text-gray-500 mt-1">Manage images, audio, and documents securely.</p>
         </div>

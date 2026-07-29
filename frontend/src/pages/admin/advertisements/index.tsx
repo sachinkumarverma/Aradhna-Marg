@@ -3,10 +3,13 @@ import { Plus } from 'lucide-react';
 
 export function AdminAdvertisements() {
   return (
-    <div className="flex-1 space-y-4">
+    <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-darkBrown">Advertisements</h1>
+          <h1 className="text-2xl font-bold text-darkBrown flex items-center gap-2 uppercase">
+            <Megaphone className="w-6 h-6 text-saffron" />
+            ADVERTISEMENTS
+          </h1>
           
           <p className="text-gray-500 mt-1 text-sm">
             Manage ad placements and banners.

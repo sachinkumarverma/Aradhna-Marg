@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   PlaySquare, Settings, Clock, RefreshCw, CheckCircle2, 
@@ -175,13 +176,13 @@ export const AdminYoutube = () => {
   };
 
   return (
-    <div className="flex-1 space-y-6 max-w-7xl mx-auto w-full">
+    <div className="space-y-6 flex flex-col flex-1 pb-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
             <PlaySquare className="w-6 h-6 text-red-600" />
-            YouTube Import Management
+            YOUTUBE IMPORT MANAGEMENT
           </h1>
           <p className="text-sm text-gray-500 mt-1">Import, review, and link YouTube videos directly to your platform.</p>
         </div>
@@ -376,6 +377,22 @@ export const AdminYoutube = () => {
               )}
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="flex items-center gap-2 w-full sm:w-48">
+                <Filter className="w-4 h-4 text-gray-400" />
+                <Select 
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  options={[
+                    { label: 'All Statuses', value: '' },
+                    { label: 'New', value: 'NEW' },
+                    { label: 'Reviewed', value: 'REVIEWED' },
+                    { label: 'Linked', value: 'LINKED' },
+                    { label: 'Ignored', value: 'IGNORED' }
+                  ]}
+                  className="w-full"
+                  searchable={false}
+                />
+              </div>
               <button 
                 onClick={() => { 
                   queryClient.invalidateQueries({ queryKey: ['youtube-videos'] }); 
@@ -383,26 +400,11 @@ export const AdminYoutube = () => {
                   queryClient.invalidateQueries({ queryKey: ['settings'] }); 
                   queryClient.invalidateQueries({ queryKey: ['youtube-history'] }); 
                 }} 
-                className="p-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-sm flex items-center justify-center"
+                className="p-2 rounded-lg text-white bg-saffron hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center"
                 title="Refresh Data"
               >
-                <RefreshCw className={`w-4 h-4 ${isFetchingVideos ? 'animate-spin text-red-600' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${isFetchingVideos ? 'animate-spin' : ''}`} />
               </button>
-              <div className="flex items-center gap-2 w-full sm:w-48">
-                <Filter className="w-4 h-4 text-gray-400" />
-              <Select 
-                value={statusFilter}
-                onChange={setStatusFilter}
-                options={[
-                  { label: 'All Statuses', value: '' },
-                  { label: 'New', value: 'NEW' },
-                  { label: 'Reviewed', value: 'REVIEWED' },
-                  { label: 'Linked', value: 'LINKED' },
-                  { label: 'Ignored', value: 'IGNORED' }
-                ]}
-                searchable={false}
-              />
-              </div>
             </div>
           </div>
 
@@ -469,10 +471,10 @@ export const AdminYoutube = () => {
                         </td>
                         <td className="px-6 py-4">
                           {video.linkedBhajan ? (
-                            <a href={`/admin/bhajans/${video.linkedBhajan.id}/edit`} className="text-sm font-semibold text-saffron hover:underline flex items-center gap-1">
+                            <Link to={`/admin/bhajans/${video.linkedBhajan.id}/edit`} className="text-sm font-semibold text-saffron hover:underline flex items-center gap-1">
                               <LinkIcon className="w-3 h-3" />
                               {video.linkedBhajan.title}
-                            </a>
+                            </Link>
                           ) : (
                             <span className="text-sm text-gray-400 italic">Not linked</span>
                           )}

@@ -99,7 +99,10 @@ export const AdminCategories = () => {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <FolderTree className="w-6 h-6 text-saffron" />
+            CATEGORIES
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Manage content taxonomies and hierarchies.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -115,9 +118,24 @@ export const AdminCategories = () => {
         />
       </div>
 
-      <div className="flex-1 min-h-[400px] relative flex flex-col">
+      <div className="flex-1 min-h-[400px] relative">
         {isLoading ? (
-          <div className="flex-1 flex justify-center items-center py-12 text-gray-500 animate-pulse">Loading categories...</div>
+          <div className="w-full overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm animate-pulse">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  {[1,2,3,4,5].map(i => <th key={i} className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {[1,2,3,4,5].map(row => (
+                  <tr key={row} className="border-b border-gray-50">
+                    {[1,2,3,4,5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : categories.length === 0 ? (
           <div className="border border-dashed border-gray-300 rounded-xl bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">

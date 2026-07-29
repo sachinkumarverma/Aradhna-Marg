@@ -1,63 +1,95 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Music2, PlaySquare, BrainCircuit, Activity, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Music2, PlaySquare, BrainCircuit, Activity, FileText } from 'lucide-react';
 import { StatCard } from '../../../components/admin/StatCard';
 import { apiClient } from '../../../api/client';
 
 export const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
   // Mocking the API fetch for UI Foundation
   const { data: stats, isLoading } = useQuery({
     queryKey: ['admin-dashboard-stats'],
     queryFn: async () => {
-      // In production, configure interceptors to inject JWT token
-      // const res = await apiClient.get('/admin/dashboard/stats', { headers: { Authorization: 'Bearer ...' }});
-      // return res.data.data;
-      return {
-        totalBhajans: 12450,
-        published: 12000,
-        draft: 450,
-        pendingAi: 12,
-        failedAi: 0,
-        totalCategories: 15,
-        totalGods: 24,
-        todayViews: 24500,
-        monthViews: 850000
-      };
+      const res = await apiClient.get('/v1/admin/dashboard/stats');
+      return res.data.data;
     }
   });
 
-  if (isLoading) return <div>Loading dashboard...</div>;
+  const { data: activityData } = useQuery({
+    queryKey: ['admin-dashboard-activity'],
+    queryFn: async () => {
+      const res = await apiClient.get('/v1/admin/dashboard/activity');
+      return res.data.data.activity;
+    }
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const res = await apiClient.get('/v1/settings');
+      return res.data.data;
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 flex flex-col h-full">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <LayoutDashboard className="w-6 h-6 text-saffron" />
+            DASHBOARD
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">Platform overview and automation status</p>
+        </div>
+        <div className="space-y-6 animate-pulse flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-32"></div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 h-64"></div>
+            <div className="bg-white rounded-lg border border-gray-200 h-64"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <LayoutDashboard className="w-6 h-6 text-saffron" />
+          DASHBOARD
+        </h1>
         <p className="text-sm text-gray-500 mt-1">Platform overview and automation status</p>
       </div>
 
       {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
-          title="Total Views (Today)" 
+        <StatCard
+          title="Total Views (Today)"
           value={new Intl.NumberFormat('en-IN').format(stats?.todayViews || 0)}
           icon={Activity}
           trend={{ value: 12, isPositive: true }}
           colorClassName="bg-blue-100 text-blue-600"
         />
-        <StatCard 
-          title="Total Bhajans" 
-          value={new Intl.NumberFormat('en-IN').format(stats?.totalBhajans || 0)}
+        <StatCard
+          title="Published Bhajans"
+          value={new Intl.NumberFormat('en-IN').format(stats?.published || 0)}
           icon={Music2}
           colorClassName="bg-saffron/20 text-saffron"
         />
-        <StatCard 
-          title="Published Bhajans" 
-          value={new Intl.NumberFormat('en-IN').format(stats?.published || 0)}
+        <StatCard
+          title="Draft Bhajans"
+          value={new Intl.NumberFormat('en-IN').format(stats?.draft || 0)}
           icon={FileText}
-          colorClassName="bg-green-100 text-green-600"
+          colorClassName="bg-yellow-100 text-yellow-600"
         />
-        <StatCard 
-          title="Pending AI Processing" 
+        <StatCard
+          title="Pending AI Processing"
           value={stats?.pendingAi || 0}
           icon={BrainCircuit}
           colorClassName="bg-purple-100 text-purple-600"
@@ -65,7 +97,7 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* Recent Activity Table Mock */}
         <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -82,24 +114,29 @@ export const AdminDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                <tr>
-                  <td className="px-5 py-3">YouTube Import</td>
-                  <td className="px-5 py-3 font-medium text-gray-900">Hanuman Chalisa Fast</td>
-                  <td className="px-5 py-3"><span className="text-green-600 bg-green-50 px-2 py-1 rounded-md text-xs font-medium">Success</span></td>
-                  <td className="px-5 py-3 text-gray-500">2 mins ago</td>
-                </tr>
-                <tr>
-                  <td className="px-5 py-3">AI Metadata Gen</td>
-                  <td className="px-5 py-3 font-medium text-gray-900">Shiv Tandav Stotram</td>
-                  <td className="px-5 py-3"><span className="text-green-600 bg-green-50 px-2 py-1 rounded-md text-xs font-medium">Success</span></td>
-                  <td className="px-5 py-3 text-gray-500">15 mins ago</td>
-                </tr>
-                <tr>
-                  <td className="px-5 py-3">PDF Generation</td>
-                  <td className="px-5 py-3 font-medium text-gray-900">Achyutam Keshavam</td>
-                  <td className="px-5 py-3"><span className="text-yellow-600 bg-yellow-50 px-2 py-1 rounded-md text-xs font-medium">Queued</span></td>
-                  <td className="px-5 py-3 text-gray-500">1 hour ago</td>
-                </tr>
+                {activityData?.length > 0 ? (
+                  activityData.map((activity: any) => (
+                    <tr key={activity.id}>
+                      <td className="px-5 py-3">Bhajan Created</td>
+                      <td className="px-5 py-3 font-medium text-gray-900">{activity.title}</td>
+                      <td className="px-5 py-3">
+                        <span className={`px-2 py-1 rounded-md text-xs font-medium ${activity.status === 'PUBLISHED' ? 'text-green-600 bg-green-50' : 'text-yellow-600 bg-yellow-50'
+                          }`}>
+                          {activity.status === 'PUBLISHED' ? 'Published' : 'Draft'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-gray-500">
+                        {new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(activity.created_at))}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-5 py-6 text-center text-gray-500">
+                      No recent activity found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -108,7 +145,7 @@ export const AdminDashboard: React.FC = () => {
         {/* YouTube Sync Status Module */}
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
           <h3 className="font-semibold text-gray-900 mb-4">YouTube Automation</h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-500 text-sm">Status</span>
@@ -116,22 +153,24 @@ export const AdminDashboard: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-green-500"></span> Active
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <span className="text-gray-500 text-sm">Last Sync</span>
-              <span className="text-sm font-medium text-gray-900">Today, 06:00 AM</span>
+              <span className="text-sm font-medium text-gray-900">
+                {settings?.youtubeLastSync ? new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(settings.youtubeLastSync)) : 'Never'}
+              </span>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-gray-500 text-sm">Next Scheduled</span>
-              <span className="text-sm font-medium text-gray-900">Today, 12:00 PM</span>
+              <span className="text-gray-500 text-sm">Auto Sync</span>
+              <span className="text-sm font-medium text-gray-900">{settings?.youtubeSyncInterval || '12h'} Interval</span>
             </div>
 
             <hr className="border-gray-100" />
 
-            <button className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition-colors border border-gray-200">
+            <button onClick={() => navigate('/admin/youtube')} className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition-colors border border-gray-200">
               <PlaySquare className="w-4 h-4 text-red-500" />
-              Force Incremental Sync
+              Manage Synchronization
             </button>
           </div>
         </div>

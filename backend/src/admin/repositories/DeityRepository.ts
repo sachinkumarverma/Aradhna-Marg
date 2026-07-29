@@ -17,8 +17,8 @@ export class DeityRepository {
     const to = from + limit - 1;
 
     const { data, count, error } = await query
-      .order('displayOrder', { ascending: true })
-      .order('createdAt', { ascending: false })
+      .order('display_order', { ascending: true })
+      .order('created_at', { ascending: false })
       .range(from, to);
 
     if (error) throw error;
@@ -56,10 +56,27 @@ export class DeityRepository {
     return data;
   }
 
+  private mapToDb(dto: Partial<CreateDeityDTO> & { createdBy?: string, updatedBy?: string, updatedAt?: string }): any {
+    const dbData: any = {};
+    if (dto.name !== undefined) dbData.name = dto.name;
+    if (dto.slug !== undefined) dbData.slug = dto.slug;
+    if (dto.shortDescription !== undefined) dbData.short_description = dto.shortDescription;
+    if (dto.image !== undefined) dbData.image = dto.image;
+    if (dto.displayOrder !== undefined) dbData.display_order = dto.displayOrder;
+    if (dto.featured !== undefined) dbData.featured = dto.featured;
+    if (dto.status !== undefined) dbData.status = dto.status;
+    if (dto.seoTitle !== undefined) dbData.seo_title = dto.seoTitle;
+    if (dto.seoDescription !== undefined) dbData.seo_description = dto.seoDescription;
+    if (dto.createdBy !== undefined) dbData.created_by = dto.createdBy;
+    if (dto.updatedBy !== undefined) dbData.updated_by = dto.updatedBy;
+    if (dto.updatedAt !== undefined) dbData.updated_at = dto.updatedAt;
+    return dbData;
+  }
+
   async create(data: CreateDeityDTO & { createdBy?: string }) {
     const { data: created, error } = await supabase
       .from(this.tableName)
-      .insert([data])
+      .insert([this.mapToDb(data)])
       .select()
       .single();
 
@@ -70,7 +87,7 @@ export class DeityRepository {
   async update(id: string, data: UpdateDeityDTO & { updatedBy?: string }) {
     const { data: updated, error } = await supabase
       .from(this.tableName)
-      .update({ ...data, updatedAt: new Date().toISOString() })
+      .update(this.mapToDb({ ...data, updatedAt: new Date().toISOString() }))
       .eq('id', id)
       .select()
       .single();

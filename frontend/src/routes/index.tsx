@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
 import { PublicLayout } from '../layouts/PublicLayout';
 import { Home } from '../pages/home';
 import { BhajanDetail } from '../pages/bhajans/detail';
@@ -62,9 +62,9 @@ const NotFoundPage = () => (
     <p className="text-gray-600 mb-8 max-w-md mx-auto">
       The spiritual path you are looking for does not exist or has been moved.
     </p>
-    <a href="/" className="px-6 py-3 bg-saffron text-white rounded-full font-bold hover:bg-golden transition-colors">
+    <Link to="/" className="px-6 py-3 bg-saffron text-white rounded-full font-bold hover:bg-golden transition-colors">
       Return Home
-    </a>
+    </Link>
   </div>
 );
 
@@ -75,9 +75,9 @@ const AdminNotFoundPage = () => (
     <p className="text-gray-500 mb-6">
       The dashboard panel you are looking for does not exist.
     </p>
-    <a href="/admin" className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors">
+    <Link to="/admin" className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors">
       Back to Dashboard
-    </a>
+    </Link>
   </div>
 );
 

@@ -39,12 +39,12 @@ export const AdminSystemHealth: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6 flex flex-col h-full max-w-4xl mx-auto">
+    <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
             <Activity className="w-6 h-6 text-saffron" />
-            System Health
+            SYSTEM HEALTH
           </h1>
           <p className="text-sm text-gray-500 mt-1">Read-only monitoring of all core services and application status.</p>
         </div>

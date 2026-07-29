@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
+import { Plus, BookOpen } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '../../../components/admin/DataTable';
 import { Button } from '../../../components/ui/Button';
@@ -103,7 +103,10 @@ export const AdminPuranas: React.FC = () => {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Puranas</h1>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <BookOpen className="w-6 h-6 text-saffron" />
+            PURANAS
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Manage document-based content like PDFs and holy scriptures.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -166,6 +169,8 @@ export const AdminPuranas: React.FC = () => {
           isLoading={isLoading}
           onEdit={(row) => navigate(`/admin/puranas/${row.id}/edit`)}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
+          emptyIcon={BookOpen}
+          emptySubtext="Create your first purana."
         />
       </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
+import { Plus, FileText } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '../../../components/admin/DataTable';
 import { Button } from '../../../components/ui/Button';
@@ -103,7 +103,10 @@ export const AdminArticles: React.FC = () => {
     <div className="space-y-6 flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Articles</h1>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <FileText className="w-6 h-6 text-saffron" />
+            ARTICLES
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Manage spiritual knowledge, stories, and lifestyle articles.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -151,6 +154,8 @@ export const AdminArticles: React.FC = () => {
           isLoading={isLoading}
           onEdit={(row) => navigate(`/admin/articles/${row.id}/edit`)}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
+          emptyIcon={FileText}
+          emptySubtext="Create your first article."
         />
       </div>
 

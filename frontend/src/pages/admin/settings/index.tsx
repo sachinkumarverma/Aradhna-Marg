@@ -363,11 +363,11 @@ export const AdminSettings: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-20">
+    <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Settings className="w-6 h-6 text-saffron" /> System Settings
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <Settings className="w-6 h-6 text-saffron" /> SYSTEM SETTINGS
           </h1>
           <p className="text-sm text-gray-500 mt-1">Configure global application parameters</p>
         </div>
