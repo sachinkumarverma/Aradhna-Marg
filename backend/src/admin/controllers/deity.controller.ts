@@ -16,7 +16,7 @@ class AdminDeityController {
       const search = req.query.search as string;
 
       const { data, meta } = await this.service.getAllDeities(page, limit, search);
-      return sendSuccess(res, 'Deities fetched', { data, meta });
+      return sendSuccess(res, 'Deities fetched', data, meta);
     } catch (error) {
       next(error);
     }

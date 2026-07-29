@@ -12,9 +12,9 @@ class DashboardController {
         { count: pendingAi },
         { count: totalCategories }
       ] = await Promise.all([
-        supabase.from('bhajans').select('*', { count: 'exact', head: true }),
-        supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('status', 'PUBLISHED'),
-        supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('metadata_status', 'PENDING'),
+        supabase.from('bhajans').select('*', { count: 'exact', head: true }).is('youtube_video_id', null),
+        supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('status', 'PUBLISHED').is('youtube_video_id', null),
+        supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('metadata_status', 'PENDING').is('youtube_video_id', null),
         supabase.from('categories').select('*', { count: 'exact', head: true })
       ]);
 
@@ -43,6 +43,7 @@ class DashboardController {
       const { data } = await supabase
         .from('bhajans')
         .select('id, title, status, created_at, metadata_status')
+        .is('youtube_video_id', null)
         .order('created_at', { ascending: false })
         .limit(10);
 

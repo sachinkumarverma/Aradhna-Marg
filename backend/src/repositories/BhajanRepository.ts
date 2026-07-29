@@ -19,7 +19,8 @@ export class BhajanRepository extends BaseRepository<any> {
 
     let query = this.db.from(this.tableName)
       .select('id, title, slug, status, views, created_at, category_id, categories(name), god_id, gods(name)', { count: 'exact' })
-      .is('deleted_at', null);
+      .is('deleted_at', null)
+      .is('youtube_video_id', null);
 
     if (status) query = query.eq('status', status);
     if (category) query = query.eq('category_id', category);

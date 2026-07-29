@@ -17,7 +17,7 @@ export class YoutubeVideoRepository {
 
     const { data, error } = await query;
     if (error) {
-      if (error.code === '42P01') {
+      if (error.code === '42P01' || error.message?.includes('schema cache')) {
         // Table doesn't exist yet, return empty list gracefully
         return [];
       }
@@ -33,7 +33,7 @@ export class YoutubeVideoRepository {
       .select('import_status', { count: 'exact' });
 
     if (error) {
-      if (error.code === '42P01') {
+      if (error.code === '42P01' || error.message?.includes('schema cache')) {
          return { total: 0, linked: 0, pending: 0, ignored: 0 };
       }
       throw error;
@@ -66,7 +66,12 @@ export class YoutubeVideoRepository {
       .upsert(dbVideos, { onConflict: 'youtube_video_id' })
       .select('id, import_status');
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === '42P01' || error.message?.includes('schema cache')) {
+        throw new Error('Database table "youtube_videos" is missing. Please run the SQL migration in your Supabase Dashboard to create it.');
+      }
+      throw error;
+    }
     
     return {
       imported: data.filter((d: any) => d.import_status === 'NEW').length,

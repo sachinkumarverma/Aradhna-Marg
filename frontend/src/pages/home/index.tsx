@@ -12,18 +12,18 @@ export const Home: React.FC = () => {
   const [bhajans, setBhajans] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchBhajans = async () => {
+    const fetchVideos = async () => {
       const { data, error } = await supabase
-        .from('bhajans')
+        .from('youtube_videos')
         .select('*')
-        .order('published_date', { ascending: false })
+        .order('published_at', { ascending: false })
         .limit(8);
       
       if (!error && data) {
         setBhajans(data);
       }
     };
-    fetchBhajans();
+    fetchVideos();
   }, []);
 
   const heroImages = [
@@ -174,17 +174,13 @@ export const Home: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
               >
-                <Link to={`/videos/${bhajan.slug}`} className="block h-full">
+                <Link to={`/videos/${bhajan.youtube_video_id}`} className="block h-full">
                   <BhajanCard 
                     title={bhajan.title}
-                    godName={bhajan.god_id || "Devotional"}
-                    views={bhajan.views || 0}
-                    duration={
-                      bhajan.duration 
-                        ? `${Math.floor(bhajan.duration / 60).toString().padStart(2, '0')}:${(bhajan.duration % 60).toString().padStart(2, '0')}` 
-                        : "00:00"
-                    }
-                    thumbnailUrl={bhajan.thumbnail_url}
+                    godName={bhajan.channel_name || "Devotional"}
+                    views={bhajan.view_count || 0}
+                    duration={bhajan.duration || "00:00"}
+                    thumbnailUrl={bhajan.thumbnail}
                   />
                 </Link>
               </motion.div>

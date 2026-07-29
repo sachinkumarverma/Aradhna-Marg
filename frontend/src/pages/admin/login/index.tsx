@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../../api/supabase';
+import { apiClient } from '../../../api/client';
 import { Button } from '../../../components/ui/Button';
 import { Loader2, Lock } from 'lucide-react';
 
@@ -40,8 +41,16 @@ export const AdminLogin: React.FC = () => {
       if (error) throw error;
 
       if (data.session) {
-        // Strictly navigate to dashboard to prevent landing on 404s from typos
-        navigate('/admin', { replace: true });
+        // Verify backend is reachable before considering login successful
+        try {
+          await apiClient.get('/admin/dashboard/stats');
+          // Strictly navigate to dashboard to prevent landing on 404s from typos
+          navigate('/admin', { replace: true });
+        } catch (backendErr: any) {
+          // If the backend is down, log out from supabase so we don't leave a ghost session
+          await supabase.auth.signOut();
+          throw new Error('Server is unreachable. Please ensure the backend is running.');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Failed to login');

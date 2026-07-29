@@ -3,13 +3,22 @@ import { settingsController } from '../controllers/SettingsController';
 
 const router = Router();
 
-// GET /api/settings
+// ── Full read ────────────────────────────────────────────────────────────────
 router.get('/', settingsController.getSettings);
 
-// PUT /api/settings
+// ── Legacy full-update (backward compat) ─────────────────────────────────────
 router.put('/', settingsController.updateSettings);
-
-// PATCH /api/settings (Handled the same way as PUT using Partial DTO)
 router.patch('/', settingsController.updateSettings);
+
+// ── Per-section endpoints ────────────────────────────────────────────────────
+// Each route validates and saves ONLY the fields for that section.
+router.put('/general', settingsController.updateGeneral);
+router.put('/contact', settingsController.updateContact);
+router.put('/social', settingsController.updateSocial);
+router.put('/youtube', settingsController.updateYoutube);
+router.put('/seo', settingsController.updateSeo);
+router.put('/analytics', settingsController.updateAnalytics);
+router.put('/advertisement', settingsController.updateAdvertisement);
+router.put('/system', settingsController.updateSystem);
 
 export default router;

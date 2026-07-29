@@ -17,13 +17,19 @@ export class SeoService {
 
     for (const table of tables) {
       // Get totals
-      const { count: total } = await supabase.from(table).select('*', { count: 'exact', head: true });
+      let totalQuery = supabase.from(table).select('*', { count: 'exact', head: true });
+      if (table === 'bhajans') totalQuery = totalQuery.is('youtube_video_id', null);
+      const { count: total } = await totalQuery;
       
       // Get missing titles
-      const { count: missingTitle } = await supabase.from(table).select('*', { count: 'exact', head: true }).or('seo_title.is.null,seo_title.eq.');
+      let missingTitleQuery = supabase.from(table).select('*', { count: 'exact', head: true }).or('seo_title.is.null,seo_title.eq.');
+      if (table === 'bhajans') missingTitleQuery = missingTitleQuery.is('youtube_video_id', null);
+      const { count: missingTitle } = await missingTitleQuery;
       
       // Get missing descriptions
-      const { count: missingDesc } = await supabase.from(table).select('*', { count: 'exact', head: true }).or('meta_description.is.null,meta_description.eq.');
+      let missingDescQuery = supabase.from(table).select('*', { count: 'exact', head: true }).or('meta_description.is.null,meta_description.eq.');
+      if (table === 'bhajans') missingDescQuery = missingDescQuery.is('youtube_video_id', null);
+      const { count: missingDesc } = await missingDescQuery;
       
       // Getting duplicates requires more complex logic, approximating or skipping for now
       // In Supabase REST API, checking duplicates efficiently is best done via RPC or View.
@@ -58,21 +64,33 @@ export class SeoService {
     const issues: any[] = [];
 
     for (const table of tables) {
-      const { data: missingTitles } = await supabase
+      let missingTitlesQuery = supabase
         .from(table)
         .select('id, title')
         .or('seo_title.is.null,seo_title.eq.')
         .limit(10);
+        
+      if (table === 'bhajans') {
+        missingTitlesQuery = missingTitlesQuery.is('youtube_video_id', null);
+      }
+      
+      const { data: missingTitles } = await missingTitlesQuery;
       
       if (missingTitles) {
         issues.push(...missingTitles.map(item => ({ id: item.id, type: table, title: item.title, issue: 'Missing SEO Title' })));
       }
 
-      const { data: missingDescs } = await supabase
+      let missingDescsQuery = supabase
         .from(table)
         .select('id, title')
         .or('meta_description.is.null,meta_description.eq.')
         .limit(10);
+        
+      if (table === 'bhajans') {
+        missingDescsQuery = missingDescsQuery.is('youtube_video_id', null);
+      }
+
+      const { data: missingDescs } = await missingDescsQuery;
 
       if (missingDescs) {
         issues.push(...missingDescs.map(item => ({ id: item.id, type: table, title: item.title, issue: 'Missing Meta Description' })));
@@ -92,6 +110,9 @@ export class SeoService {
 
   async generateBulkSEO(data: any) {
     // Treat as background job
+    // NOTE: When bulk SEO generation is fully implemented, ensure it ONLY targets
+    // ['bhajans', 'articles', 'festivals', 'puranas', 'categories']
+    // AND explicitly excludes imported youtube videos (where youtube_video_id IS NOT NULL in bhajans)
     return { status: 'Queued', jobId: 'job_' + Date.now() };
   }
 }

@@ -6,10 +6,7 @@ class AdminTagController {
   public list = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { data, total } = await tagService.getTags(req.query);
-      return sendSuccess(res, 'Tags fetched', {
-        data,
-        meta: { total, page: parseInt(req.query.page as string) || 1, limit: parseInt(req.query.limit as string) || 10 }
-      });
+      return sendSuccess(res, 'Tags fetched', data, { total, page: parseInt(req.query.page as string) || 1, limit: parseInt(req.query.limit as string) || 10 });
     } catch (error) {
       next(error);
     }

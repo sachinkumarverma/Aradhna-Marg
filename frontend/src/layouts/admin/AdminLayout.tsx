@@ -2,7 +2,9 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Bell, Search, Loader2, LogOut } from 'lucide-react';
 import { AdminSidebar } from '../../components/admin/AdminSidebar';
+import { SessionManager } from '../../components/admin/SessionManager';
 import { supabase } from '../../api/supabase';
+import { apiClient } from '../../api/client';
 
 export const AdminLayout: React.FC = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -15,8 +17,21 @@ export const AdminLayout: React.FC = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate('/admin/login', { state: { from: location }, replace: true });
-      } else {
+        return;
+      }
+      
+      try {
+        // Actively verify session with backend
+        await apiClient.get('/admin/dashboard/stats');
         setIsLoading(false);
+      } catch (err: any) {
+        // If backend is unreachable or returns 401, force logout
+        if (!err.response || err.response.status === 401) {
+          await supabase.auth.signOut();
+          navigate('/admin/login', { replace: true });
+        } else {
+          setIsLoading(false);
+        }
       }
     };
     checkAuth();
@@ -50,6 +65,7 @@ export const AdminLayout: React.FC = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 font-sans">
+      <SessionManager />
       
       {/* Sidebar */}
       <AdminSidebar 

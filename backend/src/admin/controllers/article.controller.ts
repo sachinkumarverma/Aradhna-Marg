@@ -6,10 +6,7 @@ class AdminArticleController {
   public list = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { data, count } = await articleService.getList(req.query);
-      return sendSuccess(res, 'Articles fetched', {
-        data,
-        meta: { total: count, page: parseInt(req.query.page as string) || 1, limit: parseInt(req.query.limit as string) || 10 }
-      });
+      return sendSuccess(res, 'Articles fetched', data, { total: count, page: parseInt(req.query.page as string) || 1, limit: parseInt(req.query.limit as string) || 10 });
     } catch (error) {
       next(error);
     }
