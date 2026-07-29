@@ -4,26 +4,54 @@ import { YoutubeVideo } from '../../models/YoutubeVideo';
 export class YoutubeVideoRepository {
   private readonly tableName = 'youtube_videos';
 
-  async getVideos(search?: string, status?: string, page = 1, limit = 20) {
-    let query = supabase.from(this.tableName).select('*', { count: 'exact' }).order('published_at', { ascending: false });
-
-    if (search) {
-      query = query.ilike('title', `%${search}%`);
+  async getVideos(search?: string, status?: string, type?: string, sortBy = 'published_at', sortOrder = 'desc', page = 1, limit = 20) {
+    if (type) {
+      let allData: any[] = [];
+      let p = 0;
+      let hasMore = true;
+      while (hasMore) {
+        let q = supabase.from(this.tableName).select('*').order(sortBy, { ascending: sortOrder === 'asc' }).range(p * 1000, (p + 1) * 1000 - 1);
+        if (search) q = q.ilike('title', `%${search}%`);
+        if (status) q = q.eq('import_status', status);
+        const { data, error } = await q;
+        if (error || !data || data.length === 0) break;
+        allData.push(...data);
+        if (data.length < 1000) hasMore = false;
+        p++;
+      }
+      
+      let filtered = allData.filter(v => {
+        const str = (v.duration || '').toLowerCase();
+        let secs = 0;
+        const hMatch = str.match(/(\d+)h/);
+        const mMatch = str.match(/(\d+)m/);
+        const sMatch = str.match(/(\d+)s/);
+        if (hMatch) secs += parseInt(hMatch[1], 10) * 3600;
+        if (mMatch) secs += parseInt(mMatch[1], 10) * 60;
+        if (sMatch) secs += parseInt(sMatch[1], 10);
+        const isShort = secs > 0 && secs <= 180;
+        if (type === 'SHORT') return isShort;
+        if (type === 'VIDEO') return !isShort;
+        return true;
+      });
+      
+      const total = filtered.length;
+      const offset = (page - 1) * limit;
+      filtered = filtered.slice(offset, offset + limit);
+      return { data: filtered.map(this.mapToModel), total };
     }
 
-    if (status) {
-      query = query.eq('import_status', status);
-    }
+    let query = supabase.from(this.tableName).select('*', { count: 'exact' }).order(sortBy, { ascending: sortOrder === 'asc' });
+
+    if (search) query = query.ilike('title', `%${search}%`);
+    if (status) query = query.eq('import_status', status);
     
     const offset = (page - 1) * limit;
     query = query.range(offset, offset + limit - 1);
 
     const { data, count, error } = await query;
     if (error) {
-      if (error.code === '42P01' || error.message?.includes('schema cache')) {
-        // Table doesn't exist yet, return empty list gracefully
-        return { data: [], total: 0 };
-      }
+      if (error.code === '42P01' || error.message?.includes('schema cache')) return { data: [], total: 0 };
       throw error;
     }
 

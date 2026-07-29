@@ -14,22 +14,59 @@ export const VideosList = () => {
   useEffect(() => {
     const fetchVideos = async () => {
       setLoading(true);
-      let query = supabase.from('bhajans').select('*').order('published_date', { ascending: false });
-      
-      // If not including shorts, only fetch videos longer than 3 minutes (180 seconds)
-      if (!includeShorts) {
-        query = query.gt('duration', 180);
-      }
-      
-      if (searchQuery.trim()) {
-        query = query.ilike('title', `%${searchQuery}%`);
-      }
+      let allData: any[] = [];
+      let page = 0;
+      let hasMore = true;
+      const PAGE_SIZE = 1000;
 
-      const { data, error } = await query;
-      
-      if (!error && data) {
-        setVideos(data);
+      while (hasMore) {
+        let query = supabase
+          .from('youtube_videos')
+          .select('*')
+          .order('published_at', { ascending: false })
+          .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+        
+        if (searchQuery.trim()) {
+          query = query.ilike('title', `%${searchQuery}%`);
+        }
+
+        const { data, error } = await query;
+        
+        if (error) {
+          console.error("Error fetching videos:", error);
+          break;
+        }
+
+        if (data && data.length > 0) {
+          allData = [...allData, ...data];
+          page++;
+          if (data.length < PAGE_SIZE) {
+            hasMore = false;
+          }
+        } else {
+          hasMore = false;
+        }
       }
+      
+      let filtered = allData;
+      if (!includeShorts) {
+        filtered = allData.filter(v => {
+          if (!v.duration) return true;
+          
+          const str = v.duration.toLowerCase();
+          let secs = 0;
+          const hMatch = str.match(/(\d+)h/);
+          const mMatch = str.match(/(\d+)m/);
+          const sMatch = str.match(/(\d+)s/);
+          
+          if (hMatch) secs += parseInt(hMatch[1], 10) * 3600;
+          if (mMatch) secs += parseInt(mMatch[1], 10) * 60;
+          if (sMatch) secs += parseInt(sMatch[1], 10);
+          
+          return secs > 180;
+        });
+      }
+      setVideos(filtered);
       setLoading(false);
     };
 
@@ -101,17 +138,13 @@ export const VideosList = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
                   >
-                    <Link to={`/videos/${video.slug}`} className="block h-full">
+                    <Link to={`/videos/${video.youtube_video_id}`} className="block h-full">
                       <BhajanCard 
                         title={video.title}
-                        godName={video.god_id || "Devotional"}
-                        views={video.views || 0}
-                        duration={
-                          video.duration 
-                            ? `${Math.floor(video.duration / 60).toString().padStart(2, '0')}:${(video.duration % 60).toString().padStart(2, '0')}` 
-                            : "00:00"
-                        }
-                        thumbnailUrl={video.thumbnail_url}
+                        godName={video.channel_name || "Devotional"}
+                        views={video.view_count || 0}
+                        duration={video.duration || "00:00"}
+                        thumbnailUrl={video.thumbnail}
                       />
                     </Link>
                   </motion.div>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   PlaySquare, Settings, Clock, RefreshCw, CheckCircle2, 
-  XCircle, Filter, Search, Link as LinkIcon, ExternalLink, Trash2, ShieldCheck, AlertCircle, X
+  XCircle, Filter, Search, Link as LinkIcon, ExternalLink, Trash2, ShieldCheck, AlertCircle, X, ArrowUpDown
 } from 'lucide-react';
 import { apiClient } from '../../../api/client';
 import { format } from 'date-fns';
@@ -18,6 +18,9 @@ export const AdminYoutube = () => {
   const [activeTab, setActiveTab] = useState<'videos' | 'history' | 'settings'>('videos');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [sortBy, setSortBy] = useState('published_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [linkDialogOpen, setLinkDialogOpen] = useState<string | null>(null);
   const [selectedBhajanId, setSelectedBhajanId] = useState<string>('');
   const [syncInterval, setSyncInterval] = useState('12h');
@@ -45,11 +48,14 @@ export const AdminYoutube = () => {
 
   // Fetch Videos
   const { data: videosData, isLoading: isLoadingVideos, isFetching: isFetchingVideos } = useQuery({
-    queryKey: ['youtube-videos', searchTerm, statusFilter, page, limit],
+    queryKey: ['youtube-videos', searchTerm, statusFilter, typeFilter, sortBy, sortOrder, page, limit],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      if (typeFilter) params.append('type', typeFilter);
+      if (sortBy) params.append('sortBy', sortBy);
+      if (sortOrder) params.append('sortOrder', sortOrder);
       params.append('page', page.toString());
       params.append('limit', limit.toString());
       const res = await apiClient.get(`/v1/admin/youtube/videos?${params.toString()}`);
@@ -202,7 +208,7 @@ export const AdminYoutube = () => {
         <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center text-center">
           <PlaySquare className="w-6 h-6 text-red-500 mb-2" />
           <p className="text-xs text-gray-500 font-semibold uppercase">Channel</p>
-          <p className="text-sm font-bold text-gray-900 truncate w-full" title={settings?.youtubeChannelId}>{settings?.youtubeChannelId || 'Not Configured'}</p>
+          <p className="text-sm font-bold text-gray-900 truncate w-full" title={settings?.youtubeChannelId}>{settings?.youtubeChannelId ? `${settings.youtubeChannelId.slice(0, 15)}...` : 'Not Configured'}</p>
         </div>
         <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center text-center">
           <CheckCircle2 className="w-6 h-6 text-blue-500 mb-2" />
@@ -377,11 +383,11 @@ export const AdminYoutube = () => {
               )}
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="flex items-center gap-2 w-full sm:w-48">
+              <div className="flex items-center gap-2 w-full sm:w-80">
                 <Filter className="w-4 h-4 text-gray-400" />
                 <Select 
                   value={statusFilter}
-                  onChange={setStatusFilter}
+                  onChange={(val) => { setStatusFilter(val); setPage(1); }}
                   options={[
                     { label: 'All Statuses', value: '' },
                     { label: 'New', value: 'NEW' },
@@ -389,7 +395,18 @@ export const AdminYoutube = () => {
                     { label: 'Linked', value: 'LINKED' },
                     { label: 'Ignored', value: 'IGNORED' }
                   ]}
-                  className="w-full"
+                  className="w-36"
+                  searchable={false}
+                />
+                <Select
+                  value={typeFilter}
+                  onChange={(val) => { setTypeFilter(val); setPage(1); }}
+                  options={[
+                    { label: 'All Types', value: '' },
+                    { label: 'Videos', value: 'VIDEO' },
+                    { label: 'Shorts', value: 'SHORT' }
+                  ]}
+                  className="w-32"
                   searchable={false}
                 />
               </div>
@@ -403,7 +420,7 @@ export const AdminYoutube = () => {
                 className="p-2 rounded-lg text-white bg-saffron hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center"
                 title="Refresh Data"
               >
-                <RefreshCw className={`w-4 h-4 ${isFetchingVideos ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-5 h-5 ${isFetchingVideos ? 'animate-spin' : ''}`} />
               </button>
             </div>
           </div>
@@ -413,11 +430,37 @@ export const AdminYoutube = () => {
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
-                    <th className="px-6 py-4 font-bold">Video</th>
-                    <th className="px-6 py-4 font-bold">Status</th>
-                    <th className="px-6 py-4 font-bold">Linked Bhajan</th>
-                    <th className="px-6 py-4 font-bold">Published</th>
-                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                    <th className="px-6 py-4 font-bold w-[45%]">Video</th>
+                    <th className="px-6 py-4 font-bold text-center w-[10%] cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                      if (sortBy === 'import_status') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy('import_status');
+                        setSortOrder('asc');
+                      }
+                      setPage(1);
+                    }}>
+                      <div className="flex items-center justify-center gap-1">
+                        Status
+                        <ArrowUpDown className={`w-3 h-3 ${sortBy === 'import_status' ? 'text-saffron' : 'text-gray-400'}`} />
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 font-bold w-[25%]">Linked Bhajan</th>
+                    <th className="px-6 py-4 font-bold w-[10%] cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                      if (sortBy === 'published_at') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy('published_at');
+                        setSortOrder('desc');
+                      }
+                      setPage(1);
+                    }}>
+                      <div className="flex items-center gap-1">
+                        Published
+                        <ArrowUpDown className={`w-3 h-3 ${sortBy === 'published_at' ? 'text-saffron' : 'text-gray-400'}`} />
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 font-bold text-right w-[10%]">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -466,7 +509,7 @@ export const AdminYoutube = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center">
                           {getStatusBadge(video.importStatus)}
                         </td>
                         <td className="px-6 py-4">

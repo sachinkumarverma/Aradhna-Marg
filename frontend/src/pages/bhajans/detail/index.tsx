@@ -20,11 +20,35 @@ export const BhajanDetail: React.FC = () => {
   React.useEffect(() => {
     const fetchBhajan = async () => {
       setLoading(true);
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('bhajans')
         .select('*')
         .eq('slug', slug)
         .single();
+
+      if (!data) {
+        const { data: ytData } = await supabase
+          .from('youtube_videos')
+          .select('*')
+          .eq('youtube_video_id', slug)
+          .single();
+          
+        if (ytData) {
+          data = {
+            id: ytData.id,
+            title: ytData.title,
+            description: ytData.description,
+            youtube_video_id: ytData.youtube_video_id,
+            god_id: ytData.channel_name,
+            views: ytData.view_count,
+            duration: null,
+            is_string_duration: true,
+            string_duration: ytData.duration || "00:00",
+            published_date: ytData.published_at,
+            lyrics: ytData.description
+          };
+        }
+      }
 
       if (data) {
         setBhajan(data);
@@ -108,7 +132,9 @@ export const BhajanDetail: React.FC = () => {
                 godName={bhajan.god_id || "Devotional"}
                 views={bhajan.views}
                 duration={
-                  bhajan.duration
+                  bhajan.is_string_duration
+                    ? bhajan.string_duration
+                    : bhajan.duration
                     ? `${Math.floor(bhajan.duration / 60).toString().padStart(2, '0')}:${(bhajan.duration % 60).toString().padStart(2, '0')}`
                     : "00:00"
                 }

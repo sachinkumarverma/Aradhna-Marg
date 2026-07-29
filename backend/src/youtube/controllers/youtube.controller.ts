@@ -7,9 +7,12 @@ export class YoutubeController {
     try {
       const search = req.query.search as string;
       const status = req.query.status as string;
+      const type = req.query.type as string;
+      const sortBy = (req.query.sortBy as string) || 'published_at';
+      const sortOrder = (req.query.sortOrder as string) || 'desc';
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 20;
-      const { data, total } = await youtubeService.getVideos(search, status, page, limit);
+      const { data, total } = await youtubeService.getVideos(search, status, type, sortBy, sortOrder, page, limit);
       return sendSuccess(res, 'Videos retrieved', data, { total, page, limit });
     } catch (error) {
       next(error);

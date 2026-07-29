@@ -5,8 +5,8 @@ import { YoutubeVideo } from '../../models/YoutubeVideo';
 import { AppError } from '../../errors/appError';
 
 export class YoutubeService {
-  async getVideos(search?: string, status?: string, page = 1, limit = 20) {
-    return await youtubeVideoRepository.getVideos(search, status, page, limit);
+  async getVideos(search?: string, status?: string, type?: string, sortBy = 'published_at', sortOrder = 'desc', page = 1, limit = 20) {
+    return await youtubeVideoRepository.getVideos(search, status, type, sortBy, sortOrder, page, limit);
   }
 
   async getStats() {
