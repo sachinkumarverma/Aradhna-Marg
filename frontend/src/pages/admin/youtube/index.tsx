@@ -1,24 +1,28 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   PlaySquare, Settings, Clock, RefreshCw, CheckCircle2, 
-  XCircle, Filter, Search, Link as LinkIcon, ExternalLink, Trash2, ShieldCheck, AlertCircle
+  XCircle, Filter, Search, Link as LinkIcon, ExternalLink, Trash2, ShieldCheck, AlertCircle, X
 } from 'lucide-react';
 import { apiClient } from '../../../api/client';
 import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
 
 import { Select } from '../../../components/ui/Select';
+import { supabase } from '../../../api/supabase'; // Using supabase directly for fast dropdown fetch
 
 export const AdminYoutube = () => {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'videos' | 'history' | 'settings'>('videos');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [linkDialogOpen, setLinkDialogOpen] = useState<string | null>(null);
+  const [selectedBhajanId, setSelectedBhajanId] = useState<string>('');
   const [syncInterval, setSyncInterval] = useState('12h');
 
   // Fetch Settings
-  const { data: settings, refetch: refetchSettings } = useQuery({
+  const { data: settings } = useQuery({
     queryKey: ['settings'],
     queryFn: async () => {
       const res = await apiClient.get('/v1/settings');
@@ -35,14 +39,28 @@ export const AdminYoutube = () => {
     }
   });
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+
   // Fetch Videos
-  const { data: videosData, isLoading: isLoadingVideos, refetch: refetchVideos } = useQuery({
-    queryKey: ['youtube-videos', searchTerm, statusFilter],
+  const { data: videosData, isLoading: isLoadingVideos, isFetching: isFetchingVideos } = useQuery({
+    queryKey: ['youtube-videos', searchTerm, statusFilter, page, limit],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
       const res = await apiClient.get(`/v1/admin/youtube/videos?${params.toString()}`);
+      return res.data;
+    }
+  });
+
+  // Fetch History
+  const { data: historyData, isLoading: isLoadingHistory } = useQuery({
+    queryKey: ['youtube-history'],
+    queryFn: async () => {
+      const res = await apiClient.get('/v1/admin/youtube/history');
       return res.data.data;
     }
   });
@@ -55,11 +73,73 @@ export const AdminYoutube = () => {
     },
     onSuccess: () => {
       toast.success('Sync completed successfully!');
-      refetchSettings();
-      refetchVideos();
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      queryClient.invalidateQueries({ queryKey: ['youtube-videos'] });
+      queryClient.invalidateQueries({ queryKey: ['youtube-history'] });
+      queryClient.invalidateQueries({ queryKey: ['youtube-stats'] });
     },
     onError: () => {
       toast.error('Failed to sync with YouTube');
+    }
+  });
+
+  // Fetch Bhajans for Dropdown
+  const { data: bhajansList } = useQuery({
+    queryKey: ['youtube-link-bhajans'],
+    queryFn: async () => {
+      const { data } = await supabase.from('bhajans').select('id, title').order('title');
+      return data || [];
+    }
+  });
+
+  // Init selected bhajan when dialog opens
+  useEffect(() => {
+    if (linkDialogOpen && videosData?.data) {
+      const video = videosData.data.find((v: any) => v.id === linkDialogOpen);
+      setSelectedBhajanId(video?.linkedBhajan?.id || '');
+    }
+  }, [linkDialogOpen, videosData]);
+
+  // Link Mutation
+  const linkMutation = useMutation({
+    mutationFn: async ({ videoId, bhajanId }: { videoId: string, bhajanId: string | null }) => {
+      const res = await apiClient.patch(`/v1/admin/youtube/videos/${videoId}/link`, { bhajanId });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success('Video link updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['youtube-videos'] });
+      queryClient.invalidateQueries({ queryKey: ['youtube-stats'] });
+      setLinkDialogOpen(null);
+    },
+    onError: () => {
+      toast.error('Failed to update video link');
+    }
+  });
+
+  // Status Mutation
+  const statusMutation = useMutation({
+    mutationFn: async ({ videoId, status }: { videoId: string, status: string }) => {
+      const res = await apiClient.patch(`/v1/admin/youtube/videos/${videoId}/status`, { status });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success('Status updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['youtube-videos'] });
+      queryClient.invalidateQueries({ queryKey: ['youtube-stats'] });
+    }
+  });
+
+  // Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (videoId: string) => {
+      const res = await apiClient.delete(`/v1/admin/youtube/videos/${videoId}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success('Video deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['youtube-videos'] });
+      queryClient.invalidateQueries({ queryKey: ['youtube-stats'] });
     }
   });
 
@@ -176,88 +256,100 @@ export const AdminYoutube = () => {
 
       {/* Configuration Tab */}
       {activeTab === 'settings' && (
-        <div className="max-w-2xl bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <Settings className="w-5 h-5 text-gray-500" />
-            Channel Configuration
-          </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Settings className="w-5 h-5 text-gray-500" />
+              Channel Configuration
+            </h2>
 
-          {settings?.youtubeChannelId && (
-            <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-              <h3 className="font-bold text-gray-900 mb-4 text-sm">Connected Channel Information</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-xs text-gray-500 font-semibold uppercase mb-1">Channel Name</p>
-                  <p className="font-bold text-gray-900">Aradhna Marg</p>
+            <form onSubmit={handleSaveConfig} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-700">YouTube Channel ID</label>
+                <input 
+                  name="channelId"
+                  type="text" 
+                  defaultValue={settings?.youtubeChannelId}
+                  placeholder="e.g. UCX6OQ3DkcsbYNE6H8uQQuVA"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all"
+                  required
+                />
+                <p className="text-xs text-gray-500">The unique ID of the YouTube channel to synchronize from.</p>
+              </div>
+              
+              <div className="space-y-2 pt-4 border-t border-gray-100">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    name="autoSync" 
+                    value="true"
+                    defaultChecked={settings?.youtubeAutoSync}
+                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-600"
+                  />
+                  <span className="font-bold text-gray-700">Enable Auto Sync</span>
+                </label>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-gray-700">Sync Interval</label>
+                <Select 
+                  value={syncInterval}
+                  onChange={(val) => setSyncInterval(val)}
+                  options={[
+                    { label: 'Every 1 Hour', value: '1h' },
+                    { label: 'Every 6 Hours', value: '6h' },
+                    { label: 'Every 12 Hours', value: '12h' },
+                    { label: 'Daily', value: '24h' }
+                  ]}
+                  searchable={false}
+                />
+              </div>
+
+              <div className="pt-4 flex items-center gap-3">
+                <button 
+                  type="submit" 
+                  disabled={saveSettingsMutation.isPending}
+                  className="px-6 py-2.5 bg-gray-900 text-white font-bold rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                >
+                  {saveSettingsMutation.isPending ? 'Saving...' : 'Save Configuration'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="lg:col-span-1">
+            {settings?.youtubeChannelId && (
+              <div className="p-6 bg-white border border-gray-200 rounded-xl shadow-sm sticky top-6">
+                <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm uppercase tracking-wider">
+                  <PlaySquare className="w-4 h-4 text-gray-400" />
+                  Connected Channel
+                </h3>
+                <div className="flex flex-col items-center text-center gap-4 mb-6">
+                  {stats?.channelThumbnail ? (
+                    <img src={stats.channelThumbnail} alt="Channel" className="w-20 h-20 rounded-full object-cover border border-gray-200 shadow-sm" />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm">
+                      <PlaySquare className="w-8 h-8 text-gray-300" />
+                    </div>
+                  )}
+                  <div>
+                    <h4 className="font-bold text-gray-900 text-lg leading-tight">{stats?.channelTitle || 'Loading...'}</h4>
+                    <p className="text-xs text-gray-500 mt-1 break-all">{settings?.youtubeChannelId}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-semibold uppercase mb-1">Channel Handle</p>
-                  <p className="font-bold text-gray-900">@aradhnamarg</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-semibold uppercase mb-1">Total Videos</p>
-                  <p className="font-bold text-gray-900">{stats?.total || 0}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-semibold uppercase mb-1">Status</p>
-                  <p className="font-bold text-green-600 flex items-center gap-1"><CheckCircle2 className="w-4 h-4"/> Connected</p>
+                <div className="space-y-4 pt-4 border-t border-gray-100">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-semibold text-gray-500">Total Videos</span>
+                    <span className="font-bold text-gray-900">{stats?.channelTotal !== undefined ? stats.channelTotal : (stats?.total || 0)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-semibold text-gray-500">Status</span>
+                    <span className="font-bold text-green-600 flex items-center gap-1 bg-green-50 px-2 py-0.5 rounded-md"><CheckCircle2 className="w-4 h-4"/> Connected</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-
-          <form onSubmit={handleSaveConfig} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700">YouTube Channel ID</label>
-              <input 
-                name="channelId"
-                type="text" 
-                defaultValue={settings?.youtubeChannelId}
-                placeholder="e.g. UCX6OQ3DkcsbYNE6H8uQQuVA"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all"
-                required
-              />
-              <p className="text-xs text-gray-500">The unique ID of the YouTube channel to synchronize from.</p>
-            </div>
-            
-            <div className="space-y-2 pt-4 border-t border-gray-100">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  name="autoSync" 
-                  value="true"
-                  defaultChecked={settings?.youtubeAutoSync}
-                  className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-600"
-                />
-                <span className="font-bold text-gray-700">Enable Auto Sync</span>
-              </label>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700">Sync Interval</label>
-              <Select 
-                value={syncInterval}
-                onChange={(val) => setSyncInterval(val)}
-                options={[
-                  { label: 'Every 1 Hour', value: '1h' },
-                  { label: 'Every 6 Hours', value: '6h' },
-                  { label: 'Every 12 Hours', value: '12h' },
-                  { label: 'Daily', value: '24h' }
-                ]}
-                searchable={false}
-              />
-            </div>
-
-            <div className="pt-4 flex items-center gap-3">
-              <button 
-                type="submit" 
-                disabled={saveSettingsMutation.isPending}
-                className="px-6 py-2.5 bg-gray-900 text-white font-bold rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
-              >
-                {saveSettingsMutation.isPending ? 'Saving...' : 'Save Configuration'}
-              </button>
-            </div>
-          </form>
+            )}
+          </div>
         </div>
       )}
 
@@ -271,12 +363,33 @@ export const AdminYoutube = () => {
                 type="text" 
                 placeholder="Search by title or video ID..." 
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                className="w-full pl-9 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
               />
+              {searchTerm && (
+                <button 
+                  onClick={() => { setSearchTerm(''); setPage(1); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
-            <div className="flex items-center gap-2 w-full sm:w-48">
-              <Filter className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button 
+                onClick={() => { 
+                  queryClient.invalidateQueries({ queryKey: ['youtube-videos'] }); 
+                  queryClient.invalidateQueries({ queryKey: ['youtube-stats'] }); 
+                  queryClient.invalidateQueries({ queryKey: ['settings'] }); 
+                  queryClient.invalidateQueries({ queryKey: ['youtube-history'] }); 
+                }} 
+                className="p-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-sm flex items-center justify-center"
+                title="Refresh Data"
+              >
+                <RefreshCw className={`w-4 h-4 ${isFetchingVideos ? 'animate-spin text-red-600' : ''}`} />
+              </button>
+              <div className="flex items-center gap-2 w-full sm:w-48">
+                <Filter className="w-4 h-4 text-gray-400" />
               <Select 
                 value={statusFilter}
                 onChange={setStatusFilter}
@@ -289,11 +402,12 @@ export const AdminYoutube = () => {
                 ]}
                 searchable={false}
               />
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="overflow-x-auto rounded-t-xl">
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
@@ -330,7 +444,23 @@ export const AdminYoutube = () => {
                             </div>
                             <div className="min-w-0">
                               <h4 className="text-sm font-bold text-gray-900 line-clamp-2" title={video.title}>{video.title}</h4>
-                              <p className="text-xs text-gray-500 mt-1">{video.duration} • ID: {video.youtubeVideoId}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <p className="text-xs text-gray-500">{video.duration} • ID: {video.youtubeVideoId}</p>
+                                {(() => {
+                                  const str = video.duration || '';
+                                  let secs = 0;
+                                  const hMatch = str.match(/(\d+)h/);
+                                  const mMatch = str.match(/(\d+)m/);
+                                  const sMatch = str.match(/(\d+)s/);
+                                  if (hMatch) secs += parseInt(hMatch[1], 10) * 3600;
+                                  if (mMatch) secs += parseInt(mMatch[1], 10) * 60;
+                                  if (sMatch) secs += parseInt(sMatch[1], 10);
+                                  
+                                  return secs > 0 && secs <= 180 ? (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600 uppercase tracking-wider">Short</span>
+                                  ) : null;
+                                })()}
+                              </div>
                             </div>
                           </div>
                         </td>
@@ -369,19 +499,29 @@ export const AdminYoutube = () => {
                               <LinkIcon className="w-4 h-4" />
                             </button>
                             <button 
-                              className="p-1.5 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors"
+                              onClick={() => statusMutation.mutate({ videoId: video.id, status: 'REVIEWED' })}
+                              disabled={statusMutation.isPending || video.importStatus === 'REVIEWED'}
+                              className={`p-1.5 rounded transition-colors ${video.importStatus === 'REVIEWED' ? 'text-purple-300 cursor-not-allowed' : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'}`}
                               title="Mark Reviewed"
                             >
                               <ShieldCheck className="w-4 h-4" />
                             </button>
                             <button 
-                              className="p-1.5 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded transition-colors"
+                              onClick={() => statusMutation.mutate({ videoId: video.id, status: 'IGNORED' })}
+                              disabled={statusMutation.isPending || video.importStatus === 'IGNORED'}
+                              className={`p-1.5 rounded transition-colors ${video.importStatus === 'IGNORED' ? 'text-orange-300 cursor-not-allowed' : 'text-gray-500 hover:text-orange-600 hover:bg-orange-50'}`}
                               title="Ignore"
                             >
                               <XCircle className="w-4 h-4" />
                             </button>
                             <button 
-                              className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to delete this video from the database? It will be re-imported on the next sync unless you ignore it instead.')) {
+                                  deleteMutation.mutate(video.id);
+                                }
+                              }}
+                              disabled={deleteMutation.isPending}
+                              className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
                               title="Delete"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -394,6 +534,42 @@ export const AdminYoutube = () => {
                 </tbody>
               </table>
             </div>
+            {videosData?.meta && videosData.meta.total > 0 && (
+              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <span>Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, videosData.meta.total)} of {videosData.meta.total}</span>
+                  <div className="w-40">
+                    <Select 
+                      value={limit.toString()} 
+                      onChange={(val) => { setLimit(parseInt(val)); setPage(1); }}
+                      options={[
+                        { label: '20 per page', value: '20' },
+                        { label: '50 per page', value: '50' },
+                        { label: '100 per page', value: '100' }
+                      ]}
+                      searchable={false}
+                      menuPlacement="top"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-600 font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <button 
+                    onClick={() => setPage(p => p + 1)}
+                    disabled={page * limit >= videosData.meta.total}
+                    className="px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-600 font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -405,27 +581,46 @@ export const AdminYoutube = () => {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
                 <th className="px-6 py-4 font-bold">Started</th>
-                <th className="px-6 py-4 font-bold">Completed</th>
                 <th className="px-6 py-4 font-bold">Status</th>
-                <th className="px-6 py-4 font-bold text-center">Imported</th>
-                <th className="px-6 py-4 font-bold text-center">Updated</th>
-                <th className="px-6 py-4 font-bold text-center">Ignored</th>
+                <th className="px-6 py-4 font-bold">Details</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              <tr>
-                <td colSpan={6} className="p-8 text-center text-gray-500">
-                  History log placeholder. The backend history API will populate this.
-                </td>
-              </tr>
+              {isLoadingHistory ? (
+                <tr><td colSpan={3} className="p-8 text-center text-gray-500">Loading history...</td></tr>
+              ) : !historyData || historyData.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="p-8 text-center text-gray-500">
+                    No sync history found.
+                  </td>
+                </tr>
+              ) : (
+                historyData.map((log: any) => (
+                  <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 text-sm text-gray-900 font-medium">
+                      {log.started_at ? format(new Date(log.started_at), 'dd MMM yyyy, hh:mm a') : '-'}
+                    </td>
+                    <td className="px-6 py-4">
+                      {log.status === 'COMPLETED' ? (
+                         <span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Completed</span>
+                      ) : (
+                         <span className="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">Failed</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {log.error_message || '-'}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
       )}
 
       {/* Link Dialog */}
-      {linkDialogOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      {linkDialogOpen && createPortal(
+        <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
               <h3 className="font-bold text-gray-900">Link Bhajan</h3>
@@ -437,24 +632,32 @@ export const AdminYoutube = () => {
               <label className="text-sm font-bold text-gray-700 mb-2">Search Bhajans</label>
               <Select 
                 options={[
-                  {label: 'Aarti Kunj Bihari Ki', value: '1'}, 
-                  {label: 'Achyutam Keshavam', value: '2'},
-                  {label: 'Hanuman Chalisa', value: '3'}
+                  { label: 'None (Unlink)', value: '' },
+                  ...(bhajansList || []).map((b: any) => ({
+                    label: b.title,
+                    value: b.id
+                  }))
                 ]}
-                value=""
-                onChange={() => {
-                  toast.success('Bhajan linked successfully');
-                  setLinkDialogOpen(null);
-                }}
+                value={selectedBhajanId}
+                onChange={(val) => setSelectedBhajanId(val)}
                 placeholder="Search bhajans..."
                 searchable={true}
               />
-              <p className="text-xs text-gray-500 mt-4">
+              <p className="text-xs text-gray-500 mt-4 mb-6">
                 Select a Bhajan from your database to link this YouTube video directly to its page.
               </p>
+              
+              <button 
+                onClick={() => linkMutation.mutate({ videoId: linkDialogOpen, bhajanId: selectedBhajanId || null })}
+                disabled={linkMutation.isPending}
+                className="w-full py-2.5 bg-saffron text-white rounded-lg font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
+              >
+                {linkMutation.isPending ? 'Saving...' : 'Save Link'}
+              </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

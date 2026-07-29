@@ -16,6 +16,7 @@ interface SelectProps {
   searchable?: boolean;
   className?: string;
   error?: boolean;
+  menuPlacement?: 'top' | 'bottom';
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -25,7 +26,8 @@ export const Select: React.FC<SelectProps> = ({
   placeholder = 'Select an option',
   searchable = true,
   className,
-  error
+  error,
+  menuPlacement = 'bottom'
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -65,7 +67,10 @@ export const Select: React.FC<SelectProps> = ({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+        <div className={cn(
+          "absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden",
+          menuPlacement === 'top' ? "bottom-full mb-1" : "top-full mt-1"
+        )}>
           {searchable && (
             <div className="flex items-center px-3 py-2 border-b border-gray-100 bg-white">
               <Search className="w-4 h-4 text-gray-400 mr-2" />

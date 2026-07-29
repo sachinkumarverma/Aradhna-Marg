@@ -4,8 +4,8 @@ import { YoutubeVideo } from '../../models/YoutubeVideo';
 export class YoutubeVideoRepository {
   private readonly tableName = 'youtube_videos';
 
-  async getVideos(search?: string, status?: string): Promise<YoutubeVideo[]> {
-    let query = supabase.from(this.tableName).select('*').order('published_at', { ascending: false });
+  async getVideos(search?: string, status?: string, page = 1, limit = 20) {
+    let query = supabase.from(this.tableName).select('*', { count: 'exact' }).order('published_at', { ascending: false });
 
     if (search) {
       query = query.ilike('title', `%${search}%`);
@@ -14,57 +14,79 @@ export class YoutubeVideoRepository {
     if (status) {
       query = query.eq('import_status', status);
     }
+    
+    const offset = (page - 1) * limit;
+    query = query.range(offset, offset + limit - 1);
 
-    const { data, error } = await query;
+    const { data, count, error } = await query;
     if (error) {
       if (error.code === '42P01' || error.message?.includes('schema cache')) {
         // Table doesn't exist yet, return empty list gracefully
-        return [];
+        return { data: [], total: 0 };
       }
       throw error;
     }
 
-    return (data || []).map(this.mapToModel);
+    return { data: (data || []).map(this.mapToModel), total: count || 0 };
   }
 
   async getStats() {
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select('import_status', { count: 'exact' });
+    try {
+      const [
+        { count: total }, 
+        { count: linked }, 
+        { count: pending }, 
+        { count: ignored }
+      ] = await Promise.all([
+        supabase.from(this.tableName).select('*', { count: 'exact', head: true }),
+        supabase.from(this.tableName).select('*', { count: 'exact', head: true }).eq('import_status', 'LINKED'),
+        supabase.from(this.tableName).select('*', { count: 'exact', head: true }).eq('import_status', 'NEW'),
+        supabase.from(this.tableName).select('*', { count: 'exact', head: true }).eq('import_status', 'IGNORED')
+      ]);
 
-    if (error) {
+      return {
+        total: total || 0,
+        linked: linked || 0,
+        pending: pending || 0,
+        ignored: ignored || 0
+      };
+    } catch (error: any) {
       if (error.code === '42P01' || error.message?.includes('schema cache')) {
-         return { total: 0, linked: 0, pending: 0, ignored: 0 };
+        return { total: 0, linked: 0, pending: 0, ignored: 0 };
       }
       throw error;
     }
-
-    const stats = {
-      total: data.length,
-      linked: 0,
-      pending: 0,
-      ignored: 0
-    };
-
-    data.forEach((row: any) => {
-      if (row.import_status === 'LINKED') stats.linked++;
-      else if (row.import_status === 'IGNORED') stats.ignored++;
-      else if (row.import_status === 'NEW' || row.import_status === 'REVIEWED') stats.pending++;
-    });
-
-    return stats;
   }
 
   async upsertVideos(videos: Partial<YoutubeVideo>[]) {
     if (videos.length === 0) return { imported: 0, updated: 0 };
     
     const dbVideos = videos.map(this.mapToDb);
+    const incomingIds = dbVideos.map(v => v.youtube_video_id);
     
-    // We try an upsert, matching on youtube_video_id
-    const { data, error } = await supabase
+    // Check which ones already exist to correctly count new vs updated
+    const { data: existingData } = await supabase
       .from(this.tableName)
-      .upsert(dbVideos, { onConflict: 'youtube_video_id' })
-      .select('id, import_status');
+      .select('youtube_video_id')
+      .in('youtube_video_id', incomingIds);
+      
+    const existingIds = new Set((existingData || []).map(d => d.youtube_video_id));
+    
+    let newCount = 0;
+    let updateCount = 0;
+    
+    for (const v of dbVideos) {
+      if (existingIds.has(v.youtube_video_id)) {
+        updateCount++;
+      } else {
+        newCount++;
+      }
+    }
+    
+    // Perform the upsert
+    const { error } = await supabase
+      .from(this.tableName)
+      .upsert(dbVideos, { onConflict: 'youtube_video_id' });
 
     if (error) {
       if (error.code === '42P01' || error.message?.includes('schema cache')) {
@@ -74,8 +96,8 @@ export class YoutubeVideoRepository {
     }
     
     return {
-      imported: data.filter((d: any) => d.import_status === 'NEW').length,
-      updated: data.filter((d: any) => d.import_status !== 'NEW').length
+      imported: newCount,
+      updated: updateCount
     };
   }
 
@@ -120,6 +142,66 @@ export class YoutubeVideoRepository {
       import_status: model.importStatus || 'NEW',
       last_synced: model.lastSynced || new Date().toISOString()
     };
+  }
+
+  async getSyncHistory() {
+    const { data, error } = await supabase
+      .from('youtube_sync_logs')
+      .select('*')
+      .order('started_at', { ascending: false })
+      .limit(50);
+      
+    if (error) {
+      if (error.code === '42P01' || error.message?.includes('schema cache')) return [];
+      throw error;
+    }
+    return data;
+  }
+
+  async logSync(channelId: string, status: string, errorMessage?: string) {
+    try {
+      await supabase.from('youtube_sync_logs').insert({
+        channel_id: channelId,
+        status,
+        error_message: errorMessage,
+        completed_at: new Date().toISOString()
+      });
+    } catch (e) {
+      console.error('Failed to log sync', e);
+    }
+  }
+
+  async linkBhajan(videoId: string, bhajanId: string | null) {
+    const { error } = await supabase
+      .from(this.tableName)
+      .update({ 
+        bhajan_id: bhajanId, 
+        import_status: bhajanId ? 'LINKED' : 'NEW' 
+      })
+      .eq('id', videoId);
+    
+    if (error) throw error;
+    return { success: true };
+  }
+
+  async updateStatus(videoId: string, status: string) {
+    const { error } = await supabase
+      .from(this.tableName)
+      .update({ import_status: status })
+      .eq('id', videoId);
+    
+    if (error) throw error;
+    return { success: true };
+  }
+
+  async deleteVideo(videoId: string) {
+    const { error } = await supabase
+      .from(this.tableName)
+      .delete()
+      .eq('id', videoId);
+      
+    if (error) throw error;
+    return { success: true };
   }
 }
 

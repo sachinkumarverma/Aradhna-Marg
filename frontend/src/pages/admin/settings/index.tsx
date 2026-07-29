@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { apiClient } from '../../../api/client';
+import { format } from 'date-fns';
 import { Select } from '../../../components/ui/Select';
 import { Settings, Save, AlertCircle, RefreshCw, UploadCloud, X } from 'lucide-react';
 import { supabase } from '../../../api/supabase';
@@ -207,8 +208,12 @@ const YoutubeSection = ({ defaults }: { defaults: any }) => {
               )} />
           </div>
           <div className="pt-2 border-t border-gray-200 space-y-2">
-            <p className="text-sm text-gray-500">Last Sync: <strong className="text-gray-900">{defaults?.youtubeLastSync || 'Never'}</strong></p>
-            <p className="text-sm text-gray-500">Next Scheduled: <strong className="text-gray-900">{defaults?.youtubeNextSync || 'N/A'}</strong></p>
+              <p className="text-sm mt-4 text-gray-500">
+                Last Sync: <strong className="text-gray-900">{defaults?.youtubeLastSync ? format(new Date(defaults.youtubeLastSync), 'dd MMM yyyy, hh:mm a') : 'Never'}</strong>
+              </p>
+              <p className="text-sm mt-1 text-gray-500">
+                Next Scheduled: <strong className="text-gray-900">{defaults?.youtubeNextSync ? format(new Date(defaults.youtubeNextSync), 'dd MMM yyyy, hh:mm a') : 'N/A'}</strong>
+              </p>
           </div>
         </div>
       </div>
