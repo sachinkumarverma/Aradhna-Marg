@@ -8,9 +8,9 @@ class DashboardController {
         try {
             // In production, these would be cached or calculated via materialized views
             const [{ count: totalBhajans }, { count: publishedBhajans }, { count: pendingAi }, { count: totalCategories }] = await Promise.all([
-                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }),
-                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('status', 'PUBLISHED'),
-                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('metadata_status', 'PENDING'),
+                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }).is('youtube_video_id', null),
+                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('status', 'PUBLISHED').is('youtube_video_id', null),
+                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('metadata_status', 'PENDING').is('youtube_video_id', null),
                 supabase_1.supabase.from('categories').select('*', { count: 'exact', head: true })
             ]);
             const stats = {
@@ -37,6 +37,7 @@ class DashboardController {
             const { data } = await supabase_1.supabase
                 .from('bhajans')
                 .select('id, title, status, created_at, metadata_status')
+                .is('youtube_video_id', null)
                 .order('created_at', { ascending: false })
                 .limit(10);
             return (0, apiResponse_1.sendSuccess)(res, 'Recent activity fetched', { activity: data });

@@ -42,7 +42,7 @@ class AdminAiController {
 
   public retryJob = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const job = await this.service.retryJob(req.params.id);
+      const job = await this.service.retryJob(req.params.id as string);
       sendSuccess(res, 'AI job retry initiated', job);
     } catch (error) {
       next(error);
@@ -51,7 +51,7 @@ class AdminAiController {
 
   public cancelJob = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const job = await this.service.cancelJob(req.params.id);
+      const job = await this.service.cancelJob(req.params.id as string);
       sendSuccess(res, 'AI job cancelled', job);
     } catch (error) {
       next(error);
@@ -60,7 +60,7 @@ class AdminAiController {
 
   public deleteJob = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.service.deleteJob(req.params.id);
+      await this.service.deleteJob(req.params.id as string);
       sendSuccess(res, 'AI job deleted successfully');
     } catch (error) {
       next(error);

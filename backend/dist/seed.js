@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const googleapis_1 = require("googleapis");
 const config_1 = require("./config");
 const supabase_1 = require("./database/supabase");
-const YoutubeSyncService_1 = require("./youtube/services/YoutubeSyncService");
+const YoutubeSyncService_1 = require("./features/youtube/YoutubeSyncService");
 const handle = 'TheBhaktiMarg_Official';
 async function run() {
     try {

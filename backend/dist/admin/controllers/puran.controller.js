@@ -7,10 +7,7 @@ class AdminPuranController {
     list = async (req, res, next) => {
         try {
             const { data, count } = await PuranService_1.puranService.getList(req.query);
-            return (0, apiResponse_1.sendSuccess)(res, 'Puranas fetched', {
-                data,
-                meta: { total: count, page: parseInt(req.query.page) || 1, limit: parseInt(req.query.limit) || 10 }
-            });
+            return (0, apiResponse_1.sendSuccess)(res, 'Puranas fetched', data, { total: count, page: parseInt(req.query.page) || 1, limit: parseInt(req.query.limit) || 10 });
         }
         catch (error) {
             next(error);

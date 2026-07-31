@@ -14,6 +14,7 @@ const envSchema = zod_1.z.object({
     SUPABASE_SERVICE_ROLE_KEY: zod_1.z.string().min(1),
     SUPABASE_ANON_KEY: zod_1.z.string().min(1),
     SUPABASE_STORAGE_BUCKET: zod_1.z.string().default('bhajan-assets'),
+    DATABASE_URL: zod_1.z.string().url(),
     AI_PROVIDER: zod_1.z.enum(['groq', 'openai', 'gemini', 'anthropic']).default('groq'),
     GROQ_API_KEY: zod_1.z.string().optional(),
     OPENAI_API_KEY: zod_1.z.string().optional(),

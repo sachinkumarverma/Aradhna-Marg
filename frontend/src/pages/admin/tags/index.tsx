@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SearchInput } from '../../../components/ui/SearchInput';
-import { apiClient } from '../../../api/client'; 
+import { TagApi } from '../../../features/tags/TagApi';
 import toast from 'react-hot-toast';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '../../../components/ui/Select';
@@ -25,10 +25,7 @@ export function AdminTags() {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-tags', page, search],
     queryFn: async () => {
-      const res = await apiClient.get('/admin/tags', {
-        params: { page, limit: 10, search: search || undefined }
-      });
-      return res.data;
+      return await TagApi.getTags({ page, limit: 10, search: search || undefined });
     }
   });
 
@@ -36,9 +33,9 @@ export function AdminTags() {
   const saveMutation = useMutation({
     mutationFn: async (formData: any) => {
       if (editingId) {
-        await apiClient.put(`/admin/tags/${editingId}`, formData);
+        await TagApi.updateTag(editingId, formData);
       } else {
-        await apiClient.post('/admin/tags', formData);
+        await TagApi.createTag(formData);
       }
     },
     onSuccess: () => {
@@ -54,7 +51,7 @@ export function AdminTags() {
   // Delete Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiClient.delete(`/admin/tags/${id}`);
+      await TagApi.deleteTag(id);
     },
     onSuccess: () => {
       toast.success('Tag deleted successfully');

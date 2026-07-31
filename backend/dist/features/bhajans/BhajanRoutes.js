@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const BhajanController_1 = require("./BhajanController");
+const router = (0, express_1.Router)();
+router.get('/', BhajanController_1.adminBhajanController.list);
+router.post('/bulk', BhajanController_1.adminBhajanController.bulkAction);
+router.post('/', BhajanController_1.adminBhajanController.create);
+router.get('/:id', BhajanController_1.adminBhajanController.getById);
+router.put('/:id', BhajanController_1.adminBhajanController.update);
+router.delete('/:id', BhajanController_1.adminBhajanController.delete);
+exports.default = router;

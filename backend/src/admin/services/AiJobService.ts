@@ -24,7 +24,7 @@ export class AiJobService {
 
   async retryJob(id: string): Promise<AiJob> {
     // Update status back to pending to be picked up by the worker
-    return await this.repository.updateStatus(id, 'PENDING', null);
+    return await this.repository.updateStatus(id, 'PENDING', undefined);
   }
 
   async cancelJob(id: string): Promise<AiJob> {

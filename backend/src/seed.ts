@@ -1,7 +1,7 @@
 import { google } from 'googleapis';
 import { config } from './config';
 import { supabase } from './database/supabase';
-import { youtubeSyncService } from './youtube/services/YoutubeSyncService';
+import { youtubeSyncService } from './features/youtube/YoutubeSyncService';
 
 const handle = 'TheBhaktiMarg_Official';
 

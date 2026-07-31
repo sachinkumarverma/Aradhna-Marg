@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { dashboardController } from '../controllers/dashboard.controller';
-import { adminBhajanController } from '../controllers/bhajan.controller';
 import { adminArticleController } from '../controllers/article.controller';
 import { adminPuranController } from '../controllers/puran.controller';
 import { adminFestivalController } from '../controllers/festival.controller';
-import { adminTagController } from '../controllers/tag.controller';
+import { bhajanRoutes } from '../../features/bhajans';
+import { tagRoutes } from '../../features/tags';
+import { youtubeRoutes } from '../../features/youtube';
 import { adminAuthorController } from '../controllers/author.controller';
-import { adminDeityController } from '../controllers/deity.controller';
+import { deityRoutes } from '../../features/deities';
 import { adminAiController } from '../controllers/ai.controller';
 import { requireAdmin } from '../../middlewares/auth';
 
@@ -20,12 +21,10 @@ router.get('/dashboard/stats', dashboardController.getStats);
 router.get('/dashboard/activity', dashboardController.getRecentActivity);
 
 // Bhajans Management
-router.get('/bhajans', adminBhajanController.list);
-router.post('/bhajans/bulk', adminBhajanController.bulkAction);
-router.post('/bhajans', adminBhajanController.create);
-router.get('/bhajans/:id', adminBhajanController.getById);
-router.put('/bhajans/:id', adminBhajanController.update);
-router.delete('/bhajans/:id', adminBhajanController.delete);
+router.use('/bhajans', bhajanRoutes);
+
+// YouTube Management
+router.use('/youtube', youtubeRoutes);
 
 // Articles Management
 router.get('/articles', adminArticleController.list);
@@ -52,12 +51,7 @@ router.put('/festivals/:id', adminFestivalController.update);
 router.delete('/festivals/:id', adminFestivalController.delete);
 
 // Tags Management
-router.get('/tags', adminTagController.list);
-router.post('/tags/bulk', adminTagController.bulkAction);
-router.post('/tags', adminTagController.create);
-router.get('/tags/:id', adminTagController.getById);
-router.put('/tags/:id', adminTagController.update);
-router.delete('/tags/:id', adminTagController.delete);
+router.use('/tags', tagRoutes);
 
 // Authors Management
 router.get('/authors', adminAuthorController.list);
@@ -68,12 +62,7 @@ router.put('/authors/:id', adminAuthorController.update);
 router.delete('/authors/:id', adminAuthorController.delete);
 
 // Deities Management
-router.get('/deities', adminDeityController.list);
-router.post('/deities/bulk', adminDeityController.bulkAction);
-router.post('/deities', adminDeityController.create);
-router.get('/deities/:id', adminDeityController.getById);
-router.put('/deities/:id', adminDeityController.update);
-router.delete('/deities/:id', adminDeityController.delete);
+router.use('/deities', deityRoutes);
 
 // Future endpoints:
 // router.use('/seo', seoController);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, AlertTriangle, FileText, Globe, Key, LayoutDashboard, Search, Settings, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { SeoApi } from '../../../features/seo/SeoApi';
 import { apiClient } from '../../../api/client';
 import { cn } from '../../../utils/cn';
 import { toast } from 'react-hot-toast';
@@ -21,16 +22,16 @@ export const AdminSEO = () => {
   const { data: overview, isLoading: isLoadingOverview } = useQuery({
     queryKey: ['seo-overview'],
     queryFn: async () => {
-      const res = await apiClient.get('/v1/seo/overview');
-      return res.data.data;
+      const data = await SeoApi.getOverview();
+      return data.data;
     }
   });
 
   const { data: issues, isLoading: isLoadingIssues } = useQuery({
     queryKey: ['seo-issues'],
     queryFn: async () => {
-      const res = await apiClient.get('/v1/seo/issues');
-      return res.data.data;
+      const data = await SeoApi.getIssues();
+      return data.data;
     }
   });
 
@@ -53,7 +54,7 @@ export const AdminSEO = () => {
 
   const handleGenerateSitemap = async () => {
     try {
-      await apiClient.post('/v1/seo/sitemap/generate');
+      await SeoApi.generateSitemap();
       toast.success('Sitemap generated successfully');
     } catch (error) {
       toast.error('Failed to generate sitemap');
@@ -62,7 +63,7 @@ export const AdminSEO = () => {
 
   const handleGenerateRobots = async () => {
     try {
-      await apiClient.post('/v1/seo/robots/generate');
+      await SeoApi.generateRobots();
       toast.success('robots.txt generated successfully');
     } catch (error) {
       toast.error('Failed to generate robots.txt');
@@ -71,7 +72,7 @@ export const AdminSEO = () => {
 
   const handleGenerateBulk = async () => {
     try {
-      await apiClient.post('/v1/seo/generate-bulk', {});
+      await SeoApi.generateBulk();
       toast.success('Bulk generation job queued successfully in the background');
     } catch (error) {
       toast.error('Bulk generation failed to start');

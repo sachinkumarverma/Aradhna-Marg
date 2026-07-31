@@ -6,7 +6,7 @@ import { DataTable } from '../../../components/admin/DataTable';
 import { Button } from '../../../components/ui/Button';
 import { Select } from '../../../components/ui/Select';
 import { SearchInput } from '../../../components/ui/SearchInput';
-import { apiClient } from '../../../api/client';
+import { BhajanApi } from '../../../features/bhajans/BhajanApi';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -22,16 +22,20 @@ export const AdminBhajans: React.FC = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-bhajans', page, search, statusFilter, sort],
     queryFn: async () => {
-      const res = await apiClient.get('/admin/bhajans', {
-        params: { page, limit: 10, search, status: statusFilter, sort }
+      const res = await BhajanApi.getList({
+        page,
+        limit: 10,
+        search: search || undefined,
+        status: statusFilter || undefined,
+        sort: sort || undefined
       });
       return res.data;
     }
   });
 
   const bulkMutation = useMutation({
-    mutationFn: async ({ ids, action }: { ids: string[], action: string }) => {
-      await apiClient.post('/admin/bhajans/bulk', { ids, action });
+    mutationFn: async ({ ids, action }: { ids: string[], action: 'PUBLISH' | 'DRAFT' | 'ARCHIVE' | 'DELETE' }) => {
+      await BhajanApi.bulkAction(ids, action);
     },
     onSuccess: (_, variables) => {
       toast.success(`Successfully applied ${variables.action} to items`);
@@ -150,29 +154,31 @@ export const AdminBhajans: React.FC = () => {
         />
       </div>
 
-      <div className="flex items-center justify-between py-2 bg-white px-4 rounded-b-xl border-t border-gray-100">
-        <span className="text-sm text-gray-500">
-          Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10))}</span>
-        </span>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            disabled={page === 1}
-            onClick={() => setPage(p => p - 1)}
-          >
-            Previous
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            disabled={!data?.meta || page >= Math.ceil(data.meta.total / data.meta.limit)}
-            onClick={() => setPage(p => p + 1)}
-          >
-            Next
-          </Button>
+      {!isLoading && (
+        <div className="flex items-center justify-between py-2 bg-white px-4 rounded-b-xl border-t border-gray-100">
+          <span className="text-sm text-gray-500">
+            Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10))}</span>
+          </span>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+            >
+              Previous
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              disabled={!data?.meta || page >= Math.ceil(data.meta.total / data.meta.limit)}
+              onClick={() => setPage(p => p + 1)}
+            >
+              Next
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <Outlet />
     </div>

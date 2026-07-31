@@ -11,7 +11,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
 
 import { Select } from '../../../components/ui/Select';
-import { supabase } from '../../../api/supabase'; // Using supabase directly for fast dropdown fetch
+import { YoutubeApi } from '../../../features/youtube/YoutubeApi';
 
 export const AdminYoutube = () => {
   const queryClient = useQueryClient();
@@ -38,8 +38,8 @@ export const AdminYoutube = () => {
   const { data: stats } = useQuery({
     queryKey: ['youtube-stats'],
     queryFn: async () => {
-      const res = await apiClient.get('/v1/admin/youtube/stats');
-      return res.data.data;
+      const res = await YoutubeApi.getStats();
+      return res.data;
     }
   });
 
@@ -50,16 +50,15 @@ export const AdminYoutube = () => {
   const { data: videosData, isLoading: isLoadingVideos, isFetching: isFetchingVideos } = useQuery({
     queryKey: ['youtube-videos', searchTerm, statusFilter, typeFilter, sortBy, sortOrder, page, limit],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (searchTerm) params.append('search', searchTerm);
-      if (statusFilter) params.append('status', statusFilter);
-      if (typeFilter) params.append('type', typeFilter);
-      if (sortBy) params.append('sortBy', sortBy);
-      if (sortOrder) params.append('sortOrder', sortOrder);
-      params.append('page', page.toString());
-      params.append('limit', limit.toString());
-      const res = await apiClient.get(`/v1/admin/youtube/videos?${params.toString()}`);
-      return res.data;
+      return await YoutubeApi.getVideos({ 
+        search: searchTerm || undefined, 
+        status: statusFilter || undefined, 
+        type: typeFilter || undefined, 
+        sortBy, 
+        sortOrder, 
+        page, 
+        limit 
+      });
     }
   });
 
@@ -67,16 +66,15 @@ export const AdminYoutube = () => {
   const { data: historyData, isLoading: isLoadingHistory } = useQuery({
     queryKey: ['youtube-history'],
     queryFn: async () => {
-      const res = await apiClient.get('/v1/admin/youtube/history');
-      return res.data.data;
+      const res = await YoutubeApi.getHistory();
+      return res.data;
     }
   });
 
   // Sync Mutation
   const syncMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiClient.post('/v1/admin/youtube/sync');
-      return res.data;
+      return await YoutubeApi.syncNow();
     },
     onSuccess: () => {
       toast.success('Sync completed successfully!');
@@ -94,8 +92,8 @@ export const AdminYoutube = () => {
   const { data: bhajansList } = useQuery({
     queryKey: ['youtube-link-bhajans'],
     queryFn: async () => {
-      const { data } = await supabase.from('bhajans').select('id, title').order('title');
-      return data || [];
+      const res = await YoutubeApi.getBhajansForLink();
+      return res.data || [];
     }
   });
 
@@ -110,8 +108,7 @@ export const AdminYoutube = () => {
   // Link Mutation
   const linkMutation = useMutation({
     mutationFn: async ({ videoId, bhajanId }: { videoId: string, bhajanId: string | null }) => {
-      const res = await apiClient.patch(`/v1/admin/youtube/videos/${videoId}/link`, { bhajanId });
-      return res.data;
+      return await YoutubeApi.linkVideo(videoId, bhajanId);
     },
     onSuccess: () => {
       toast.success('Video link updated successfully!');
@@ -127,8 +124,7 @@ export const AdminYoutube = () => {
   // Status Mutation
   const statusMutation = useMutation({
     mutationFn: async ({ videoId, status }: { videoId: string, status: string }) => {
-      const res = await apiClient.patch(`/v1/admin/youtube/videos/${videoId}/status`, { status });
-      return res.data;
+      return await YoutubeApi.updateStatus(videoId, status);
     },
     onSuccess: () => {
       toast.success('Status updated successfully');
@@ -140,8 +136,7 @@ export const AdminYoutube = () => {
   // Delete Mutation
   const deleteMutation = useMutation({
     mutationFn: async (videoId: string) => {
-      const res = await apiClient.delete(`/v1/admin/youtube/videos/${videoId}`);
-      return res.data;
+      return await YoutubeApi.deleteVideo(videoId);
     },
     onSuccess: () => {
       toast.success('Video deleted successfully');

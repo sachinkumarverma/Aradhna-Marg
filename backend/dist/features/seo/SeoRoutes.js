@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const SeoController_1 = require("./SeoController");
+const router = (0, express_1.Router)();
+router.get('/overview', SeoController_1.seoController.getOverview.bind(SeoController_1.seoController));
+router.get('/issues', SeoController_1.seoController.getIssues.bind(SeoController_1.seoController));
+router.post('/sitemap/generate', SeoController_1.seoController.generateSitemap.bind(SeoController_1.seoController));
+router.post('/robots/generate', SeoController_1.seoController.generateRobots.bind(SeoController_1.seoController));
+router.post('/generate-bulk', SeoController_1.seoController.generateBulkSEO.bind(SeoController_1.seoController));
+exports.default = router;

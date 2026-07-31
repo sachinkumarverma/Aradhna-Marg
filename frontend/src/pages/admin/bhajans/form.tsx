@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, Eye, Plus, Trash2, ChevronDown, Send } from 'lucide-react';
+import { BhajanApi } from '../../../features/bhajans/BhajanApi';
 import { apiClient } from '../../../api/client';
 import toast from 'react-hot-toast';
 import { Select } from '../../../components/ui/Select';
@@ -62,8 +63,8 @@ export const AdminBhajanForm = () => {
     queryKey: ['admin-bhajan', id],
     queryFn: async () => {
       if (!id) return null;
-      const res = await apiClient.get(`/admin/bhajans/${id}`);
-      const data = res.data.data;
+      const res = await BhajanApi.getById(id);
+      const data = res.data;
       reset({
         ...data,
         video_source_mode: data.original_youtube_url ? 'manual' : 'automatic',
@@ -87,7 +88,7 @@ export const AdminBhajanForm = () => {
     queryKey: ['admin-deities-list'],
     queryFn: async () => {
       const res = await apiClient.get('/admin/deities?limit=100');
-      return res.data?.data || [];
+      return res.data.data || [];
     }
   });
 
@@ -96,8 +97,8 @@ export const AdminBhajanForm = () => {
 
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
-      if (isEditing) return apiClient.put(`/admin/bhajans/${id}`, data);
-      return apiClient.post('/admin/bhajans', data);
+      if (isEditing) return BhajanApi.update(id!, data);
+      return BhajanApi.create(data);
     },
     onSuccess: (res) => {
       setLastSaved(new Date());

@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const DeityController_1 = require("./DeityController");
+const router = (0, express_1.Router)();
+router.get('/', DeityController_1.deityController.getDeities.bind(DeityController_1.deityController));
+router.post('/', DeityController_1.deityController.createDeity.bind(DeityController_1.deityController));
+router.post('/bulk', DeityController_1.deityController.bulkAction.bind(DeityController_1.deityController));
+router.get('/:id', DeityController_1.deityController.getDeity.bind(DeityController_1.deityController));
+router.put('/:id', DeityController_1.deityController.updateDeity.bind(DeityController_1.deityController));
+router.delete('/:id', DeityController_1.deityController.deleteDeity.bind(DeityController_1.deityController));
+exports.default = router;

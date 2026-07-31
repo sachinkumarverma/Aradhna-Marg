@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SearchInput } from '../../../components/ui/SearchInput';
-import { apiClient } from '../../../api/client';
+import { CategoryApi } from '../../../features/categories/CategoryApi';
 import toast from 'react-hot-toast';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '../../../components/ui/Select';
@@ -32,10 +32,7 @@ export const AdminCategories = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-categories', page, search],
     queryFn: async () => {
-      const res = await apiClient.get('/admin/categories', {
-        params: { page, limit: 10, search: search || undefined }
-      });
-      return res.data;
+      return await CategoryApi.getCategories({ page, limit: 10, search: search || undefined });
     }
   });
 
@@ -43,9 +40,9 @@ export const AdminCategories = () => {
   const saveMutation = useMutation({
     mutationFn: async (formData: any) => {
       if (editingId) {
-        await apiClient.put(`/admin/categories/${editingId}`, formData);
+        await CategoryApi.updateCategory(editingId, formData);
       } else {
-        await apiClient.post('/admin/categories', formData);
+        await CategoryApi.createCategory(formData);
       }
     },
     onSuccess: () => {
@@ -61,7 +58,7 @@ export const AdminCategories = () => {
   // Delete Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiClient.delete(`/admin/categories/${id}`);
+      await CategoryApi.deleteCategory(id);
     },
     onSuccess: () => {
       toast.success('Category deleted successfully');

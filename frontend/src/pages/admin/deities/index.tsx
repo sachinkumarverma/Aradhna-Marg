@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SearchInput } from '../../../components/ui/SearchInput';
-import { apiClient } from '../../../api/client'; 
+import { DeityApi } from '../../../features/deities/DeityApi';
 import toast from 'react-hot-toast';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '../../../components/ui/Select';
@@ -26,10 +26,7 @@ export const AdminDeities = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-deities', page, search],
     queryFn: async () => {
-      const res = await apiClient.get('/admin/deities', {
-        params: { page, limit: 10, search: search || undefined }
-      });
-      return res.data;
+      return await DeityApi.getDeities({ page, limit: 10, search: search || undefined });
     }
   });
 
@@ -37,9 +34,9 @@ export const AdminDeities = () => {
   const saveMutation = useMutation({
     mutationFn: async (formData: any) => {
       if (editingId) {
-        await apiClient.put(`/admin/deities/${editingId}`, formData);
+        await DeityApi.updateDeity(editingId, formData);
       } else {
-        await apiClient.post('/admin/deities', formData);
+        await DeityApi.createDeity(formData);
       }
     },
     onSuccess: () => {
@@ -55,7 +52,7 @@ export const AdminDeities = () => {
   // Delete Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiClient.delete(`/admin/deities/${id}`);
+      await DeityApi.deleteDeity(id);
     },
     onSuccess: () => {
       toast.success('Deity deleted successfully');

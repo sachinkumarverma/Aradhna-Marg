@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const seo_controller_1 = require("../controllers/seo.controller");
+const router = (0, express_1.Router)();
+router.get('/overview', seo_controller_1.seoController.getOverview);
+router.get('/issues', seo_controller_1.seoController.getIssues);
+router.post('/sitemap/generate', seo_controller_1.seoController.generateSitemap);
+router.post('/robots/generate', seo_controller_1.seoController.generateRobots);
+router.post('/generate-bulk', seo_controller_1.seoController.generateBulkSEO);
+exports.default = router;
