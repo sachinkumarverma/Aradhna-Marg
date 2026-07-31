@@ -6,10 +6,6 @@ dotenv.config();
 const envSchema = z.object({
   PORT: z.string().default('5000'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  SUPABASE_URL: z.string().url(),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  SUPABASE_ANON_KEY: z.string().min(1),
-  SUPABASE_STORAGE_BUCKET: z.string().default('bhajan-assets'),
   DATABASE_URL: z.string().url(),
   AI_PROVIDER: z.enum(['groq', 'openai', 'gemini', 'anthropic']).default('groq'),
   GROQ_API_KEY: z.string().optional(),

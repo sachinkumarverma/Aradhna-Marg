@@ -61,7 +61,7 @@ class MemoryQueue {
         else {
             job.state = types_1.JobState.FAILED;
             this.deadLetterQueue.set(jobId, job);
-            logger_1.logger.error(`[Queue] Job Moved to DLQ: ${jobId}`, error);
+            logger_1.logger.error({ error }, `[Queue] Job Moved to DLQ: ${jobId}`);
         }
         this.jobs.set(jobId, job);
     }

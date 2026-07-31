@@ -38,7 +38,7 @@ class CronScheduler {
                 await this.queue.enqueue(jobType, payload, priority);
             }
             catch (error) {
-                logger_1.logger.error(`[Scheduler] Failed to enqueue scheduled job: ${jobType}`, error);
+                logger_1.logger.error({ error }, `[Scheduler] Failed to enqueue scheduled job: ${jobType}`);
             }
         });
         this.tasks.push(task);

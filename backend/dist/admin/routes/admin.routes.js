@@ -12,9 +12,14 @@ const author_controller_1 = require("../controllers/author.controller");
 const deities_1 = require("../../features/deities");
 const ai_controller_1 = require("../controllers/ai.controller");
 const auth_1 = require("../../middlewares/auth");
+const auth_controller_1 = require("../controllers/auth.controller");
 const router = (0, express_1.Router)();
-// ALL admin routes are protected by JWT
+// Public auth routes — no JWT required
+router.post('/auth/login', auth_controller_1.authController.login);
+router.post('/auth/logout', auth_controller_1.authController.logout);
+// ALL routes below this line are protected by JWT
 router.use(auth_1.requireAdmin);
+router.get('/auth/me', auth_controller_1.authController.me);
 // Dashboard
 router.get('/dashboard/stats', dashboard_controller_1.dashboardController.getStats);
 router.get('/dashboard/activity', dashboard_controller_1.dashboardController.getRecentActivity);

@@ -2,9 +2,6 @@ import app from './app';
 import { config } from './config';
 import { logger } from './utils/logger';
 
-// Initialize Supabase early to fail fast if config is wrong
-import './database/supabase'; 
-
 const PORT = parseInt(config.PORT, 10);
 
 const server = app.listen(PORT, () => {
@@ -32,12 +29,12 @@ process.on('SIGINT', gracefulShutdown);
 // Handle uncaught exceptions and rejections
 process.on('uncaughtException', (err) => {
   console.error('RAW UNCAUGHT EXCEPTION:', err);
-  logger.error('Uncaught Exception', err);
+  logger.error({ err }, 'Uncaught Exception');
   gracefulShutdown();
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('RAW UNHANDLED REJECTION:', reason);
-  logger.error('Unhandled Rejection at promise', reason);
+  logger.error({ reason }, 'Unhandled Rejection at promise');
   gracefulShutdown();
 });

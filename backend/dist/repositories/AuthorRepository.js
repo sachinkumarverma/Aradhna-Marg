@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorRepository = exports.AuthorRepository = void 0;
-const supabase_1 = require("../database/supabase");
+const DatabaseClient_1 = require("../common/database/DatabaseClient");
 class AuthorRepository {
     tableName = 'authors';
     mapToModel(row) {
@@ -37,55 +37,56 @@ class AuthorRepository {
     async findAll(options = {}) {
         const { search, sort = 'created_at', order = 'desc', page = 1, limit = 10, status } = options;
         const offset = (page - 1) * limit;
-        let query = supabase_1.supabase.from(this.tableName).select('*', { count: 'exact' });
+        let whereClauses = ['deleted_at IS NULL'];
+        const queryParams = [];
         if (search) {
-            query = query.ilike('name', `%${search}%`);
+            queryParams.push(`%${search}%`);
+            whereClauses.push(`name ILIKE $${queryParams.length}`);
         }
         if (status) {
-            query = query.eq('status', status);
+            queryParams.push(status);
+            whereClauses.push(`status = $${queryParams.length}`);
         }
-        query = query.order(sort === 'name' ? 'name' : 'created_at', { ascending: order === 'asc' });
-        query = query.range(offset, offset + limit - 1);
-        const { data, error, count } = await query;
-        if (error)
-            throw error;
-        return { data: data.map(this.mapToModel), total: count || 0 };
+        const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+        const orderStr = sort === 'name'
+            ? `ORDER BY name ${order === 'asc' ? 'ASC' : 'DESC'}`
+            : `ORDER BY created_at ${order === 'asc' ? 'ASC' : 'DESC'}`;
+        const dataQuery = `SELECT * FROM ${this.tableName} ${whereStr} ${orderStr} LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+        const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} ${whereStr}`;
+        const [dataResult, countResult] = await Promise.all([
+            DatabaseClient_1.db.query(dataQuery, [...queryParams, limit, offset]),
+            DatabaseClient_1.db.query(countQuery, queryParams)
+        ]);
+        return { data: dataResult.rows.map(this.mapToModel), total: parseInt(countResult.rows[0].total, 10) || 0 };
     }
     async findById(id) {
-        const { data, error } = await supabase_1.supabase.from(this.tableName).select('*').eq('id', id).single();
-        if (error && error.code !== 'PGRST116')
-            throw error;
-        if (!data)
+        const { rows } = await DatabaseClient_1.db.query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL LIMIT 1`, [id]);
+        if (rows.length === 0)
             return null;
-        return this.mapToModel(data);
+        return this.mapToModel(rows[0]);
     }
     async create(dto) {
-        const { data, error } = await supabase_1.supabase
-            .from(this.tableName)
-            .insert([this.mapToDb(dto)])
-            .select()
-            .single();
-        if (error)
-            throw error;
-        return this.mapToModel(data);
+        const dbData = this.mapToDb(dto);
+        const keys = Object.keys(dbData);
+        const values = Object.values(dbData);
+        const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+        const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, values);
+        return this.mapToModel(rows[0]);
     }
     async update(id, dto) {
         const dbData = this.mapToDb(dto);
         dbData.updated_at = new Date().toISOString();
-        const { data, error } = await supabase_1.supabase
-            .from(this.tableName)
-            .update(dbData)
-            .eq('id', id)
-            .select()
-            .single();
-        if (error)
-            throw error;
-        return this.mapToModel(data);
+        const keys = Object.keys(dbData);
+        const values = Object.values(dbData);
+        const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
+        values.push(id);
+        const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, values);
+        return this.mapToModel(rows[0]);
     }
     async delete(id) {
-        const { error } = await supabase_1.supabase.from(this.tableName).delete().eq('id', id);
-        if (error)
-            throw error;
+        await DatabaseClient_1.db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id = $1`, [id]);
     }
 }
 exports.AuthorRepository = AuthorRepository;

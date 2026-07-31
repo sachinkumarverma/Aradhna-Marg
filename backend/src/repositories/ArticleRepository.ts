@@ -1,4 +1,5 @@
 import { BaseRepository } from './base.repository';
+import { db } from '../common/database/DatabaseClient';
 
 export class ArticleRepository extends BaseRepository<any> {
   constructor() {
@@ -17,83 +18,112 @@ export class ArticleRepository extends BaseRepository<any> {
     deity?: string;
     sort?: string;
   }) {
-    const { page, limit, search, status, category, author, featured, festival, deity, sort } = params;
+    const { page, limit, search, status, category, author, featured, sort } = params;
     const offset = (page - 1) * limit;
 
-    let query = this.db.from(this.tableName)
-      .select('id, title, slug, status, featured, view_count, created_at, publish_date, category_id, categories(name), author_id, authors(name), featured_image_id, media_files(url)', { count: 'exact' })
-      .is('deleted_at', null);
+    let whereClauses = ['a.deleted_at IS NULL'];
+    const queryParams: any[] = [];
 
-    if (status) query = query.eq('status', status);
-    if (category) query = query.eq('category_id', category);
-    if (author) query = query.eq('author_id', author);
-    if (featured === 'true') query = query.eq('featured', true);
-    if (featured === 'false') query = query.eq('featured', false);
-
-    // Note: complex joins for festival/deity filtering in list might need a raw query or inner select
-    // Assuming simple filtering for now, or skipping if too complex for Supabase standard client
-    
-    if (search) {
-      query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+    if (status) {
+      queryParams.push(status);
+      whereClauses.push(`a.status = $${queryParams.length}`);
+    }
+    if (category) {
+      queryParams.push(category);
+      whereClauses.push(`a.category_id = $${queryParams.length}`);
+    }
+    if (author) {
+      queryParams.push(author);
+      whereClauses.push(`a.author_id = $${queryParams.length}`);
+    }
+    if (featured === 'true') {
+      whereClauses.push(`a.featured = true`);
+    } else if (featured === 'false') {
+      whereClauses.push(`a.featured = false`);
     }
 
-    if (sort === 'newest') query = query.order('created_at', { ascending: false });
-    else if (sort === 'oldest') query = query.order('created_at', { ascending: true });
-    else if (sort === 'views') query = query.order('view_count', { ascending: false });
-    else query = query.order('created_at', { ascending: false });
+    if (search) {
+      queryParams.push(`%${search}%`);
+      whereClauses.push(`(a.title ILIKE $${queryParams.length} OR a.content ILIKE $${queryParams.length})`);
+    }
 
-    const { data, count, error } = await query.range(offset, offset + limit - 1);
-    if (error) throw error;
+    const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+    
+    let orderStr = 'ORDER BY a.created_at DESC';
+    if (sort === 'oldest') orderStr = 'ORDER BY a.created_at ASC';
+    else if (sort === 'views') orderStr = 'ORDER BY a.view_count DESC';
 
-    return { data, count };
+    const dataQuery = `
+      SELECT 
+        a.id, a.title, a.slug, a.status, a.featured, a.view_count, a.created_at, a.publish_date, a.category_id, a.author_id, a.featured_image_id,
+        json_build_object('name', c.name) as categories,
+        json_build_object('name', au.name) as authors,
+        json_build_object('url', m.url) as media_files
+      FROM ${this.tableName} a
+      LEFT JOIN categories c ON a.category_id = c.id
+      LEFT JOIN authors au ON a.author_id = au.id
+      LEFT JOIN media_files m ON a.featured_image_id = m.id
+      ${whereStr} 
+      ${orderStr} 
+      LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
+    `;
+    
+    const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} a ${whereStr}`;
+
+    const [dataResult, countResult] = await Promise.all([
+      db.query(dataQuery, [...queryParams, limit, offset]),
+      db.query(countQuery, queryParams)
+    ]);
+
+    return { data: dataResult.rows, count: parseInt(countResult.rows[0].total, 10) || 0 };
   }
 
   public async getByIdWithRelations(id: string) {
-    const { data, error } = await this.db.from(this.tableName)
-      .select(`
-        *,
-        categories(id, name),
-        authors(id, name),
-        media_files(id, url, file_name),
-        article_gods(god_id),
-        article_festivals(festival_id),
-        article_tags(tag_id),
-        article_bhajans(bhajan_id),
-        related_articles(related_id)
-      `)
-      .eq('id', id)
-      .is('deleted_at', null)
-      .single();
-
-    if (error) throw error;
-    return data;
+    const query = `
+      SELECT 
+        a.*,
+        json_build_object('id', c.id, 'name', c.name) as categories,
+        json_build_object('id', au.id, 'name', au.name) as authors,
+        json_build_object('id', m.id, 'url', m.url, 'file_name', m.file_name) as media_files,
+        COALESCE((SELECT json_agg(json_build_object('god_id', god_id)) FROM article_gods WHERE article_id = a.id), '[]'::json) as article_gods,
+        COALESCE((SELECT json_agg(json_build_object('festival_id', festival_id)) FROM article_festivals WHERE article_id = a.id), '[]'::json) as article_festivals,
+        COALESCE((SELECT json_agg(json_build_object('tag_id', tag_id)) FROM article_tags WHERE article_id = a.id), '[]'::json) as article_tags,
+        COALESCE((SELECT json_agg(json_build_object('bhajan_id', bhajan_id)) FROM article_bhajans WHERE article_id = a.id), '[]'::json) as article_bhajans,
+        COALESCE((SELECT json_agg(json_build_object('related_id', related_id)) FROM related_articles WHERE article_id = a.id), '[]'::json) as related_articles
+      FROM ${this.tableName} a
+      LEFT JOIN categories c ON a.category_id = c.id
+      LEFT JOIN authors au ON a.author_id = au.id
+      LEFT JOIN media_files m ON a.featured_image_id = m.id
+      WHERE a.id = $1 AND a.deleted_at IS NULL
+    `;
+    const { rows } = await db.query(query, [id]);
+    return rows[0] || null;
   }
 
   public async updateJunctionTable(tableName: string, articleId: string, foreignColumn: string, ids: string[]) {
-    await this.db.from(tableName).delete().eq('article_id', articleId);
+    await db.query(`DELETE FROM ${tableName} WHERE article_id = $1`, [articleId]);
     if (ids && ids.length > 0) {
-      const inserts = ids.map(id => ({ article_id: articleId, [foreignColumn]: id }));
-      const { error } = await this.db.from(tableName).insert(inserts);
-      if (error) throw error;
+      const placeholders = ids.map((_, i) => `($1, $${i + 2})`).join(', ');
+      const query = `INSERT INTO ${tableName} (article_id, ${foreignColumn}) VALUES ${placeholders}`;
+      await db.query(query, [articleId, ...ids]);
     }
   }
 
   public async bulkAction(ids: string[], action: string) {
+    if (ids.length === 0) return;
+    
+    const placeholders = ids.map((_, i) => `$${i + 1}`).join(',');
+    
     if (action === 'DELETE') {
-      const { error } = await this.db.from(this.tableName)
-        .update({ deleted_at: new Date().toISOString() })
-        .in('id', ids);
-      if (error) throw error;
+      await db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id IN (${placeholders})`, ids);
     } else if (action === 'FEATURE' || action === 'UNFEATURE') {
       const featured = action === 'FEATURE';
-      const { error } = await this.db.from(this.tableName).update({ featured }).in('id', ids);
-      if (error) throw error;
+      await db.query(`UPDATE ${this.tableName} SET featured = $1 WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`, [featured, ...ids]);
     } else {
       let status = 'DRAFT';
       if (action === 'PUBLISH') status = 'PUBLISHED';
       if (action === 'ARCHIVE') status = 'ARCHIVED';
-      const { error } = await this.db.from(this.tableName).update({ status }).in('id', ids);
-      if (error) throw error;
+      await db.query(`UPDATE ${this.tableName} SET status = $1 WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`, [status, ...ids]);
     }
   }
 }

@@ -1,18 +1,19 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { sendSuccess } from '../responses/apiResponse';
-import { supabase } from '../database/supabase';
 import { InternalServerError } from '../errors/appError';
 import { logger } from '../utils/logger';
+import { db } from '../common/database/DatabaseClient';
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Check Database connection by fetching server version or a simple ping
-    const { error: dbError } = await supabase.from('settings').select('id').limit(1);
-    
-    if (dbError) {
-      logger.error('Database health check failed:', dbError);
+    let dbError = false;
+    try {
+      await db.query(`SELECT 1`);
+    } catch (e) {
+      dbError = true;
+      logger.error({ err: e }, 'Database health check failed');
       throw new InternalServerError('Database connection failed');
     }
 

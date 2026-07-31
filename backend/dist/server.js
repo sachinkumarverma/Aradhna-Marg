@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const config_1 = require("./config");
 const logger_1 = require("./utils/logger");
-// Initialize Supabase early to fail fast if config is wrong
-require("./database/supabase");
 const PORT = parseInt(config_1.config.PORT, 10);
 const server = app_1.default.listen(PORT, () => {
     logger_1.logger.info(`🚀 Server is running on http://localhost:${PORT} in ${config_1.config.NODE_ENV} mode.`);
@@ -30,11 +28,11 @@ process.on('SIGINT', gracefulShutdown);
 // Handle uncaught exceptions and rejections
 process.on('uncaughtException', (err) => {
     console.error('RAW UNCAUGHT EXCEPTION:', err);
-    logger_1.logger.error('Uncaught Exception', err);
+    logger_1.logger.error({ err }, 'Uncaught Exception');
     gracefulShutdown();
 });
 process.on('unhandledRejection', (reason, promise) => {
     console.error('RAW UNHANDLED REJECTION:', reason);
-    logger_1.logger.error('Unhandled Rejection at promise', reason);
+    logger_1.logger.error({ reason }, 'Unhandled Rejection at promise');
     gracefulShutdown();
 });

@@ -22,7 +22,6 @@ class YouTubeWorker extends BaseWorker_1.BaseWorker {
         }
         // 2. Insert minimal records into Database (mocked)
         for (const video of newVideos) {
-            // e.g. await supabase.from('bhajans').insert({ youtube_video_id: video.videoId, title: video.title });
             logger_1.logger.info(`[YouTubeWorker] Imported video ${video.videoId}`);
             // 3. ✨ ARCHITECTURE KEY: Publish Event rather than calling AI queue directly ✨
             EventBus_1.eventBus.publish(types_1.PlatformEvent.VIDEO_IMPORTED, {

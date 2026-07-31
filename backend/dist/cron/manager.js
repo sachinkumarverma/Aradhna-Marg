@@ -25,13 +25,13 @@ class CronManager {
             try {
                 await currentJob.run();
                 currentJob.status = 'IDLE';
-                logger_1.logger.success(`Successfully completed cron job: ${job.name}`);
+                logger_1.logger.info(`Successfully completed cron job: ${job.name}`);
             }
             catch (error) {
                 currentJob.status = 'FAILED';
-                logger_1.logger.error(`Cron job ${job.name} failed:`, error);
+                logger_1.logger.error({ error }, `Cron job ${job.name} failed`);
             }
-        }, { scheduled: false }); // start later manually or by default
+        }, { name: job.name }); // node-cron v3 uses 'name' not 'scheduled'
         this.tasks.set(job.name, task);
         logger_1.logger.info(`Registered cron job: ${job.name} with schedule: ${job.schedule}`);
     }

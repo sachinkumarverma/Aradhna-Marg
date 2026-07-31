@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Megaphone } from 'lucide-react';
 
 export function AdminAdvertisements() {
   return (

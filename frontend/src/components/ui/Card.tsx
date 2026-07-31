@@ -13,7 +13,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <motion.div
         ref={ref}
-        variants={hoverable ? cardHoverVariant : undefined}
+        variants={hoverable ? (cardHoverVariant as any) : undefined}
         initial="initial"
         whileHover={hoverable ? "hover" : undefined}
         whileTap={hoverable ? "tap" : undefined}

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mediaRepository = exports.MediaRepository = void 0;
-const supabase_1 = require("../database/supabase");
+const DatabaseClient_1 = require("../common/database/DatabaseClient");
 class MediaRepository {
     foldersTable = 'media_folders';
     filesTable = 'media_files';
@@ -32,114 +32,99 @@ class MediaRepository {
     }
     // Folders
     async createFolder(dto) {
-        const { data, error } = await supabase_1.supabase
-            .from(this.foldersTable)
-            .insert([{
-                name: dto.name,
-                parent_id: dto.parentId || null,
-            }])
-            .select()
-            .single();
-        if (error)
-            throw error;
-        return this.mapFolderToModel(data);
+        const query = `INSERT INTO ${this.foldersTable} (name, parent_id) VALUES ($1, $2) RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, [dto.name, dto.parentId || null]);
+        return this.mapFolderToModel(rows[0]);
     }
     async getFolders(parentId) {
-        let query = supabase_1.supabase.from(this.foldersTable).select('*');
+        let query = `SELECT * FROM ${this.foldersTable}`;
+        const params = [];
         if (parentId) {
-            query = query.eq('parent_id', parentId);
+            query += ` WHERE parent_id = $1`;
+            params.push(parentId);
         }
         else {
-            query = query.is('parent_id', null);
+            query += ` WHERE parent_id IS NULL`;
         }
-        const { data, error } = await query.order('name');
-        if (error)
-            throw error;
-        return data.map(this.mapFolderToModel);
+        query += ` ORDER BY name ASC`;
+        const { rows } = await DatabaseClient_1.db.query(query, params);
+        return rows.map(r => this.mapFolderToModel(r));
     }
     async updateFolder(id, name) {
-        const { data, error } = await supabase_1.supabase
-            .from(this.foldersTable)
-            .update({ name, updated_at: new Date().toISOString() })
-            .eq('id', id)
-            .select()
-            .single();
-        if (error)
-            throw error;
-        return this.mapFolderToModel(data);
+        const query = `UPDATE ${this.foldersTable} SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, [name, id]);
+        return this.mapFolderToModel(rows[0]);
     }
     async deleteFolder(id) {
-        const { error } = await supabase_1.supabase.from(this.foldersTable).delete().eq('id', id);
-        if (error)
-            throw error;
+        await DatabaseClient_1.db.query(`DELETE FROM ${this.foldersTable} WHERE id = $1`, [id]);
     }
     // Files
     async createFile(dto) {
-        const { data, error } = await supabase_1.supabase
-            .from(this.filesTable)
-            .insert([{
-                file_name: dto.fileName,
-                original_name: dto.originalName,
-                folder_id: dto.folderId || null,
-                mime_type: dto.mimeType,
-                size_bytes: dto.sizeBytes,
-                url: dto.url,
-                thumbnail_url: dto.thumbnailUrl,
-                dimensions: dto.dimensions,
-                storage_path: dto.storagePath,
-            }])
-            .select()
-            .single();
-        if (error)
-            throw error;
-        return this.mapFileToModel(data);
+        const query = `
+      INSERT INTO ${this.filesTable} 
+      (file_name, original_name, folder_id, mime_type, size_bytes, url, thumbnail_url, dimensions, storage_path)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *
+    `;
+        const params = [
+            dto.fileName,
+            dto.originalName,
+            dto.folderId || null,
+            dto.mimeType,
+            dto.sizeBytes,
+            dto.url,
+            dto.thumbnailUrl,
+            dto.dimensions,
+            dto.storagePath
+        ];
+        const { rows } = await DatabaseClient_1.db.query(query, params);
+        return this.mapFileToModel(rows[0]);
     }
     async getFiles(folderId, search) {
-        let query = supabase_1.supabase.from(this.filesTable).select('*');
+        let query = `SELECT * FROM ${this.filesTable}`;
+        const params = [];
         if (search) {
-            query = query.ilike('file_name', `%${search}%`);
+            query += ` WHERE file_name ILIKE $1`;
+            params.push(`%${search}%`);
         }
         else {
             if (folderId) {
-                query = query.eq('folder_id', folderId);
+                query += ` WHERE folder_id = $1`;
+                params.push(folderId);
             }
             else {
-                query = query.is('folder_id', null);
+                query += ` WHERE folder_id IS NULL`;
             }
         }
-        const { data, error } = await query.order('created_at', { ascending: false });
-        if (error)
-            throw error;
-        return data.map(this.mapFileToModel);
+        query += ` ORDER BY created_at DESC`;
+        const { rows } = await DatabaseClient_1.db.query(query, params);
+        return rows.map(r => this.mapFileToModel(r));
     }
     async getFile(id) {
-        const { data, error } = await supabase_1.supabase.from(this.filesTable).select('*').eq('id', id).single();
-        if (error && error.code !== 'PGRST116')
-            throw error;
-        if (!data)
+        const { rows } = await DatabaseClient_1.db.query(`SELECT * FROM ${this.filesTable} WHERE id = $1 LIMIT 1`, [id]);
+        if (rows.length === 0)
             return null;
-        return this.mapFileToModel(data);
+        return this.mapFileToModel(rows[0]);
     }
     async updateFile(id, dto) {
-        const updates = { updated_at: new Date().toISOString() };
-        if (dto.fileName !== undefined)
-            updates.file_name = dto.fileName;
-        if (dto.folderId !== undefined)
-            updates.folder_id = dto.folderId || null;
-        const { data, error } = await supabase_1.supabase
-            .from(this.filesTable)
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
-        if (error)
-            throw error;
-        return this.mapFileToModel(data);
+        const updates = ['updated_at = NOW()'];
+        const params = [];
+        let paramIdx = 1;
+        if (dto.fileName !== undefined) {
+            updates.push(`file_name = $${paramIdx++}`);
+            params.push(dto.fileName);
+        }
+        if (dto.folderId !== undefined) {
+            updates.push(`folder_id = $${paramIdx++}`);
+            params.push(dto.folderId || null);
+        }
+        params.push(id);
+        const query = `UPDATE ${this.filesTable} SET ${updates.join(', ')} WHERE id = $${paramIdx} RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, params);
+        return this.mapFileToModel(rows[0]);
     }
     async deleteFile(id) {
-        const { error } = await supabase_1.supabase.from(this.filesTable).delete().eq('id', id);
-        if (error)
-            throw error;
+        await DatabaseClient_1.db.query(`DELETE FROM ${this.filesTable} WHERE id = $1`, [id]);
     }
 }
 exports.MediaRepository = MediaRepository;

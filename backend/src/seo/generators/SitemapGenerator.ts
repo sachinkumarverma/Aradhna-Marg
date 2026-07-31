@@ -1,4 +1,4 @@
-import { supabase } from '../../database/supabase';
+import { db } from '../../common/database/DatabaseClient';
 import { logger } from '../../utils/logger';
 
 export class SitemapGenerator {
@@ -31,25 +31,24 @@ export class SitemapGenerator {
    * If > 50,000 URLs, this should implement chunking (`bhajans-1.xml`, etc).
    */
   public async generateBhajansSitemap(): Promise<string> {
-    const { data: bhajans, error } = await supabase
-      .from('bhajans')
-      .select('slug, updated_at')
-      .eq('status', 'PUBLISHED');
+    try {
+      const { rows: bhajans } = await db.query(
+        `SELECT slug, updated_at FROM bhajans WHERE status = 'PUBLISHED'`
+      );
 
-    if (error) {
-      logger.error('Failed to generate bhajans sitemap', error);
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+      for (const bhajan of bhajans) {
+        const date = (bhajan.updated_at ? new Date(bhajan.updated_at) : new Date()).toISOString().split('T')[0];
+        xml += `  <url>\n    <loc>${this.baseUrl}/bhajans/${bhajan.slug}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      }
+
+      xml += `</urlset>`;
+      return xml;
+    } catch (error) {
+      logger.error({ error }, 'Failed to generate bhajans sitemap');
       throw error;
     }
-
-    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-
-    for (const bhajan of bhajans) {
-      const date = (bhajan.updated_at ? new Date(bhajan.updated_at) : new Date()).toISOString().split('T')[0];
-      xml += `  <url>\n    <loc>${this.baseUrl}/bhajans/${bhajan.slug}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
-    }
-
-    xml += `</urlset>`;
-    return xml;
   }
 }
 

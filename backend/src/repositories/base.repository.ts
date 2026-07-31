@@ -1,93 +1,110 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { supabase } from '../database/supabase';
+import { db } from '../common/database/DatabaseClient';
 import { IBaseRepository } from '../interfaces/repositories';
 
 export class BaseRepository<T> implements IBaseRepository<T> {
   protected readonly tableName: string;
-  protected readonly db: SupabaseClient;
 
   constructor(tableName: string) {
     this.tableName = tableName;
-    this.db = supabase;
   }
 
   public async findAll(options?: { select?: string; order?: { column: string; ascending?: boolean } }): Promise<T[]> {
-    let query = this.db.from(this.tableName).select(options?.select || '*');
+    const selectStr = options?.select || '*';
+    let query = `SELECT ${selectStr} FROM ${this.tableName} WHERE deleted_at IS NULL`;
     
     if (options?.order) {
-      query = query.order(options.order.column, { ascending: options.order.ascending ?? true });
+      const orderDir = options.order.ascending ?? true ? 'ASC' : 'DESC';
+      query += ` ORDER BY ${options.order.column} ${orderDir}`;
     }
 
-    const { data, error } = await query;
-    if (error) throw error;
-    return data as unknown as T[];
+    const { rows } = await db.query(query);
+    return rows as unknown as T[];
   }
 
   public async findById(id: string): Promise<T | null> {
-    const { data, error } = await this.db.from(this.tableName).select('*').eq('id', id).single();
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 is not found
-    return (data as unknown as T) || null;
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL LIMIT 1`, [id]);
+    return (rows[0] as unknown as T) || null;
   }
 
   public async findBySlug(slug: string): Promise<T | null> {
-    const { data, error } = await this.db.from(this.tableName).select('*').eq('slug', slug).single();
-    if (error && error.code !== 'PGRST116') throw error;
-    return (data as unknown as T) || null;
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE slug = $1 AND deleted_at IS NULL LIMIT 1`, [slug]);
+    return (rows[0] as unknown as T) || null;
   }
 
   public async create(data: Partial<T>): Promise<T> {
-    const { data: created, error } = await this.db.from(this.tableName).insert(data).select().single();
-    if (error) throw error;
-    return created as unknown as T;
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+    const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+    
+    const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
+    const { rows } = await db.query(query, values);
+    return rows[0] as unknown as T;
   }
 
   public async update(id: string, data: Partial<T>): Promise<T> {
-    const { data: updated, error } = await this.db.from(this.tableName).update(data).eq('id', id).select().single();
-    if (error) throw error;
-    return updated as unknown as T;
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+    
+    const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
+    values.push(id); // ID is the last parameter
+    
+    const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING *`;
+    const { rows } = await db.query(query, values);
+    return rows[0] as unknown as T;
   }
 
   public async delete(id: string): Promise<boolean> {
-    const { error } = await this.db.from(this.tableName).delete().eq('id', id);
-    if (error) throw error;
+    await db.query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
     return true;
   }
 
   public async paginate(page: number, limit: number, filters?: Record<string, any>): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const offset = (page - 1) * limit;
     
-    let query = this.db.from(this.tableName).select('*', { count: 'exact' });
+    let whereClauses = ['deleted_at IS NULL'];
+    const params: any[] = [];
     
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          query = query.eq(key, value);
+          whereClauses.push(`${key} = $${params.length + 1}`);
+          params.push(value);
         }
       });
     }
 
-    const { data, error, count } = await query.range(offset, offset + limit - 1);
+    const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
     
-    if (error) throw error;
+    const dataQuery = `SELECT * FROM ${this.tableName} ${whereStr} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} ${whereStr}`;
+
+    const [dataResult, countResult] = await Promise.all([
+      db.query(dataQuery, [...params, limit, offset]),
+      db.query(countQuery, params)
+    ]);
     
     return {
-      data: (data as unknown as T[]) || [],
-      total: count || 0,
+      data: (dataResult.rows as unknown as T[]) || [],
+      total: parseInt(countResult.rows[0].total, 10) || 0,
       page,
       limit,
     };
   }
 
   public async search(queryText: string, options?: { select?: string, limit?: number }): Promise<T[]> {
-    // Assuming FTS column is search_vector, this is a basic wrapper.
-    // For specific advanced searching, subclasses should override this.
-    const { data, error } = await this.db
-      .from(this.tableName)
-      .select(options?.select || '*')
-      .textSearch('search_vector', queryText, { config: 'english' })
-      .limit(options?.limit || 20);
-
-    if (error) throw error;
-    return data as unknown as T[];
+    const selectStr = options?.select || '*';
+    const limit = options?.limit || 20;
+    
+    // Very basic fallback since full text search requires specific columns.
+    const query = `
+      SELECT ${selectStr} FROM ${this.tableName} 
+      WHERE deleted_at IS NULL AND (
+        title ILIKE $1 OR description ILIKE $1
+      )
+      LIMIT $2
+    `;
+    
+    const { rows } = await db.query(query, [`%${queryText}%`, limit]);
+    return rows as unknown as T[];
   }
 }

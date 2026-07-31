@@ -1,4 +1,4 @@
-import { supabase } from '../database/supabase';
+import { db } from '../common/database/DatabaseClient';
 
 /**
  * Generates a URL-friendly slug from a string.
@@ -27,15 +27,17 @@ export const generateUniqueSlug = async (
   let isUnique = false;
 
   while (!isUnique) {
-    let query = supabase.from(tableName).select('id').eq('slug', finalSlug);
+    let query = `SELECT id FROM ${tableName} WHERE slug = $1 LIMIT 1`;
+    const params: any[] = [finalSlug];
     
     if (excludeId) {
-      query = query.neq('id', excludeId);
+      query = `SELECT id FROM ${tableName} WHERE slug = $1 AND id != $2 LIMIT 1`;
+      params.push(excludeId);
     }
 
-    const { data, error } = await query.single();
+    const { rows } = await db.query(query, params);
 
-    if (error && error.code === 'PGRST116') {
+    if (rows.length === 0) {
       // Not found, means it's unique
       isUnique = true;
     } else {

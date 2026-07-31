@@ -35,14 +35,14 @@ class YoutubeClient {
 
       // Paginate through playlist items
       do {
-        const playlistRes = await this.youtube.playlistItems.list({
+        const playlistRes: any = await this.youtube.playlistItems.list({
           part: ['snippet', 'contentDetails'],
           playlistId: uploadsPlaylistId,
           maxResults: 50,
           pageToken: nextPageToken,
         });
 
-        const videoIds = playlistRes.data.items?.map(item => item.contentDetails?.videoId).filter(Boolean) as string[];
+        const videoIds = playlistRes.data.items?.map((item: any) => item.contentDetails?.videoId).filter(Boolean) as string[];
         
         if (videoIds.length > 0) {
           // Fetch full video details including statistics and contentDetails
@@ -69,7 +69,7 @@ class YoutubeClient {
 
       return allVideos;
     } catch (error: any) {
-      logger.error('YouTube API Error:', error.message);
+      logger.error({ err: error }, 'YouTube API Error');
       if (error.code === 403) {
         throw new InternalServerError('YouTube API quota exceeded or forbidden.');
       }

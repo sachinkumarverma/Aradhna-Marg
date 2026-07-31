@@ -1,4 +1,4 @@
-import { supabase } from '../../database/supabase';
+import { db } from '../../common/database/DatabaseClient';
 import { AiJob, CreateAiJobDTO } from '../../models/AiJob';
 import { NotFoundError } from '../../errors/appError';
 
@@ -6,23 +6,36 @@ export class AiJobRepository {
   private tableName = 'ai_jobs';
 
   async findAll(page: number = 1, limit: number = 10, status?: string): Promise<{ data: AiJob[]; count: number }> {
-    let query = supabase
-      .from(this.tableName)
-      .select('*', { count: 'exact' });
+    const offset = (page - 1) * limit;
+    const params: any[] = [];
+    let whereClause = '';
 
     if (status) {
-      query = query.eq('status', status);
+      params.push(status);
+      whereClause = `WHERE status = $1`;
     }
 
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
+    const dataQuery = `
+      SELECT * FROM ${this.tableName}
+      ${whereClause}
+      ORDER BY created_at DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
 
-    const { data, count, error } = await query
-      .order('created_at', { ascending: false })
-      .range(from, to);
+    const countQuery = `
+      SELECT COUNT(*) as total FROM ${this.tableName}
+      ${whereClause}
+    `;
 
-    if (error) throw error;
-    return { data: data as AiJob[], count: count || 0 };
+    const [dataResult, countResult] = await Promise.all([
+      db.query(dataQuery, [...params, limit, offset]),
+      db.query(countQuery, params)
+    ]);
+
+    return { 
+      data: dataResult.rows as AiJob[], 
+      count: parseInt(countResult.rows[0].total, 10) 
+    };
   }
   
   async getStats(): Promise<any> {
@@ -30,77 +43,90 @@ export class AiJobRepository {
     today.setHours(0,0,0,0);
     const todayStr = today.toISOString();
     
-    // In a real app we might use aggregate functions, for simplicity we'll just fetch small counts or use multiple queries.
-    const [{ count: pendingCount }, { count: processingCount }, { count: completedCount }, { count: failedCount }, { count: todayCount }] = await Promise.all([
-      supabase.from(this.tableName).select('*', { count: 'exact', head: true }).eq('status', 'PENDING'),
-      supabase.from(this.tableName).select('*', { count: 'exact', head: true }).eq('status', 'PROCESSING'),
-      supabase.from(this.tableName).select('*', { count: 'exact', head: true }).eq('status', 'COMPLETED'),
-      supabase.from(this.tableName).select('*', { count: 'exact', head: true }).eq('status', 'FAILED'),
-      supabase.from(this.tableName).select('*', { count: 'exact', head: true }).gte('created_at', todayStr)
+    const queries = [
+      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'PENDING'`,
+      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'PROCESSING'`,
+      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'COMPLETED'`,
+      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'FAILED'`,
+      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE created_at >= $1`
+    ];
+
+    const results = await Promise.all([
+      db.query(queries[0]),
+      db.query(queries[1]),
+      db.query(queries[2]),
+      db.query(queries[3]),
+      db.query(queries[4], [todayStr])
     ]);
     
     return {
-      pending: pendingCount || 0,
-      processing: processingCount || 0,
-      completed: completedCount || 0,
-      failed: failedCount || 0,
-      today: todayCount || 0
+      pending: parseInt(results[0].rows[0].total, 10) || 0,
+      processing: parseInt(results[1].rows[0].total, 10) || 0,
+      completed: parseInt(results[2].rows[0].total, 10) || 0,
+      failed: parseInt(results[3].rows[0].total, 10) || 0,
+      today: parseInt(results[4].rows[0].total, 10) || 0
     };
   }
 
   async findById(id: string): Promise<AiJob> {
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) throw new NotFoundError('AI Job not found');
-    return data as AiJob;
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE id = $1`, [id]);
+    
+    if (rows.length === 0) throw new NotFoundError('AI Job not found');
+    return rows[0] as AiJob;
   }
 
   async create(dto: CreateAiJobDTO): Promise<AiJob> {
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .insert([
-        {
-          job_name: dto.job_name,
-          content_type: dto.content_type,
-          action_type: dto.action_type,
-          total_items: dto.total_items || 1,
-          status: 'PENDING'
-        }
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as AiJob;
+    const query = `
+      INSERT INTO ${this.tableName} (job_name, content_type, action_type, total_items, status)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `;
+    const params = [
+      dto.job_name,
+      dto.content_type,
+      dto.action_type,
+      dto.total_items || 1,
+      'PENDING'
+    ];
+    
+    const { rows } = await db.query(query, params);
+    return rows[0] as AiJob;
   }
 
   async updateStatus(id: string, status: string, errorMessage?: string): Promise<AiJob> {
-    const updateData: any = { status };
-    if (errorMessage !== undefined) updateData.error_message = errorMessage;
-    if (status === 'PROCESSING') updateData.started_at = new Date().toISOString();
-    if (status === 'COMPLETED' || status === 'FAILED') updateData.completed_at = new Date().toISOString();
+    let updateClause = `status = $1`;
+    const params: any[] = [status];
+    let paramIndex = 2;
 
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
+    if (errorMessage !== undefined) {
+      updateClause += `, error_message = $${paramIndex}`;
+      params.push(errorMessage);
+      paramIndex++;
+    }
+    
+    if (status === 'PROCESSING') {
+      updateClause += `, started_at = NOW()`;
+    }
+    
+    if (status === 'COMPLETED' || status === 'FAILED') {
+      updateClause += `, completed_at = NOW()`;
+    }
 
-    if (error) throw error;
-    return data as AiJob;
+    params.push(id);
+    
+    const query = `
+      UPDATE ${this.tableName} 
+      SET ${updateClause}
+      WHERE id = $${paramIndex}
+      RETURNING *
+    `;
+
+    const { rows } = await db.query(query, params);
+    if (rows.length === 0) throw new NotFoundError('AI Job not found');
+    return rows[0] as AiJob;
   }
   
   async delete(id: string): Promise<void> {
-    const { error } = await supabase
-      .from(this.tableName)
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await db.query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
   }
 }

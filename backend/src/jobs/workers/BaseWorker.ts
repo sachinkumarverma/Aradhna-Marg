@@ -39,7 +39,7 @@ export abstract class BaseWorker {
       await this.processWithRetry(job);
       
     } catch (error) {
-      logger.error(`[Worker] Uncaught Queue Exception`, error);
+      logger.error({ error }, `[Worker] Uncaught Queue Exception`);
     }
   }
 

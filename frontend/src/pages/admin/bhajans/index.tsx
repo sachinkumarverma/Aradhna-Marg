@@ -49,7 +49,7 @@ export const AdminBhajans: React.FC = () => {
   const handleBulkAction = (action: string, selectedIds: string[]) => {
     if (selectedIds.length === 0) return toast.error('No items selected');
     if (window.confirm(`Are you sure you want to ${action} ${selectedIds.length} items?`)) {
-      bulkMutation.mutate({ ids: selectedIds, action });
+      bulkMutation.mutate({ ids: selectedIds, action: action as any });
     }
   };
 

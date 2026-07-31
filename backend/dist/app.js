@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 const security_1 = require("./config/security");
 const compression_1 = __importDefault(require("compression"));
 const morgan_1 = __importDefault(require("morgan"));
@@ -44,6 +45,8 @@ app.use((0, morgan_1.default)((tokens, req, res) => {
 }));
 // Public SEO Files (robots.txt, sitemap.xml)
 app.use('/', seo_routes_1.default);
+// Serve locally uploaded media files
+app.use('/uploads', express_1.default.static(path_1.default.join(process.cwd(), 'public', 'uploads')));
 // API Routes Entry Point
 app.use('/api', routes_1.default);
 // 404 Handler for undefined routes

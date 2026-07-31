@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
 import { config } from './config';
-import { supabase } from './database/supabase';
+import { db } from './common/database/DatabaseClient';
 import { youtubeSyncService } from './features/youtube/YoutubeSyncService';
 
 const handle = 'TheBhaktiMarg_Official';
@@ -30,12 +30,13 @@ async function run() {
     console.log(`Found Channel ID: ${channelId}`);
     
     // Save to settings
-    await supabase.from('settings').upsert({
-      id: '00000000-0000-0000-0000-000000000001', // Example fixed ID for singleton
-      site_name: 'Aradhna Marg',
-      youtube_channel_id: channelId,
-      is_singleton: true
-    }, { onConflict: 'is_singleton' });
+    await db.query(`
+      INSERT INTO settings (id, site_name, youtube_channel_id, is_singleton)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (id) DO UPDATE SET
+        youtube_channel_id = EXCLUDED.youtube_channel_id,
+        site_name = EXCLUDED.site_name
+    `, ['00000000-0000-0000-0000-000000000001', 'Aradhna Marg', channelId, true]);
     console.log('Saved to settings table.');
 
     // Run sync service (we will limit it by passing a recent publishedAfter date to only get a few videos)

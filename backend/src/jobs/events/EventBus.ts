@@ -25,7 +25,7 @@ class EventBus {
       try {
         await handler(payload);
       } catch (error) {
-        logger.error(`[EventBus] Error in handler for ${event}`, error);
+        logger.error({ error }, `[EventBus] Error in handler for ${event}`);
       }
     });
   }

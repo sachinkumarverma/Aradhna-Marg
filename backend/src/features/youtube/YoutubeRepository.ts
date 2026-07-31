@@ -117,7 +117,7 @@ export class YoutubeVideoRepository {
       existingResult.rows.forEach(r => existingIds.add(r.youtube_video_id));
     } catch (error: any) {
       if (error.code === '42P01' || error.message?.includes('does not exist')) {
-        throw new Error('Database table "youtube_videos" is missing. Please run the SQL migration in your Supabase Dashboard to create it.');
+        throw new Error('Database table "youtube_videos" is missing. Please run the SQL migration in your PostgreSQL database to create it.');
       }
       throw error;
     }

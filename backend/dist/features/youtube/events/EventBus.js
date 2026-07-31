@@ -19,7 +19,7 @@ class EventBus extends events_1.EventEmitter {
         this.setMaxListeners(50);
     }
     publish(event, payload) {
-        logger_1.logger.debug(`[EVENT PUBLISHED] ${event}`, payload.videoId ? { videoId: payload.videoId } : {});
+        logger_1.logger.debug({ event, videoId: payload?.videoId }, `[EVENT PUBLISHED] ${event}`);
         this.emit(event, payload);
     }
     subscribe(event, callback) {
@@ -28,7 +28,7 @@ class EventBus extends events_1.EventEmitter {
                 await callback(payload);
             }
             catch (error) {
-                logger_1.logger.error(`[EVENT HANDLER FAILED] Event: ${event}`, error);
+                logger_1.logger.error({ error }, `[EVENT HANDLER FAILED] Event: ${event}`);
             }
         });
     }

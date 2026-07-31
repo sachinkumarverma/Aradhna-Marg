@@ -14,7 +14,6 @@ class SettingsService {
                 siteName: 'Aradhna Marg',
                 defaultLanguage: 'en',
                 defaultTheme: 'light',
-                enableSearch: true
             });
             return initial;
         }

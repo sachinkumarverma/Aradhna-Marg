@@ -1,85 +1,90 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseRepository = void 0;
-const supabase_1 = require("../database/supabase");
+const DatabaseClient_1 = require("../common/database/DatabaseClient");
 class BaseRepository {
     tableName;
-    db;
     constructor(tableName) {
         this.tableName = tableName;
-        this.db = supabase_1.supabase;
     }
     async findAll(options) {
-        let query = this.db.from(this.tableName).select(options?.select || '*');
+        const selectStr = options?.select || '*';
+        let query = `SELECT ${selectStr} FROM ${this.tableName} WHERE deleted_at IS NULL`;
         if (options?.order) {
-            query = query.order(options.order.column, { ascending: options.order.ascending ?? true });
+            const orderDir = options.order.ascending ?? true ? 'ASC' : 'DESC';
+            query += ` ORDER BY ${options.order.column} ${orderDir}`;
         }
-        const { data, error } = await query;
-        if (error)
-            throw error;
-        return data;
+        const { rows } = await DatabaseClient_1.db.query(query);
+        return rows;
     }
     async findById(id) {
-        const { data, error } = await this.db.from(this.tableName).select('*').eq('id', id).single();
-        if (error && error.code !== 'PGRST116')
-            throw error; // PGRST116 is not found
-        return data || null;
+        const { rows } = await DatabaseClient_1.db.query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL LIMIT 1`, [id]);
+        return rows[0] || null;
     }
     async findBySlug(slug) {
-        const { data, error } = await this.db.from(this.tableName).select('*').eq('slug', slug).single();
-        if (error && error.code !== 'PGRST116')
-            throw error;
-        return data || null;
+        const { rows } = await DatabaseClient_1.db.query(`SELECT * FROM ${this.tableName} WHERE slug = $1 AND deleted_at IS NULL LIMIT 1`, [slug]);
+        return rows[0] || null;
     }
     async create(data) {
-        const { data: created, error } = await this.db.from(this.tableName).insert(data).select().single();
-        if (error)
-            throw error;
-        return created;
+        const keys = Object.keys(data);
+        const values = Object.values(data);
+        const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+        const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, values);
+        return rows[0];
     }
     async update(id, data) {
-        const { data: updated, error } = await this.db.from(this.tableName).update(data).eq('id', id).select().single();
-        if (error)
-            throw error;
-        return updated;
+        const keys = Object.keys(data);
+        const values = Object.values(data);
+        const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
+        values.push(id); // ID is the last parameter
+        const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, values);
+        return rows[0];
     }
     async delete(id) {
-        const { error } = await this.db.from(this.tableName).delete().eq('id', id);
-        if (error)
-            throw error;
+        await DatabaseClient_1.db.query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
         return true;
     }
     async paginate(page, limit, filters) {
         const offset = (page - 1) * limit;
-        let query = this.db.from(this.tableName).select('*', { count: 'exact' });
+        let whereClauses = ['deleted_at IS NULL'];
+        const params = [];
         if (filters) {
             Object.entries(filters).forEach(([key, value]) => {
                 if (value !== undefined && value !== null) {
-                    query = query.eq(key, value);
+                    whereClauses.push(`${key} = $${params.length + 1}`);
+                    params.push(value);
                 }
             });
         }
-        const { data, error, count } = await query.range(offset, offset + limit - 1);
-        if (error)
-            throw error;
+        const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+        const dataQuery = `SELECT * FROM ${this.tableName} ${whereStr} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+        const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} ${whereStr}`;
+        const [dataResult, countResult] = await Promise.all([
+            DatabaseClient_1.db.query(dataQuery, [...params, limit, offset]),
+            DatabaseClient_1.db.query(countQuery, params)
+        ]);
         return {
-            data: data || [],
-            total: count || 0,
+            data: dataResult.rows || [],
+            total: parseInt(countResult.rows[0].total, 10) || 0,
             page,
             limit,
         };
     }
     async search(queryText, options) {
-        // Assuming FTS column is search_vector, this is a basic wrapper.
-        // For specific advanced searching, subclasses should override this.
-        const { data, error } = await this.db
-            .from(this.tableName)
-            .select(options?.select || '*')
-            .textSearch('search_vector', queryText, { config: 'english' })
-            .limit(options?.limit || 20);
-        if (error)
-            throw error;
-        return data;
+        const selectStr = options?.select || '*';
+        const limit = options?.limit || 20;
+        // Very basic fallback since full text search requires specific columns.
+        const query = `
+      SELECT ${selectStr} FROM ${this.tableName} 
+      WHERE deleted_at IS NULL AND (
+        title ILIKE $1 OR description ILIKE $1
+      )
+      LIMIT $2
+    `;
+        const { rows } = await DatabaseClient_1.db.query(query, [`%${queryText}%`, limit]);
+        return rows;
     }
 }
 exports.BaseRepository = BaseRepository;

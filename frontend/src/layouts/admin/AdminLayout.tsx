@@ -3,8 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Bell, Search, Loader2, LogOut } from 'lucide-react';
 import { AdminSidebar } from '../../components/admin/AdminSidebar';
 import { SessionManager } from '../../components/admin/SessionManager';
-import { supabase } from '../../api/supabase';
-import { apiClient } from '../../api/client';
+import { logout, verifySession } from '../../api/auth';
 
 export const AdminLayout: React.FC = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -14,44 +13,18 @@ export const AdminLayout: React.FC = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const valid = await verifySession();
+      if (!valid) {
         navigate('/admin/login', { state: { from: location }, replace: true });
         return;
       }
-      
-      try {
-        // Actively verify session with backend
-        await apiClient.get('/admin/dashboard/stats');
-        setIsLoading(false);
-      } catch (err: any) {
-        // If backend is unreachable or returns 401, force logout
-        if (!err.response || err.response.status === 401) {
-          await supabase.auth.signOut();
-          navigate('/admin/login', { replace: true });
-        } else {
-          setIsLoading(false);
-        }
-      }
+      setIsLoading(false);
     };
     checkAuth();
-    
-    // Listen for auth changes (like logout from another tab)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        navigate('/admin/login', { replace: true });
-      } else if (session) {
-        setIsLoading(false);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, [navigate, location]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await logout();
     navigate('/admin/login', { replace: true });
   };
 

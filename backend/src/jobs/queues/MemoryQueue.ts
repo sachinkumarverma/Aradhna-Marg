@@ -67,7 +67,7 @@ export class MemoryQueue implements IQueueService {
     } else {
       job.state = JobState.FAILED;
       this.deadLetterQueue.set(jobId, job);
-      logger.error(`[Queue] Job Moved to DLQ: ${jobId}`, error);
+      logger.error({ error }, `[Queue] Job Moved to DLQ: ${jobId}`);
     }
     
     this.jobs.set(jobId, job);

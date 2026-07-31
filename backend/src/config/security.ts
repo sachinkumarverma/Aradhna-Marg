@@ -6,8 +6,8 @@ export const securityMiddleware = helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com"], // Add analytics/tag managers here
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https://i.ytimg.com", "https://images.unsplash.com", "https://*.supabase.co"],
-      connectSrc: ["'self'", "https://*.supabase.co", "https://www.google-analytics.com"],
+      imgSrc: ["'self'", "data:", "https://i.ytimg.com", "https://images.unsplash.com"],
+      connectSrc: ["'self'", "https://www.google-analytics.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],

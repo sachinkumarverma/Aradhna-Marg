@@ -68,8 +68,8 @@ export class YoutubeService {
       const MAX_PAGES = 50; // Cap at ~2500 videos per sync to prevent timeouts
 
       do {
-        const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?key=${apiKey}&playlistId=${uploadsPlaylistId}&part=snippet&maxResults=50${pageToken ? `&pageToken=${pageToken}` : ''}`;
-        const res = await axios.get(playlistUrl);
+        const playlistUrl: string = `https://www.googleapis.com/youtube/v3/playlistItems?key=${apiKey}&playlistId=${uploadsPlaylistId}&part=snippet&maxResults=50${pageToken ? `&pageToken=${pageToken}` : ''}`;
+        const res: any = await axios.get(playlistUrl);
         
         const items = res.data.items || [];
         if (items.length === 0) break;

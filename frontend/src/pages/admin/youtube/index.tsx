@@ -26,7 +26,7 @@ export const AdminYoutube = () => {
   const [syncInterval, setSyncInterval] = useState('12h');
 
   // Fetch Settings
-  const { data: settings } = useQuery({
+  const { data: settings, refetch: refetchSettings } = useQuery({
     queryKey: ['settings'],
     queryFn: async () => {
       const res = await apiClient.get('/v1/settings');

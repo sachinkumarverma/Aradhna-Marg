@@ -10,10 +10,6 @@ dotenv_1.default.config();
 const envSchema = zod_1.z.object({
     PORT: zod_1.z.string().default('5000'),
     NODE_ENV: zod_1.z.enum(['development', 'production', 'test']).default('development'),
-    SUPABASE_URL: zod_1.z.string().url(),
-    SUPABASE_SERVICE_ROLE_KEY: zod_1.z.string().min(1),
-    SUPABASE_ANON_KEY: zod_1.z.string().min(1),
-    SUPABASE_STORAGE_BUCKET: zod_1.z.string().default('bhajan-assets'),
     DATABASE_URL: zod_1.z.string().url(),
     AI_PROVIDER: zod_1.z.enum(['groq', 'openai', 'gemini', 'anthropic']).default('groq'),
     GROQ_API_KEY: zod_1.z.string().optional(),

@@ -1,11 +1,8 @@
-import { supabase } from '../../database/supabase';
+import { db } from '../../common/database/DatabaseClient';
 import { ISearchOptions, ISearchResult } from '../interfaces';
-import { BaseRepository } from '../../repositories/base.repository';
 
-class SearchRepository extends BaseRepository<ISearchResult> {
-  constructor() {
-    super('bhajans');
-  }
+class SearchRepository {
+  private readonly tableName = 'bhajans';
 
   /**
    * Executes a PostgreSQL Full Text Search query utilizing the `search_vector` GIN index.
@@ -15,78 +12,68 @@ class SearchRepository extends BaseRepository<ISearchResult> {
     const { query, filters, sort, page = 1, limit = 20 } = options;
     const offset = (page - 1) * limit;
 
-    // We build the query dynamically.
-    // Use .textSearch('search_vector', query) for true FTS.
-    // If the user inputs misspellings, we might fallback to ILIKE in the service layer, 
-    // or use a Postgres pg_trgm extension if available in Supabase.
-    
-    // Convert basic query to tsquery format (e.g., 'krishna:*') for prefix matching.
-    // A more advanced implementation would use websearch_to_tsquery.
-    const ftsQuery = query.trim() ? query.trim().split(' ').map(q => `'${q}':*`).join(' & ') : '';
+    let whereClauses = [`status = 'PUBLISHED'`];
+    const queryParams: any[] = [];
 
-    let dbQuery = this.db.from(this.tableName)
-      .select('id, slug, title, hindi_title, thumbnail_url, views, has_pdf, youtube_video_id, reading_time', { count: 'exact' });
-
-    if (ftsQuery) {
-      dbQuery = dbQuery.textSearch('search_vector', ftsQuery);
+    if (query?.trim()) {
+      queryParams.push(`%${query.trim()}%`);
+      whereClauses.push(`(title ILIKE $${queryParams.length} OR hindi_title ILIKE $${queryParams.length} OR content ILIKE $${queryParams.length})`);
     }
 
-    // Apply Filters
-    if (filters?.categoryId) {
-      // In a real relation, we'd query through the junction table `bhajan_categories`.
-      // For this architecture demo, we assume the query builder handles it or uses RPC.
+    if (filters?.hasPdf) {
+      whereClauses.push(`has_pdf = true`);
     }
-    if (filters?.hasPdf) dbQuery = dbQuery.eq('has_pdf', true);
-    if (filters?.hasVideo) dbQuery = dbQuery.not('youtube_video_id', 'is', null);
+    if (filters?.hasVideo) {
+      whereClauses.push(`youtube_video_id IS NOT NULL`);
+    }
 
-    // Apply Sorting
+    const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    let orderStr = 'ORDER BY created_at DESC';
     switch (sort) {
-      case 'NEWEST':
-        dbQuery = dbQuery.order('published_at', { ascending: false });
-        break;
-      case 'OLDEST':
-        dbQuery = dbQuery.order('published_at', { ascending: true });
-        break;
-      case 'VIEWS':
-        dbQuery = dbQuery.order('views', { ascending: false });
-        break;
-      case 'POPULARITY':
-        dbQuery = dbQuery.order('popularity_score', { ascending: false });
-        break;
-      default:
-        // By default, if there is a query, Postgres ranks by relevance. 
-        break;
+      case 'NEWEST': orderStr = 'ORDER BY published_at DESC'; break;
+      case 'OLDEST': orderStr = 'ORDER BY published_at ASC'; break;
+      case 'VIEWS':  orderStr = 'ORDER BY views DESC'; break;
+      case 'POPULARITY': orderStr = 'ORDER BY popularity_score DESC'; break;
     }
 
-    const { data, count, error } = await dbQuery.range(offset, offset + limit - 1);
-    
-    if (error) throw error;
+    const dataQuery = `
+      SELECT id, slug, title, hindi_title, thumbnail_url, views, has_pdf, youtube_video_id, reading_time
+      FROM ${this.tableName}
+      ${whereStr}
+      ${orderStr}
+      LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
+    `;
+    const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} ${whereStr}`;
+
+    const [dataResult, countResult] = await Promise.all([
+      db.query(dataQuery, [...queryParams, limit, offset]),
+      db.query(countQuery, queryParams)
+    ]);
 
     return {
-      data: (data as any).map((b: any) => ({
-        ...b,
-        has_video: !!b.youtube_video_id
-      })),
-      total: count || 0
+      data: dataResult.rows.map((b: any) => ({ ...b, has_video: !!b.youtube_video_id })),
+      total: parseInt(countResult.rows[0].total, 10) || 0
     };
   }
 
   public async logSearch(query: string, resultCount: number, metadata?: any): Promise<void> {
-    await this.db.from('search_logs').insert({
-      search_query: query,
-      results_count: resultCount,
-      metadata: metadata || {}
-    });
+    await db.query(
+      `INSERT INTO search_logs (search_query, results_count, metadata) VALUES ($1, $2, $3)`,
+      [query, resultCount, JSON.stringify(metadata || {})]
+    );
   }
 
   public async getTrendingSearches(): Promise<string[]> {
-    // Queries the materialized view or a raw SQL RPC to get top grouped queries
-    const { data, error } = await this.db.rpc('get_trending_searches', { limit_num: 10 });
-    if (error) {
-      // Fallback for architecture demo if RPC is not created yet
+    try {
+      const { rows } = await db.query(
+        `SELECT search_query FROM search_logs GROUP BY search_query ORDER BY COUNT(*) DESC LIMIT 10`
+      );
+      return rows.map((row: any) => row.search_query);
+    } catch {
+      // Fallback for architecture demo if table doesn't exist yet
       return ['Hanuman Chalisa', 'Shiv Tandav', 'Morning Bhajans'];
     }
-    return data.map((row: any) => row.search_query);
   }
 }
 

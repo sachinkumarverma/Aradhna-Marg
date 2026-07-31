@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.settingsRepository = exports.SettingsRepository = void 0;
-const supabase_1 = require("../database/supabase");
+const DatabaseClient_1 = require("../common/database/DatabaseClient");
 class SettingsRepository {
     tableName = 'settings';
     mapToModel(row) {
@@ -152,41 +152,30 @@ class SettingsRepository {
         return dbData;
     }
     async getSettings() {
-        const { data, error } = await supabase_1.supabase
-            .from(this.tableName)
-            .select('*')
-            .limit(1)
-            .single();
-        if (error && error.code !== 'PGRST116') {
-            throw error;
-        }
-        if (!data)
+        const { rows } = await DatabaseClient_1.db.query(`SELECT * FROM ${this.tableName} LIMIT 1`);
+        if (rows.length === 0)
             return null;
-        return this.mapToModel(data);
+        return this.mapToModel(rows[0]);
     }
     async updateSettings(id, updates) {
         const dbData = this.mapToDb(updates);
-        const { data, error } = await supabase_1.supabase
-            .from(this.tableName)
-            .update(dbData)
-            .eq('id', id)
-            .select()
-            .single();
-        if (error)
-            throw error;
-        return this.mapToModel(data);
+        const keys = Object.keys(dbData);
+        const values = Object.values(dbData);
+        const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
+        values.push(id);
+        const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, values);
+        return this.mapToModel(rows[0]);
     }
     async createInitialSettings(updates) {
         const dbData = this.mapToDb(updates);
         dbData.is_singleton = true;
-        const { data, error } = await supabase_1.supabase
-            .from(this.tableName)
-            .insert([dbData])
-            .select()
-            .single();
-        if (error)
-            throw error;
-        return this.mapToModel(data);
+        const keys = Object.keys(dbData);
+        const values = Object.values(dbData);
+        const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+        const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
+        const { rows } = await DatabaseClient_1.db.query(query, values);
+        return this.mapToModel(rows[0]);
     }
 }
 exports.SettingsRepository = SettingsRepository;

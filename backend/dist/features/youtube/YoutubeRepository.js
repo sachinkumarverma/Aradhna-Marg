@@ -110,7 +110,7 @@ class YoutubeVideoRepository {
         }
         catch (error) {
             if (error.code === '42P01' || error.message?.includes('does not exist')) {
-                throw new Error('Database table "youtube_videos" is missing. Please run the SQL migration in your Supabase Dashboard to create it.');
+                throw new Error('Database table "youtube_videos" is missing. Please run the SQL migration in your PostgreSQL database to create it.');
             }
             throw error;
         }

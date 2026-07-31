@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, ChevronDown, Eye, Send, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { apiClient } from '../../../api/client';
-import { supabase } from '../../../api/supabase';
+import { uploadFile } from '../../../api/upload';
 import toast from 'react-hot-toast';
 import { Select } from '../../../components/ui/Select';
 import { MultiSelect } from '../../../components/ui/MultiSelect';
@@ -124,21 +124,9 @@ export const AdminArticleForm = () => {
     if (coverFile) {
       setIsUploading(true);
       try {
-        const fileExt = coverFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const { error: uploadError } = await supabase.storage
-          .from('images')
-          .upload(`articles/${fileName}`, coverFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('images')
-          .getPublicUrl(`articles/${fileName}`);
-          
-        data.image_url = publicUrl;
+        data.image_url = await uploadFile(coverFile);
       } catch (err: any) {
-        toast.error('Failed to upload image: ' + err.message);
+        toast.error('Failed to upload image: ' + (err.response?.data?.message || err.message));
         setIsUploading(false);
         return;
       }

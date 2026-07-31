@@ -19,7 +19,7 @@ class EventBus extends EventEmitter {
   }
 
   public publish(event: string, payload: any) {
-    logger.debug(`[EVENT PUBLISHED] ${event}`, payload.videoId ? { videoId: payload.videoId } : {});
+    logger.debug({ event, videoId: payload?.videoId }, `[EVENT PUBLISHED] ${event}`);
     this.emit(event, payload);
   }
 
@@ -28,7 +28,7 @@ class EventBus extends EventEmitter {
       try {
         await callback(payload);
       } catch (error) {
-        logger.error(`[EVENT HANDLER FAILED] Event: ${event}`, error);
+        logger.error({ error }, `[EVENT HANDLER FAILED] Event: ${event}`);
       }
     });
   }

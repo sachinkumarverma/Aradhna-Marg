@@ -37,7 +37,7 @@ class BaseWorker {
             await this.processWithRetry(job);
         }
         catch (error) {
-            logger_1.logger.error(`[Worker] Uncaught Queue Exception`, error);
+            logger_1.logger.error({ error }, `[Worker] Uncaught Queue Exception`);
         }
     }
     // Wrapper for processing with Error boundaries

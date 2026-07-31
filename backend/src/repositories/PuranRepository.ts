@@ -1,4 +1,5 @@
 import { BaseRepository } from './base.repository';
+import { db } from '../common/database/DatabaseClient';
 
 export class PuranRepository extends BaseRepository<any> {
   constructor() {
@@ -16,86 +17,82 @@ export class PuranRepository extends BaseRepository<any> {
     const { page, limit, search, status, language, sort } = params;
     const offset = (page - 1) * limit;
 
-    let query = this.db.from(this.tableName).select('*', { count: 'exact' }).is('deleted_at', null);
+    let whereClauses = ['deleted_at IS NULL'];
+    const queryParams: any[] = [];
 
-    if (status) query = query.eq('status', status);
-    if (language) query = query.eq('language', language);
+    if (status) {
+      queryParams.push(status);
+      whereClauses.push(`status = $${queryParams.length}`);
+    }
+    if (language) {
+      queryParams.push(language);
+      whereClauses.push(`language = $${queryParams.length}`);
+    }
     
     if (search) {
-      query = query.or(`title.ilike.%${search}%,short_description.ilike.%${search}%`);
+      queryParams.push(`%${search}%`);
+      whereClauses.push(`(title ILIKE $${queryParams.length} OR short_description ILIKE $${queryParams.length})`);
     }
 
-    if (sort === 'newest') query = query.order('created_at', { ascending: false });
-    else if (sort === 'oldest') query = query.order('created_at', { ascending: true });
-    else if (sort === 'downloads') query = query.order('download_count', { ascending: false });
-    else if (sort === 'views') query = query.order('view_count', { ascending: false });
-    else if (sort === 'alphabetical') query = query.order('title', { ascending: true });
-    else query = query.order('created_at', { ascending: false });
+    const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+    
+    let orderStr = 'ORDER BY created_at DESC';
+    if (sort === 'oldest') orderStr = 'ORDER BY created_at ASC';
+    else if (sort === 'downloads') orderStr = 'ORDER BY download_count DESC';
+    else if (sort === 'views') orderStr = 'ORDER BY view_count DESC';
+    else if (sort === 'alphabetical') orderStr = 'ORDER BY title ASC';
 
-    const { data, count, error } = await query.range(offset, offset + limit - 1);
-    if (error) throw error;
+    const dataQuery = `SELECT * FROM ${this.tableName} ${whereStr} ${orderStr} LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+    const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} ${whereStr}`;
 
-    return { data, count };
+    const [dataResult, countResult] = await Promise.all([
+      db.query(dataQuery, [...queryParams, limit, offset]),
+      db.query(countQuery, queryParams)
+    ]);
+
+    return { data: dataResult.rows, count: parseInt(countResult.rows[0].total, 10) || 0 };
   }
 
   public async getById(id: string) {
-    const { data, error } = await this.db.from(this.tableName)
-      .select('*')
-      .eq('id', id)
-      .is('deleted_at', null)
-      .single();
-
-    if (error) throw error;
-    return data;
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL LIMIT 1`, [id]);
+    return rows[0] || null;
   }
 
   public async bulkAction(ids: string[], action: string) {
+    if (ids.length === 0) return;
+    
+    const placeholders = ids.map((_, i) => `$${i + 1}`).join(',');
+    
     if (action === 'DELETE') {
-      const { error } = await this.db.from(this.tableName)
-        .update({ deleted_at: new Date().toISOString() })
-        .in('id', ids);
-      if (error) throw error;
+      await db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id IN (${placeholders})`, ids);
     } else {
       let status = 'DRAFT';
       if (action === 'PUBLISH') status = 'PUBLISHED';
       if (action === 'ARCHIVE') status = 'ARCHIVED';
-      const { error } = await this.db.from(this.tableName).update({ status }).in('id', ids);
-      if (error) throw error;
+      await db.query(`UPDATE ${this.tableName} SET status = $1 WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`, [status, ...ids]);
     }
   }
 
   public async getBySlug(slug: string) {
-    const { data, error } = await this.db.from(this.tableName)
-      .select('*')
-      .eq('slug', slug)
-      .eq('status', 'PUBLISHED')
-      .is('deleted_at', null)
-      .single();
-
-    if (error) throw error;
-    return data;
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE slug = $1 AND status = 'PUBLISHED' AND deleted_at IS NULL LIMIT 1`, [slug]);
+    return rows[0] || null;
   }
 
   public async getRelated(id: string, language: string, limit = 4) {
-    const { data, error } = await this.db.from(this.tableName)
-      .select('id, title, slug, language, cover_image, short_description')
-      .eq('status', 'PUBLISHED')
-      .is('deleted_at', null)
-      .neq('id', id)
-      .eq('language', language)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (error) throw error;
-    return data;
+    const { rows } = await db.query(
+      `SELECT id, title, slug, language, cover_image, short_description 
+       FROM ${this.tableName} 
+       WHERE status = 'PUBLISHED' AND deleted_at IS NULL AND id != $1 AND language = $2 
+       ORDER BY created_at DESC 
+       LIMIT $3`,
+      [id, language, limit]
+    );
+    return rows;
   }
 
   public async incrementStats(id: string, field: 'view_count' | 'download_count') {
-    // using raw rpc or fetch existing and update (supabase limitation for simple increment without RPC)
-    const { data: existing } = await this.db.from(this.tableName).select(field).eq('id', id).single();
-    if (existing) {
-      await this.db.from(this.tableName).update({ [field]: (existing[field] || 0) + 1 }).eq('id', id);
-    }
+    const fieldName = field === 'view_count' ? 'view_count' : 'download_count';
+    await db.query(`UPDATE ${this.tableName} SET ${fieldName} = COALESCE(${fieldName}, 0) + 1 WHERE id = $1`, [id]);
   }
 }
 

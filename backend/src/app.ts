@@ -1,5 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import path from 'path';
 import { securityMiddleware } from './config/security';
 import compression from 'compression';
 import morgan from 'morgan';
@@ -47,6 +48,9 @@ app.use(
 
 // Public SEO Files (robots.txt, sitemap.xml)
 app.use('/', seoRoutes);
+
+// Serve locally uploaded media files
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
 // API Routes Entry Point
 app.use('/api', routes);

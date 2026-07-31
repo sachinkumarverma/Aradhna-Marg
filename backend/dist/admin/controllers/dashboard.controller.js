@@ -2,25 +2,29 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dashboardController = void 0;
 const apiResponse_1 = require("../../responses/apiResponse");
-const supabase_1 = require("../../database/supabase");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
 class DashboardController {
     getStats = async (req, res, next) => {
         try {
             // In production, these would be cached or calculated via materialized views
-            const [{ count: totalBhajans }, { count: publishedBhajans }, { count: pendingAi }, { count: totalCategories }] = await Promise.all([
-                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }).is('youtube_video_id', null),
-                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('status', 'PUBLISHED').is('youtube_video_id', null),
-                supabase_1.supabase.from('bhajans').select('*', { count: 'exact', head: true }).eq('metadata_status', 'PENDING').is('youtube_video_id', null),
-                supabase_1.supabase.from('categories').select('*', { count: 'exact', head: true })
+            const [{ rows: [{ total: totalBhajans }] }, { rows: [{ total: publishedBhajans }] }, { rows: [{ total: pendingAi }] }, { rows: [{ total: totalCategories }] }] = await Promise.all([
+                DatabaseClient_1.db.query(`SELECT COUNT(*) as total FROM bhajans WHERE youtube_video_id IS NULL AND deleted_at IS NULL`),
+                DatabaseClient_1.db.query(`SELECT COUNT(*) as total FROM bhajans WHERE status = 'PUBLISHED' AND youtube_video_id IS NULL AND deleted_at IS NULL`),
+                DatabaseClient_1.db.query(`SELECT COUNT(*) as total FROM bhajans WHERE metadata_status = 'PENDING' AND youtube_video_id IS NULL AND deleted_at IS NULL`),
+                DatabaseClient_1.db.query(`SELECT COUNT(*) as total FROM categories WHERE deleted_at IS NULL`)
             ]);
+            const tb = parseInt(totalBhajans, 10) || 0;
+            const pb = parseInt(publishedBhajans, 10) || 0;
+            const pa = parseInt(pendingAi, 10) || 0;
+            const tc = parseInt(totalCategories, 10) || 0;
             const stats = {
-                totalBhajans: totalBhajans || 0,
-                published: publishedBhajans || 0,
-                draft: (totalBhajans || 0) - (publishedBhajans || 0),
-                pendingAi: pendingAi || 0,
+                totalBhajans: tb,
+                published: pb,
+                draft: tb - pb,
+                pendingAi: pa,
                 failedAi: 0, // Mocked
                 pendingPdfs: 0, // Mocked
-                totalCategories: totalCategories || 0,
+                totalCategories: tc,
                 totalFestivals: 45, // Mocked
                 totalGods: 32, // Mocked
                 todayViews: 1250, // Mocked
@@ -34,13 +38,14 @@ class DashboardController {
     };
     getRecentActivity = async (req, res, next) => {
         try {
-            const { data } = await supabase_1.supabase
-                .from('bhajans')
-                .select('id, title, status, created_at, metadata_status')
-                .is('youtube_video_id', null)
-                .order('created_at', { ascending: false })
-                .limit(10);
-            return (0, apiResponse_1.sendSuccess)(res, 'Recent activity fetched', { activity: data });
+            const { rows } = await DatabaseClient_1.db.query(`
+        SELECT id, title, status, created_at, metadata_status
+        FROM bhajans
+        WHERE youtube_video_id IS NULL AND deleted_at IS NULL
+        ORDER BY created_at DESC
+        LIMIT 10
+      `);
+            return (0, apiResponse_1.sendSuccess)(res, 'Recent activity fetched', { activity: rows });
         }
         catch (error) {
             next(error);

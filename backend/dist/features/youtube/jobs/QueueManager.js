@@ -34,7 +34,7 @@ class QueueManager {
         this.queues.get(queueName).push(job);
         logger_1.logger.debug(`[ENQUEUED] Job ${job.id} to ${queueName}`);
         // Trigger processing asynchronously if not already running
-        this.processQueue(queueName).catch(err => logger_1.logger.error(`Queue error ${queueName}:`, err));
+        this.processQueue(queueName).catch(err => logger_1.logger.error({ err }, `Queue error ${queueName}`));
     }
     async processQueue(queueName) {
         if (this.isProcessing.get(queueName))
@@ -61,7 +61,7 @@ class QueueManager {
                 queue.splice(jobIndex, 1);
             }
             catch (error) {
-                logger_1.logger.error(`[JOB FAILED] ${job.id} in ${queueName} (Attempt ${job.attempts})`, error);
+                logger_1.logger.error({ error }, `[JOB FAILED] ${job.id} in ${queueName} (Attempt ${job.attempts})`);
                 if (job.attempts < (job.options.retryLimit || 0)) {
                     job.status = 'PENDING';
                     // Wait before retry

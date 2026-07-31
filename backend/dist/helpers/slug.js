@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateUniqueSlug = exports.generateBaseSlug = void 0;
-const supabase_1 = require("../database/supabase");
+const DatabaseClient_1 = require("../common/database/DatabaseClient");
 /**
  * Generates a URL-friendly slug from a string.
  */
@@ -24,12 +24,14 @@ const generateUniqueSlug = async (baseText, tableName, excludeId) => {
     let counter = 2;
     let isUnique = false;
     while (!isUnique) {
-        let query = supabase_1.supabase.from(tableName).select('id').eq('slug', finalSlug);
+        let query = `SELECT id FROM ${tableName} WHERE slug = $1 LIMIT 1`;
+        const params = [finalSlug];
         if (excludeId) {
-            query = query.neq('id', excludeId);
+            query = `SELECT id FROM ${tableName} WHERE slug = $1 AND id != $2 LIMIT 1`;
+            params.push(excludeId);
         }
-        const { data, error } = await query.single();
-        if (error && error.code === 'PGRST116') {
+        const { rows } = await DatabaseClient_1.db.query(query, params);
+        if (rows.length === 0) {
             // Not found, means it's unique
             isUnique = true;
         }

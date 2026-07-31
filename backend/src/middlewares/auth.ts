@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { UnauthorizedError } from '../errors/appError';
-import { supabase } from '../database/supabase';
 import { logger } from '../utils/logger';
+import jwt from 'jsonwebtoken';
+import { config } from '../config';
 
 export const requireAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -12,21 +13,22 @@ export const requireAdmin = async (req: Request, res: Response, next: NextFuncti
 
     const token = authHeader.split(' ')[1];
 
-    // Verify token with Supabase Auth
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-
-    if (error || !user) {
+    // Verify token using our own JWT_SECRET
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, config.JWT_SECRET);
+    } catch (jwtError) {
       throw new UnauthorizedError('Invalid or expired token');
     }
 
-    // In a single-admin system, you can verify the email or a role claim
-    // For this architecture, we assume any valid user in this Supabase project is the admin
-    // as registrations are disabled globally.
+    if (!decoded) {
+      throw new UnauthorizedError('Invalid or expired token');
+    }
 
-    req.user = user;
+    req.user = decoded;
     next();
   } catch (error) {
-    logger.warn('Admin access denied', error);
+    logger.warn({ error }, 'Admin access denied');
     next(error);
   }
 };

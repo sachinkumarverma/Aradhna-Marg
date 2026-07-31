@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { BhajanCard } from '../../components/cards/BhajanCard';
 import { DeitiesCarousel } from '../../components/common/DeitiesCarousel';
 import { staggerContainer, fadeUpVariant } from '../../animations/variants';
-import { supabase } from '../../api/supabase';
+import { apiClient } from '../../api/client';
 import { Link } from 'react-router-dom';
 
 export const Home: React.FC = () => {
@@ -13,14 +13,14 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const { data, error } = await supabase
-        .from('youtube_videos')
-        .select('*')
-        .order('published_at', { ascending: false })
-        .limit(8);
-      
-      if (!error && data) {
-        setBhajans(data);
+      try {
+        const res = await apiClient.get('/admin/youtube', { params: { limit: 8, page: 1 } });
+        const data = res.data.data;
+        if (data) {
+          setBhajans(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch videos:', error);
       }
     };
     fetchVideos();

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sitemapGenerator = exports.SitemapGenerator = void 0;
-const supabase_1 = require("../../database/supabase");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
 const logger_1 = require("../../utils/logger");
 class SitemapGenerator {
     baseUrl = 'https://aradhnamarg.com';
@@ -31,21 +31,20 @@ class SitemapGenerator {
      * If > 50,000 URLs, this should implement chunking (`bhajans-1.xml`, etc).
      */
     async generateBhajansSitemap() {
-        const { data: bhajans, error } = await supabase_1.supabase
-            .from('bhajans')
-            .select('slug, updated_at')
-            .eq('status', 'PUBLISHED');
-        if (error) {
-            logger_1.logger.error('Failed to generate bhajans sitemap', error);
+        try {
+            const { rows: bhajans } = await DatabaseClient_1.db.query(`SELECT slug, updated_at FROM bhajans WHERE status = 'PUBLISHED'`);
+            let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+            for (const bhajan of bhajans) {
+                const date = (bhajan.updated_at ? new Date(bhajan.updated_at) : new Date()).toISOString().split('T')[0];
+                xml += `  <url>\n    <loc>${this.baseUrl}/bhajans/${bhajan.slug}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+            }
+            xml += `</urlset>`;
+            return xml;
+        }
+        catch (error) {
+            logger_1.logger.error({ error }, 'Failed to generate bhajans sitemap');
             throw error;
         }
-        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-        for (const bhajan of bhajans) {
-            const date = (bhajan.updated_at ? new Date(bhajan.updated_at) : new Date()).toISOString().split('T')[0];
-            xml += `  <url>\n    <loc>${this.baseUrl}/bhajans/${bhajan.slug}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
-        }
-        xml += `</urlset>`;
-        return xml;
     }
 }
 exports.SitemapGenerator = SitemapGenerator;

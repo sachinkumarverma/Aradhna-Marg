@@ -10,11 +10,17 @@ import { adminAuthorController } from '../controllers/author.controller';
 import { deityRoutes } from '../../features/deities';
 import { adminAiController } from '../controllers/ai.controller';
 import { requireAdmin } from '../../middlewares/auth';
+import { authController } from '../controllers/auth.controller';
 
 const router = Router();
 
-// ALL admin routes are protected by JWT
+// Public auth routes — no JWT required
+router.post('/auth/login', authController.login);
+router.post('/auth/logout', authController.logout);
+
+// ALL routes below this line are protected by JWT
 router.use(requireAdmin);
+router.get('/auth/me', authController.me);
 
 // Dashboard
 router.get('/dashboard/stats', dashboardController.getStats);

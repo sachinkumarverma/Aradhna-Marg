@@ -38,7 +38,7 @@ class YoutubeClient {
                     maxResults: 50,
                     pageToken: nextPageToken,
                 });
-                const videoIds = playlistRes.data.items?.map(item => item.contentDetails?.videoId).filter(Boolean);
+                const videoIds = playlistRes.data.items?.map((item) => item.contentDetails?.videoId).filter(Boolean);
                 if (videoIds.length > 0) {
                     // Fetch full video details including statistics and contentDetails
                     const videoRes = await this.youtube.videos.list({
@@ -60,7 +60,7 @@ class YoutubeClient {
             return allVideos;
         }
         catch (error) {
-            logger_1.logger.error('YouTube API Error:', error.message);
+            logger_1.logger.error({ err: error }, 'YouTube API Error');
             if (error.code === 403) {
                 throw new appError_1.InternalServerError('YouTube API quota exceeded or forbidden.');
             }

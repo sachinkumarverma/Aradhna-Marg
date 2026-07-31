@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, Upload, Eye, X, Send } from 'lucide-react';
 import { apiClient } from '../../../api/client';
-import { supabase } from '../../../api/supabase';
+import { uploadFile } from '../../../api/upload';
 import toast from 'react-hot-toast';
 import { Select } from '../../../components/ui/Select';
 import { MultiSelect } from '../../../components/ui/MultiSelect';
@@ -134,13 +134,9 @@ export const AdminFestivalForm = () => {
     if (bannerFile) {
       setIsUploading(true);
       try {
-        const fileExt = bannerFile.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const { error } = await supabase.storage.from('images').upload(`festivals/${fileName}`, bannerFile);
-        if (error) throw error;
-        data.bannerImage = supabase.storage.from('images').getPublicUrl(`festivals/${fileName}`).data.publicUrl;
+        data.bannerImage = await uploadFile(bannerFile);
       } catch (err: any) {
-        toast.error('Upload failed: ' + err.message);
+        toast.error('Upload failed: ' + (err.response?.data?.message || err.message));
         setIsUploading(false);
         return;
       }

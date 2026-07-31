@@ -8,6 +8,7 @@ import searchRoutes from '../search/routes/search.routes';
 import settingsRoutes from './settings.routes';
 import puranaRoutes from './puranas.routes';
 import { seoRoutes } from '../features/seo';
+import publicRoutes from './public.routes';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/v1/puranas', puranaRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/v1/settings', settingsRoutes);
 router.use('/v1/seo', seoRoutes);
+router.use('/v1/public', publicRoutes);
 
 export default router;

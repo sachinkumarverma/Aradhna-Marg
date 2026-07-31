@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const googleapis_1 = require("googleapis");
 const config_1 = require("./config");
-const supabase_1 = require("./database/supabase");
+const DatabaseClient_1 = require("./common/database/DatabaseClient");
 const YoutubeSyncService_1 = require("./features/youtube/YoutubeSyncService");
 const handle = 'TheBhaktiMarg_Official';
 async function run() {
@@ -25,12 +25,13 @@ async function run() {
         }
         console.log(`Found Channel ID: ${channelId}`);
         // Save to settings
-        await supabase_1.supabase.from('settings').upsert({
-            id: '00000000-0000-0000-0000-000000000001', // Example fixed ID for singleton
-            site_name: 'Aradhna Marg',
-            youtube_channel_id: channelId,
-            is_singleton: true
-        }, { onConflict: 'is_singleton' });
+        await DatabaseClient_1.db.query(`
+      INSERT INTO settings (id, site_name, youtube_channel_id, is_singleton)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (id) DO UPDATE SET
+        youtube_channel_id = EXCLUDED.youtube_channel_id,
+        site_name = EXCLUDED.site_name
+    `, ['00000000-0000-0000-0000-000000000001', 'Aradhna Marg', channelId, true]);
         console.log('Saved to settings table.');
         // Run sync service (we will limit it by passing a recent publishedAfter date to only get a few videos)
         const lastMonth = new Date();

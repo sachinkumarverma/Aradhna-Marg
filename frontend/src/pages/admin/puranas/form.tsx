@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, ChevronDown, Upload, Eye, Send, X, FileText, Image as ImageIcon } from 'lucide-react';
 import { apiClient } from '../../../api/client';
-import { supabase } from '../../../api/supabase';
+import { uploadFile } from '../../../api/upload';
 import toast from 'react-hot-toast';
 import { Select } from '../../../components/ui/Select';
 import { cn } from '../../../utils/cn';
@@ -107,21 +107,13 @@ export const AdminPuranForm = () => {
       setIsUploading(true);
       try {
         if (coverFile) {
-          const fileExt = coverFile.name.split('.').pop();
-          const fileName = `${Math.random()}.${fileExt}`;
-          const { error } = await supabase.storage.from('images').upload(`puranas/${fileName}`, coverFile);
-          if (error) throw error;
-          data.cover_image = supabase.storage.from('images').getPublicUrl(`puranas/${fileName}`).data.publicUrl;
+          data.cover_image = await uploadFile(coverFile);
         }
         if (pdfFile) {
-          const fileExt = pdfFile.name.split('.').pop();
-          const fileName = `${Math.random()}.${fileExt}`;
-          const { error } = await supabase.storage.from('pdfs').upload(`puranas/${fileName}`, pdfFile);
-          if (error) throw error;
-          data.pdf_file = supabase.storage.from('pdfs').getPublicUrl(`puranas/${fileName}`).data.publicUrl;
+          data.pdf_file = await uploadFile(pdfFile);
         }
       } catch (err: any) {
-        toast.error('Upload failed: ' + err.message);
+        toast.error('Upload failed: ' + (err.response?.data?.message || err.message));
         setIsUploading(false);
         return;
       }

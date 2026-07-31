@@ -9,7 +9,7 @@ import { YouTubePlayer } from './components/YouTubePlayer';
 
 import { useClipboard } from '../../../hooks/useClipboard';
 
-import { supabase } from '../../../api/supabase';
+import { apiClient } from '../../../api/client';
 
 export const BhajanDetail: React.FC = () => {
   const { slug } = useParams(); // URL slug parameter
@@ -20,38 +20,13 @@ export const BhajanDetail: React.FC = () => {
   React.useEffect(() => {
     const fetchBhajan = async () => {
       setLoading(true);
-      let { data, error } = await supabase
-        .from('bhajans')
-        .select('*')
-        .eq('slug', slug)
-        .single();
-
-      if (!data) {
-        const { data: ytData } = await supabase
-          .from('youtube_videos')
-          .select('*')
-          .eq('youtube_video_id', slug)
-          .single();
-          
-        if (ytData) {
-          data = {
-            id: ytData.id,
-            title: ytData.title,
-            description: ytData.description,
-            youtube_video_id: ytData.youtube_video_id,
-            god_id: ytData.channel_name,
-            views: ytData.view_count,
-            duration: null,
-            is_string_duration: true,
-            string_duration: ytData.duration || "00:00",
-            published_date: ytData.published_at,
-            lyrics: ytData.description
-          };
+      try {
+        const res = await apiClient.get(`/v1/public/videos/${slug}`);
+        if (res.data.data) {
+          setBhajan(res.data.data);
         }
-      }
-
-      if (data) {
-        setBhajan(data);
+      } catch (error) {
+        console.error('Failed to fetch bhajan/video detail:', error);
       }
       setLoading(false);
     };

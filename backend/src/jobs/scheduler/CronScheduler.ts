@@ -1,10 +1,10 @@
-import cron from 'node-cron';
+import cron, { ScheduledTask } from 'node-cron';
 import { IQueueService } from '../interfaces/IQueue';
 import { JobType, JobPriority } from '../types';
 import { logger } from '../../utils/logger';
 
 export class CronScheduler {
-  private tasks: cron.ScheduledTask[] = [];
+  private tasks: ScheduledTask[] = [];
 
   constructor(private queue: IQueueService) {}
 
@@ -38,7 +38,7 @@ export class CronScheduler {
       try {
         await this.queue.enqueue(jobType, payload, priority);
       } catch (error) {
-        logger.error(`[Scheduler] Failed to enqueue scheduled job: ${jobType}`, error);
+        logger.error({ error }, `[Scheduler] Failed to enqueue scheduled job: ${jobType}`);
       }
     });
 

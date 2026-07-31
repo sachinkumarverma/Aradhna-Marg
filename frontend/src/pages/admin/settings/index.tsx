@@ -6,7 +6,7 @@ import { apiClient } from '../../../api/client';
 import { format } from 'date-fns';
 import { Select } from '../../../components/ui/Select';
 import { Settings, Save, AlertCircle, RefreshCw, UploadCloud, X } from 'lucide-react';
-import { supabase } from '../../../api/supabase';
+import { uploadFile } from '../../../api/upload';
 
 const TABS = ['General', 'Contact', 'Social Media', 'YouTube Automation', 'SEO', 'Analytics', 'Advertisement', 'System'];
 
@@ -73,27 +73,23 @@ const GeneralSection = ({ defaults }: { defaults: any }) => {
     let payload = { ...data };
     if (logoFile) {
       setUploadingLogo(true);
-      const ext = logoFile.name.split('.').pop();
-      const name = `siteLogo-${Date.now()}.${ext}`;
-      const { error, data: up } = await supabase.storage.from('public').upload(`settings/${name}`, logoFile);
-      setUploadingLogo(false);
-      if (!error && up) {
-        const { data: { publicUrl } } = supabase.storage.from('public').getPublicUrl(`settings/${name}`);
-        payload.siteLogo = publicUrl;
+      try {
+        payload.siteLogo = await uploadFile(logoFile);
         setLogoFile(null);
+      } catch {
+        // continue without logo upload
       }
+      setUploadingLogo(false);
     }
     if (faviconFile) {
       setUploadingFavicon(true);
-      const ext = faviconFile.name.split('.').pop();
-      const name = `favicon-${Date.now()}.${ext}`;
-      const { error, data: up } = await supabase.storage.from('public').upload(`settings/${name}`, faviconFile);
-      setUploadingFavicon(false);
-      if (!error && up) {
-        const { data: { publicUrl } } = supabase.storage.from('public').getPublicUrl(`settings/${name}`);
-        payload.favicon = publicUrl;
+      try {
+        payload.favicon = await uploadFile(faviconFile);
         setFaviconFile(null);
+      } catch {
+        // continue without favicon upload
       }
+      setUploadingFavicon(false);
     }
     mutation.mutate(payload);
   };

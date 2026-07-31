@@ -1,4 +1,4 @@
-import { supabase } from '../database/supabase';
+import { db } from '../common/database/DatabaseClient';
 import { Settings, UpdateSettingsDTO } from '../models/Settings';
 
 export class SettingsRepository {
@@ -110,49 +110,36 @@ export class SettingsRepository {
   }
 
   async getSettings(): Promise<Settings | null> {
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select('*')
-      .limit(1)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      throw error;
-    }
-
-    if (!data) return null;
-
-    return this.mapToModel(data);
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} LIMIT 1`);
+    if (rows.length === 0) return null;
+    return this.mapToModel(rows[0]);
   }
 
   async updateSettings(id: string, updates: UpdateSettingsDTO): Promise<Settings> {
     const dbData = this.mapToDb(updates);
+    const keys = Object.keys(dbData);
+    const values = Object.values(dbData);
+    const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
+    values.push(id);
     
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .update(dbData)
-      .eq('id', id)
-      .select()
-      .single();
+    const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING *`;
+    const { rows } = await db.query(query, values);
 
-    if (error) throw error;
-
-    return this.mapToModel(data);
+    return this.mapToModel(rows[0]);
   }
 
   async createInitialSettings(updates: UpdateSettingsDTO): Promise<Settings> {
     const dbData = this.mapToDb(updates);
     dbData.is_singleton = true;
 
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .insert([dbData])
-      .select()
-      .single();
+    const keys = Object.keys(dbData);
+    const values = Object.values(dbData);
+    const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+    
+    const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
+    const { rows } = await db.query(query, values);
 
-    if (error) throw error;
-
-    return this.mapToModel(data);
+    return this.mapToModel(rows[0]);
   }
 }
 

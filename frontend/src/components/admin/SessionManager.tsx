@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../api/supabase';
+import { logout } from '../../api/auth';
 import toast from 'react-hot-toast';
 
 // Configurable session timings
@@ -12,7 +12,7 @@ export const SessionManager: React.FC = () => {
   const [showWarning, setShowWarning] = useState(false);
   
   const handleLogout = useCallback(async (message: string) => {
-    await supabase.auth.signOut();
+    await logout();
     toast.error(message, { duration: 5000, id: 'session-toast' });
     navigate('/admin/login', { replace: true });
   }, [navigate]);
@@ -28,8 +28,8 @@ export const SessionManager: React.FC = () => {
 
   // Handle inactivity tracking
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    let warningId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let warningId: ReturnType<typeof setTimeout>;
 
     const resetTimer = () => {
       if (showWarning) return; // Prevent resetting if warning is already visible

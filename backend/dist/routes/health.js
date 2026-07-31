@@ -2,16 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const apiResponse_1 = require("../responses/apiResponse");
-const supabase_1 = require("../database/supabase");
 const appError_1 = require("../errors/appError");
 const logger_1 = require("../utils/logger");
+const DatabaseClient_1 = require("../common/database/DatabaseClient");
 const router = (0, express_1.Router)();
 router.get('/', async (req, res, next) => {
     try {
-        // Check Database connection by fetching server version or a simple ping
-        const { error: dbError } = await supabase_1.supabase.from('settings').select('id').limit(1);
-        if (dbError) {
-            logger_1.logger.error('Database health check failed:', dbError);
+        let dbError = false;
+        try {
+            await DatabaseClient_1.db.query(`SELECT 1`);
+        }
+        catch (e) {
+            dbError = true;
+            logger_1.logger.error({ err: e }, 'Database health check failed');
             throw new appError_1.InternalServerError('Database connection failed');
         }
         const healthData = {

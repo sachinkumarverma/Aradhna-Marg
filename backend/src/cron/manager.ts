@@ -1,4 +1,4 @@
-import cron from 'node-cron';
+import cron, { ScheduledTask } from 'node-cron';
 import { logger } from '../utils/logger';
 
 export interface ICronJob {
@@ -12,7 +12,7 @@ export interface ICronJob {
 
 class CronManager {
   private jobs: Map<string, ICronJob> = new Map();
-  private tasks: Map<string, cron.ScheduledTask> = new Map();
+  private tasks: Map<string, ScheduledTask> = new Map();
 
   public register(job: ICronJob) {
     if (this.jobs.has(job.name)) {
@@ -33,12 +33,12 @@ class CronManager {
       try {
         await currentJob.run();
         currentJob.status = 'IDLE';
-        logger.success(`Successfully completed cron job: ${job.name}`);
+        logger.info(`Successfully completed cron job: ${job.name}`);
       } catch (error) {
         currentJob.status = 'FAILED';
-        logger.error(`Cron job ${job.name} failed:`, error);
+        logger.error({ error }, `Cron job ${job.name} failed`);
       }
-    }, { scheduled: false }); // start later manually or by default
+    }, { name: job.name }); // node-cron v3 uses 'name' not 'scheduled'
 
     this.tasks.set(job.name, task);
     logger.info(`Registered cron job: ${job.name} with schedule: ${job.schedule}`);

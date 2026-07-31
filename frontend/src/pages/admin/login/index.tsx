@@ -1,31 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '../../../api/supabase';
-import { apiClient } from '../../../api/client';
+import { useNavigate } from 'react-router-dom';
+import { login, isAuthenticated } from '../../../api/auth';
 import { Button } from '../../../components/ui/Button';
 import { Loader2, Lock } from 'lucide-react';
 
 export const AdminLogin: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [error, setError] = useState('');
   
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
-    // Check if already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        // If already logged in, strictly redirect to the admin dashboard
-        navigate('/admin', { replace: true });
-      } else {
-        setCheckingAuth(false);
-      }
-    });
-  }, [navigate, location]);
+    // If already logged in, redirect to dashboard
+    if (isAuthenticated()) {
+      navigate('/admin', { replace: true });
+    } else {
+      setCheckingAuth(false);
+    }
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,27 +28,10 @@ export const AdminLogin: React.FC = () => {
     setError('');
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      if (data.session) {
-        // Verify backend is reachable before considering login successful
-        try {
-          await apiClient.get('/admin/dashboard/stats');
-          // Strictly navigate to dashboard to prevent landing on 404s from typos
-          navigate('/admin', { replace: true });
-        } catch (backendErr: any) {
-          // If the backend is down, log out from supabase so we don't leave a ghost session
-          await supabase.auth.signOut();
-          throw new Error('Server is unreachable. Please ensure the backend is running.');
-        }
-      }
+      await login(username, password);
+      navigate('/admin', { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      setError(err.response?.data?.message || err.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }
@@ -84,14 +62,14 @@ export const AdminLogin: React.FC = () => {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Username</label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
-                placeholder="admin@aradhnamarg.com"
+                placeholder="admin"
               />
             </div>
             

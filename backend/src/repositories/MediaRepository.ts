@@ -1,4 +1,4 @@
-import { supabase } from '../database/supabase';
+import { db } from '../common/database/DatabaseClient';
 import { MediaFolder, MediaFile, CreateMediaFolderDTO, CreateMediaFileDTO, UpdateMediaFileDTO } from '../models/Media';
 
 export class MediaRepository {
@@ -34,115 +34,111 @@ export class MediaRepository {
 
   // Folders
   async createFolder(dto: CreateMediaFolderDTO): Promise<MediaFolder> {
-    const { data, error } = await supabase
-      .from(this.foldersTable)
-      .insert([{
-        name: dto.name,
-        parent_id: dto.parentId || null,
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return this.mapFolderToModel(data);
+    const query = `INSERT INTO ${this.foldersTable} (name, parent_id) VALUES ($1, $2) RETURNING *`;
+    const { rows } = await db.query(query, [dto.name, dto.parentId || null]);
+    return this.mapFolderToModel(rows[0]);
   }
 
   async getFolders(parentId?: string | null): Promise<MediaFolder[]> {
-    let query = supabase.from(this.foldersTable).select('*');
+    let query = `SELECT * FROM ${this.foldersTable}`;
+    const params: any[] = [];
+    
     if (parentId) {
-      query = query.eq('parent_id', parentId);
+      query += ` WHERE parent_id = $1`;
+      params.push(parentId);
     } else {
-      query = query.is('parent_id', null);
+      query += ` WHERE parent_id IS NULL`;
     }
 
-    const { data, error } = await query.order('name');
-    if (error) throw error;
-    return data.map(this.mapFolderToModel);
+    query += ` ORDER BY name ASC`;
+    const { rows } = await db.query(query, params);
+    return rows.map(r => this.mapFolderToModel(r));
   }
 
   async updateFolder(id: string, name: string): Promise<MediaFolder> {
-    const { data, error } = await supabase
-      .from(this.foldersTable)
-      .update({ name, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return this.mapFolderToModel(data);
+    const query = `UPDATE ${this.foldersTable} SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING *`;
+    const { rows } = await db.query(query, [name, id]);
+    return this.mapFolderToModel(rows[0]);
   }
 
   async deleteFolder(id: string): Promise<void> {
-    const { error } = await supabase.from(this.foldersTable).delete().eq('id', id);
-    if (error) throw error;
+    await db.query(`DELETE FROM ${this.foldersTable} WHERE id = $1`, [id]);
   }
 
   // Files
   async createFile(dto: CreateMediaFileDTO): Promise<MediaFile> {
-    const { data, error } = await supabase
-      .from(this.filesTable)
-      .insert([{
-        file_name: dto.fileName,
-        original_name: dto.originalName,
-        folder_id: dto.folderId || null,
-        mime_type: dto.mimeType,
-        size_bytes: dto.sizeBytes,
-        url: dto.url,
-        thumbnail_url: dto.thumbnailUrl,
-        dimensions: dto.dimensions,
-        storage_path: dto.storagePath,
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return this.mapFileToModel(data);
+    const query = `
+      INSERT INTO ${this.filesTable} 
+      (file_name, original_name, folder_id, mime_type, size_bytes, url, thumbnail_url, dimensions, storage_path)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *
+    `;
+    const params = [
+      dto.fileName,
+      dto.originalName,
+      dto.folderId || null,
+      dto.mimeType,
+      dto.sizeBytes,
+      dto.url,
+      dto.thumbnailUrl,
+      dto.dimensions,
+      dto.storagePath
+    ];
+    
+    const { rows } = await db.query(query, params);
+    return this.mapFileToModel(rows[0]);
   }
 
   async getFiles(folderId?: string | null, search?: string): Promise<MediaFile[]> {
-    let query = supabase.from(this.filesTable).select('*');
+    let query = `SELECT * FROM ${this.filesTable}`;
+    const params: any[] = [];
     
     if (search) {
-      query = query.ilike('file_name', `%${search}%`);
+      query += ` WHERE file_name ILIKE $1`;
+      params.push(`%${search}%`);
     } else {
       if (folderId) {
-        query = query.eq('folder_id', folderId);
+        query += ` WHERE folder_id = $1`;
+        params.push(folderId);
       } else {
-        query = query.is('folder_id', null);
+        query += ` WHERE folder_id IS NULL`;
       }
     }
 
-    const { data, error } = await query.order('created_at', { ascending: false });
-    if (error) throw error;
-    return data.map(this.mapFileToModel);
+    query += ` ORDER BY created_at DESC`;
+    const { rows } = await db.query(query, params);
+    return rows.map(r => this.mapFileToModel(r));
   }
 
   async getFile(id: string): Promise<MediaFile | null> {
-    const { data, error } = await supabase.from(this.filesTable).select('*').eq('id', id).single();
-    if (error && error.code !== 'PGRST116') throw error;
-    if (!data) return null;
-    return this.mapFileToModel(data);
+    const { rows } = await db.query(`SELECT * FROM ${this.filesTable} WHERE id = $1 LIMIT 1`, [id]);
+    if (rows.length === 0) return null;
+    return this.mapFileToModel(rows[0]);
   }
 
   async updateFile(id: string, dto: UpdateMediaFileDTO): Promise<MediaFile> {
-    const updates: any = { updated_at: new Date().toISOString() };
-    if (dto.fileName !== undefined) updates.file_name = dto.fileName;
-    if (dto.folderId !== undefined) updates.folder_id = dto.folderId || null;
+    const updates: string[] = ['updated_at = NOW()'];
+    const params: any[] = [];
+    let paramIdx = 1;
+    
+    if (dto.fileName !== undefined) {
+      updates.push(`file_name = $${paramIdx++}`);
+      params.push(dto.fileName);
+    }
+    if (dto.folderId !== undefined) {
+      updates.push(`folder_id = $${paramIdx++}`);
+      params.push(dto.folderId || null);
+    }
 
-    const { data, error } = await supabase
-      .from(this.filesTable)
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return this.mapFileToModel(data);
+    params.push(id);
+    const query = `UPDATE ${this.filesTable} SET ${updates.join(', ')} WHERE id = $${paramIdx} RETURNING *`;
+    
+    const { rows } = await db.query(query, params);
+    return this.mapFileToModel(rows[0]);
   }
 
   async deleteFile(id: string): Promise<void> {
-    const { error } = await supabase.from(this.filesTable).delete().eq('id', id);
-    if (error) throw error;
+    await db.query(`DELETE FROM ${this.filesTable} WHERE id = $1`, [id]);
   }
 }
 

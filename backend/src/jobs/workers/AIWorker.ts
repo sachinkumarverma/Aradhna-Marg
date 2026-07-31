@@ -24,9 +24,7 @@ export class AIWorker extends BaseWorker {
     };
 
     // 1. Update Database (mocked)
-    // await supabase.from('bhajans').update(extractedData).eq('youtube_video_id', videoId);
-    
-    logger.info(`[AIWorker] Generated metadata for ${title}`);
+    // e.g. await db.query('UPDATE bhajans SET ... WHERE youtube_video_id = $1', [videoId]);
 
     // 2. Publish Event
     eventBus.publish(PlatformEvent.AI_COMPLETED, {

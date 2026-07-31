@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { supabase } from '../../api/supabase';
+import { apiClient } from '../../api/client';
 import { BhajanCard } from '../../components/cards/BhajanCard';
 
 export const VideosList = () => {
@@ -14,59 +14,17 @@ export const VideosList = () => {
   useEffect(() => {
     const fetchVideos = async () => {
       setLoading(true);
-      let allData: any[] = [];
-      let page = 0;
-      let hasMore = true;
-      const PAGE_SIZE = 1000;
+      try {
+        const params: Record<string, any> = { limit: 1000, page: 1 };
+        if (searchQuery.trim()) params.search = searchQuery.trim();
+        if (!includeShorts) params.excludeShorts = true;
 
-      while (hasMore) {
-        let query = supabase
-          .from('youtube_videos')
-          .select('*')
-          .order('published_at', { ascending: false })
-          .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
-        
-        if (searchQuery.trim()) {
-          query = query.ilike('title', `%${searchQuery}%`);
-        }
-
-        const { data, error } = await query;
-        
-        if (error) {
-          console.error("Error fetching videos:", error);
-          break;
-        }
-
-        if (data && data.length > 0) {
-          allData = [...allData, ...data];
-          page++;
-          if (data.length < PAGE_SIZE) {
-            hasMore = false;
-          }
-        } else {
-          hasMore = false;
-        }
+        const res = await apiClient.get('/admin/youtube', { params });
+        const data = res.data.data || [];
+        setVideos(data);
+      } catch (err) {
+        console.error('Error fetching videos:', err);
       }
-      
-      let filtered = allData;
-      if (!includeShorts) {
-        filtered = allData.filter(v => {
-          if (!v.duration) return true;
-          
-          const str = v.duration.toLowerCase();
-          let secs = 0;
-          const hMatch = str.match(/(\d+)h/);
-          const mMatch = str.match(/(\d+)m/);
-          const sMatch = str.match(/(\d+)s/);
-          
-          if (hMatch) secs += parseInt(hMatch[1], 10) * 3600;
-          if (mMatch) secs += parseInt(mMatch[1], 10) * 60;
-          if (sMatch) secs += parseInt(sMatch[1], 10);
-          
-          return secs > 180;
-        });
-      }
-      setVideos(filtered);
       setLoading(false);
     };
 

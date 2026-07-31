@@ -12,6 +12,7 @@ const search_routes_1 = __importDefault(require("../search/routes/search.routes"
 const settings_routes_1 = __importDefault(require("./settings.routes"));
 const puranas_routes_1 = __importDefault(require("./puranas.routes"));
 const seo_1 = require("../features/seo");
+const public_routes_1 = __importDefault(require("./public.routes"));
 const router = (0, express_1.Router)();
 // API Version 1
 router.use('/v1/health', health_1.default);
@@ -25,4 +26,5 @@ router.use('/v1/puranas', puranas_routes_1.default);
 router.use('/settings', settings_routes_1.default);
 router.use('/v1/settings', settings_routes_1.default);
 router.use('/v1/seo', seo_1.seoRoutes);
+router.use('/v1/public', public_routes_1.default);
 exports.default = router;

@@ -10,7 +10,7 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
 
   // Log error
   if (!error.isOperational) {
-    logger.error(`[UNHANDLED ERROR] ${err.message}`, { stack: err.stack, path: req.path });
+    logger.error({ stack: err.stack, path: req.path }, `[UNHANDLED ERROR] ${err.message}`);
   } else {
     logger.warn(`[OPERATIONAL ERROR] ${err.message}`);
   }

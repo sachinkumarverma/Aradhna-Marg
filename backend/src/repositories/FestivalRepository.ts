@@ -1,4 +1,4 @@
-import { supabase } from '../database/supabase';
+import { db } from '../common/database/DatabaseClient';
 import { Festival, CreateFestivalDTO, UpdateFestivalDTO } from '../models/Festival';
 import { ConflictError, NotFoundError } from '../errors/appError';
 
@@ -47,102 +47,125 @@ export class FestivalRepository {
     const { search, sort = 'created_at', order = 'desc', page = 1, limit = 10 } = options;
     const offset = (page - 1) * limit;
 
-    let query = supabase
-      .from(this.tableName)
-      .select('*, festival_bhajans(bhajan_id), festival_articles(article_id)', { count: 'exact' });
+    let whereClauses = ['deleted_at IS NULL'];
+    const queryParams: any[] = [];
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,slug.ilike.%${search}%`);
+      queryParams.push(`%${search}%`);
+      whereClauses.push(`(name ILIKE $${queryParams.length} OR slug ILIKE $${queryParams.length})`);
     }
 
-    query = query.order(sort === 'name' ? 'name' : sort === 'festivalDate' ? 'festival_date' : 'created_at', { ascending: order === 'asc' });
-    query = query.range(offset, offset + limit - 1);
+    const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+    
+    let orderStr = 'ORDER BY created_at DESC';
+    if (sort === 'name') orderStr = `ORDER BY name ${order === 'asc' ? 'ASC' : 'DESC'}`;
+    else if (sort === 'festivalDate') orderStr = `ORDER BY festival_date ${order === 'asc' ? 'ASC' : 'DESC'}`;
+    else if (sort === 'created_at') orderStr = `ORDER BY created_at ${order === 'asc' ? 'ASC' : 'DESC'}`;
 
-    const { data, error, count } = await query;
-    if (error) throw error;
+    const dataQuery = `
+      SELECT 
+        f.*,
+        COALESCE((SELECT json_agg(json_build_object('bhajan_id', bhajan_id)) FROM festival_bhajans WHERE festival_id = f.id), '[]'::json) as festival_bhajans,
+        COALESCE((SELECT json_agg(json_build_object('article_id', article_id)) FROM festival_articles WHERE festival_id = f.id), '[]'::json) as festival_articles
+      FROM ${this.tableName} f
+      ${whereStr} 
+      ${orderStr} 
+      LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
+    `;
+    
+    const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} f ${whereStr}`;
 
-    return { data: data.map((d: any) => this.mapToModel(d)), total: count || 0 };
+    const [dataResult, countResult] = await Promise.all([
+      db.query(dataQuery, [...queryParams, limit, offset]),
+      db.query(countQuery, queryParams)
+    ]);
+
+    return { data: dataResult.rows.map((d: any) => this.mapToModel(d)), total: parseInt(countResult.rows[0].total, 10) || 0 };
   }
 
   async findById(id: string): Promise<Festival | null> {
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select('*, festival_bhajans(bhajan_id), festival_articles(article_id)')
-      .eq('id', id)
-      .single();
-      
-    if (error && error.code !== 'PGRST116') throw error;
-    if (!data) return null;
-    return this.mapToModel(data);
+    const query = `
+      SELECT 
+        f.*,
+        COALESCE((SELECT json_agg(json_build_object('bhajan_id', bhajan_id)) FROM festival_bhajans WHERE festival_id = f.id), '[]'::json) as festival_bhajans,
+        COALESCE((SELECT json_agg(json_build_object('article_id', article_id)) FROM festival_articles WHERE festival_id = f.id), '[]'::json) as festival_articles
+      FROM ${this.tableName} f
+      WHERE f.id = $1 AND f.deleted_at IS NULL
+    `;
+    const { rows } = await db.query(query, [id]);
+    if (rows.length === 0) return null;
+    return this.mapToModel(rows[0]);
   }
 
   async create(dto: CreateFestivalDTO): Promise<Festival> {
     const dbData = this.mapToDb(dto);
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .insert([dbData])
-      .select()
-      .single();
+    const keys = Object.keys(dbData);
+    const values = Object.values(dbData);
+    const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
 
-    if (error) {
+    try {
+      const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING id`;
+      const { rows } = await db.query(query, values);
+      
+      await this.updateRelations(rows[0].id, dto.bhajanIds, dto.articleIds);
+      return this.findById(rows[0].id) as Promise<Festival>;
+    } catch (error: any) {
       if (error.code === '23505') throw new ConflictError('Festival slug already exists');
       throw error;
     }
-
-    await this.updateRelations(data.id, dto.bhajanIds, dto.articleIds);
-
-    return this.findById(data.id) as Promise<Festival>;
   }
 
   async update(id: string, dto: UpdateFestivalDTO): Promise<Festival> {
     const dbData = this.mapToDb(dto);
     dbData.updated_at = new Date().toISOString();
+    
+    const keys = Object.keys(dbData);
+    const values = Object.values(dbData);
+    const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
+    values.push(id);
 
-    const { error } = await supabase
-      .from(this.tableName)
-      .update(dbData)
-      .eq('id', id);
-
-    if (error) {
+    try {
+      const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING id`;
+      await db.query(query, values);
+      
+      await this.updateRelations(id, dto.bhajanIds, dto.articleIds);
+      return this.findById(id) as Promise<Festival>;
+    } catch (error: any) {
       if (error.code === '23505') throw new ConflictError('Festival slug already exists');
       throw error;
     }
-
-    await this.updateRelations(id, dto.bhajanIds, dto.articleIds);
-
-    return this.findById(id) as Promise<Festival>;
   }
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from(this.tableName).delete().eq('id', id);
-    if (error) throw error;
+    await db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id = $1`, [id]);
   }
   
   async bulkAction(ids: string[], action: 'publish' | 'draft' | 'delete'): Promise<void> {
+    if (ids.length === 0) return;
+    const placeholders = ids.map((_, i) => `$${i + 1}`).join(',');
+    
     if (action === 'delete') {
-      const { error } = await supabase.from(this.tableName).delete().in('id', ids);
-      if (error) throw error;
+      await db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id IN (${placeholders})`, ids);
     } else {
       const status = action === 'publish' ? 'Published' : 'Draft';
-      const { error } = await supabase.from(this.tableName).update({ status, updated_at: new Date().toISOString() }).in('id', ids);
-      if (error) throw error;
+      await db.query(`UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`, [status, ...ids]);
     }
   }
 
   private async updateRelations(festivalId: string, bhajanIds?: string[], articleIds?: string[]) {
     if (bhajanIds !== undefined) {
-      await supabase.from('festival_bhajans').delete().eq('festival_id', festivalId);
+      await db.query(`DELETE FROM festival_bhajans WHERE festival_id = $1`, [festivalId]);
       if (bhajanIds.length > 0) {
-        const bhajanInserts = bhajanIds.map(id => ({ festival_id: festivalId, bhajan_id: id }));
-        await supabase.from('festival_bhajans').insert(bhajanInserts);
+        const placeholders = bhajanIds.map((_, i) => `($1, $${i + 2})`).join(', ');
+        await db.query(`INSERT INTO festival_bhajans (festival_id, bhajan_id) VALUES ${placeholders}`, [festivalId, ...bhajanIds]);
       }
     }
 
     if (articleIds !== undefined) {
-      await supabase.from('festival_articles').delete().eq('festival_id', festivalId);
+      await db.query(`DELETE FROM festival_articles WHERE festival_id = $1`, [festivalId]);
       if (articleIds.length > 0) {
-        const articleInserts = articleIds.map(id => ({ festival_id: festivalId, article_id: id }));
-        await supabase.from('festival_articles').insert(articleInserts);
+        const placeholders = articleIds.map((_, i) => `($1, $${i + 2})`).join(', ');
+        await db.query(`INSERT INTO festival_articles (festival_id, article_id) VALUES ${placeholders}`, [festivalId, ...articleIds]);
       }
     }
   }
