@@ -1,15 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../api/client';
 
 export const useCollections = (type: 'categories' | 'gods' | 'festivals') => {
   return useQuery({
     queryKey: ['collections', type],
     queryFn: async () => {
-      // Mocked endpoint for architecture phase
-      // const { data } = await apiClient.get(`/${type}`);
-      // return data.data;
-
-      // Mock Data to build UI foundation
       if (type === 'gods') {
         return [
           { id: 1, name: 'Shiva', count: 120, thumbnail: 'https://images.unsplash.com/photo-1605995536553-6a9b4070a256?auto=format&fit=crop&q=80&w=400' },

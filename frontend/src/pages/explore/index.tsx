@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { CollectionHero } from '../../components/layout/CollectionHero';
 import { BhajanCarousel } from '../../components/carousels/BhajanCarousel';
 import { CollectionCarousel } from '../../components/carousels/CollectionCarousel';

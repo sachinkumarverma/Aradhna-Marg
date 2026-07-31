@@ -1,19 +1,15 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronRight, Home, FileText } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-
 import { BhajanHero } from './components/BhajanHero';
 import { LyricsViewer } from './components/LyricsViewer';
 import { YouTubePlayer } from './components/YouTubePlayer';
-
 import { useClipboard } from '../../../hooks/useClipboard';
-
 import { apiClient } from '../../../api/client';
 
 export const BhajanDetail: React.FC = () => {
   const { slug } = useParams(); // URL slug parameter
-
   const [bhajan, setBhajan] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
 

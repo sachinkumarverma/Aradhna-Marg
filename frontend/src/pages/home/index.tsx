@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Sparkles, BookOpen, Music, Download } from 'lucide-react';
+import { Search, BookOpen, Music, Download } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { BhajanCard } from '../../components/cards/BhajanCard';
 import { DeitiesCarousel } from '../../components/common/DeitiesCarousel';

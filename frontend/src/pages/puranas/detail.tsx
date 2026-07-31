@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Download, Eye, BookOpen, Clock, FileText } from 'lucide-react';
+import { Download, Eye, BookOpen, FileText } from 'lucide-react';
 import { apiClient } from '../../api/client';
 import toast from 'react-hot-toast';
 

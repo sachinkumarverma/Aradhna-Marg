@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Save, Loader2, Eye, Plus, Trash2, ChevronDown, Send } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Send } from 'lucide-react';
 import { BhajanApi } from '../../../features/bhajans/BhajanApi';
 import { apiClient } from '../../../api/client';
 import toast from 'react-hot-toast';
 import { Select } from '../../../components/ui/Select';
-import { MultiSelect } from '../../../components/ui/MultiSelect';
 import { TagsInput } from '../../../components/ui/TagsInput';
-import { cn } from '../../../utils/cn';
 
 // Simple client-side slugify
 const generateSlug = (text: string) => {

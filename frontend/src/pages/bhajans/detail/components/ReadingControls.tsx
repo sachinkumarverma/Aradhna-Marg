@@ -1,5 +1,5 @@
 import React from 'react';
-import { Minus, Plus, Settings2, Moon, Sun, Play, Square } from 'lucide-react';
+import { Minus, Plus, Moon, Sun, Play, Square } from 'lucide-react';
 import { Button } from '../../../../components/ui/Button';
 
 interface ReadingControlsProps {

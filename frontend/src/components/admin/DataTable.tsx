@@ -1,5 +1,5 @@
 import React from 'react';
-import { MoreVertical, Edit2, Eye, Trash2, Loader2, Sparkles, Inbox } from 'lucide-react';
+import { Edit2, Eye, Trash2, Sparkles, Inbox } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 interface Column<T> {

@@ -8,8 +8,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Select } from '../../../components/ui/Select';
 import { Button } from '../../../components/ui/Button';
 import { 
-  FolderTree, Plus, Search, Edit2, Trash2, 
-  MoreVertical, RefreshCw, X, Save, Image as ImageIcon,
+  FolderTree, Plus, Edit2, Trash2, RefreshCw, X, Save, Image as ImageIcon,
   CheckCircle2, XCircle, ArrowLeft,
   Music, Heart, Star, Flame, Sun, Moon, Feather, Eye
 } from 'lucide-react';

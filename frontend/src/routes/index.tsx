@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
 import { PublicLayout } from '../layouts/PublicLayout';
 import { Home } from '../pages/home';
@@ -10,7 +10,6 @@ import { AdminLayout } from '../layouts/admin/AdminLayout';
 import { AdminDashboard } from '../pages/admin/dashboard';
 import { AdminBhajans } from '../pages/admin/bhajans';
 import { AdminBhajanForm } from '../pages/admin/bhajans/form';
-
 import { VideosList } from '../pages/videos';
 import { AdminLogin } from '../pages/admin/login';
 

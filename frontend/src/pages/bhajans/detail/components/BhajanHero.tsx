@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Eye, Calendar, Share2, Heart } from 'lucide-react';
+import { Clock, Eye, Calendar, Share2 } from 'lucide-react';
 import { Button } from '../../../../components/ui/Button';
 
 interface BhajanHeroProps {

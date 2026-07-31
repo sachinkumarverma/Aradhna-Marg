@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Loader2, SlidersHorizontal } from 'lucide-react';
 import { SearchBar } from '../../components/search/SearchBar';

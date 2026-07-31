@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SearchInput } from '../../../components/ui/SearchInput';
-import { apiClient } from '../../../api/client'; 
+import { apiClient } from '../../../api/client';
 import toast from 'react-hot-toast';
-import { 
-  Folder, File, Image as ImageIcon, FileText, Music, 
-  UploadCloud, Trash2, Search, Edit2, Download, Copy, Grid, List, 
-  ChevronRight, FolderPlus, MoreVertical 
+import {
+  Folder, Image as ImageIcon, FileText,
+  UploadCloud, Trash2, Download, Copy, Grid, List,
+  ChevronRight, FolderPlus
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
@@ -117,20 +117,20 @@ export const AdminMedia = () => {
             onChange={setSearch}
             className="flex-1 max-w-md"
           />
-          
+
           <button onClick={handleCreateFolder} className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
             <FolderPlus className="w-4 h-4" /> New Folder
           </button>
         </div>
 
         <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
-          <button 
+          <button
             onClick={() => setViewMode('grid')}
             className={`p-1.5 rounded-md ${viewMode === 'grid' ? 'bg-white shadow' : 'text-gray-500 hover:text-gray-900'}`}
           >
             <Grid className="w-4 h-4" />
           </button>
-          <button 
+          <button
             onClick={() => setViewMode('list')}
             className={`p-1.5 rounded-md ${viewMode === 'list' ? 'bg-white shadow' : 'text-gray-500 hover:text-gray-900'}`}
           >
@@ -151,11 +151,10 @@ export const AdminMedia = () => {
       </div>
 
       {/* Upload Zone */}
-      <div 
-        {...getRootProps()} 
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-          isDragActive ? 'border-saffron bg-saffron/5' : 'border-gray-300 hover:border-gray-400 bg-gray-50'
-        }`}
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-saffron bg-saffron/5' : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+          }`}
       >
         <input {...getInputProps()} />
         <UploadCloud className={`w-10 h-10 mx-auto mb-3 ${isDragActive ? 'text-saffron' : 'text-gray-400'}`} />
@@ -173,8 +172,8 @@ export const AdminMedia = () => {
               <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">Folders</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {folders.map((folder: any) => (
-                  <div 
-                    key={folder.id} 
+                  <div
+                    key={folder.id}
                     className="group bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md cursor-pointer transition-shadow"
                     onClick={() => setCurrentFolderId(folder.id)}
                   >
@@ -182,7 +181,7 @@ export const AdminMedia = () => {
                       <Folder className="w-6 h-6 text-blue-500 shrink-0" />
                       <span className="font-medium text-gray-900 truncate">{folder.name}</span>
                     </div>
-                    <button 
+                    <button
                       onClick={(e) => { e.stopPropagation(); deleteMutation.mutate({ id: folder.id, type: 'folder' }); }}
                       className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
@@ -198,7 +197,7 @@ export const AdminMedia = () => {
           {files.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">Files</h3>
-              
+
               {viewMode === 'grid' ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {files.map((file: any) => (

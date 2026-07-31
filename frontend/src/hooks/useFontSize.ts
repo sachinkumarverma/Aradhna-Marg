@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { StorageService } from '../common/storage/StorageService';
 
 const FONT_SIZES = [16, 18, 20, 24, 28, 32];
-const DEFAULT_INDEX = 2; // 20px
+const DEFAULT_INDEX = 2; 
 
 export const useFontSize = () => {
   const [sizeIndex, setSizeIndex] = useState(() => {
