@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
+import { StorageService } from '../common/storage/StorageService';
 
 export const useReadingMode = () => {
   const [isReadingMode, setIsReadingMode] = useState(false);
-  const [isDark, setIsDark] = useState(() => {
-    return localStorage.getItem('bhajan-reading-dark') === 'true';
-  });
+  const [isDark, setIsDark] = useState(() => StorageService.getReadingMode());
 
   const toggleReadingMode = () => setIsReadingMode(!isReadingMode);
   
   const toggleDarkMode = () => {
     setIsDark(!isDark);
-    localStorage.setItem('bhajan-reading-dark', (!isDark).toString());
+    StorageService.setReadingMode(!isDark);
   };
 
   // Lock body scroll if needed, or hide navbar natively

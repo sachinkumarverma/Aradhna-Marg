@@ -1,6 +1,6 @@
 /**
  * Frontend media upload utility.
- * Sends multipart/form-data to the backend media API (replaces Supabase Storage).
+ * Sends multipart/form-data to the backend media API 
  */
 import { apiClient } from './client';
 

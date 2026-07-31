@@ -1,14 +1,11 @@
 /**
  * Custom JWT-based authentication utility.
- * Replaces Supabase Auth entirely.
- * Token is stored in localStorage under 'admin_token'.
  */
 
 import axios from 'axios';
+import { StorageService } from '../common/storage/StorageService';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const TOKEN_KEY = 'admin_token';
-const USER_KEY = 'admin_user';
 
 export interface AdminUser {
   username: string;
@@ -17,25 +14,17 @@ export interface AdminUser {
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
 
-export const getToken = (): string | null => localStorage.getItem(TOKEN_KEY);
+export const getToken = (): string | null => StorageService.getToken();
 
-export const getUser = (): AdminUser | null => {
-  try {
-    const raw = localStorage.getItem(USER_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-};
+export const getUser = (): AdminUser | null => StorageService.getUser();
 
 const saveSession = (token: string, user: AdminUser) => {
-  localStorage.setItem(TOKEN_KEY, token);
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  StorageService.setToken(token);
+  StorageService.setUser(user);
 };
 
 export const clearSession = () => {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
+  StorageService.clearAuth();
 };
 
 export const isAuthenticated = (): boolean => !!getToken();
