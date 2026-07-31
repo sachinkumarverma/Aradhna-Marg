@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '../../responses/apiResponse';
-import { AiJobService } from '../services/AiJobService';
+import { sendSuccess } from '@/responses/apiResponse';
+import { AiJobService } from '@admin/services/AiJobService';
 
 class AdminAiController {
   private service: AiJobService;

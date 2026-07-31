@@ -1,4 +1,4 @@
-import { settingsRepository } from '../repositories/SettingsRepository';
+import { settingsRepository } from '@repositories/SettingsRepository';
 
 export interface YouTubeConfiguration {
   apiKey: string;

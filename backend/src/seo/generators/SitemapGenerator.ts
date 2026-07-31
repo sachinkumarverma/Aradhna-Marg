@@ -1,5 +1,5 @@
-import { db } from '../../common/database/DatabaseClient';
-import { logger } from '../../utils/logger';
+import { db } from '@common/database/DatabaseClient';
+import { logger } from '@utils/logger';
 
 export class SitemapGenerator {
   private readonly baseUrl = 'https://aradhnamarg.com';

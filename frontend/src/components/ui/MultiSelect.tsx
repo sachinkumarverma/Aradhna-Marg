@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, X } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { cn } from '@utils/cn';
 import type { SelectOption } from './Select';
 
 interface MultiSelectProps {

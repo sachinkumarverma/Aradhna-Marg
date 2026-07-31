@@ -1,5 +1,5 @@
-import { db } from '../../common/database/DatabaseClient';
-import { ISearchOptions, ISearchResult } from '../interfaces';
+import { db } from '@common/database/DatabaseClient';
+import { ISearchOptions, ISearchResult } from '@/search/interfaces';
 
 class SearchRepository {
   private readonly tableName = 'bhajans';

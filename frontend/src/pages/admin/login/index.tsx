@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login, isAuthenticated } from '../../../api/auth';
-import { Button } from '../../../components/ui/Button';
+import { login, isAuthenticated } from '@api/auth';
+import { Button } from '@components/ui/Button';
 import { Loader2, Lock } from 'lucide-react';
 
 export const AdminLogin: React.FC = () => {

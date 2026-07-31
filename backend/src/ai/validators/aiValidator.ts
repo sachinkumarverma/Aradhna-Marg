@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { logger } from '../../utils/logger';
-import { IAIProvider } from '../interfaces/AIProvider';
+import { logger } from '@utils/logger';
+import { IAIProvider } from '@/ai/interfaces/AIProvider';
 
 export class AIValidator {
   /**

@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import type { HTMLMotionProps } from 'framer-motion';
-import { cn } from '../../utils/cn';
-import { cardHoverVariant } from '../../animations/variants';
+import { cn } from '@utils/cn';
+import { cardHoverVariant } from '@/animations/variants';
 
 interface CardProps extends HTMLMotionProps<"div"> {
   hoverable?: boolean;

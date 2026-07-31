@@ -1,7 +1,7 @@
 import { BaseWorker } from './BaseWorker';
-import { IJobPayload, JobType, PlatformEvent } from '../types';
-import { eventBus } from '../events/EventBus';
-import { logger } from '../../utils/logger';
+import { IJobPayload, JobType, PlatformEvent } from '@/jobs/types';
+import { eventBus } from '@/jobs/events/EventBus';
+import { logger } from '@utils/logger';
 
 export class AIWorker extends BaseWorker {
   constructor(queue: any) {

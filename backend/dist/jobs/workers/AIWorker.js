@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIWorker = void 0;
 const BaseWorker_1 = require("./BaseWorker");
-const types_1 = require("../types");
-const EventBus_1 = require("../events/EventBus");
+const types_1 = require("../../jobs/types");
+const EventBus_1 = require("../../jobs/events/EventBus");
 const logger_1 = require("../../utils/logger");
 class AIWorker extends BaseWorker_1.BaseWorker {
     constructor(queue) {

@@ -1,5 +1,5 @@
-import { db } from '../common/database/DatabaseClient';
-import { IBaseRepository } from '../interfaces/repositories';
+import { db } from '@common/database/DatabaseClient';
+import { IBaseRepository } from '@/interfaces/repositories';
 
 export class BaseRepository<T> implements IBaseRepository<T> {
   protected readonly tableName: string;

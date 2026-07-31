@@ -1,6 +1,6 @@
 import { eventBus, EVENTS } from './EventBus';
-import { queueManager } from '../jobs/QueueManager';
-import { logger } from '../../../utils/logger';
+import { queueManager } from '@features/youtube/jobs/QueueManager';
+import { logger } from '@utils/logger';
 
 export const registerYouTubeEventHandlers = () => {
   eventBus.subscribe(EVENTS.VIDEO_IMPORTED, async (payload) => {

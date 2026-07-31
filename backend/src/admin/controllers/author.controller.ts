@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '../../responses/apiResponse';
-import { authorService } from '../../services/AuthorService';
+import { sendSuccess } from '@/responses/apiResponse';
+import { authorService } from '@services/AuthorService';
 
 class AdminAuthorController {
   public list = async (req: Request, res: Response, next: NextFunction) => {

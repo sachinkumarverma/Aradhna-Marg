@@ -1,6 +1,6 @@
 import React from 'react';
 import { Play, Clock, Eye } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { Card } from '@components/ui/Card';
 import { motion } from 'framer-motion';
 
 interface BhajanCardProps {

@@ -1,4 +1,4 @@
-import { apiClient } from '../../api/client';
+import { apiClient } from '@api/client';
 
 export class CategoryApi {
   static async getCategories(params?: { page?: number; limit?: number; search?: string }) {

@@ -1,5 +1,5 @@
-import { AiJobRepository } from '../repositories/AiJobRepository';
-import { CreateAiJobDTO, AiJob } from '../../models/AiJob';
+import { AiJobRepository } from '@admin/repositories/AiJobRepository';
+import { CreateAiJobDTO, AiJob } from '@models/AiJob';
 
 export class AiJobService {
   private repository: AiJobRepository;

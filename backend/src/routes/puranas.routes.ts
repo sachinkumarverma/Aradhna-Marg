@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { puranPublicController } from '../controllers/PuranPublicController';
+import { puranPublicController } from '@controllers/PuranPublicController';
 
 const router = Router();
 

@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { apiClient } from '../api/client';
+import { apiClient } from '@api/client';
 
 export const useInfiniteBhajans = (collectionType: string, filters: any = {}) => {
   return useInfiniteQuery({

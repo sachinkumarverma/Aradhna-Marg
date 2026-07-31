@@ -1,7 +1,7 @@
 import React from 'react';
 import { BookOpen, Download, Share2, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../../../utils/cn';
+import { cn } from '@utils/cn';
 
 interface StickyBottomBarProps {
   onToggleReadingMode: () => void;

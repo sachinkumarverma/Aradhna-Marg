@@ -1,4 +1,4 @@
-import { apiClient } from '../../api/client';
+import { apiClient } from '@api/client';
 
 export class BhajanApi {
   static async getList(params?: { page?: number; limit?: number; search?: string; status?: string; category?: string; primaryDeity?: string; sort?: string }) {

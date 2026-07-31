@@ -1,5 +1,5 @@
-import { festivalRepository } from '../repositories/FestivalRepository';
-import { CreateFestivalDTO, UpdateFestivalDTO, Festival } from '../models/Festival';
+import { festivalRepository } from '@repositories/FestivalRepository';
+import { CreateFestivalDTO, UpdateFestivalDTO, Festival } from '@models/Festival';
 
 export class FestivalService {
   async getList(query: any): Promise<{ data: Festival[], count: number }> {

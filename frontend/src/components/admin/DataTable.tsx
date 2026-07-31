@@ -1,6 +1,6 @@
 import React from 'react';
 import { Edit2, Eye, Trash2, Sparkles, Inbox } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { cn } from '@utils/cn';
 
 interface Column<T> {
   header: string;

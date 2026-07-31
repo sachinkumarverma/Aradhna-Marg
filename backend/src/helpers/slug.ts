@@ -1,4 +1,4 @@
-import { db } from '../common/database/DatabaseClient';
+import { db } from '@common/database/DatabaseClient';
 
 /**
  * Generates a URL-friendly slug from a string.

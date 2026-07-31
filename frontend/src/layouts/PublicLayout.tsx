@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Navbar } from '../components/common/Navbar';
-import { Footer } from '../components/common/Footer';
+import { Navbar } from '@components/common/Navbar';
+import { Footer } from '@components/common/Footer';
 import { Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

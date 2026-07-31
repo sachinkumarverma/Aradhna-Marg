@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
-import { CollectionHero } from '../../components/layout/CollectionHero';
-import { BhajanCard } from '../../components/cards/BhajanCard';
-import { useInfiniteBhajans } from '../../hooks/useInfiniteBhajans';
-import { Button } from '../../components/ui/Button';
+import { CollectionHero } from '@components/layout/CollectionHero';
+import { BhajanCard } from '@components/cards/BhajanCard';
+import { useInfiniteBhajans } from '@hooks/useInfiniteBhajans';
+import { Button } from '@components/ui/Button';
 import { Loader2 } from 'lucide-react';
 
 export const CollectionDetails: React.FC = () => {

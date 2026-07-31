@@ -1,6 +1,6 @@
-import { db } from '../../common/database/DatabaseClient';
-import { AiJob, CreateAiJobDTO } from '../../models/AiJob';
-import { NotFoundError } from '../../errors/appError';
+import { db } from '@common/database/DatabaseClient';
+import { AiJob, CreateAiJobDTO } from '@models/AiJob';
+import { NotFoundError } from '@/errors/appError';
 
 export class AiJobRepository {
   private tableName = 'ai_jobs';

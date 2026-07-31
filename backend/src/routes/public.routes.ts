@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { db } from '../common/database/DatabaseClient';
-import { sendSuccess } from '../responses/apiResponse';
+import { db } from '@common/database/DatabaseClient';
+import { sendSuccess } from '@/responses/apiResponse';
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { categoryRepository } from './CategoryRepository';
 import { CreateCategoryDTO, UpdateCategoryDTO, CategoryQueryOptions } from './CategoryDTO';
-import { NotFoundError } from '../../errors/appError';
+import { NotFoundError } from '@/errors/appError';
 
 export class CategoryService {
   async getCategories(options: CategoryQueryOptions) {

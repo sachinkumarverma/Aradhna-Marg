@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { BhajanCard } from '../cards/BhajanCard';
+import { BhajanCard } from '@components/cards/BhajanCard';
 
 interface BhajanCarouselProps {
   title: string;

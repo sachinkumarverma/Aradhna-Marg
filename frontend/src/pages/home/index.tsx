@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, BookOpen, Music, Download } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { BhajanCard } from '../../components/cards/BhajanCard';
-import { DeitiesCarousel } from '../../components/common/DeitiesCarousel';
-import { staggerContainer, fadeUpVariant } from '../../animations/variants';
-import { apiClient } from '../../api/client';
+import { Button } from '@components/ui/Button';
+import { BhajanCard } from '@components/cards/BhajanCard';
+import { DeitiesCarousel } from '@components/common/DeitiesCarousel';
+import { staggerContainer, fadeUpVariant } from '@/animations/variants';
+import { apiClient } from '@api/client';
 import { Link } from 'react-router-dom';
 
 export const Home: React.FC = () => {

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchController = void 0;
-const SearchService_1 = require("../services/SearchService");
+const SearchService_1 = require("../../search/services/SearchService");
 const apiResponse_1 = require("../../responses/apiResponse");
 const pagination_1 = require("../../utils/pagination");
 class SearchController {

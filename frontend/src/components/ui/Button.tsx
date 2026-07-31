@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import type { HTMLMotionProps } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
-import { cn } from '../../utils/cn';
-import { buttonTapVariant } from '../../animations/variants';
+import { cn } from '@utils/cn';
+import { buttonTapVariant } from '@/animations/variants';
 
 export interface ButtonProps extends Omit<HTMLMotionProps<"button">, 'ref'> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'icon';

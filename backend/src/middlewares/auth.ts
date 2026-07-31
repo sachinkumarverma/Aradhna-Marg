@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { UnauthorizedError } from '../errors/appError';
-import { logger } from '../utils/logger';
+import { UnauthorizedError } from '@/errors/appError';
+import { logger } from '@utils/logger';
 import jwt from 'jsonwebtoken';
-import { config } from '../config';
+import { config } from '@/config';
 
 export const requireAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {

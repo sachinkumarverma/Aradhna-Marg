@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MemoryQueue = void 0;
-const types_1 = require("../types");
+const types_1 = require("../../jobs/types");
 const uuid_1 = require("uuid");
 const logger_1 = require("../../utils/logger");
 class MemoryQueue {

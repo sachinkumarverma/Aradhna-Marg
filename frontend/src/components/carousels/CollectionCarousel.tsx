@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CollectionCard } from '../cards/CollectionCard';
+import { CollectionCard } from '@components/cards/CollectionCard';
 
 interface CollectionCarouselProps {
   title: string;

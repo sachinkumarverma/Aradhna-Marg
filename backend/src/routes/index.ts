@@ -2,12 +2,12 @@ import { Router } from 'express';
 import healthRoutes from './health';
 
 // Placeholders for future route modules
-import { categoryRoutes } from '../features/categories';
-import adminRoutes from '../admin/routes/admin.routes';
-import searchRoutes from '../search/routes/search.routes';
+import { categoryRoutes } from '@features/categories';
+import adminRoutes from '@admin/routes/admin.routes';
+import searchRoutes from '@/search/routes/search.routes';
 import settingsRoutes from './settings.routes';
 import puranaRoutes from './puranas.routes';
-import { seoRoutes } from '../features/seo';
+import { seoRoutes } from '@features/seo';
 import publicRoutes from './public.routes';
 
 const router = Router();

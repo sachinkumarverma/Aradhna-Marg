@@ -1,7 +1,7 @@
 import React from 'react';
-import type { SearchFilters as ISearchFilters } from '../../../hooks/useSearch';
+import type { SearchFilters as ISearchFilters } from '@hooks/useSearch';
 import { Check } from 'lucide-react';
-import { cn } from '../../../utils/cn';
+import { cn } from '@utils/cn';
 
 interface SearchFiltersProps {
   filters: ISearchFilters;

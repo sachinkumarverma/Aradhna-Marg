@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, CheckCircle2, XCircle, RefreshCw, Server, Database, Cloud, PlaySquare, Bot, Clock } from 'lucide-react';
-import { apiClient } from '../../api/client';
+import { apiClient } from '@api/client';
 import { format } from 'date-fns';
 
 export const AdminSystemHealth: React.FC = () => {

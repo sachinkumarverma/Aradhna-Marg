@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '../../responses/apiResponse';
-import { db } from '../../common/database/DatabaseClient';
+import { sendSuccess } from '@/responses/apiResponse';
+import { db } from '@common/database/DatabaseClient';
 
 class DashboardController {
   public getStats = async (req: Request, res: Response, next: NextFunction) => {

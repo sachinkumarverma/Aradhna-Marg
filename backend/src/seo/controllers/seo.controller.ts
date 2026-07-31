@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { sitemapGenerator } from '../generators/SitemapGenerator';
-import { robotsGenerator } from '../generators/RobotsGenerator';
+import { sitemapGenerator } from '@/seo/generators/SitemapGenerator';
+import { robotsGenerator } from '@/seo/generators/RobotsGenerator';
 
 class SEOController {
   public getRobotsTxt = async (req: Request, res: Response, next: NextFunction) => {

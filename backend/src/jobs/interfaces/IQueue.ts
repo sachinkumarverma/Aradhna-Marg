@@ -1,4 +1,4 @@
-import { IJobPayload, JobType } from '../types';
+import { IJobPayload, JobType } from '@/jobs/types';
 
 export interface IQueueService {
   enqueue(type: JobType, payload: any, priority?: number): Promise<string>;

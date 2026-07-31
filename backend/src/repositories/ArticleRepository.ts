@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository';
-import { db } from '../common/database/DatabaseClient';
+import { db } from '@common/database/DatabaseClient';
 
 export class ArticleRepository extends BaseRepository<any> {
   constructor() {

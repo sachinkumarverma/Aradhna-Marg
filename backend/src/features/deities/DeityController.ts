@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { deityService } from './DeityService';
-import { sendSuccess } from '../../responses/apiResponse';
+import { sendSuccess } from '@/responses/apiResponse';
 
 export class DeityController {
   async getDeities(req: Request, res: Response, next: NextFunction) {

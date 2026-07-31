@@ -1,17 +1,17 @@
 import { lazy } from 'react';
 import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
-import { PublicLayout } from '../layouts/PublicLayout';
-import { Home } from '../pages/home';
-import { BhajanDetail } from '../pages/bhajans/detail';
-import { SearchPage } from '../pages/search';
-import { ExplorePage } from '../pages/explore';
-import { CollectionDetails } from '../pages/collections/CollectionDetails';
-import { AdminLayout } from '../layouts/admin/AdminLayout';
-import { AdminDashboard } from '../pages/admin/dashboard';
-import { AdminBhajans } from '../pages/admin/bhajans';
-import { AdminBhajanForm } from '../pages/admin/bhajans/form';
-import { VideosList } from '../pages/videos';
-import { AdminLogin } from '../pages/admin/login';
+import { PublicLayout } from '@/layouts/PublicLayout';
+import { Home } from '@pages/home';
+import { BhajanDetail } from '@pages/bhajans/detail';
+import { SearchPage } from '@pages/search';
+import { ExplorePage } from '@pages/explore';
+import { CollectionDetails } from '@pages/collections/CollectionDetails';
+import { AdminLayout } from '@/layouts/admin/AdminLayout';
+import { AdminDashboard } from '@pages/admin/dashboard';
+import { AdminBhajans } from '@pages/admin/bhajans';
+import { AdminBhajanForm } from '@pages/admin/bhajans/form';
+import { VideosList } from '@pages/videos';
+import { AdminLogin } from '@pages/admin/login';
 
 // Reusable beautifully styled Coming Soon component
 const ComingSoon = ({ title }: { title: string }) => (

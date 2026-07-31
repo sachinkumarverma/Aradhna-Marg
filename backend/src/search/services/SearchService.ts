@@ -1,6 +1,6 @@
-import { searchRepository } from '../repositories/SearchRepository';
-import { ISearchOptions, ISearchResult } from '../interfaces';
-import { logger } from '../../utils/logger';
+import { searchRepository } from '@/search/repositories/SearchRepository';
+import { ISearchOptions, ISearchResult } from '@/search/interfaces';
+import { logger } from '@utils/logger';
 
 class SearchService {
   /**

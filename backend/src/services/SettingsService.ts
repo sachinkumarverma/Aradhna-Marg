@@ -1,7 +1,7 @@
-import { settingsRepository } from '../repositories/SettingsRepository';
-import { Settings, UpdateSettingsDTO } from '../models/Settings';
-import { encrypt, decrypt } from '../utils/encryption';
-import { NotFoundError } from '../errors/appError';
+import { settingsRepository } from '@repositories/SettingsRepository';
+import { Settings, UpdateSettingsDTO } from '@models/Settings';
+import { encrypt, decrypt } from '@utils/encryption';
+import { NotFoundError } from '@/errors/appError';
 
 export class SettingsService {
   async getSettings(): Promise<Settings> {

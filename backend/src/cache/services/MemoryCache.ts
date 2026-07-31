@@ -1,5 +1,5 @@
-import { ICacheService } from '../interfaces/ICache';
-import { logger } from '../../utils/logger';
+import { ICacheService } from '@/cache/interfaces/ICache';
+import { logger } from '@utils/logger';
 
 interface CacheEntry {
   value: any;

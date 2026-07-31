@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
-import { PlatformEvent } from '../types';
-import { logger } from '../../utils/logger';
+import { PlatformEvent } from '@/jobs/types';
+import { logger } from '@utils/logger';
 
 type EventHandler = (payload: any) => Promise<void>;
 

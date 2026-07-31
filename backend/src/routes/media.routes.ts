@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { mediaController } from '../controllers/MediaController';
+import { mediaController } from '@controllers/MediaController';
 
 const router = Router();
 const upload = multer({ 

@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { logger } from '../../../utils/logger';
+import { logger } from '@utils/logger';
 
 // Event Names
 export const EVENTS = {

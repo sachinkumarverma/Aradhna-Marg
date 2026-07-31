@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { apiClient } from '../../../api/client';
+import { apiClient } from '@api/client';
 import { format } from 'date-fns';
-import { Select } from '../../../components/ui/Select';
+import { Select } from '@components/ui/Select';
 import { Settings, Save, AlertCircle, RefreshCw, UploadCloud, X } from 'lucide-react';
-import { uploadFile } from '../../../api/upload';
+import { uploadFile } from '@api/upload';
 
 const TABS = ['General', 'Contact', 'Social Media', 'YouTube Automation', 'SEO', 'Analytics', 'Advertisement', 'System'];
 

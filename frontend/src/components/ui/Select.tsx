@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, Search } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { cn } from '@utils/cn';
 
 export interface SelectOption {
   label: string;

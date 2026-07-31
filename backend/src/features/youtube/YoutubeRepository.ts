@@ -1,5 +1,5 @@
-import { db } from '../../common/database/DatabaseClient';
-import { YoutubeVideo } from '../../models/YoutubeVideo';
+import { db } from '@common/database/DatabaseClient';
+import { YoutubeVideo } from '@models/YoutubeVideo';
 
 export class YoutubeVideoRepository {
   private readonly tableName = 'youtube_videos';

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { mediaService } from '../services/MediaService';
-import { sendSuccess } from '../responses/apiResponse';
-import { AppError } from '../errors/appError';
+import { mediaService } from '@services/MediaService';
+import { sendSuccess } from '@/responses/apiResponse';
+import { AppError } from '@/errors/appError';
 
 export class MediaController {
   

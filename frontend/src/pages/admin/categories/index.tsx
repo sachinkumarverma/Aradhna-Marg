@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { SearchInput } from '../../../components/ui/SearchInput';
-import { CategoryApi } from '../../../features/categories/CategoryApi';
+import { SearchInput } from '@components/ui/SearchInput';
+import { CategoryApi } from '@features/categories/CategoryApi';
 import toast from 'react-hot-toast';
 import { useForm, Controller } from 'react-hook-form';
-import { Select } from '../../../components/ui/Select';
-import { Button } from '../../../components/ui/Button';
+import { Select } from '@components/ui/Select';
+import { Button } from '@components/ui/Button';
 import { 
   FolderTree, Plus, Edit2, Trash2, RefreshCw, X, Save, Image as ImageIcon,
   CheckCircle2, XCircle, ArrowLeft,

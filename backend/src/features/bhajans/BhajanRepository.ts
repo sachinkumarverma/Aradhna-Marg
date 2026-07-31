@@ -1,4 +1,4 @@
-import { db } from '../../common/database/DatabaseClient';
+import { db } from '@common/database/DatabaseClient';
 
 export class BhajanRepository {
   private readonly tableName = 'bhajans';

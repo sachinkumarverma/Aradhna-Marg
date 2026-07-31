@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '../../responses/apiResponse';
+import { sendSuccess } from '@/responses/apiResponse';
 import { bhajanService } from './BhajanService';
 
 class AdminBhajanController {

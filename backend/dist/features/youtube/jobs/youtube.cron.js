@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const manager_1 = require("../../../cron/manager");
-const YoutubeSyncService_1 = require("../YoutubeSyncService");
+const YoutubeSyncService_1 = require("../../youtube/YoutubeSyncService");
 const DatabaseClient_1 = require("../../../common/database/DatabaseClient");
 const logger_1 = require("../../../utils/logger");
 manager_1.cronManager.register({

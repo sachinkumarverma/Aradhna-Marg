@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '../responses/apiResponse';
-import { InternalServerError } from '../errors/appError';
-import { logger } from '../utils/logger';
-import { db } from '../common/database/DatabaseClient';
+import { sendSuccess } from '@/responses/apiResponse';
+import { InternalServerError } from '@/errors/appError';
+import { logger } from '@utils/logger';
+import { db } from '@common/database/DatabaseClient';
 
 const router = Router();
 

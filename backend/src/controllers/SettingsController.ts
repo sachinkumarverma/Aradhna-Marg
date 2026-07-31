@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { settingsService } from '../services/SettingsService';
+import { settingsService } from '@services/SettingsService';
 import {
   updateSettingsSchema,
   generalSettingsSchema,
@@ -10,9 +10,9 @@ import {
   analyticsSettingsSchema,
   advertisementSettingsSchema,
   systemSettingsSchema,
-} from '../validators/settings.validator';
-import { sendSuccess } from '../responses/apiResponse';
-import { ValidationError } from '../errors/appError';
+} from '@/validators/settings.validator';
+import { sendSuccess } from '@/responses/apiResponse';
+import { ValidationError } from '@/errors/appError';
 
 /** Generic helper: validate with a schema and persist only that section's fields */
 async function updateSection(

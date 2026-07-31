@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { categoryService } from './CategoryService';
-import { sendSuccess } from '../../responses/apiResponse';
+import { sendSuccess } from '@/responses/apiResponse';
 import { createCategorySchema, updateCategorySchema } from './CategoryValidator';
-import { AppError } from '../../errors/appError';
+import { AppError } from '@/errors/appError';
 
 export class CategoryController {
   async getCategories(req: Request, res: Response, next: NextFunction) {

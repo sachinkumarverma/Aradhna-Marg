@@ -1,8 +1,8 @@
 import OpenAI from 'openai';
-import { IAIProvider, IAIGenerationOptions } from '../interfaces/AIProvider';
-import { config } from '../../config';
-import { InternalServerError } from '../../errors/appError';
-import { logger } from '../../utils/logger';
+import { IAIProvider, IAIGenerationOptions } from '@/ai/interfaces/AIProvider';
+import { config } from '@/config';
+import { InternalServerError } from '@/errors/appError';
+import { logger } from '@utils/logger';
 
 export class OpenAIProvider implements IAIProvider {
   private client: OpenAI;

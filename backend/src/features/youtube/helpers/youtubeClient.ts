@@ -1,7 +1,7 @@
 import { google, youtube_v3 } from 'googleapis';
-import { config } from '../../../config';
-import { InternalServerError } from '../../../errors/appError';
-import { logger } from '../../../utils/logger';
+import { config } from '@/config';
+import { InternalServerError } from '@/errors/appError';
+import { logger } from '@utils/logger';
 
 class YoutubeClient {
   private youtube: youtube_v3.Youtube;

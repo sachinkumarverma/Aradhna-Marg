@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '../responses/apiResponse';
-import { puranService } from '../services/PuranService';
+import { sendSuccess } from '@/responses/apiResponse';
+import { puranService } from '@services/PuranService';
 
 class PuranPublicController {
   public getBySlug = async (req: Request, res: Response, next: NextFunction) => {

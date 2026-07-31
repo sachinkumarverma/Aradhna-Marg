@@ -1,6 +1,6 @@
-import { db } from '../common/database/DatabaseClient';
-import { Festival, CreateFestivalDTO, UpdateFestivalDTO } from '../models/Festival';
-import { ConflictError, NotFoundError } from '../errors/appError';
+import { db } from '@common/database/DatabaseClient';
+import { Festival, CreateFestivalDTO, UpdateFestivalDTO } from '@models/Festival';
+import { ConflictError, NotFoundError } from '@/errors/appError';
 
 export class FestivalRepository {
   private readonly tableName = 'festivals';

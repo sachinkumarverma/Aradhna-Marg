@@ -1,8 +1,8 @@
-import { db } from '../../common/database/DatabaseClient';
+import { db } from '@common/database/DatabaseClient';
 import { Category } from './CategoryTypes';
 import { CategoryQueryOptions, CreateCategoryDTO, UpdateCategoryDTO } from './CategoryDTO';
 // Using the types from the interfaces
-import { ConflictError } from '../../errors/appError';
+import { ConflictError } from '@/errors/appError';
 
 export class CategoryRepository {
   private mapToModel(row: any): Category {

@@ -1,6 +1,6 @@
-import { IQueueService } from '../interfaces/IQueue';
-import { JobType, IJobPayload } from '../types';
-import { logger } from '../../utils/logger';
+import { IQueueService } from '@/jobs/interfaces/IQueue';
+import { JobType, IJobPayload } from '@/jobs/types';
+import { logger } from '@utils/logger';
 
 export abstract class BaseWorker {
   protected isRunning: boolean = false;

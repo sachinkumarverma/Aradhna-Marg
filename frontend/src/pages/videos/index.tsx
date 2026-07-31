@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { apiClient } from '../../api/client';
-import { BhajanCard } from '../../components/cards/BhajanCard';
+import { apiClient } from '@api/client';
+import { BhajanCard } from '@components/cards/BhajanCard';
 
 export const VideosList = () => {
   const [videos, setVideos] = useState<any[]>([]);

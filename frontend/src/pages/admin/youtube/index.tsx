@@ -6,12 +6,12 @@ import {
   PlaySquare, Settings, Clock, RefreshCw, CheckCircle2, 
   XCircle, Filter, Search, Link as LinkIcon, ExternalLink, Trash2, ShieldCheck, AlertCircle, X, ArrowUpDown
 } from 'lucide-react';
-import { apiClient } from '../../../api/client';
+import { apiClient } from '@api/client';
 import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
 
-import { Select } from '../../../components/ui/Select';
-import { YoutubeApi } from '../../../features/youtube/YoutubeApi';
+import { Select } from '@components/ui/Select';
+import { YoutubeApi } from '@features/youtube/YoutubeApi';
 
 export const AdminYoutube = () => {
   const queryClient = useQueryClient();

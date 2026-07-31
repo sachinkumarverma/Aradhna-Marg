@@ -1,5 +1,5 @@
-import { db } from '../common/database/DatabaseClient';
-import { MediaFolder, MediaFile, CreateMediaFolderDTO, CreateMediaFileDTO, UpdateMediaFileDTO } from '../models/Media';
+import { db } from '@common/database/DatabaseClient';
+import { MediaFolder, MediaFile, CreateMediaFolderDTO, CreateMediaFileDTO, UpdateMediaFileDTO } from '@models/Media';
 
 export class MediaRepository {
   private readonly foldersTable = 'media_folders';

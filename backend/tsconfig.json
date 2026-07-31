@@ -7,8 +7,24 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "noImplicitAny": false,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@services/*": ["./src/services/*"],
+      "@repositories/*": ["./src/repositories/*"],
+      "@config/*": ["./src/config/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@routes/*": ["./src/routes/*"],
+      "@models/*": ["./src/models/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@admin/*": ["./src/admin/*"],
+      "@features/*": ["./src/features/*"],
+      "@common/*": ["./src/common/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]

@@ -5,8 +5,8 @@ import { Link, useParams } from 'react-router-dom';
 import { BhajanHero } from './components/BhajanHero';
 import { LyricsViewer } from './components/LyricsViewer';
 import { YouTubePlayer } from './components/YouTubePlayer';
-import { useClipboard } from '../../../hooks/useClipboard';
-import { apiClient } from '../../../api/client';
+import { useClipboard } from '@hooks/useClipboard';
+import { apiClient } from '@api/client';
 
 export const BhajanDetail: React.FC = () => {
   const { slug } = useParams(); // URL slug parameter

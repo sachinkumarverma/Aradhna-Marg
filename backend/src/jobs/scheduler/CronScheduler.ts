@@ -1,7 +1,7 @@
 import cron, { ScheduledTask } from 'node-cron';
-import { IQueueService } from '../interfaces/IQueue';
-import { JobType, JobPriority } from '../types';
-import { logger } from '../../utils/logger';
+import { IQueueService } from '@/jobs/interfaces/IQueue';
+import { JobType, JobPriority } from '@/jobs/types';
+import { logger } from '@utils/logger';
 
 export class CronScheduler {
   private tasks: ScheduledTask[] = [];

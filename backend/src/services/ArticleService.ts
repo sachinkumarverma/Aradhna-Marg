@@ -1,5 +1,5 @@
-import { articleRepository } from '../repositories/ArticleRepository';
-import { slugify } from '../utils/slugify';
+import { articleRepository } from '@repositories/ArticleRepository';
+import { slugify } from '@utils/slugify';
 
 export class ArticleService {
   public async getList(query: any) {

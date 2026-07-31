@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository';
-import { db } from '../common/database/DatabaseClient';
+import { db } from '@common/database/DatabaseClient';
 
 export class PuranRepository extends BaseRepository<any> {
   constructor() {

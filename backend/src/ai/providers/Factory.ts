@@ -1,8 +1,8 @@
-import { IAIProvider } from '../interfaces/AIProvider';
+import { IAIProvider } from '@/ai/interfaces/AIProvider';
 import { GroqProvider } from './groq.provider';
 import { OpenAIProvider } from './openai.provider';
-import { config } from '../../config';
-import { InternalServerError } from '../../errors/appError';
+import { config } from '@/config';
+import { InternalServerError } from '@/errors/appError';
 
 export class AIProviderFactory {
   public static getProvider(): IAIProvider {

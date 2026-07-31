@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, AlertTriangle, FileText, Globe, Key, LayoutDashboard, Search, Settings, ShieldAlert, ShieldCheck } from 'lucide-react';
-import { SeoApi } from '../../../features/seo/SeoApi';
-import { apiClient } from '../../../api/client';
-import { cn } from '../../../utils/cn';
+import { SeoApi } from '@features/seo/SeoApi';
+import { apiClient } from '@api/client';
+import { cn } from '@utils/cn';
 import { toast } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 

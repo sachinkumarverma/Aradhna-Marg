@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useReadingProgress } from '../../../../hooks/useReadingProgress';
+import { useReadingProgress } from '@hooks/useReadingProgress';
 
 export const ReadingProgress: React.FC = () => {
   const progress = useReadingProgress();

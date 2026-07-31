@@ -1,7 +1,7 @@
-import { db } from '../../common/database/DatabaseClient';
+import { db } from '@common/database/DatabaseClient';
 import { Tag } from './TagTypes';
 import { TagQueryOptions, CreateTagDTO, UpdateTagDTO } from './TagDTO';
-import { ConflictError } from '../../errors/appError';
+import { ConflictError } from '@/errors/appError';
 
 export class TagRepository {
   private mapToModel(row: any): Tag {

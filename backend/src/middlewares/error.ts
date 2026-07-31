@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../errors/appError';
-import { sendError } from '../responses/apiResponse';
-import { logger } from '../utils/logger';
-import { config } from '../config';
+import { AppError } from '@/errors/appError';
+import { sendError } from '@/responses/apiResponse';
+import { logger } from '@utils/logger';
+import { config } from '@/config';
 
 export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   let error = { ...err };

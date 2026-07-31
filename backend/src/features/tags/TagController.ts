@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { tagService } from './TagService';
-import { sendSuccess } from '../../responses/apiResponse';
+import { sendSuccess } from '@/responses/apiResponse';
 
 export class TagController {
   async getTags(req: Request, res: Response, next: NextFunction) {

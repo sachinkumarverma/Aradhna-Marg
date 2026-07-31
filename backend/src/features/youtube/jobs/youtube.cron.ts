@@ -1,7 +1,7 @@
-import { cronManager } from '../../../cron/manager';
-import { youtubeSyncService } from '../YoutubeSyncService';
-import { db } from '../../../common/database/DatabaseClient';
-import { logger } from '../../../utils/logger';
+import { cronManager } from '@/cron/manager';
+import { youtubeSyncService } from '@features/youtube/YoutubeSyncService';
+import { db } from '@common/database/DatabaseClient';
+import { logger } from '@utils/logger';
 
 cronManager.register({
   name: 'IncrementalYouTubeSync',

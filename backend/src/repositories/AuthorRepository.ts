@@ -1,6 +1,6 @@
-import { db } from '../common/database/DatabaseClient';
-import { Author, CreateAuthorDTO, UpdateAuthorDTO } from '../models/Author';
-import { ConflictError, NotFoundError } from '../errors/appError';
+import { db } from '@common/database/DatabaseClient';
+import { Author, CreateAuthorDTO, UpdateAuthorDTO } from '@models/Author';
+import { ConflictError, NotFoundError } from '@/errors/appError';
 
 export class AuthorRepository {
   private readonly tableName = 'authors';

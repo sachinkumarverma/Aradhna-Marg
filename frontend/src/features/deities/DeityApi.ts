@@ -1,4 +1,4 @@
-import { apiClient } from '../../api/client';
+import { apiClient } from '@api/client';
 
 export class DeityApi {
   static async getDeities(params?: { page?: number; limit?: number; search?: string }) {

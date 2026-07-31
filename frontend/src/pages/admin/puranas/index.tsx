@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, BookOpen } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { DataTable } from '../../../components/admin/DataTable';
-import { Button } from '../../../components/ui/Button';
-import { Select } from '../../../components/ui/Select';
-import { SearchInput } from '../../../components/ui/SearchInput';
-import { apiClient } from '../../../api/client'; 
+import { DataTable } from '@components/admin/DataTable';
+import { Button } from '@components/ui/Button';
+import { Select } from '@components/ui/Select';
+import { SearchInput } from '@components/ui/SearchInput';
+import { apiClient } from '@api/client'; 
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 

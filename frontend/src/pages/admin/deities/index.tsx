@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { SearchInput } from '../../../components/ui/SearchInput';
-import { DeityApi } from '../../../features/deities/DeityApi';
+import { SearchInput } from '@components/ui/SearchInput';
+import { DeityApi } from '@features/deities/DeityApi';
 import toast from 'react-hot-toast';
 import { useForm, Controller } from 'react-hook-form';
-import { Select } from '../../../components/ui/Select';
-import { Button } from '../../../components/ui/Button';
+import { Select } from '@components/ui/Select';
+import { Button } from '@components/ui/Button';
 import { 
   Plus, Edit2, Trash2, RefreshCw, Save, ArrowLeft, CheckCircle2, XCircle, Image as ImageIcon,
   Flame, Star, X, Sparkles

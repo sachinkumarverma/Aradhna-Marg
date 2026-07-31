@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '../../responses/apiResponse';
-import { festivalService } from '../../services/FestivalService';
+import { sendSuccess } from '@/responses/apiResponse';
+import { festivalService } from '@services/FestivalService';
 
 class AdminFestivalController {
   public list = async (req: Request, res: Response, next: NextFunction) => {

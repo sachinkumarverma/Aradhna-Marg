@@ -4,7 +4,7 @@ import { YouTubeWorker } from './workers/YouTubeWorker';
 import { AIWorker } from './workers/AIWorker';
 import { eventBus } from './events/EventBus';
 import { JobType, PlatformEvent, JobPriority } from './types';
-import { logger } from '../utils/logger';
+import { logger } from '@utils/logger';
 
 export class BackgroundJobSystem {
   private queue = new MemoryQueue();

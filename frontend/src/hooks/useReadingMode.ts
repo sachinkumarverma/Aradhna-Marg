@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StorageService } from '../common/storage/StorageService';
+import { StorageService } from '@common/storage/StorageService';
 
 export const useReadingMode = () => {
   const [isReadingMode, setIsReadingMode] = useState(false);

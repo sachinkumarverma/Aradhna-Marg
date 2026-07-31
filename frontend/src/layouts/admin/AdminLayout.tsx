@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Bell, Search, Loader2, LogOut } from 'lucide-react';
-import { AdminSidebar } from '../../components/admin/AdminSidebar';
-import { SessionManager } from '../../components/admin/SessionManager';
-import { logout, verifySession } from '../../api/auth';
+import { AdminSidebar } from '@components/admin/AdminSidebar';
+import { SessionManager } from '@components/admin/SessionManager';
+import { logout, verifySession } from '@api/auth';
 
 export const AdminLayout: React.FC = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../api/client';
+import { apiClient } from '@api/client';
 
 export interface SearchFilters {
   categoryId?: string;

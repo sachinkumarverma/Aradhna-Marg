@@ -1,8 +1,8 @@
 import React from 'react';
-import { CollectionHero } from '../../components/layout/CollectionHero';
-import { BhajanCarousel } from '../../components/carousels/BhajanCarousel';
-import { CollectionCarousel } from '../../components/carousels/CollectionCarousel';
-import { useCollections } from '../../hooks/useCollections';
+import { CollectionHero } from '@components/layout/CollectionHero';
+import { BhajanCarousel } from '@components/carousels/BhajanCarousel';
+import { CollectionCarousel } from '@components/carousels/CollectionCarousel';
+import { useCollections } from '@hooks/useCollections';
 
 // Mock Data for UI Foundation
 const mockBhajans = [

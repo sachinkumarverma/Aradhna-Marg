@@ -1,5 +1,5 @@
 import { bhajanRepository } from './BhajanRepository';
-import { slugify } from '../../utils/slugify';
+import { slugify } from '@utils/slugify';
 
 export class BhajanService {
   public async getList(query: any) {

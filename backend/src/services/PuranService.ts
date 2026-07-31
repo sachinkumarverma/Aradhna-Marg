@@ -1,5 +1,5 @@
-import { puranRepository } from '../repositories/PuranRepository';
-import { slugify } from '../utils/slugify';
+import { puranRepository } from '@repositories/PuranRepository';
+import { slugify } from '@utils/slugify';
 
 export class PuranService {
   public async getList(query: any) {

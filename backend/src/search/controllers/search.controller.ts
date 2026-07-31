@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { searchService } from '../services/SearchService';
-import { sendSuccess } from '../../responses/apiResponse';
-import { getPaginationData, formatPaginatedResponse } from '../../utils/pagination';
+import { searchService } from '@/search/services/SearchService';
+import { sendSuccess } from '@/responses/apiResponse';
+import { getPaginationData, formatPaginatedResponse } from '@utils/pagination';
 
 class SearchController {
   public search = async (req: Request, res: Response, next: NextFunction) => {

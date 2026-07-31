@@ -1,5 +1,5 @@
 import { Pool, QueryResult } from 'pg';
-import { config } from '../../config';
+import { config } from '@/config';
 
 class DatabaseClient {
   private pool: Pool;

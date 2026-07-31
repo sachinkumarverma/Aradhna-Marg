@@ -1,9 +1,9 @@
 import { youtubeClient } from './helpers/youtubeClient';
-import { logger } from '../../utils/logger';
+import { logger } from '@utils/logger';
 import { eventBus, EVENTS } from './events/EventBus';
 import { IVideoMetadata } from './interfaces';
-import { generateUniqueSlug } from '../../helpers/slug';
-import { db } from '../../common/database/DatabaseClient';
+import { generateUniqueSlug } from '@/helpers/slug';
+import { db } from '@common/database/DatabaseClient';
 
 class YoutubeSyncService {
   /**

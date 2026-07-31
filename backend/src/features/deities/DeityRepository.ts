@@ -1,4 +1,4 @@
-import { db } from '../../common/database/DatabaseClient';
+import { db } from '@common/database/DatabaseClient';
 import { Deity } from './DeityTypes';
 import { CreateDeityDTO, UpdateDeityDTO, DeityQueryOptions } from './DeityDTO';
 

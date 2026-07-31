@@ -1,5 +1,5 @@
 import pino from 'pino';
-import { config } from '../config';
+import { config } from '@/config';
 import fs from 'fs';
 import path from 'path';
 
@@ -8,7 +8,7 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
 }
 
-const targets = [];
+const targets: any[] = [];
 
 if (config.NODE_ENV === 'development') {
   targets.push({

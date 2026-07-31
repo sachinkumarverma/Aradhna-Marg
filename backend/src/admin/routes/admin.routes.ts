@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import { dashboardController } from '../controllers/dashboard.controller';
-import { adminArticleController } from '../controllers/article.controller';
-import { adminPuranController } from '../controllers/puran.controller';
-import { adminFestivalController } from '../controllers/festival.controller';
-import { bhajanRoutes } from '../../features/bhajans';
-import { tagRoutes } from '../../features/tags';
-import { youtubeRoutes } from '../../features/youtube';
-import { adminAuthorController } from '../controllers/author.controller';
-import { deityRoutes } from '../../features/deities';
-import { adminAiController } from '../controllers/ai.controller';
-import { requireAdmin } from '../../middlewares/auth';
-import { authController } from '../controllers/auth.controller';
+import { dashboardController } from '@admin/controllers/dashboard.controller';
+import { adminArticleController } from '@admin/controllers/article.controller';
+import { adminPuranController } from '@admin/controllers/puran.controller';
+import { adminFestivalController } from '@admin/controllers/festival.controller';
+import { bhajanRoutes } from '@features/bhajans';
+import { tagRoutes } from '@features/tags';
+import { youtubeRoutes } from '@features/youtube';
+import { adminAuthorController } from '@admin/controllers/author.controller';
+import { deityRoutes } from '@features/deities';
+import { adminAiController } from '@admin/controllers/ai.controller';
+import { requireAdmin } from '@middlewares/auth';
+import { authController } from '@admin/controllers/auth.controller';
 
 const router = Router();
 

@@ -5,7 +5,7 @@ import {
   Settings, FolderTree, Sparkles, Image, Settings2, FileText,
   BookOpen, CalendarDays, Users, Tags, Search, Megaphone, Activity
 } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { cn } from '@utils/cn';
 
 const DASHBOARD_NAV = [
   { name: 'DASHBOARD', path: '/admin', icon: LayoutDashboard },

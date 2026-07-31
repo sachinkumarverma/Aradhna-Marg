@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, Clock, TrendingUp, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDebounce } from '../../hooks/useDebounce';
-import { useSearchSuggestions, useTrendingSearches } from '../../hooks/useSearch';
-import { useRecentSearches } from '../../hooks/useRecentSearches';
-import { cn } from '../../utils/cn';
+import { useDebounce } from '@hooks/useDebounce';
+import { useSearchSuggestions, useTrendingSearches } from '@hooks/useSearch';
+import { useRecentSearches } from '@hooks/useRecentSearches';
+import { cn } from '@utils/cn';
 
 export const SearchBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

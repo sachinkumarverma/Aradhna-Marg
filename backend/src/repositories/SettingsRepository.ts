@@ -1,5 +1,5 @@
-import { db } from '../common/database/DatabaseClient';
-import { Settings, UpdateSettingsDTO } from '../models/Settings';
+import { db } from '@common/database/DatabaseClient';
+import { Settings, UpdateSettingsDTO } from '@models/Settings';
 
 export class SettingsRepository {
   private readonly tableName = 'settings';

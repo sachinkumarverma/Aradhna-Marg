@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { youtubeVideoRepository } from './YoutubeRepository';
-import { db } from '../../common/database/DatabaseClient';
-import { YoutubeVideo } from '../../models/YoutubeVideo';
-import { AppError } from '../../errors/appError';
+import { db } from '@common/database/DatabaseClient';
+import { YoutubeVideo } from '@models/YoutubeVideo';
+import { AppError } from '@/errors/appError';
 
 export class YoutubeService {
   async getVideos(search?: string, status?: string, type?: string, sortBy = 'published_at', sortOrder = 'desc', page = 1, limit = 20) {

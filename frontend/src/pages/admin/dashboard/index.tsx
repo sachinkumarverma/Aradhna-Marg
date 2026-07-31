@@ -2,8 +2,8 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Music2, PlaySquare, BrainCircuit, Activity, FileText } from 'lucide-react';
-import { StatCard } from '../../../components/admin/StatCard';
-import { apiClient } from '../../../api/client';
+import { StatCard } from '@components/admin/StatCard';
+import { apiClient } from '@api/client';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();

@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { sendSuccess } from '../../responses/apiResponse';
-import { UnauthorizedError } from '../../errors/appError';
-import { config } from '../../config';
-import { logger } from '../../utils/logger';
+import { sendSuccess } from '@/responses/apiResponse';
+import { UnauthorizedError } from '@/errors/appError';
+import { config } from '@/config';
+import { logger } from '@utils/logger';
 
 class AuthController {
   /**

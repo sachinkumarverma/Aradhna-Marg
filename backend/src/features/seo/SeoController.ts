@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { seoService } from './SeoService';
-import { sendSuccess } from '../../responses/apiResponse';
+import { sendSuccess } from '@/responses/apiResponse';
 
 export class SeoController {
   async getOverview(req: Request, res: Response, next: NextFunction) {

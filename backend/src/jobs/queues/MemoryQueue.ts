@@ -1,7 +1,7 @@
-import { IQueueService } from '../interfaces/IQueue';
-import { IJobPayload, JobType, JobState, JobPriority } from '../types';
+import { IQueueService } from '@/jobs/interfaces/IQueue';
+import { IJobPayload, JobType, JobState, JobPriority } from '@/jobs/types';
 import { v4 as uuidv4 } from 'uuid';
-import { logger } from '../../utils/logger';
+import { logger } from '@utils/logger';
 
 export class MemoryQueue implements IQueueService {
   private jobs: Map<string, IJobPayload> = new Map();

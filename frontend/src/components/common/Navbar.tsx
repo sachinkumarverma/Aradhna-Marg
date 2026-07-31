@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { Search, Menu, X, Heart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { Button } from '../ui/Button';
+import { Button } from '@components/ui/Button';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);

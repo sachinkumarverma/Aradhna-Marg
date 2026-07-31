@@ -1,6 +1,6 @@
 import { tagRepository } from './TagRepository';
 import { CreateTagDTO, UpdateTagDTO, TagQueryOptions } from './TagDTO';
-import { NotFoundError } from '../../errors/appError';
+import { NotFoundError } from '@/errors/appError';
 
 export class TagService {
   async getTags(options: TagQueryOptions) {

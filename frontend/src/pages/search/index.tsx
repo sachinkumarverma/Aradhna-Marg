@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Loader2, SlidersHorizontal } from 'lucide-react';
-import { SearchBar } from '../../components/search/SearchBar';
+import { SearchBar } from '@components/search/SearchBar';
 import { SearchFilters } from './components/SearchFilters';
-import { BhajanCard } from '../../components/cards/BhajanCard';
-import { useSearch } from '../../hooks/useSearch';
-import type { SearchFilters as IFilters } from '../../hooks/useSearch';
-import { Button } from '../../components/ui/Button';
+import { BhajanCard } from '@components/cards/BhajanCard';
+import { useSearch } from '@hooks/useSearch';
+import type { SearchFilters as IFilters } from '@hooks/useSearch';
+import { Button } from '@components/ui/Button';
 
 export const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

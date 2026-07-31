@@ -3,11 +3,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, Eye, Send, Upload, X } from 'lucide-react';
-import { apiClient } from '../../../api/client';
-import { uploadFile } from '../../../api/upload';
+import { apiClient } from '@api/client';
+import { uploadFile } from '@api/upload';
 import toast from 'react-hot-toast';
-import { Select } from '../../../components/ui/Select';
-import { MultiSelect } from '../../../components/ui/MultiSelect';
+import { Select } from '@components/ui/Select';
+import { MultiSelect } from '@components/ui/MultiSelect';
 
 // Simple client-side slugify
 const generateSlug = (text: string) => {

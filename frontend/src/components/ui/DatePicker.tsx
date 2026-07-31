@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, startOfWeek, endOfWeek, isBefore, startOfDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../utils/cn';
+import { cn } from '@utils/cn';
 
 interface DatePickerProps {
   value: string;

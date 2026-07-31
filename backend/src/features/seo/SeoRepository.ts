@@ -1,4 +1,4 @@
-import { db } from '../../common/database/DatabaseClient';
+import { db } from '@common/database/DatabaseClient';
 
 export class SeoRepository {
   async getTableStats(table: string, isBhajans: boolean = false) {

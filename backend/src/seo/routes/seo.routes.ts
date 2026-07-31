@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { seoController } from '../controllers/seo.controller';
+import { seoController } from '@/seo/controllers/seo.controller';
 
 const router = Router();
 

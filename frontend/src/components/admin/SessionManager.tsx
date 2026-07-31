@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../../api/auth';
+import { logout } from '@api/auth';
 import toast from 'react-hot-toast';
 
 // Configurable session timings

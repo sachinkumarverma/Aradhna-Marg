@@ -1,5 +1,5 @@
 import cron, { ScheduledTask } from 'node-cron';
-import { logger } from '../utils/logger';
+import { logger } from '@utils/logger';
 
 export interface ICronJob {
   name: string;

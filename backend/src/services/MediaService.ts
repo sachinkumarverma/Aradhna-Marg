@@ -1,4 +1,4 @@
-import { mediaRepository } from '../repositories/MediaRepository';
+import { mediaRepository } from '@repositories/MediaRepository';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import path from 'path';

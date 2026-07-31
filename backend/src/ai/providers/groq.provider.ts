@@ -1,8 +1,8 @@
 import Groq from 'groq-sdk';
-import { IAIProvider, IAIGenerationOptions } from '../interfaces/AIProvider';
-import { config } from '../../config';
-import { InternalServerError } from '../../errors/appError';
-import { logger } from '../../utils/logger';
+import { IAIProvider, IAIGenerationOptions } from '@/ai/interfaces/AIProvider';
+import { config } from '@/config';
+import { InternalServerError } from '@/errors/appError';
+import { logger } from '@utils/logger';
 
 export class GroqProvider implements IAIProvider {
   private client: Groq;
