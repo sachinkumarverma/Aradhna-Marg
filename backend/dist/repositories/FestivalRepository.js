@@ -93,7 +93,7 @@ class FestivalRepository {
         COALESCE((SELECT json_agg(json_build_object('bhajan_id', bhajan_id)) FROM festival_bhajans WHERE festival_id = f.id), '[]'::json) as festival_bhajans,
         COALESCE((SELECT json_agg(json_build_object('article_id', article_id)) FROM festival_articles WHERE festival_id = f.id), '[]'::json) as festival_articles
       FROM ${this.tableName} f
-      WHERE f.id = $1 AND f.deleted_at IS NULL
+      WHERE f.id = $1
     `;
         const { rows } = await DatabaseClient_1.db.query(query, [id]);
         if (rows.length === 0)
@@ -137,14 +137,14 @@ class FestivalRepository {
         }
     }
     async delete(id) {
-        await DatabaseClient_1.db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id = $1`, [id]);
+        await DatabaseClient_1.db.query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
     }
     async bulkAction(ids, action) {
         if (ids.length === 0)
             return;
         const placeholders = ids.map((_, i) => `$${i + 1}`).join(',');
         if (action === 'delete') {
-            await DatabaseClient_1.db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id IN (${placeholders})`, ids);
+            await DatabaseClient_1.db.query(`DELETE FROM ${this.tableName} WHERE id IN (${placeholders})`, ids);
         }
         else {
             const status = action === 'publish' ? 'Published' : 'Draft';
