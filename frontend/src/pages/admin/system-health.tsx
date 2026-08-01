@@ -19,10 +19,10 @@ export const AdminSystemHealth: React.FC = () => {
     return <XCircle className="w-5 h-5 text-red-500" />;
   };
 
-  const ServiceCard = ({ title, icon: Icon, status }: { title: string, icon: any, status?: string }) => (
-    <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm flex items-center justify-between">
+  const ServiceCard = ({ title, icon: Icon, status, bgClassName = "bg-gradient-to-br from-blue-50 to-white", borderClassName = "border-blue-100" }: { title: string, icon: any, status?: string, bgClassName?: string, borderClassName?: string }) => (
+    <div className={`${bgClassName} p-5 rounded-md border ${borderClassName} shadow-sm flex items-center justify-between`}>
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-gray-50 rounded-lg">
+        <div className="p-2 bg-gray-50 rounded-md">
           <Icon className="w-5 h-5 text-gray-600" />
         </div>
         <span className="font-semibold text-gray-800">{title}</span>
@@ -42,7 +42,7 @@ export const AdminSystemHealth: React.FC = () => {
     <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <Activity className="w-6 h-6 text-saffron" />
             SYSTEM HEALTH
           </h1>
@@ -51,7 +51,7 @@ export const AdminSystemHealth: React.FC = () => {
         <button 
           onClick={() => refetch()}
           disabled={isFetching}
-          className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-lg hover:bg-saffron/90 transition-colors font-medium shadow-sm disabled:opacity-40"
+          className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
           Refresh
@@ -59,28 +59,28 @@ export const AdminSystemHealth: React.FC = () => {
       </div>
 
       {isError && (
-        <div className="bg-red-50 border border-red-200 p-4 rounded-lg text-red-700 text-sm font-medium">
+        <div className="bg-red-50 border border-red-200 p-4 rounded-md text-red-700 text-sm font-medium">
           Failed to fetch system health data. Please check your connection to the API server.
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ServiceCard title="API Server" icon={Server} status={isLoading ? undefined : data?.api_status} />
-        <ServiceCard title="Supabase DB" icon={Database} status={isLoading ? undefined : data?.database_status} />
-        <ServiceCard title="Supabase Storage" icon={Cloud} status={isLoading ? undefined : data?.storage_status} />
-        <ServiceCard title="YouTube API" icon={PlaySquare} status={isLoading ? undefined : data?.youtube_api_status} />
-        <ServiceCard title="Groq AI" icon={Bot} status={isLoading ? undefined : data?.groq_ai_status} />
-        <ServiceCard title="Cron Jobs" icon={Clock} status={isLoading ? undefined : data?.cron_jobs_status} />
+        <ServiceCard title="API Server" icon={Server} status={isLoading ? undefined : data?.api_status} bgClassName="bg-gradient-to-br from-blue-50 to-white" borderClassName="border-blue-100" />
+        <ServiceCard title="Supabase DB" icon={Database} status={isLoading ? undefined : data?.database_status} bgClassName="bg-gradient-to-br from-green-50 to-white" borderClassName="border-green-100" />
+        <ServiceCard title="Supabase Storage" icon={Cloud} status={isLoading ? undefined : data?.storage_status} bgClassName="bg-gradient-to-br from-orange-50 to-white" borderClassName="border-orange-100" />
+        <ServiceCard title="YouTube API" icon={PlaySquare} status={isLoading ? undefined : data?.youtube_api_status} bgClassName="bg-gradient-to-br from-red-50 to-white" borderClassName="border-red-100" />
+        <ServiceCard title="Groq AI" icon={Bot} status={isLoading ? undefined : data?.groq_ai_status} bgClassName="bg-gradient-to-br from-purple-50 to-white" borderClassName="border-purple-100" />
+        <ServiceCard title="Cron Jobs" icon={Clock} status={isLoading ? undefined : data?.cron_jobs_status} bgClassName="bg-gradient-to-br from-amber-50 to-white" borderClassName="border-amber-100" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         
         {/* Last Checked */}
-        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-md border border-green-100 shadow-sm">
           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Last Checked</h3>
           {data ? (
             <div>
-              <p className="text-xl font-bold text-gray-900">{format(new Date(data.server_time), 'dd MMM yyyy')}</p>
+              <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{format(new Date(data.server_time), 'dd MMM yyyy')}</p>
               <p className="text-gray-500">{format(new Date(data.server_time), 'h:mm:ss a')}</p>
             </div>
           ) : (
@@ -89,11 +89,11 @@ export const AdminSystemHealth: React.FC = () => {
         </div>
 
         {/* Environment */}
-        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-gradient-to-br from-amber-50 to-white p-6 rounded-md border border-amber-100 shadow-sm">
           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Environment</h3>
           {data ? (
             <div>
-              <p className="text-xl font-bold text-gray-900">{data.environment}</p>
+              <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{data.environment}</p>
               <div className="mt-1 space-y-0.5">
                 <p className="text-sm text-gray-500">Uptime: {Math.floor(data.uptime_seconds / 3600)}h {Math.floor((data.uptime_seconds % 3600) / 60)}m</p>
                 <p className="text-sm text-gray-500">Started: {format(new Date(new Date(data.server_time).getTime() - (data.uptime_seconds * 1000)), 'dd MMM, h:mm:ss a')}</p>
@@ -105,7 +105,7 @@ export const AdminSystemHealth: React.FC = () => {
         </div>
 
         {/* Version Info */}
-        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-md border border-gray-200 shadow-sm">
           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Version Information</h3>
           {data ? (
             <div className="space-y-2">

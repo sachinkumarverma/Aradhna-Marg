@@ -52,7 +52,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
             end={link.path === '/admin'}
             onClick={onClose}
             className={({ isActive }) => cn(
-              "flex items-center gap-3 px-3 py-2 rounded-lg text-[14px] font-bold transition-all duration-200",
+              "flex items-center gap-3 px-3 py-2 rounded-md text-[14px] font-bold transition-all duration-200",
               isActive 
                 ? "bg-[#ff3b00] text-white shadow-md shadow-red-500/20" 
                 : "text-[#00274c] hover:bg-gray-100 hover:text-[#d9480f]"
@@ -67,7 +67,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
   );
 
   const sidebarClasses = cn(
-    "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+    "fixed inset-y-0 left-0 z-50 w-64 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
     isMobileOpen ? "translate-x-0" : "-translate-x-full"
   );
 
@@ -84,14 +84,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
       <aside className={sidebarClasses}>
         <div className="h-full flex flex-col">
           {/* Header */}
-          <div className="px-6 h-16 border-b border-gray-100 flex-shrink-0 flex items-center">
+          <div className="px-6 h-16 border-b border-[#e63500] flex-shrink-0 flex items-center bg-[#ff3b00] shadow-sm relative z-20 -mr-[1px]">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0">
+              <div className="w-9 h-9 rounded-md overflow-hidden flex-shrink-0 shadow-sm border border-white/20">
                 <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-serif text-xl font-bold tracking-wide whitespace-nowrap">
-                <span className="text-[#00274c]">ADMIN </span>
-                <span className="text-[#ff3b00]">PORTAL</span>
+                <span className="text-white">ADMIN </span>
+                <span className="text-black">PORTAL</span>
               </span>
             </div>
           </div>
@@ -125,7 +125,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
           
           {/* Bottom user profile mock */}
           <div className="p-3 border-t border-gray-100 flex-shrink-0">
-            <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+            <div className="flex items-center gap-3 px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
               <img 
                 src="https://api.dicebear.com/7.x/micah/svg?seed=AdminUser&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4&backgroundType=gradientLinear" 
                 alt="Admin Avatar" 

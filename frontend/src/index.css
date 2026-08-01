@@ -34,16 +34,29 @@
   }
 }
 
-/* Custom Scrollbar for a premium feel */
-::-webkit-scrollbar {
+/* Keep main window scrollbar default */
+main.overflow-y-auto::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-
-::-webkit-scrollbar-track {
+main.overflow-y-auto::-webkit-scrollbar-track {
   @apply bg-cream;
 }
-
-::-webkit-scrollbar-thumb {
+main.overflow-y-auto::-webkit-scrollbar-thumb {
   @apply bg-golden/50 rounded-full hover:bg-saffron transition-colors;
+}
+
+/* Thin scrollbars for sidebar and tables */
+.scrollbar-thin::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
 }

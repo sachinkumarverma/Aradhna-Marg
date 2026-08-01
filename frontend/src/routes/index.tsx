@@ -74,7 +74,7 @@ const AdminNotFoundPage = () => (
     <p className="text-gray-500 mb-6">
       The dashboard panel you are looking for does not exist.
     </p>
-    <Link to="/admin" className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors">
+    <Link to="/admin" className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md font-semibold transition-colors">
       Back to Dashboard
     </Link>
   </div>

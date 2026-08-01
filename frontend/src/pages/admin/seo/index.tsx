@@ -92,7 +92,7 @@ export const AdminSEO = () => {
       <div className="space-y-2">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+            <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
               <Search className="w-6 h-6 text-saffron" />
               SEO ENGINE
             </h1>
@@ -106,10 +106,10 @@ export const AdminSEO = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+                "flex items-center gap-2 px-4 py-3 text-sm font-bold uppercase border-b-2 transition-colors whitespace-nowrap",
                 activeTab === tab.id
                   ? "border-saffron text-saffron"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-gray-900 hover:text-black hover:border-gray-300"
               )}
             >
               <tab.icon className="w-4 h-4" />
@@ -122,33 +122,33 @@ export const AdminSEO = () => {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+            <div className="bg-gradient-to-br from-blue-50 to-white p-5 rounded-md border border-blue-100 shadow-sm">
               <h3 className="text-sm font-semibold text-gray-500">Total Bhajans</h3>
               {isLoadingOverview ? <JumpingDots /> : <p className="text-3xl font-bold mt-2">{overview?.totalBhajans || 0}</p>}
             </div>
-            <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+            <div className="bg-gradient-to-br from-green-50 to-white p-5 rounded-md border border-green-100 shadow-sm">
               <h3 className="text-sm font-semibold text-gray-500">Total Articles</h3>
               {isLoadingOverview ? <JumpingDots /> : <p className="text-3xl font-bold mt-2">{overview?.totalArticles || 0}</p>}
             </div>
-            <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+            <div className="bg-gradient-to-br from-orange-50 to-white p-5 rounded-md border border-orange-100 shadow-sm">
               <h3 className="text-sm font-semibold text-gray-500">Total Festivals</h3>
               {isLoadingOverview ? <JumpingDots /> : <p className="text-3xl font-bold mt-2">{overview?.totalFestivals || 0}</p>}
             </div>
-            <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+            <div className="bg-gradient-to-br from-purple-50 to-white p-5 rounded-md border border-purple-100 shadow-sm">
               <h3 className="text-sm font-semibold text-gray-500">Total Puranas</h3>
               {isLoadingOverview ? <JumpingDots /> : <p className="text-3xl font-bold mt-2">{overview?.totalPuranas || 0}</p>}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-lg border border-red-200 shadow-sm flex items-center justify-between">
+            <div className="bg-gradient-to-br from-red-50 to-white p-5 rounded-md border border-red-200 shadow-sm flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-semibold text-red-600">Missing SEO Titles</h3>
                 {isLoadingOverview ? <JumpingDots colorClass="text-red-400" /> : <p className="text-3xl font-bold text-red-700 mt-2">{overview?.missingTitles || 0}</p>}
               </div>
               <AlertTriangle className="w-10 h-10 text-red-200" />
             </div>
-            <div className="bg-white p-5 rounded-lg border border-orange-200 shadow-sm flex items-center justify-between">
+            <div className="bg-gradient-to-br from-orange-50 to-white p-5 rounded-md border border-orange-200 shadow-sm flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-semibold text-orange-600">Duplicate Meta Descriptions</h3>
                 {isLoadingOverview ? <JumpingDots colorClass="text-orange-400" /> : <p className="text-3xl font-bold text-orange-700 mt-2">{overview?.duplicateDescriptions || 0}</p>}
@@ -158,7 +158,7 @@ export const AdminSEO = () => {
           </div>
           
           <h2 className="text-lg font-bold mt-8 mb-4">SEO Audit Health</h2>
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-br from-red-50 to-white rounded-md border border-red-100 shadow-sm overflow-hidden">
              <table className="w-full text-left border-collapse">
                <thead>
                  <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
@@ -197,7 +197,7 @@ export const AdminSEO = () => {
       )}
 
       {activeTab === 'issues' && (
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
@@ -219,7 +219,7 @@ export const AdminSEO = () => {
                 </tr>
               ) : issues?.length === 0 ? (
                 <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                  <ShieldCheck className="w-12 h-12 text-green-400 mx-auto mb-3" />
+                  <ShieldCheck className="w-12 h-12 text-green-400 mx-auto mb-3" strokeWidth={2.5} />
                   <h3 className="text-lg font-bold text-gray-900 mb-1">Excellent!</h3>
                   <p>All content is currently optimized. No SEO issues found.</p>
                 </td></tr>
@@ -242,7 +242,7 @@ export const AdminSEO = () => {
 
       {activeTab === 'settings' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Default SEO Fallbacks</h3>
             <p className="text-xs text-gray-500 mb-4">These values will act as fallbacks when content-specific SEO fields are empty.</p>
             
@@ -251,7 +251,7 @@ export const AdminSEO = () => {
               <input 
                 type="text" 
                 defaultValue={settings?.seoSiteTitle}
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron" 
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron" 
               />
             </div>
             <div className="space-y-1.5">
@@ -259,15 +259,15 @@ export const AdminSEO = () => {
               <textarea 
                 rows={4}
                 defaultValue={settings?.seoMetaDescription}
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron resize-y" 
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron resize-y" 
               />
             </div>
-            <button className="px-4 py-2 bg-saffron text-white rounded-lg font-medium hover:bg-saffron/90 w-full mt-2">
+            <button className="px-4 py-2 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 w-full mt-2">
               Save Default SEO
             </button>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Structured Data (Schema.org)</h3>
             <p className="text-xs text-gray-500 mb-4">The backend will automatically determine the correct schema fields for each page type. These switches simply enable or disable schema generation globally.</p>
             
@@ -288,7 +288,7 @@ export const AdminSEO = () => {
                 </label>
               ))}
             </div>
-            <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 w-full mt-2">
+            <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 w-full mt-2">
               Save Schema Settings
             </button>
           </div>
@@ -297,7 +297,7 @@ export const AdminSEO = () => {
 
       {activeTab === 'tools' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 flex flex-col items-center text-center">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6 flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
               <Globe className="w-8 h-8 text-blue-500" />
             </div>
@@ -309,22 +309,22 @@ export const AdminSEO = () => {
               Status: <strong className="text-green-600">Available</strong>
             </p>
             <div className="flex gap-3 w-full">
-              <button onClick={handleGenerateSitemap} className="flex-1 px-4 py-2 bg-saffron text-white rounded-lg font-medium hover:bg-saffron/90">
+              <button onClick={handleGenerateSitemap} className="flex-1 px-4 py-2 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90">
                 Generate
               </button>
-              <a href="/sitemap.xml" download className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 block text-center">
+              <a href="/sitemap.xml" download className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 block text-center">
                 Download
               </a>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 flex flex-col items-center text-center">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6 flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
               <FileText className="w-8 h-8 text-green-500" />
             </div>
             <h3 className="text-lg font-bold text-gray-900 mb-2">Robots.txt</h3>
             <p className="text-sm text-gray-500 mb-6">Automatically generate a standard robots.txt file to guide search engine crawlers properly.</p>
-            <button onClick={handleGenerateRobots} className="w-full px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 mt-auto">
+            <button onClick={handleGenerateRobots} className="w-full px-4 py-2 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 mt-auto">
               Generate robots.txt
             </button>
           </div>
@@ -333,7 +333,7 @@ export const AdminSEO = () => {
 
       {activeTab === 'generator' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
+          <div className="lg:col-span-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-8 text-center">
             <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
               <Search className="w-10 h-10 text-saffron" />
             </div>
@@ -343,7 +343,7 @@ export const AdminSEO = () => {
               This process will <strong>never</strong> overwrite manually entered SEO values. It will generate values <strong>only when</strong> the SEO Title or Meta Description is empty.
             </p>
             
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-left space-y-4 mb-8">
+            <div className="bg-gray-50 p-4 rounded-md border border-gray-200 text-left space-y-4 mb-8">
               <h4 className="font-semibold text-gray-900">Select content to generate:</h4>
               <div className="grid grid-cols-2 gap-3">
                 {['Bhajans', 'Articles', 'Festivals', 'Puranas', 'Categories'].map(item => (
@@ -355,14 +355,14 @@ export const AdminSEO = () => {
               </div>
             </div>
 
-            <button onClick={handleGenerateBulk} className="px-6 py-3 bg-saffron text-white rounded-lg font-bold hover:bg-saffron/90 w-full shadow-sm text-lg flex items-center justify-center gap-2 transition-colors">
+            <button onClick={handleGenerateBulk} className="px-6 py-3 bg-saffron text-white rounded-md font-bold hover:bg-saffron/90 w-full shadow-sm text-lg flex items-center justify-center gap-2 transition-colors">
               Start Bulk Generation Job
             </button>
           </div>
           
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6">
             <h3 className="font-bold text-gray-900 mb-4">Background Job Status</h3>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg divide-y divide-gray-100 text-center">
+            <div className="bg-gray-50 border border-gray-200 rounded-md divide-y divide-gray-100 text-center">
               <div className="p-8 text-gray-500">
                 <Search className="w-8 h-8 text-gray-300 mx-auto mb-2" />
                 <p className="text-sm">No SEO generation jobs have been executed yet.</p>

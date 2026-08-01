@@ -137,7 +137,7 @@ export const Home: React.FC = () => {
               Divine <span className="text-saffron">Deities</span>
             </h2>
             <Link to="/gods">
-              <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-bold rounded-lg shadow-md px-6">
+              <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-bold rounded-md shadow-md px-6">
                 VIEW ALL <span className="ml-2 font-black">&gt;</span>
               </Button>
             </Link>
@@ -158,7 +158,7 @@ export const Home: React.FC = () => {
             <p className="text-darkBrown/60 mt-2">Most loved bhajans this week</p>
           </div>
           <Link to="/videos">
-            <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-bold rounded-lg shadow-md px-6">
+            <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-bold rounded-md shadow-md px-6">
               VIEW ALL <span className="ml-2 font-black">&gt;</span>
             </Button>
           </Link>

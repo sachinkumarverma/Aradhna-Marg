@@ -12,7 +12,7 @@ router.get('/videos', async (req: Request, res: Response, next: NextFunction) =>
     const excludeShorts = req.query.excludeShorts === 'true';
     const offset = (page - 1) * limit;
 
-    let whereConditions = ['1=1'];
+    let whereConditions = ["import_status != 'IGNORED'"];
     let queryParams: any[] = [];
     let paramIndex = 1;
 

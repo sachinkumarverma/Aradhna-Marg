@@ -36,7 +36,7 @@ export function DataTable<T extends { id: string | number }>({
 
   if (isLoading) {
     return (
-      <div className="w-full overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm animate-pulse">
+      <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm animate-pulse">
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
@@ -44,7 +44,7 @@ export function DataTable<T extends { id: string | number }>({
             </tr>
           </thead>
           <tbody>
-            {[1,2,3,4,5].map(row => (
+            {[1,2,3,4,5,6,7,8,9,10].map(row => (
               <tr key={row} className="border-b border-gray-50">
                 {[1,2,3,4,5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
               </tr>
@@ -58,7 +58,7 @@ export function DataTable<T extends { id: string | number }>({
   if (!data || data.length === 0) {
     const EmptyIcon = emptyIcon || Inbox;
     return (
-      <div className="w-full border border-dashed border-gray-300 rounded-xl bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
+      <div className="w-full border border-dashed border-gray-300 rounded-md bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
           <EmptyIcon className="w-6 h-6 text-gray-400" />
         </div>
@@ -69,7 +69,7 @@ export function DataTable<T extends { id: string | number }>({
   }
 
   return (
-    <div className="w-full overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm">
       <table className="w-full text-sm text-left">
         <thead className="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-xs tracking-wider">
           <tr>
@@ -98,23 +98,23 @@ export function DataTable<T extends { id: string | number }>({
               <td className="px-6 py-4">
                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   {onPreview && (
-                    <button onClick={() => onPreview(row)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors" title="Preview">
-                      <Eye className="w-4 h-4" />
+                    <button onClick={() => onPreview(row)} className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors" title="Preview">
+                      <Eye className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                   )}
                   {onEdit && (
-                    <button onClick={() => onEdit(row)} className="p-1.5 text-gray-400 hover:text-saffron hover:bg-saffron/10 rounded-md transition-colors" title="Edit">
-                      <Edit2 className="w-4 h-4" />
+                    <button onClick={() => onEdit(row)} className="p-1.5 text-saffron hover:text-orange-700 hover:bg-saffron/10 rounded-md transition-colors" title="Edit">
+                      <Edit2 className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                   )}
                   {onActionClick && (
-                    <button onClick={() => onActionClick('REGENERATE_AI', row)} className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors" title="Regenerate AI Metadata">
-                      <Sparkles className="w-4 h-4" />
+                    <button onClick={() => onActionClick('REGENERATE_AI', row)} className="p-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors" title="Regenerate AI Metadata">
+                      <Sparkles className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                   )}
                   {onDelete && (
-                    <button onClick={() => onDelete(row)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors" title="Delete">
-                      <Trash2 className="w-4 h-4" />
+                    <button onClick={() => onDelete(row)} className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors" title="Delete">
+                      <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                   )}
                 </div>

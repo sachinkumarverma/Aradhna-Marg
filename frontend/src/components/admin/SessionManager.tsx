@@ -73,7 +73,7 @@ export const SessionManager: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-md shadow-2xl p-6 max-w-sm w-full animate-in zoom-in-95 duration-200">
         <h3 className="text-xl font-bold text-gray-900 mb-2">Session Expiring</h3>
         <p className="text-gray-600 mb-6 text-sm leading-relaxed">
           Your session will expire in 5 minutes due to inactivity. Do you want to continue your session?
@@ -81,13 +81,13 @@ export const SessionManager: React.FC = () => {
         <div className="flex gap-3 justify-end">
           <button 
             onClick={() => handleLogout("You have been logged out.")}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
             Logout Now
           </button>
           <button 
             onClick={() => setShowWarning(false)}
-            className="px-4 py-2 text-sm font-medium text-white bg-saffron hover:bg-saffron/90 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-saffron/50 shadow-sm"
+            className="px-4 py-2 text-sm font-medium text-white bg-saffron hover:bg-saffron/90 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-saffron/50 shadow-sm"
           >
             Continue Session
           </button>

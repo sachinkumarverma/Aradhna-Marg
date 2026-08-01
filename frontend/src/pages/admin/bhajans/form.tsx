@@ -124,13 +124,13 @@ export const AdminBhajanForm = () => {
       <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 bg-orange-100 border-b border-orange-200">
           <div className="flex items-center gap-4">
             <button type="button" onClick={handleClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">{isEditing ? 'Edit Bhajan' : 'Create Bhajan'}</h1>
+              <h1 className="text-xl font-bold tracking-wide text-slate-900 uppercase">{isEditing ? 'Edit Bhajan' : 'Create Bhajan'}</h1>
               {lastSaved && <p className="text-xs text-green-600 font-medium mt-1">Last saved: {lastSaved.toLocaleTimeString()}</p>}
             </div>
           </div>
@@ -144,7 +144,7 @@ export const AdminBhajanForm = () => {
                 handleSubmit(onSubmit)();
               }}
               disabled={saveMutation.isPending || !isValid}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
               Save as Draft
@@ -155,7 +155,7 @@ export const AdminBhajanForm = () => {
                 handleSubmit(onSubmit)();
               }}
               disabled={saveMutation.isPending || !isValid}
-              className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-lg hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               {saveMutation.isPending ? 'Publishing...' : 'Publish'}
@@ -168,12 +168,12 @@ export const AdminBhajanForm = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT COLUMN: Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-800">Bhajan Title *</label>
               <input
                 {...register('title', { required: 'Title is required' })}
-                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
                 placeholder="e.g. Shri Hanuman Chalisa"
               />
               {errors.title && <p className="text-xs text-red-500">{errors.title.message as string}</p>}
@@ -191,7 +191,7 @@ export const AdminBhajanForm = () => {
                       theme="snow" 
                       value={field.value || ''} 
                       onChange={field.onChange} 
-                      className="bg-white rounded-b-lg" 
+                      className="bg-white rounded-b-md" 
                       style={{ height: '350px' }} 
                     />
                   </div>
@@ -201,7 +201,7 @@ export const AdminBhajanForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
             <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b">
               Advanced SEO
             </div>
@@ -211,7 +211,7 @@ export const AdminBhajanForm = () => {
                 <label className="text-sm font-semibold text-gray-700">SEO Title</label>
                 <input
                   {...register('seo_title')}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                  className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
                 />
               </div>
               <div className="space-y-1.5">
@@ -219,7 +219,7 @@ export const AdminBhajanForm = () => {
                 <textarea
                   {...register('seo_description')}
                   rows={3}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                  className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
                 />
               </div>
               <div className="space-y-1.5">
@@ -239,7 +239,7 @@ export const AdminBhajanForm = () => {
         {/* RIGHT COLUMN: Settings & Metadata */}
         <div className="space-y-6">
           
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Classification</h3>
             
             <div className="space-y-1.5">
@@ -281,7 +281,7 @@ export const AdminBhajanForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Publishing</h3>
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-700">Status</label>
@@ -304,7 +304,7 @@ export const AdminBhajanForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Video Configuration</h3>
             
             <div className="space-y-3">
@@ -321,7 +321,7 @@ export const AdminBhajanForm = () => {
               </div>
 
               {videoSourceMode === 'automatic' ? (
-                <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100 text-xs text-blue-700">
+                <div className="bg-blue-50/50 p-3 rounded-md border border-blue-100 text-xs text-blue-700">
                   The primary YouTube video will automatically be linked based on title matching during the sync process.
                 </div>
               ) : (
@@ -331,7 +331,7 @@ export const AdminBhajanForm = () => {
                     {...register('original_youtube_url', { 
                       pattern: { value: /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/, message: 'Invalid YouTube URL' }
                     })}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-saffron focus:ring-1 focus:ring-saffron text-sm"
+                    className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none focus:border-saffron focus:ring-1 focus:ring-saffron text-sm"
                     placeholder="https://youtube.com/watch?v=..."
                   />
                   {errors.original_youtube_url && <p className="text-xs text-red-500">{errors.original_youtube_url.message as string}</p>}

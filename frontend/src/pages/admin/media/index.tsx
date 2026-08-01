@@ -101,7 +101,7 @@ export const AdminMedia = () => {
     <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <ImageIcon className="w-6 h-6 text-saffron" /> MEDIA LIBRARY
           </h1>
           <p className="text-sm text-gray-500 mt-1">Manage images, audio, and documents securely.</p>
@@ -109,7 +109,7 @@ export const AdminMedia = () => {
       </div>
 
       {/* Action Bar */}
-      <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex flex-wrap gap-4 justify-between items-center">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md border border-blue-100 shadow-sm flex flex-wrap gap-4 justify-between items-center">
         <div className="flex items-center gap-4 flex-1 min-w-[300px]">
           <SearchInput
             placeholder="Search files..."
@@ -118,21 +118,21 @@ export const AdminMedia = () => {
             className="flex-1 max-w-md"
           />
 
-          <button onClick={handleCreateFolder} className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+          <button onClick={handleCreateFolder} className="px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50 flex items-center gap-2">
             <FolderPlus className="w-4 h-4" /> New Folder
           </button>
         </div>
 
-        <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
+        <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-md">
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-1.5 rounded-md ${viewMode === 'grid' ? 'bg-white shadow' : 'text-gray-500 hover:text-gray-900'}`}
+            className={`p-1.5 rounded-md ${viewMode === 'grid' ? 'bg-white shadow' : 'text-gray-900 hover:text-gray-900'}`}
           >
             <Grid className="w-4 h-4" />
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`p-1.5 rounded-md ${viewMode === 'list' ? 'bg-white shadow' : 'text-gray-500 hover:text-gray-900'}`}
+            className={`p-1.5 rounded-md ${viewMode === 'list' ? 'bg-white shadow' : 'text-gray-900 hover:text-gray-900'}`}
           >
             <List className="w-4 h-4" />
           </button>
@@ -153,7 +153,7 @@ export const AdminMedia = () => {
       {/* Upload Zone */}
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-saffron bg-saffron/5' : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+        className={`border-2 border-dashed rounded-md p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-saffron bg-saffron/5' : 'border-gray-300 hover:border-gray-400 bg-gray-50'
           }`}
       >
         <input {...getInputProps()} />
@@ -174,7 +174,7 @@ export const AdminMedia = () => {
                 {folders.map((folder: any) => (
                   <div
                     key={folder.id}
-                    className="group bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md cursor-pointer transition-shadow"
+                    className="group bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-md p-4 flex items-center justify-between hover:shadow-md cursor-pointer transition-shadow"
                     onClick={() => setCurrentFolderId(folder.id)}
                   >
                     <div className="flex items-center gap-3 overflow-hidden">
@@ -183,9 +183,9 @@ export const AdminMedia = () => {
                     </div>
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteMutation.mutate({ id: folder.id, type: 'folder' }); }}
-                      className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="p-1 text-red-500 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                   </div>
                 ))}
@@ -201,7 +201,7 @@ export const AdminMedia = () => {
               {viewMode === 'grid' ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {files.map((file: any) => (
-                    <div key={file.id} className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow relative">
+                    <div key={file.id} className="group bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-md overflow-hidden hover:shadow-md transition-shadow relative">
                       <div className="aspect-square bg-gray-100 flex items-center justify-center p-2 relative">
                         {file.thumbnailUrl ? (
                           <img src={file.thumbnailUrl} alt={file.fileName} className="w-full h-full object-cover rounded" />
@@ -216,7 +216,7 @@ export const AdminMedia = () => {
                             <Download className="w-4 h-4" />
                           </a>
                           <button onClick={() => deleteMutation.mutate({ id: file.id, type: 'file' })} className="p-2 bg-red-500/80 hover:bg-red-500 text-white rounded-full">
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                           </button>
                         </div>
                       </div>
@@ -228,7 +228,7 @@ export const AdminMedia = () => {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-md overflow-hidden">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-gray-50 border-b">
                       <tr>
@@ -256,8 +256,8 @@ export const AdminMedia = () => {
                               <button onClick={() => copyUrl(file.url)} className="p-1.5 text-gray-500 hover:text-saffron hover:bg-saffron/10 rounded">
                                 <Copy className="w-4 h-4" />
                               </button>
-                              <button onClick={() => deleteMutation.mutate({ id: file.id, type: 'file' })} className="p-1.5 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded">
-                                <Trash2 className="w-4 h-4" />
+                              <button onClick={() => deleteMutation.mutate({ id: file.id, type: 'file' })} className="p-1.5 text-red-500 hover:text-red-600 hover:bg-red-50 rounded">
+                                <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                               </button>
                             </div>
                           </td>

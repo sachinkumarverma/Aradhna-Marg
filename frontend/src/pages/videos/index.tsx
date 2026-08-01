@@ -56,11 +56,11 @@ export const VideosList = () => {
               placeholder="Search videos by title..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 bg-white rounded-xl pl-12 pr-4 outline-none border border-black/5 focus:border-saffron focus:ring-1 focus:ring-saffron shadow-sm"
+              className="w-full h-12 bg-white rounded-md pl-12 pr-4 outline-none border border-black/5 focus:border-saffron focus:ring-1 focus:ring-saffron shadow-sm"
             />
           </div>
 
-          <label className="flex items-center gap-3 cursor-pointer bg-white px-5 py-3 rounded-xl border border-black/5 shadow-sm hover:border-saffron/30 transition-colors">
+          <label className="flex items-center gap-3 cursor-pointer bg-white px-5 py-3 rounded-md border border-black/5 shadow-sm hover:border-saffron/30 transition-colors">
             <div className="relative">
               <input 
                 type="checkbox" 

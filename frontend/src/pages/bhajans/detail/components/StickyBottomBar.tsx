@@ -29,7 +29,7 @@ export const StickyBottomBar: React.FC<StickyBottomBarProps> = ({
           <button 
             onClick={onToggleReadingMode}
             className={cn(
-              "flex flex-col items-center gap-1 p-2 rounded-xl flex-1 transition-colors",
+              "flex flex-col items-center gap-1 p-2 rounded-md flex-1 transition-colors",
               isReadingMode ? "text-saffron bg-saffron/10" : "text-darkBrown/70 hover:bg-black/5"
             )}
           >
@@ -37,20 +37,20 @@ export const StickyBottomBar: React.FC<StickyBottomBarProps> = ({
             <span className="text-[10px] font-medium">Read</span>
           </button>
 
-          <button className="flex flex-col items-center gap-1 p-2 rounded-xl flex-1 text-darkBrown/70 hover:bg-black/5 transition-colors">
+          <button className="flex flex-col items-center gap-1 p-2 rounded-md flex-1 text-darkBrown/70 hover:bg-black/5 transition-colors">
             <Download className="w-5 h-5" />
             <span className="text-[10px] font-medium">PDF</span>
           </button>
 
           <button 
             onClick={onCopy}
-            className="flex flex-col items-center gap-1 p-2 rounded-xl flex-1 text-darkBrown/70 hover:bg-black/5 transition-colors"
+            className="flex flex-col items-center gap-1 p-2 rounded-md flex-1 text-darkBrown/70 hover:bg-black/5 transition-colors"
           >
             {hasCopied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
             <span className="text-[10px] font-medium">{hasCopied ? 'Copied' : 'Copy'}</span>
           </button>
 
-          <button className="flex flex-col items-center gap-1 p-2 rounded-xl flex-1 text-darkBrown/70 hover:bg-black/5 transition-colors">
+          <button className="flex flex-col items-center gap-1 p-2 rounded-md flex-1 text-darkBrown/70 hover:bg-black/5 transition-colors">
             <Share2 className="w-5 h-5" />
             <span className="text-[10px] font-medium">Share</span>
           </button>

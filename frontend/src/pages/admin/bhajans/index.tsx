@@ -6,6 +6,7 @@ import { DataTable } from '@components/admin/DataTable';
 import { Button } from '@components/ui/Button';
 import { Select } from '@components/ui/Select';
 import { SearchInput } from '@components/ui/SearchInput';
+import { Pagination } from '@components/ui/Pagination';
 import { BhajanApi } from '@features/bhajans/BhajanApi';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -14,6 +15,7 @@ export const AdminBhajans: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [sort, setSort] = useState('newest');
@@ -52,6 +54,8 @@ export const AdminBhajans: React.FC = () => {
       bulkMutation.mutate({ ids: selectedIds, action: action as any });
     }
   };
+
+  const totalPages = Math.ceil((data?.meta?.total || 0) / (limit || 10));
 
   const columns = [
     {
@@ -94,10 +98,10 @@ export const AdminBhajans: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 flex flex-col h-full">
+    <div className="space-y-6 flex flex-col min-h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <Music2 className="w-6 h-6 text-saffron" />
             BHAJANS
           </h1>
@@ -108,7 +112,7 @@ export const AdminBhajans: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
         <SearchInput 
           placeholder="Search by title, slug, lyrics..."
           value={search}
@@ -155,31 +159,18 @@ export const AdminBhajans: React.FC = () => {
       </div>
 
 
-      {Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10)) > 1 && (
-        <div className="flex items-center justify-between py-2 bg-white px-4 rounded-b-xl border-t border-gray-100">
-          <span className="text-sm text-gray-500">
-            Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10))}</span>
-          </span>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              disabled={page === 1}
-              onClick={() => setPage(p => p - 1)}
-            >
-              Previous
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              disabled={!data?.meta || page >= Math.ceil(data.meta.total / data.meta.limit)}
-              onClick={() => setPage(p => p + 1)}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      )}
+      
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 overflow-hidden relative z-10">
+        <Pagination 
+          page={page} 
+          totalPages={totalPages} 
+          totalRecords={data?.meta?.total || 0} 
+          limit={limit} 
+          onPageChange={setPage} 
+          onLimitChange={(l) => { setLimit(l); setPage(1); }} 
+        />
+      </div>
+    
 
       <Outlet />
     </div>

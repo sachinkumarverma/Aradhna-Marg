@@ -98,7 +98,7 @@ export function AdminAI() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'COMPLETED': return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"><CheckCircle2 className="w-3 h-3 mr-1" /> Completed</span>;
-      case 'FAILED': return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><XCircle className="w-3 h-3 mr-1" /> Failed</span>;
+      case 'FAILED': return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><XCircle className="w-3 h-3 mr-1" strokeWidth={2.5} /> Failed</span>;
       case 'PROCESSING': return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 animate-pulse"><Zap className="w-3 h-3 mr-1" /> Processing</span>;
       default: return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"><Clock className="w-3 h-3 mr-1" /> Pending</span>;
     }
@@ -158,7 +158,7 @@ export function AdminAI() {
       {/* Header & Stats Overview */}
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <BrainCircuit className="w-6 h-6 text-saffron" />
             AI PROCESSING PIPELINE
           </h1>
@@ -167,7 +167,7 @@ export function AdminAI() {
         
         {/* Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-gradient-to-br from-blue-50 to-white p-5 rounded-md shadow-sm border border-blue-100">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Today's Jobs</p>
@@ -178,7 +178,7 @@ export function AdminAI() {
               </div>
             </div>
           </div>
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-gradient-to-br from-orange-50 to-white p-5 rounded-md shadow-sm border border-orange-100">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Pending Queue</p>
@@ -189,7 +189,7 @@ export function AdminAI() {
               </div>
             </div>
           </div>
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-gradient-to-br from-green-50 to-white p-5 rounded-md shadow-sm border border-green-100">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Completed Jobs</p>
@@ -200,7 +200,7 @@ export function AdminAI() {
               </div>
             </div>
           </div>
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-gradient-to-br from-red-50 to-white p-5 rounded-md shadow-sm border border-red-100">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Failed Jobs</p>
@@ -226,10 +226,10 @@ export function AdminAI() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-4 py-2.5 text-sm font-bold uppercase border-b-2 transition-colors ${
               activeTab === tab.id 
                 ? 'border-saffron text-saffron' 
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'
             }`}
           >
             {tab.label}
@@ -238,7 +238,7 @@ export function AdminAI() {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col min-h-[400px]">
+      <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm flex flex-col ">
         
         {/* Content Assistant Tab */}
         {activeTab === 'assistant' && (
@@ -248,9 +248,9 @@ export function AdminAI() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {assistantCards.map(card => (
-                <div key={card.title} className="border border-gray-100 rounded-xl p-5 hover:border-saffron/30 hover:shadow-md transition-all">
+                <div key={card.title} className="border border-gray-100 rounded-md p-5 hover:border-saffron/30 hover:shadow-md transition-all">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gray-50 rounded-lg">
+                    <div className="p-2 bg-gray-50 rounded-md">
                       {card.icon}
                     </div>
                     <h3 className="font-semibold text-gray-900">{card.title}</h3>
@@ -261,7 +261,7 @@ export function AdminAI() {
                         key={action.name}
                         disabled={action.disabled || queueMutation.isPending}
                         onClick={() => handleQueueJob(`${action.name} for ${card.title}`, card.title, action.type, 1)}
-                        className={`w-full flex items-center justify-between px-4 py-2 text-sm rounded-lg border transition-colors ${
+                        className={`w-full flex items-center justify-between px-4 py-2 text-sm rounded-md border transition-colors ${
                           action.disabled 
                             ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
                             : 'bg-white text-gray-700 border-gray-200 hover:border-saffron hover:text-saffron hover:bg-orange-50'
@@ -290,7 +290,7 @@ export function AdminAI() {
                 { name: 'Generate Article Excerpts', desc: 'Creates short summaries for articles missing an excerpt', type: 'BULK_EXCERPT', content: 'Articles', items: 45 },
                 { name: 'Generate Festival Summaries', desc: 'Fills missing descriptions for upcoming festivals', type: 'BULK_FESTIVAL', content: 'Festivals', items: 12 },
               ].map(tool => (
-                <div key={tool.name} className="flex flex-col border border-gray-200 rounded-xl p-5 bg-gray-50/50">
+                <div key={tool.name} className="flex flex-col border border-gray-200 rounded-md p-5 bg-gray-50/50">
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{tool.name}</h3>
                     <p className="text-sm text-gray-500 mt-1">{tool.desc}</p>
@@ -387,17 +387,17 @@ export function AdminAI() {
                           <button 
                             onClick={() => cancelMutation.mutate(job.id)}
                             disabled={cancelMutation.isPending}
-                            className="p-1.5 text-gray-400 hover:text-orange-500 transition-colors"
+                            className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors"
                             title="Cancel Job"
                           >
-                            <XCircle className="w-4 h-4" />
+                            <XCircle className="w-4 h-4" strokeWidth={2.5} />
                           </button>
                         )}
                         {job.status === 'FAILED' && (
                           <button 
                             onClick={() => retryMutation.mutate(job.id)}
                             disabled={retryMutation.isPending}
-                            className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"
+                            className="p-1.5 text-blue-500 hover:text-blue-600 transition-colors"
                             title="Retry Job"
                           >
                             <RotateCcw className="w-4 h-4" />
@@ -411,10 +411,10 @@ export function AdminAI() {
                               }
                             }}
                             disabled={deleteMutation.isPending}
-                            className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                            className="p-1.5 text-red-500 hover:text-red-600 transition-colors"
                             title="Delete Record"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                           </button>
                         )}
                       </td>

@@ -132,13 +132,13 @@ export const AdminPuranForm = () => {
       <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 bg-orange-100 border-b border-orange-200">
           <div className="flex items-center gap-4">
             <button type="button" onClick={handleClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">{isEditing ? 'Edit Purana' : 'Create Purana'}</h1>
+              <h1 className="text-xl font-bold tracking-wide text-slate-900 uppercase">{isEditing ? 'Edit Purana' : 'Create Purana'}</h1>
               {lastSaved && <p className="text-xs text-green-600 font-medium mt-1">Last saved: {lastSaved.toLocaleTimeString()}</p>}
             </div>
           </div>
@@ -152,7 +152,7 @@ export const AdminPuranForm = () => {
                 handleSubmit(onSubmit)();
               }}
               disabled={saveMutation.isPending || isUploading || !isValid}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
               Save as Draft
@@ -163,7 +163,7 @@ export const AdminPuranForm = () => {
                 handleSubmit(onSubmit)();
               }}
               disabled={saveMutation.isPending || isUploading || !isValid}
-              className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-lg hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {(saveMutation.isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               {(saveMutation.isPending || isUploading) ? 'Publishing...' : 'Publish'}
@@ -176,12 +176,12 @@ export const AdminPuranForm = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT COLUMN: Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-800">Title *</label>
               <input
                 {...register('title', { required: 'Title is required' })}
-                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
                 placeholder="e.g. Shiva Purana"
               />
               {errors.title && <p className="text-xs text-red-500">{errors.title.message as string}</p>}
@@ -191,7 +191,7 @@ export const AdminPuranForm = () => {
               <div className="space-y-1.5">
                 <label className="text-sm font-semibold text-gray-800">Cover Image</label>
                 {coverPreview ? (
-                  <div className="relative rounded-lg overflow-hidden border border-gray-200 group h-[200px]">
+                  <div className="relative rounded-md overflow-hidden border border-gray-200 group h-[200px]">
                     <img src={coverPreview} alt="Cover Preview" className="w-full h-full object-cover" />
                     <div className="absolute top-3 right-3 flex gap-2">
                       <button 
@@ -211,7 +211,7 @@ export const AdminPuranForm = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[200px]">
+                  <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[200px]">
                     <input type="file" accept="image/*" className="hidden" id="purana-cover-upload" onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
@@ -231,7 +231,7 @@ export const AdminPuranForm = () => {
               <div className="space-y-1.5">
                 <label className="text-sm font-semibold text-gray-800">PDF File *</label>
                 {pdfFile || watch('pdf_file') ? (
-                  <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-red-50 flex flex-col items-center justify-center h-[200px] group">
+                  <div className="relative rounded-md overflow-hidden border border-gray-200 bg-red-50 flex flex-col items-center justify-center h-[200px] group">
                     <FileText className="w-12 h-12 text-red-500 mb-2" />
                     <span className="text-sm font-medium text-red-700 px-4 text-center truncate w-full">
                       {pdfFile ? pdfFile.name : 'PDF Uploaded'}
@@ -254,7 +254,7 @@ export const AdminPuranForm = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[200px]">
+                  <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[200px]">
                     <input type="file" accept="application/pdf" className="hidden" id="purana-pdf-upload" onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
@@ -283,7 +283,7 @@ export const AdminPuranForm = () => {
                       theme="snow" 
                       value={field.value || ''} 
                       onChange={field.onChange} 
-                      className="bg-white rounded-b-lg" 
+                      className="bg-white rounded-b-md" 
                       style={{ height: '350px' }} 
                     />
                   </div>
@@ -292,7 +292,7 @@ export const AdminPuranForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
             <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b">
               Advanced SEO
             </div>
@@ -302,7 +302,7 @@ export const AdminPuranForm = () => {
                 <label className="text-sm font-semibold text-gray-700">SEO Title</label>
                 <input
                   {...register('seo_title')}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                  className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
                 />
               </div>
               <div className="space-y-1.5">
@@ -310,7 +310,7 @@ export const AdminPuranForm = () => {
                 <textarea
                   {...register('seo_description')}
                   rows={3}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                  className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
                 />
               </div>
             </div>
@@ -320,7 +320,7 @@ export const AdminPuranForm = () => {
         {/* RIGHT COLUMN: Settings & Metadata */}
         <div className="space-y-6">
           
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Publishing Details</h3>
             
             <div className="space-y-1.5">
@@ -346,7 +346,7 @@ export const AdminPuranForm = () => {
               <label className="text-sm font-semibold text-gray-700">Author</label>
               <input
                 {...register('author')}
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-saffron focus:ring-1 focus:ring-saffron text-sm"
+                className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none focus:border-saffron focus:ring-1 focus:ring-saffron text-sm"
                 placeholder="Optional author name..."
               />
             </div>

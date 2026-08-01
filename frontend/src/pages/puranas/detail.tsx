@@ -122,7 +122,7 @@ export const PuranDetail: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleView}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium shadow-sm"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium shadow-sm"
           >
             <FileText className="w-5 h-5" />
             View PDF
@@ -133,7 +133,7 @@ export const PuranDetail: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleDownload}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-saffron text-white rounded-xl hover:bg-saffron/90 transition-colors font-medium shadow-sm"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium shadow-sm"
           >
             <Download className="w-5 h-5" />
             Download PDF
@@ -146,7 +146,7 @@ export const PuranDetail: React.FC = () => {
             <h3 className="text-2xl font-bold text-gray-900 mb-6 font-serif">Related Puranas</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {data.related.map((puran: any) => (
-                <Link to={`/puranas/${puran.slug}`} key={puran.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                <Link to={`/puranas/${puran.slug}`} key={puran.id} className="bg-white rounded-md shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
                   <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                     {puran.cover_image ? (
                       <img src={puran.cover_image} alt={puran.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />

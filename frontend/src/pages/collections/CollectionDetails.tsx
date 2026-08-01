@@ -47,7 +47,7 @@ export const CollectionDetails: React.FC = () => {
           <h2 className="text-2xl font-bold text-darkBrown tracking-tight">All {title}</h2>
           
           {/* Simple Sorting Mock */}
-          <select className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-saffron">
+          <select className="bg-white border border-gray-200 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-saffron">
             <option>Most Popular</option>
             <option>Newest</option>
             <option>A-Z</option>

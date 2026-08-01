@@ -34,9 +34,9 @@ export const AdminDashboard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 flex flex-col h-full">
+      <div className="space-y-6 flex flex-col min-h-full">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <LayoutDashboard className="w-6 h-6 text-saffron" />
             DASHBOARD
           </h1>
@@ -45,12 +45,12 @@ export const AdminDashboard: React.FC = () => {
         <div className="space-y-6 animate-pulse flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-32"></div>
+              <div key={i} className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-md border border-gray-100 shadow-sm h-32"></div>
             ))}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 h-64"></div>
-            <div className="bg-white rounded-lg border border-gray-200 h-64"></div>
+            <div className="lg:col-span-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 h-64"></div>
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 h-64"></div>
           </div>
         </div>
       </div>
@@ -60,7 +60,7 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+        <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
           <LayoutDashboard className="w-6 h-6 text-saffron" />
           DASHBOARD
         </h1>
@@ -75,31 +75,39 @@ export const AdminDashboard: React.FC = () => {
           icon={Activity}
           trend={{ value: 12, isPositive: true }}
           colorClassName="bg-blue-100 text-blue-600"
+          bgClassName="bg-gradient-to-br from-blue-50 to-white"
+          borderClassName="border-blue-100"
         />
         <StatCard
           title="Published Bhajans"
           value={new Intl.NumberFormat('en-IN').format(stats?.published || 0)}
           icon={Music2}
           colorClassName="bg-saffron/20 text-saffron"
+          bgClassName="bg-gradient-to-br from-orange-50 to-white"
+          borderClassName="border-orange-100"
         />
         <StatCard
           title="Draft Bhajans"
           value={new Intl.NumberFormat('en-IN').format(stats?.draft || 0)}
           icon={FileText}
           colorClassName="bg-yellow-100 text-yellow-600"
+          bgClassName="bg-gradient-to-br from-amber-50 to-white"
+          borderClassName="border-amber-100"
         />
         <StatCard
           title="Pending AI Processing"
           value={stats?.pendingAi || 0}
           icon={BrainCircuit}
           colorClassName="bg-purple-100 text-purple-600"
+          bgClassName="bg-gradient-to-br from-purple-50 to-white"
+          borderClassName="border-purple-100"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Recent Activity Table Mock */}
-        <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+        <div className="lg:col-span-2 bg-gradient-to-br from-slate-50 to-white rounded-md border border-slate-200 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-semibold text-gray-900">Recently Added Bhajans</h3>
           </div>
@@ -143,7 +151,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* YouTube Sync Status Module */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
+        <div className="bg-gradient-to-br from-red-50 to-white rounded-md border border-red-100 shadow-sm p-5">
           <h3 className="font-semibold text-gray-900 mb-4">YouTube Automation</h3>
 
           <div className="space-y-4">
@@ -168,7 +176,7 @@ export const AdminDashboard: React.FC = () => {
 
             <hr className="border-gray-100" />
 
-            <button onClick={() => navigate('/admin/youtube')} className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-lg text-sm font-medium transition-colors border border-gray-200">
+            <button onClick={() => navigate('/admin/youtube')} className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-md text-sm font-medium transition-colors border border-gray-200">
               <PlaySquare className="w-4 h-4 text-red-500" />
               Manage Synchronization
             </button>

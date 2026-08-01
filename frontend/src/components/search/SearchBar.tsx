@@ -103,7 +103,7 @@ export const SearchBar: React.FC = () => {
                       <button 
                         key={i}
                         onClick={() => handleSearch(s)}
-                        className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl text-left transition-colors"
+                        className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-md text-left transition-colors"
                       >
                         <Search className="w-4 h-4 text-gray-400" />
                         <span className="font-medium text-darkBrown">{s}</span>
@@ -124,7 +124,7 @@ export const SearchBar: React.FC = () => {
                         <span>Recent</span>
                       </div>
                       {recentSearches.map((r, i) => (
-                        <div key={i} className="flex items-center justify-between w-full hover:bg-gray-50 rounded-xl group transition-colors">
+                        <div key={i} className="flex items-center justify-between w-full hover:bg-gray-50 rounded-md group transition-colors">
                           <button 
                             onClick={() => handleSearch(r)}
                             className="flex-1 flex items-center gap-3 p-3 text-left"
@@ -154,7 +154,7 @@ export const SearchBar: React.FC = () => {
                           <button 
                             key={i}
                             onClick={() => handleSearch(t)}
-                            className="px-3 py-1.5 bg-saffron/10 text-saffron hover:bg-saffron hover:text-white rounded-lg text-sm font-medium transition-colors"
+                            className="px-3 py-1.5 bg-saffron/10 text-saffron hover:bg-saffron hover:text-white rounded-md text-sm font-medium transition-colors"
                           >
                             {t}
                           </button>

@@ -33,7 +33,7 @@ export const ReadingControls: React.FC<ReadingControlsProps> = ({
     <div className="sticky top-24 z-30 bg-white/80 backdrop-blur-lg border border-black/5 rounded-2xl p-4 shadow-sm mb-8 flex flex-wrap items-center justify-between gap-4">
       
       <div className="flex items-center gap-4">
-        <div className="flex items-center bg-gray-100 rounded-lg p-1">
+        <div className="flex items-center bg-gray-100 rounded-md p-1">
           <Button variant="ghost" size="icon" onClick={onDecreaseFont} disabled={!canDecrease} className="h-8 w-8 rounded-md">
             <Minus className="w-4 h-4" />
           </Button>
@@ -45,14 +45,14 @@ export const ReadingControls: React.FC<ReadingControlsProps> = ({
 
         <div className="h-6 w-px bg-gray-200"></div>
 
-        <Button variant="ghost" size="icon" onClick={onToggleDark} className="rounded-lg hover:bg-gray-100">
+        <Button variant="ghost" size="icon" onClick={onToggleDark} className="rounded-md hover:bg-gray-100">
           {isDark ? <Sun className="w-5 h-5 text-golden" /> : <Moon className="w-5 h-5 text-darkBrown" />}
         </Button>
       </div>
 
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium text-darkBrown/60 hidden sm:inline-block">Auto Scroll</span>
-        <div className="flex items-center bg-gray-100 rounded-lg p-1">
+        <div className="flex items-center bg-gray-100 rounded-md p-1">
           <Button 
             variant="ghost" 
             size="sm"

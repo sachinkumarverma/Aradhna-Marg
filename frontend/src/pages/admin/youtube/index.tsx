@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
 
 import { Select } from '@components/ui/Select';
+import { Pagination } from '@components/ui/Pagination';
 import { YoutubeApi } from '@features/youtube/YoutubeApi';
 
 export const AdminYoutube = () => {
@@ -168,7 +169,7 @@ export const AdminYoutube = () => {
 
   const getStatusBadge = (status: string) => {
     switch(status) {
-      case 'NEW': return <span className="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">New</span>;
+      case 'NEW': return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white bg-blue-900 uppercase">NEW</span>;
       case 'REVIEWED': return <span className="px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">Reviewed</span>;
       case 'LINKED': return <span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Linked</span>;
       case 'IGNORED': return <span className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold">Ignored</span>;
@@ -181,9 +182,9 @@ export const AdminYoutube = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <PlaySquare className="w-6 h-6 text-red-600" />
-            YOUTUBE IMPORT MANAGEMENT
+            YOUTUBE IMPORTER
           </h1>
           <p className="text-sm text-gray-500 mt-1">Import, review, and link YouTube videos directly to your platform.</p>
         </div>
@@ -191,7 +192,7 @@ export const AdminYoutube = () => {
             type="button"
             onClick={() => syncMutation.mutate()}
             disabled={syncMutation.isPending}
-            className="flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#ff3b00] text-white rounded-md font-bold hover:bg-[#e63500] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`w-4 h-4 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
             {syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
@@ -200,32 +201,32 @@ export const AdminYoutube = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center text-center">
+        <div className="bg-gradient-to-br from-red-50 to-white p-4 rounded-md border border-red-100 shadow-sm flex flex-col items-center text-center">
           <PlaySquare className="w-6 h-6 text-red-500 mb-2" />
           <p className="text-xs text-gray-500 font-semibold uppercase">Channel</p>
           <p className="text-sm font-bold text-gray-900 truncate w-full" title={settings?.youtubeChannelId}>{settings?.youtubeChannelId ? `${settings.youtubeChannelId.slice(0, 15)}...` : 'Not Configured'}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center text-center">
+        <div className="bg-gradient-to-br from-blue-50 to-white p-4 rounded-md border border-blue-100 shadow-sm flex flex-col items-center text-center">
           <CheckCircle2 className="w-6 h-6 text-blue-500 mb-2" />
           <p className="text-xs text-gray-500 font-semibold uppercase">Total Imported</p>
-          <p className="text-xl font-bold text-gray-900">{stats?.total || 0}</p>
+          <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{stats?.total || 0}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center text-center">
-          <LinkIcon className="w-6 h-6 text-green-500 mb-2" />
+        <div className="bg-gradient-to-br from-green-50 to-white p-4 rounded-md border border-green-100 shadow-sm flex flex-col items-center text-center">
+          <LinkIcon className="w-6 h-6 text-green-500 mb-2" strokeWidth={2.5} />
           <p className="text-xs text-gray-500 font-semibold uppercase">Linked</p>
-          <p className="text-xl font-bold text-gray-900">{stats?.linked || 0}</p>
+          <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{stats?.linked || 0}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center text-center">
+        <div className="bg-gradient-to-br from-orange-50 to-white p-4 rounded-md border border-orange-100 shadow-sm flex flex-col items-center text-center">
           <AlertCircle className="w-6 h-6 text-orange-500 mb-2" />
           <p className="text-xs text-gray-500 font-semibold uppercase">Pending Review</p>
-          <p className="text-xl font-bold text-gray-900">{stats?.pending || 0}</p>
+          <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{stats?.pending || 0}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center text-center">
-          <XCircle className="w-6 h-6 text-gray-400 mb-2" />
+        <div className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-md border border-gray-200 shadow-sm flex flex-col items-center text-center">
+          <XCircle className="w-6 h-6 text-gray-400 mb-2" strokeWidth={2.5} />
           <p className="text-xs text-gray-500 font-semibold uppercase">Ignored</p>
-          <p className="text-xl font-bold text-gray-900">{stats?.ignored || 0}</p>
+          <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{stats?.ignored || 0}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center text-center">
+        <div className="bg-gradient-to-br from-purple-50 to-white p-4 rounded-md border border-purple-100 shadow-sm flex flex-col items-center text-center">
           <Clock className="w-6 h-6 text-purple-500 mb-2" />
           <p className="text-xs text-gray-500 font-semibold uppercase">Last Sync</p>
           <p className="text-sm font-bold text-gray-900">
@@ -238,19 +239,19 @@ export const AdminYoutube = () => {
       <div className="flex border-b border-gray-200">
         <button
           onClick={() => setActiveTab('videos')}
-          className={`px-6 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'videos' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`px-6 py-3 text-sm font-bold uppercase border-b-2 transition-colors ${activeTab === 'videos' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
         >
           Imported Videos
         </button>
         <button
           onClick={() => setActiveTab('history')}
-          className={`px-6 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'history' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`px-6 py-3 text-sm font-bold uppercase border-b-2 transition-colors ${activeTab === 'history' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
         >
           Sync History
         </button>
         <button
           onClick={() => setActiveTab('settings')}
-          className={`px-6 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'settings' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`px-6 py-3 text-sm font-bold uppercase border-b-2 transition-colors ${activeTab === 'settings' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
         >
           Configuration
         </button>
@@ -259,7 +260,7 @@ export const AdminYoutube = () => {
       {/* Configuration Tab */}
       {activeTab === 'settings' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="lg:col-span-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Settings className="w-5 h-5 text-gray-500" />
               Channel Configuration
@@ -273,7 +274,7 @@ export const AdminYoutube = () => {
                   type="text" 
                   defaultValue={settings?.youtubeChannelId}
                   placeholder="e.g. UCX6OQ3DkcsbYNE6H8uQQuVA"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all"
                   required
                 />
                 <p className="text-xs text-gray-500">The unique ID of the YouTube channel to synchronize from.</p>
@@ -311,7 +312,7 @@ export const AdminYoutube = () => {
                 <button 
                   type="submit" 
                   disabled={saveSettingsMutation.isPending}
-                  className="px-6 py-2.5 bg-gray-900 text-white font-bold rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                  className="px-6 py-2.5 bg-gray-900 text-white font-bold rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
                 >
                   {saveSettingsMutation.isPending ? 'Saving...' : 'Save Configuration'}
                 </button>
@@ -321,7 +322,7 @@ export const AdminYoutube = () => {
 
           <div className="lg:col-span-1">
             {settings?.youtubeChannelId && (
-              <div className="p-6 bg-white border border-gray-200 rounded-xl shadow-sm sticky top-6">
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-md shadow-sm sticky top-6">
                 <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-sm uppercase tracking-wider">
                   <PlaySquare className="w-4 h-4 text-gray-400" />
                   Connected Channel
@@ -358,7 +359,7 @@ export const AdminYoutube = () => {
       {/* Videos Tab */}
       {activeTab === 'videos' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4 justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex flex-col sm:flex-row gap-4 justify-between bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input 
@@ -366,12 +367,12 @@ export const AdminYoutube = () => {
                 placeholder="Search by title or video ID..." 
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
-                className="w-full pl-9 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                className="w-full pl-9 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
               />
               {searchTerm && (
                 <button 
                   onClick={() => { setSearchTerm(''); setPage(1); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-700 focus:outline-none"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -412,7 +413,8 @@ export const AdminYoutube = () => {
                   queryClient.invalidateQueries({ queryKey: ['settings'] }); 
                   queryClient.invalidateQueries({ queryKey: ['youtube-history'] }); 
                 }} 
-                className="p-2 rounded-lg text-white bg-saffron hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center"
+                disabled={isFetchingVideos}
+                className="p-2 rounded-md text-white bg-saffron hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Refresh Data"
               >
                 <RefreshCw className={`w-5 h-5 ${isFetchingVideos ? 'animate-spin' : ''}`} />
@@ -420,8 +422,8 @@ export const AdminYoutube = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="overflow-x-auto rounded-t-xl">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100">
+            <div className="overflow-x-auto rounded-t-md">
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
@@ -460,7 +462,11 @@ export const AdminYoutube = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {isLoadingVideos ? (
-                    <tr><td colSpan={5} className="p-8 text-center text-gray-500">Loading videos...</td></tr>
+                    Array.from({ length: 10 }).map((_, i) => (
+                      <tr key={i} className="border-b border-gray-50 animate-pulse">
+                        {[1, 2, 3, 4, 5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
+                      </tr>
+                    ))
                   ) : !videosData?.data || videosData.data.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="p-12 text-center text-gray-500">
@@ -510,7 +516,7 @@ export const AdminYoutube = () => {
                         <td className="px-6 py-4">
                           {video.linkedBhajan ? (
                             <Link to={`/admin/bhajans/${video.linkedBhajan.id}/edit`} className="text-sm font-semibold text-saffron hover:underline flex items-center gap-1">
-                              <LinkIcon className="w-3 h-3" />
+                              <LinkIcon className="w-3 h-3" strokeWidth={2.5} />
                               {video.linkedBhajan.title}
                             </Link>
                           ) : (
@@ -520,39 +526,39 @@ export const AdminYoutube = () => {
                         <td className="px-6 py-4">
                           <span className="text-sm text-gray-600">{format(new Date(video.publishedAt), 'dd MMM yyyy')}</span>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-end gap-2">
+                        <td className="px-4 py-4">
+                          <div className="flex items-center justify-end gap-0">
                             <a 
                               href={video.youtubeUrl} 
                               target="_blank" 
                               rel="noreferrer"
-                              className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                              className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
                               title="Preview on YouTube"
                             >
-                              <ExternalLink className="w-4 h-4" />
+                              <ExternalLink className="w-4 h-4" strokeWidth={2.5} />
                             </a>
                             <button 
                               onClick={() => setLinkDialogOpen(video.id)}
-                              className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
+                              className="p-1.5 text-green-600 hover:text-green-700 hover:bg-green-50 rounded transition-colors"
                               title="Link to Bhajan"
                             >
-                              <LinkIcon className="w-4 h-4" />
+                              <LinkIcon className="w-4 h-4" strokeWidth={2.5} />
                             </button>
                             <button 
                               onClick={() => statusMutation.mutate({ videoId: video.id, status: 'REVIEWED' })}
                               disabled={statusMutation.isPending || video.importStatus === 'REVIEWED'}
-                              className={`p-1.5 rounded transition-colors ${video.importStatus === 'REVIEWED' ? 'text-purple-300 cursor-not-allowed' : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'}`}
+                              className={`p-1.5 rounded transition-colors ${video.importStatus === 'REVIEWED' ? 'text-purple-300 cursor-not-allowed' : 'text-purple-600 hover:text-purple-700 hover:bg-purple-50'}`}
                               title="Mark Reviewed"
                             >
-                              <ShieldCheck className="w-4 h-4" />
+                              <ShieldCheck className="w-4 h-4" strokeWidth={2.5} />
                             </button>
                             <button 
                               onClick={() => statusMutation.mutate({ videoId: video.id, status: 'IGNORED' })}
                               disabled={statusMutation.isPending || video.importStatus === 'IGNORED'}
-                              className={`p-1.5 rounded transition-colors ${video.importStatus === 'IGNORED' ? 'text-orange-300 cursor-not-allowed' : 'text-gray-500 hover:text-orange-600 hover:bg-orange-50'}`}
+                              className={`p-1.5 rounded transition-colors ${video.importStatus === 'IGNORED' ? 'text-orange-300 cursor-not-allowed' : 'text-orange-600 hover:text-orange-700 hover:bg-orange-50'}`}
                               title="Ignore"
                             >
-                              <XCircle className="w-4 h-4" />
+                              <XCircle className="w-4 h-4" strokeWidth={2.5} />
                             </button>
                             <button 
                               onClick={() => {
@@ -561,10 +567,10 @@ export const AdminYoutube = () => {
                                 }
                               }}
                               disabled={deleteMutation.isPending}
-                              className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                              className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
                               title="Delete"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                             </button>
                           </div>
                         </td>
@@ -575,40 +581,15 @@ export const AdminYoutube = () => {
               </table>
             </div>
             {videosData?.meta && videosData.meta.total > 0 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span>Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, videosData.meta.total)} of {videosData.meta.total}</span>
-                  <div className="w-40">
-                    <Select 
-                      value={limit.toString()} 
-                      onChange={(val) => { setLimit(parseInt(val)); setPage(1); }}
-                      options={[
-                        { label: '20 per page', value: '20' },
-                        { label: '50 per page', value: '50' },
-                        { label: '100 per page', value: '100' }
-                      ]}
-                      searchable={false}
-                      menuPlacement="top"
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-600 font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <button 
-                    onClick={() => setPage(p => p + 1)}
-                    disabled={page * limit >= videosData.meta.total}
-                    className="px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-600 font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+              <Pagination 
+                page={page} 
+                totalPages={Math.ceil(videosData.meta.total / limit)} 
+                totalRecords={videosData.meta.total} 
+                limit={limit} 
+                onPageChange={setPage} 
+                onLimitChange={(l) => { setLimit(l); setPage(1); }} 
+                limitOptions={[20, 50, 100]}
+              />
             )}
           </div>
         </div>
@@ -616,7 +597,7 @@ export const AdminYoutube = () => {
 
       {/* History Tab */}
       {activeTab === 'history' && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
@@ -627,7 +608,11 @@ export const AdminYoutube = () => {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {isLoadingHistory ? (
-                <tr><td colSpan={3} className="p-8 text-center text-gray-500">Loading history...</td></tr>
+                Array.from({ length: 10 }).map((_, i) => (
+                  <tr key={i} className="border-b border-gray-50 animate-pulse">
+                    {[1, 2, 3].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
+                  </tr>
+                ))
               ) : !historyData || historyData.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="p-8 text-center text-gray-500">
@@ -661,10 +646,10 @@ export const AdminYoutube = () => {
       {/* Link Dialog */}
       {linkDialogOpen && createPortal(
         <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-md shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
               <h3 className="font-bold text-gray-900">Link Bhajan</h3>
-              <button onClick={() => setLinkDialogOpen(null)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setLinkDialogOpen(null)} className="text-gray-600 hover:text-gray-700">
                 <XCircle className="w-5 h-5"/>
               </button>
             </div>
@@ -690,7 +675,7 @@ export const AdminYoutube = () => {
               <button 
                 onClick={() => linkMutation.mutate({ videoId: linkDialogOpen, bhajanId: selectedBhajanId || null })}
                 disabled={linkMutation.isPending}
-                className="w-full py-2.5 bg-saffron text-white rounded-lg font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
+                className="w-full py-2.5 bg-saffron text-white rounded-md font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
               >
                 {linkMutation.isPending ? 'Saving...' : 'Save Link'}
               </button>

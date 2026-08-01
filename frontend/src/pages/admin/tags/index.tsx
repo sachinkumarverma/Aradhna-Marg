@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SearchInput } from '@components/ui/SearchInput';
+import { Pagination } from '@components/ui/Pagination';
 import { TagApi } from '@features/tags/TagApi';
 import toast from 'react-hot-toast';
 import { useForm, Controller } from 'react-hook-form';
@@ -15,6 +16,7 @@ export function AdminTags() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -23,9 +25,9 @@ export function AdminTags() {
 
   // Fetch Tags
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-tags', page, search],
+    queryKey: ['admin-tags', page, limit, search],
     queryFn: async () => {
-      return await TagApi.getTags({ page, limit: 10, search: search || undefined });
+      return await TagApi.getTags({ page, limit, search: search || undefined });
     }
   });
 
@@ -82,7 +84,8 @@ export function AdminTags() {
   };
 
   const tags = data?.data || [];
-  const totalPages = Math.ceil((data?.meta?.total || 0) / 10);
+  const totalRecords = data?.meta?.total || 0;
+  const totalPages = Math.ceil(totalRecords / limit);
 
   const currentColor = watch('color') || '';
   const isValidColor = (str: string) => {
@@ -93,10 +96,10 @@ export function AdminTags() {
   const previewColor = isValidColor(currentColor) ? currentColor : '#FFFFFF';
 
   return (
-    <div className="space-y-6 flex flex-col h-full">
+    <div className="space-y-4 flex flex-col min-h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <TagIcon className="w-6 h-6 text-saffron" />
             TAGS
           </h1>
@@ -107,7 +110,7 @@ export function AdminTags() {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
         <SearchInput
           placeholder="Search tags..."
           value={search}
@@ -115,10 +118,10 @@ export function AdminTags() {
         />
       </div>
 
-      <div className="flex-1 min-h-[400px] relative flex flex-col">
+      <div className="flex-1  relative flex flex-col">
         {/* Table Container */}
         {isLoading ? (
-          <div className="w-full overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm animate-pulse">
+          <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm animate-pulse">
             <table className="w-full text-sm text-left">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
@@ -126,7 +129,7 @@ export function AdminTags() {
                 </tr>
               </thead>
               <tbody>
-                {[1,2,3,4,5].map(row => (
+                {[1,2,3,4,5,6,7,8,9,10].map(row => (
                   <tr key={row} className="border-b border-gray-50">
                     {[1,2,3,4,5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
                   </tr>
@@ -135,7 +138,7 @@ export function AdminTags() {
             </table>
           </div>
         ) : tags.length === 0 ? (
-          <div className="border border-dashed border-gray-300 rounded-xl bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
+          <div className="border border-dashed border-gray-300 rounded-md bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
               <TagIcon className="w-6 h-6 text-gray-400" />
             </div>
@@ -143,47 +146,47 @@ export function AdminTags() {
             <p className="text-xs text-gray-500 mt-1">Create your first tag.</p>
           </div>
         ) : (
-        <div className="flex-1 bg-white rounded-t-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+        <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm overflow-hidden flex flex-col mb-6">
           <div className="overflow-x-auto flex-1">
             <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-xs tracking-wider">
               <tr>
-                <th className="px-6 py-4 font-bold">Tag</th>
-                <th className="px-6 py-4 font-bold">Color</th>
-                <th className="px-6 py-4 font-bold">Status</th>
-                <th className="px-6 py-4 font-bold">Created At</th>
-                <th className="px-6 py-4 font-bold text-right">Actions</th>
+                <th className="px-6 py-3 font-bold">Tag</th>
+                <th className="px-6 py-3 font-bold text-center">Color</th>
+                <th className="px-6 py-3 font-bold text-center">Status</th>
+                <th className="px-6 py-3 font-bold">Created At</th>
+                <th className="px-6 py-3 font-bold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {tags.map((tag: any) => (
                 <tr key={tag.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-3">
                       <div>
                         <p className="font-semibold text-gray-900">{tag.name}</p>
                         {tag.description && <p className="text-xs text-gray-500 truncate max-w-[200px]">{tag.description}</p>}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-3">
                        {tag.color && (
-                         <div className="w-6 h-6 rounded-full border border-gray-200" style={{ backgroundColor: tag.color }} />
+                         <div className="w-5 h-5 rounded-full border border-gray-200 mx-auto" style={{ backgroundColor: tag.color }} />
                        )}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                        ${tag.status === 'ACTIVE' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200'}
+                    <td className="px-6 py-3 text-center">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white
+                        ${tag.status === 'ACTIVE' ? 'bg-green-600' : 'bg-red-600'}
                       `}>
-                        {tag.status === 'ACTIVE' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                        {tag.status === 'ACTIVE' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" strokeWidth={2.5} />}
                         {tag.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      {new Date(tag.createdAt).toLocaleDateString()}
+                    <td className="px-6 py-3 text-gray-600">
+                      {new Date(tag.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '')}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => openDrawer(tag)} className="p-2 text-gray-400 hover:text-saffron hover:bg-saffron/10 rounded-lg transition-colors">
-                          <Edit2 className="w-4 h-4" />
+                    <td className="px-6 py-3 text-right">
+                      <div className="flex items-center justify-end">
+                        <button onClick={() => openDrawer(tag)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+                          <Edit2 className="w-4 h-4" strokeWidth={3.5} />
                         </button>
                         <button 
                           onClick={() => {
@@ -191,9 +194,9 @@ export function AdminTags() {
                               deleteMutation.mutate(tag.id);
                             }
                           }} 
-                          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4" strokeWidth={3.5} />
                         </button>
                       </div>
                     </td>
@@ -202,35 +205,17 @@ export function AdminTags() {
             </tbody>
           </table>
         </div>
+          <Pagination 
+            page={page} 
+            totalPages={totalPages} 
+            totalRecords={totalRecords} 
+            limit={limit} 
+            onPageChange={setPage} 
+            onLimitChange={(l) => { setLimit(l); setPage(1); }} 
+          />
         </div>
         )}
       </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between py-3 bg-white px-4 rounded-b-xl border border-gray-200 border-t-0 -mt-6 z-10 relative shadow-sm">
-          <span className="text-sm text-gray-500">
-            Showing page <span className="font-bold text-gray-900">{page}</span> of <span className="font-bold text-gray-900">{totalPages}</span>
-          </span>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              disabled={page === 1}
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-            >
-              Previous
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              disabled={page === totalPages}
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* Drawer */}
       {isDrawerOpen && createPortal(
@@ -239,20 +224,20 @@ export function AdminTags() {
           <div className="relative w-full max-w-md bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+            <div className="flex items-center justify-between px-6 py-4 bg-orange-100 border-b border-orange-200">
               <div className="flex items-center gap-4">
                 <button type="button" onClick={closeDrawer} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                   <ArrowLeft className="w-5 h-5 text-gray-600" />
                 </button>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">{editingId ? 'Edit Tag' : 'Create Tag'}</h1>
+                  <h1 className="text-xl font-bold tracking-wide text-slate-900 uppercase">{editingId ? 'Edit Tag' : 'Create Tag'}</h1>
                 </div>
               </div>
               <button
                 type="submit"
                 form="tag-form"
                 disabled={saveMutation.isPending || !isValid}
-                className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-lg hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 {saveMutation.isPending ? 'Saving...' : 'Save'}
@@ -262,12 +247,12 @@ export function AdminTags() {
             <div className="flex-1 overflow-y-auto p-6">
               <form id="tag-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                   <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-gray-800">Tag Name *</label>
                     <input 
                       {...register('name', { required: true })} 
-                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                      className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
                       placeholder="e.g. Featured"
                     />
                   </div>
@@ -277,7 +262,7 @@ export function AdminTags() {
                     <textarea 
                       {...register('description')} 
                       rows={3}
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm leading-relaxed"
+                      className="w-full px-4 py-3 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm leading-relaxed"
                       placeholder="Write a short description..."
                     />
                   </div>
@@ -286,14 +271,14 @@ export function AdminTags() {
                     <label className="text-sm font-semibold text-gray-800">Color</label>
                     <div className="flex items-center gap-3">
                       <div 
-                        className="w-10 h-10 border border-gray-200 rounded-lg flex-shrink-0" 
+                        className="w-10 h-10 border border-gray-200 rounded-md flex-shrink-0" 
                         style={{ backgroundColor: previewColor }}
                       />
                       <input 
                         type="text"
                         {...register('color')} 
                         placeholder="#HEX or Color Name"
-                        className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                        className="w-full px-4 py-2 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
                       />
                     </div>
                   </div>

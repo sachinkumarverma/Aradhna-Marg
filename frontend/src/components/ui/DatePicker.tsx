@@ -129,7 +129,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       <div className={cn("relative w-full text-sm", className)} ref={wrapperRef}>
         <div
           className={cn(
-            "flex items-center justify-between w-full px-3 py-2.5 bg-white border rounded-lg cursor-pointer transition-colors",
+            "flex items-center justify-between w-full px-3 py-2.5 bg-white border rounded-md cursor-pointer transition-colors",
             isOpen ? "border-saffron ring-2 ring-saffron/20" : "border-gray-200 hover:border-gray-300"
           )}
           onClick={toggleOpen}
@@ -149,7 +149,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: placement === 'top' ? 10 : -10 }}
             transition={{ duration: 0.2 }}
-            className="fixed z-[9999] w-[270px] bg-white border border-gray-100 rounded-xl shadow-2xl overflow-hidden flex flex-col"
+            className="fixed z-[9999] w-[270px] bg-white border border-gray-100 rounded-md shadow-2xl overflow-hidden flex flex-col"
             style={{ 
               right: window.innerWidth - coords.right, // Align right edge of dropdown with right edge of input!
               ...(placement === 'top' ? { bottom: window.innerHeight - coords.top } : { top: coords.top }) 
@@ -249,7 +249,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                         setView('calendar');
                       }}
                       className={cn(
-                        "py-2 px-1 text-sm rounded-lg transition-all",
+                        "py-2 px-1 text-sm rounded-md transition-all",
                         currentMonth.getMonth() === i ? "bg-saffron text-white font-bold shadow-md" : "text-gray-700 hover:bg-gray-100 font-medium border border-gray-100"
                       )}
                     >
@@ -273,7 +273,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                           setView('calendar');
                         }}
                         className={cn(
-                          "py-1.5 px-1 text-xs rounded-lg transition-all",
+                          "py-1.5 px-1 text-xs rounded-md transition-all",
                           isActive ? "bg-saffron text-white font-bold shadow-md active-year" : "text-gray-700 hover:bg-gray-100 font-medium"
                         )}
                       >

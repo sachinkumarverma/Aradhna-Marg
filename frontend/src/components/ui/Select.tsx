@@ -53,7 +53,7 @@ export const Select: React.FC<SelectProps> = ({
     <div className={cn('relative w-full text-sm', className)} ref={wrapperRef}>
       <div
         className={cn(
-          'flex items-center justify-between w-full px-3 py-2.5 bg-white border rounded-lg cursor-pointer transition-colors',
+          'flex items-center justify-between w-full px-3 py-2.5 bg-white border rounded-md cursor-pointer transition-colors',
           isOpen ? 'border-saffron ring-2 ring-saffron/20' : 'border-gray-200 hover:border-gray-300',
           error && 'border-red-500 ring-2 ring-red-500/20'
         )}
@@ -68,7 +68,7 @@ export const Select: React.FC<SelectProps> = ({
 
       {isOpen && (
         <div className={cn(
-          "absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden",
+          "absolute z-50 w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden",
           menuPlacement === 'top' ? "bottom-full mb-1" : "top-full mt-1"
         )}>
           {searchable && (

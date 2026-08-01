@@ -10,7 +10,7 @@ export const AdminLogin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [error, setError] = useState('');
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,8 +52,8 @@ export const AdminLogin: React.FC = () => {
           <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Lock className="w-8 h-8 text-saffron" />
           </div>
-          
-          <h2 className="text-3xl font-extrabold text-center text-darkBrown tracking-tight mb-2">
+
+          <h2 className="text-3xl font-extrabold text-center text-darkBrown tracking-wide mb-2 uppercase">
             Admin <span className="text-saffron">Access</span>
           </h2>
           <p className="text-center text-gray-500 mb-8">
@@ -68,11 +68,11 @@ export const AdminLogin: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
+                className="w-full h-12 px-4 rounded-md border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
                 placeholder="admin"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
               <input
@@ -80,20 +80,20 @@ export const AdminLogin: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
+                className="w-full h-12 px-4 rounded-md border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
                 placeholder="••••••••"
               />
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 font-medium text-center">
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600 font-medium text-center">
                 {error}
               </div>
             )}
 
-            <Button 
-              type="submit" 
-              className="w-full h-12 bg-saffron hover:bg-[#d96a1a] text-white font-bold rounded-lg shadow-md flex justify-center items-center"
+            <Button
+              type="submit"
+              className="w-full h-12 bg-saffron hover:bg-[#d96a1a] text-white font-bold rounded-md shadow-md flex justify-center items-center"
               disabled={loading}
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Secure Login'}

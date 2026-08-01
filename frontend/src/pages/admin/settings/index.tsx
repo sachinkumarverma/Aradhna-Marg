@@ -20,11 +20,11 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
 );
 
 const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
-  <input {...props} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
+  <input {...props} className="w-full px-3 py-2 border rounded-md bg-white focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
 );
 
 const Textarea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
-  <textarea {...props} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
+  <textarea {...props} className="w-full px-3 py-2 border rounded-md bg-white focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
 );
 
 const SaveButton = ({ isPending }: { isPending: boolean }) => (
@@ -32,7 +32,7 @@ const SaveButton = ({ isPending }: { isPending: boolean }) => (
     <button
       type="submit"
       disabled={isPending}
-      className="flex items-center gap-2 px-5 py-2.5 bg-saffron text-white rounded-lg font-medium hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      className="flex items-center gap-2 px-5 py-2.5 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
     >
       {isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
       {isPending ? 'Saving...' : 'Save Changes'}
@@ -99,19 +99,19 @@ const GeneralSection = ({ defaults }: { defaults: any }) => {
     return (
       <Field label={label}>
         {val ? (
-          <div className="relative rounded-lg overflow-hidden border border-gray-200 h-[200px] w-full max-w-sm">
+          <div className="relative rounded-md overflow-hidden border border-gray-200 h-[200px] w-full max-w-sm">
             <img src={val} alt={label} className="w-full h-full object-cover bg-gray-50" />
             <div className="absolute top-3 right-3 flex gap-2">
-              <button type="button" onClick={() => window.open(val, '_blank')} className="p-2 bg-white text-blue-500 rounded-full shadow-md border border-gray-100">
+              <button type="button" onClick={() => window.open(val, '_blank')} className="p-2 bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-500 rounded-full shadow-md border border-gray-100">
                 <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
-              <button type="button" onClick={() => { setValue(field, '', { shouldDirty: true }); setFile(null); }} className="p-2 bg-white text-red-500 rounded-full shadow-md border border-gray-100">
+              <button type="button" onClick={() => { setValue(field, '', { shouldDirty: true }); setFile(null); }} className="p-2 bg-gradient-to-br from-blue-50 to-indigo-50 text-red-500 rounded-full shadow-md border border-gray-100">
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
         ) : (
-          <div className="border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center h-[200px] w-full max-w-sm hover:bg-gray-50 cursor-pointer">
+          <div className="border-2 border-dashed border-gray-200 rounded-md flex flex-col items-center justify-center h-[200px] w-full max-w-sm bg-white hover:bg-gray-50 cursor-pointer">
             <input type="file" accept="image/*" className="hidden" id={`upload-${field}`} disabled={uploading}
               onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; setFile(f); setValue(field, URL.createObjectURL(f), { shouldDirty: true }); }} />
             <label htmlFor={`upload-${field}`} className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
@@ -181,9 +181,9 @@ const YoutubeSection = ({ defaults }: { defaults: any }) => {
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">YouTube Sync Settings</h3>
       <div className="grid grid-cols-1 gap-5 max-w-lg">
-        <Field label="Channel ID"><Input {...register('youtubeChannelId')} className="w-full px-3 py-2 border rounded-lg font-mono text-sm focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" /></Field>
+        <Field label="Channel ID"><Input {...register('youtubeChannelId')} className="w-full px-3 py-2 border rounded-md bg-white font-mono text-sm focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" /></Field>
         <Field label="Channel URL"><Input {...register('youtubeChannelUrl')} /></Field>
-        <div className="p-4 bg-gray-50 border rounded-lg space-y-4 mt-2">
+        <div className="p-4 bg-gray-50 border rounded-md space-y-4 mt-2">
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" {...register('youtubeAutoSync')} className="w-4 h-4 text-saffron rounded" />
             <div><p className="text-sm font-medium text-gray-900">Enable Auto Sync</p><p className="text-xs text-gray-500">Automatically pull new videos from YouTube</p></div>
@@ -239,14 +239,14 @@ const AnalyticsSection = ({ defaults }: { defaults: any }) => {
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">Tracking &amp; Analytics</h3>
-      <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer max-w-lg">
+      <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-md cursor-pointer max-w-lg">
         <input type="checkbox" {...register('enableAnalytics')} className="w-4 h-4 text-saffron rounded" />
         <div><p className="text-sm font-medium text-gray-900">Enable Analytics</p><p className="text-xs text-gray-500">Inject tracking codes into the public site</p></div>
       </label>
       <div className="grid grid-cols-1 gap-5 max-w-lg">
-        <Field label="Google Analytics ID"><Input {...register('googleAnalyticsId')} className="w-full px-3 py-2 border rounded-lg font-mono text-sm focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" /></Field>
-        <Field label="Google Search Console Verification"><Input {...register('googleSearchConsole')} className="w-full px-3 py-2 border rounded-lg font-mono text-sm focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" /></Field>
-        <Field label="Microsoft Clarity ID"><Input {...register('microsoftClarity')} className="w-full px-3 py-2 border rounded-lg font-mono text-sm focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" /></Field>
+        <Field label="Google Analytics ID"><Input {...register('googleAnalyticsId')} className="w-full px-3 py-2 border rounded-md bg-white font-mono text-sm focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" /></Field>
+        <Field label="Google Search Console Verification"><Input {...register('googleSearchConsole')} className="w-full px-3 py-2 border rounded-md bg-white font-mono text-sm focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" /></Field>
+        <Field label="Microsoft Clarity ID"><Input {...register('microsoftClarity')} className="w-full px-3 py-2 border rounded-md bg-white font-mono text-sm focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" /></Field>
       </div>
       <SaveButton isPending={mutation.isPending} />
     </form>
@@ -257,11 +257,11 @@ const AdvertisementSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
   const mutation = useSectionSave('/settings/advertisement', qc);
   const { register, handleSubmit } = useForm({ values: defaults });
-  const AdTextarea = (props: any) => <textarea {...props} className="w-full px-3 py-2 border rounded-lg font-mono text-xs focus:ring-2 focus:ring-saffron/20 outline-none" />;
+  const AdTextarea = (props: any) => <textarea {...props} className="w-full px-3 py-2 border rounded-md bg-white font-mono text-xs focus:ring-2 focus:ring-saffron/20 outline-none" />;
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">Monetization &amp; Ads</h3>
-      <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer max-w-lg">
+      <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-md cursor-pointer max-w-lg">
         <input type="checkbox" {...register('enableAds')} className="w-4 h-4 text-saffron rounded" />
         <div><p className="text-sm font-medium text-gray-900">Enable Display Ads</p></div>
       </label>
@@ -284,7 +284,7 @@ const SystemSection = ({ defaults }: { defaults: any }) => {
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">System Controls</h3>
       <div className="grid grid-cols-1 gap-4">
-        <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer">
+        <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-md cursor-pointer">
           <input type="checkbox" {...register('maintenanceMode')} className="w-4 h-4 text-red-500 rounded focus:ring-red-500" />
           <div><p className="text-sm font-bold text-gray-900">Maintenance Mode</p><p className="text-xs text-gray-500">Take the public site offline</p></div>
         </label>
@@ -309,7 +309,7 @@ export const AdminSettings: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] flex-1">
         <RefreshCw className="w-8 h-8 text-saffron animate-spin mb-4" />
         <p className="text-gray-500 font-medium">Loading settings...</p>
       </div>
@@ -318,12 +318,12 @@ export const AdminSettings: React.FC = () => {
 
   if (isError) {
     return (
-      <div className="bg-red-50 p-6 rounded-lg border border-red-100 flex items-start gap-4">
+      <div className="bg-red-50 p-6 rounded-md border border-red-100 flex items-start gap-4">
         <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
         <div>
           <h3 className="text-red-800 font-semibold mb-1">Error Loading Settings</h3>
           <p className="text-red-600 text-sm mb-4">Could not retrieve settings from the server.</p>
-          <button onClick={() => refetch()} className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50">Try Again</button>
+          <button onClick={() => refetch()} className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-md text-sm font-medium hover:bg-red-50">Try Again</button>
         </div>
       </div>
     );
@@ -344,14 +344,14 @@ export const AdminSettings: React.FC = () => {
     <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <Settings className="w-6 h-6 text-saffron" /> SYSTEM SETTINGS
           </h1>
           <p className="text-sm text-gray-500 mt-1">Configure global application parameters</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col md:flex-row overflow-hidden">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm flex flex-col md:flex-row overflow-hidden">
         {/* Sidebar Tabs */}
         <div className="md:w-64 border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/50 p-4 shrink-0 flex flex-row md:flex-col overflow-x-auto">
           {TABS.map(tab => (
@@ -359,8 +359,8 @@ export const AdminSettings: React.FC = () => {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                activeTab === tab ? 'bg-saffron/10 text-saffron' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              className={`text-left px-4 py-2.5 rounded-md text-sm font-bold transition-colors whitespace-nowrap uppercase ${
+                activeTab === tab ? 'bg-saffron/10 text-saffron' : 'text-gray-900 hover:bg-gray-100 hover:text-black'
               }`}
             >
               {tab}

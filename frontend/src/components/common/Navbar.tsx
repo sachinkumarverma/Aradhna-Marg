@@ -41,7 +41,7 @@ export const Navbar: React.FC = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
               <div className="w-14 h-14 rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-100 flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
-                <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover rounded-xl" />
+                <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover rounded-md" />
               </div>
               <div className="flex flex-col ml-1">
                 <span
@@ -114,7 +114,7 @@ export const Navbar: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search bhajans, gods..."
-                className="w-full bg-white h-12 rounded-xl pl-12 pr-4 outline-none focus:ring-2 focus:ring-saffron shadow-sm"
+                className="w-full bg-white h-12 rounded-md pl-12 pr-4 outline-none focus:ring-2 focus:ring-saffron shadow-sm"
               />
             </div>
 

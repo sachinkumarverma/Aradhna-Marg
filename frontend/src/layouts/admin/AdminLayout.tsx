@@ -50,11 +50,11 @@ export const AdminLayout: React.FC = () => {
       <div className="flex-1 flex flex-col w-full min-w-0">
         
         {/* Top Header */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 z-10">
+        <header className="h-16 bg-[#ff3b00] flex items-center justify-between px-4 sm:px-6 z-10 shadow-md">
           
           <div className="flex items-center gap-4">
             <button 
-              className="lg:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+              className="lg:hidden p-2 -ml-2 text-white/90 hover:text-white hover:bg-white/10 rounded-md transition-colors"
               onClick={() => setIsMobileOpen(true)}
             >
               <Menu className="w-5 h-5" />
@@ -66,26 +66,26 @@ export const AdminLayout: React.FC = () => {
               <input 
                 type="text"
                 placeholder="Global Search (Cmd+K)"
-                className="pl-9 pr-4 py-2 bg-gray-100 border-transparent rounded-lg text-sm w-64 focus:bg-white focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all outline-none"
+                className="pl-9 pr-4 py-2 bg-white/90 hover:bg-white focus:bg-white border-transparent rounded-md text-sm w-64 text-gray-700 placeholder:text-gray-400 focus:text-gray-900 focus:ring-2 focus:ring-white/50 transition-all outline-none shadow-inner"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg relative">
+            <button className="p-2 text-white/90 hover:text-white hover:bg-white/10 rounded-md relative transition-colors">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full border-2 border-[#ff3b00]"></span>
             </button>
             <button 
               onClick={handleLogout}
-              className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white/90 hover:text-white hover:bg-white/10 rounded-md transition-colors"
             >
               <LogOut className="w-4 h-4" />
               Logout
             </button>
             <button 
               onClick={handleLogout}
-              className="sm:hidden p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className="sm:hidden p-2 text-white/90 hover:text-white hover:bg-white/10 rounded-md transition-colors"
             >
               <LogOut className="w-5 h-5" />
             </button>
@@ -94,7 +94,7 @@ export const AdminLayout: React.FC = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:px-6 sm:py-4 lg:px-8 lg:py-6 lg:border-l lg:border-gray-200">
           <Suspense fallback={
             <div className="flex h-full w-full items-center justify-center">
               <Loader2 className="w-8 h-8 animate-spin text-saffron" />

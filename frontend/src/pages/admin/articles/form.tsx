@@ -150,13 +150,13 @@ export const AdminArticleForm = () => {
       <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 bg-orange-100 border-b border-orange-200">
           <div className="flex items-center gap-4">
             <button type="button" onClick={handleClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">{isEditing ? 'Edit Article' : 'Create Article'}</h1>
+              <h1 className="text-xl font-bold tracking-wide text-slate-900 uppercase">{isEditing ? 'Edit Article' : 'Create Article'}</h1>
               {lastSaved && <p className="text-xs text-green-600 font-medium mt-1">Last saved: {lastSaved.toLocaleTimeString()}</p>}
             </div>
           </div>
@@ -164,7 +164,7 @@ export const AdminArticleForm = () => {
             <button
               type="button"
               onClick={handlePreview}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm"
             >
               <Eye className="w-4 h-4" />
               Live Preview
@@ -176,7 +176,7 @@ export const AdminArticleForm = () => {
                 handleSubmit(onSubmit)();
               }}
               disabled={saveMutation.isPending || isUploading || !isValid}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
               Save as Draft
@@ -187,7 +187,7 @@ export const AdminArticleForm = () => {
                 handleSubmit(onSubmit)();
               }}
               disabled={saveMutation.isPending || isUploading || !isValid}
-              className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-lg hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {(saveMutation.isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               {(saveMutation.isPending || isUploading) ? 'Publishing...' : 'Publish'}
@@ -200,12 +200,12 @@ export const AdminArticleForm = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT COLUMN: Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-800">Article Title *</label>
               <input
                 {...register('title', { required: 'Title is required' })}
-                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
                 placeholder="e.g. The Significance of Diwali"
               />
               {errors.title && <p className="text-xs text-red-500">{errors.title.message as string}</p>}
@@ -216,7 +216,7 @@ export const AdminArticleForm = () => {
               <textarea
                 {...register('excerpt')}
                 rows={3}
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm leading-relaxed"
+                className="w-full px-4 py-3 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm leading-relaxed"
                 placeholder="A short summary of the article..."
               />
             </div>
@@ -224,7 +224,7 @@ export const AdminArticleForm = () => {
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-800">Cover Image</label>
               {coverPreview ? (
-                <div className="relative rounded-lg overflow-hidden border border-gray-200 group">
+                <div className="relative rounded-md overflow-hidden border border-gray-200 group">
                   <img src={coverPreview} alt="Cover Preview" className="w-full h-64 object-cover" />
                   <div className="absolute top-3 right-3 flex gap-2">
                     <button 
@@ -244,7 +244,7 @@ export const AdminArticleForm = () => {
                   </div>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group">
+                <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-8 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group">
                   <input type="file" accept="image/*" className="hidden" id="cover-upload" onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
@@ -273,7 +273,7 @@ export const AdminArticleForm = () => {
                       theme="snow" 
                       value={field.value || ''} 
                       onChange={field.onChange} 
-                      className="bg-white rounded-b-lg" 
+                      className="bg-white rounded-b-md" 
                       style={{ height: '350px' }} 
                     />
                   </div>
@@ -283,7 +283,7 @@ export const AdminArticleForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
               <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b">
                 Advanced SEO
               </div>
@@ -293,7 +293,7 @@ export const AdminArticleForm = () => {
                   <label className="text-sm font-semibold text-gray-700">SEO Title</label>
                   <input
                     {...register('seo_title')}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                    className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -301,7 +301,7 @@ export const AdminArticleForm = () => {
                   <textarea
                     {...register('seo_description')}
                     rows={3}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                    className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
                   />
                 </div>
               </div>
@@ -311,7 +311,7 @@ export const AdminArticleForm = () => {
         {/* RIGHT COLUMN: Settings & Metadata */}
         <div className="space-y-6">
           
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Taxonomy & Relations</h3>
             
             <div className="space-y-1.5">
@@ -378,7 +378,7 @@ export const AdminArticleForm = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Publishing</h3>
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-700">Status</label>
@@ -400,13 +400,13 @@ export const AdminArticleForm = () => {
               />
             </div>
 
-            <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-md border border-gray-200">
               <input type="checkbox" {...register('featured')} className="w-4 h-4 text-saffron focus:ring-saffron rounded border-gray-300" />
               <span className="text-sm font-medium text-gray-700">Featured Article</span>
             </label>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
             <h3 className="font-bold text-gray-900 border-b pb-3">Relations</h3>
             
             <div className="space-y-1.5">
@@ -461,7 +461,7 @@ export const AdminArticleForm = () => {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-cream">
-          <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-sm border border-gray-100">
+          <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-md shadow-sm border border-gray-100">
             <h1 className="text-4xl md:text-5xl font-extrabold text-darkBrown mb-6 font-serif">{watch('title') || 'Untitled Article'}</h1>
             {watch('excerpt') && (
               <p className="text-xl text-gray-600 mb-8 leading-relaxed italic border-l-4 border-saffron pl-4">
@@ -470,13 +470,13 @@ export const AdminArticleForm = () => {
             )}
             
             {coverPreview && (
-              <div className="mb-10 rounded-xl overflow-hidden shadow-md">
+              <div className="mb-10 rounded-md overflow-hidden shadow-md">
                 <img src={coverPreview} alt="Cover" className="w-full h-auto object-cover max-h-[400px]" />
               </div>
             )}
             
             <div 
-              className="prose prose-lg max-w-none text-gray-800 leading-loose [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-darkBrown [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-darkBrown [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_a]:text-saffron [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_blockquote]:border-l-4 [&_blockquote]:border-saffron [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:my-6 [&_img]:rounded-xl [&_img]:shadow-md" 
+              className="prose prose-lg max-w-none text-gray-800 leading-loose [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-darkBrown [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-darkBrown [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_a]:text-saffron [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_blockquote]:border-l-4 [&_blockquote]:border-saffron [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:my-6 [&_img]:rounded-md [&_img]:shadow-md" 
               dangerouslySetInnerHTML={{ __html: watch('content') || '<p class="text-gray-400 italic">Start writing your article to see the preview here...</p>' }} 
             />
           </div>

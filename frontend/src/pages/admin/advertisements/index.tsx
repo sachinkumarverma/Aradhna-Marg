@@ -6,7 +6,7 @@ export function AdminAdvertisements() {
     <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-darkBrown flex items-center gap-2 uppercase">
+          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <Megaphone className="w-6 h-6 text-saffron" />
             ADVERTISEMENTS
           </h1>
@@ -17,14 +17,14 @@ export function AdminAdvertisements() {
         </div>
         
         <button
-          className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-lg hover:bg-golden transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-md hover:bg-golden transition-colors"
         >
           <Plus className="w-4 h-4" />
           Create Ad
         </button>
       </div>
 
-      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-lg border border-gray-100 shadow-sm mt-8">
+      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-md border border-gray-100 shadow-sm mt-8">
         <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4">
           <span className="text-2xl">📢</span>
         </div>
@@ -32,7 +32,7 @@ export function AdminAdvertisements() {
         <p className="text-gray-500 mb-6 max-w-sm text-center">
           Get started by creating your first ad campaign.
         </p>
-        <button className="px-5 py-2.5 bg-saffron text-white rounded-lg font-medium hover:bg-golden transition-colors flex items-center gap-2">
+        <button className="px-5 py-2.5 bg-saffron text-white rounded-md font-medium hover:bg-golden transition-colors flex items-center gap-2">
           <Plus className="w-4 h-4" />
           Create Ad
         </button>

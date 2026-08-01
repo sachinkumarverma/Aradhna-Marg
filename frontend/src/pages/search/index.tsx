@@ -69,7 +69,7 @@ export const SearchPage: React.FC = () => {
                 {isLoading ? 'Searching...' : `Found ${data?.length || 0} results for "${query}"`}
               </span>
               <select 
-                className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-saffron"
+                className="bg-white border border-gray-200 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-saffron"
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
               >
