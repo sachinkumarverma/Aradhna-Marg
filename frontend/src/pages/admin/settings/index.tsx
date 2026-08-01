@@ -148,9 +148,7 @@ const ContactSection = ({ defaults }: { defaults: any }) => {
       <h3 className="text-lg font-semibold border-b pb-2">Contact Information</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Field label="Email Address"><Input {...register('contactEmail')} type="email" /></Field>
-        <Field label="Phone Number"><Input {...register('contactPhone')} /></Field>
-        <Field label="WhatsApp Number"><Input {...register('whatsappNumber')} /></Field>
-        <div className="md:col-span-2"><Field label="Physical Address"><Textarea {...register('contactAddress')} rows={2} /></Field></div>
+        <div className="md:col-span-2"><Field label="Address"><Textarea {...register('contactAddress')} rows={2} /></Field></div>
       </div>
       <SaveButton isPending={mutation.isPending} />
     </form>
@@ -169,7 +167,6 @@ const SocialSection = ({ defaults }: { defaults: any }) => {
         <Field label="Instagram URL"><Input {...register('instagramUrl')} /></Field>
         <Field label="YouTube URL"><Input {...register('youtubeUrl')} /></Field>
         <Field label="Twitter URL"><Input {...register('twitterUrl')} /></Field>
-        <Field label="LinkedIn URL"><Input {...register('linkedinUrl')} /></Field>
       </div>
       <SaveButton isPending={mutation.isPending} />
     </form>
@@ -229,9 +226,6 @@ const SeoSection = ({ defaults }: { defaults: any }) => {
         <div className="md:col-span-2"><Field label="Global Site Title"><Input {...register('seoSiteTitle')} /></Field></div>
         <div className="md:col-span-2"><Field label="Global Meta Description"><Textarea {...register('seoMetaDescription')} rows={3} /></Field></div>
         <div className="md:col-span-2"><Field label="Meta Keywords"><Input {...register('seoMetaKeywords')} /></Field></div>
-        <Field label="Robots Directive"><Input {...register('seoRobots')} placeholder="index, follow" /></Field>
-        <Field label="Canonical Domain"><Input {...register('seoCanonicalDomain')} /></Field>
-        <div className="md:col-span-2"><Field label="Default OG Image URL"><Input {...register('seoOgImage')} /></Field></div>
       </div>
       <SaveButton isPending={mutation.isPending} />
     </form>
@@ -289,22 +283,10 @@ const SystemSection = ({ defaults }: { defaults: any }) => {
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">System Controls</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer">
           <input type="checkbox" {...register('maintenanceMode')} className="w-4 h-4 text-red-500 rounded focus:ring-red-500" />
           <div><p className="text-sm font-bold text-gray-900">Maintenance Mode</p><p className="text-xs text-gray-500">Take the public site offline</p></div>
-        </label>
-        <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer">
-          <input type="checkbox" {...register('enableComments')} className="w-4 h-4 text-saffron rounded" />
-          <div><p className="text-sm font-medium text-gray-900">Enable Comments</p><p className="text-xs text-gray-500">Allow user comments on content</p></div>
-        </label>
-        <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer">
-          <input type="checkbox" {...register('enableCache')} className="w-4 h-4 text-saffron rounded" />
-          <div><p className="text-sm font-medium text-gray-900">Enable Cache</p><p className="text-xs text-gray-500">Cache pages for faster load times</p></div>
-        </label>
-        <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-lg cursor-pointer">
-          <input type="checkbox" {...register('enablePdfGeneration')} className="w-4 h-4 text-saffron rounded" />
-          <div><p className="text-sm font-medium text-gray-900">Enable PDF Generation</p><p className="text-xs text-gray-500">Auto-generate PDFs for Bhajans</p></div>
         </label>
       </div>
       <SaveButton isPending={mutation.isPending} />

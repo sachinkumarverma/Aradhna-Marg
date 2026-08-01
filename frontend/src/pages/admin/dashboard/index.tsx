@@ -101,7 +101,7 @@ export const AdminDashboard: React.FC = () => {
         {/* Recent Activity Table Mock */}
         <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">Recent Automation Activity</h3>
+            <h3 className="font-semibold text-gray-900">Recently Added Bhajans</h3>
           </div>
           <div className="p-0">
             <table className="w-full text-sm text-left">

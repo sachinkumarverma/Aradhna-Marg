@@ -126,8 +126,6 @@ export function AdminAI() {
       actions: [
         { name: 'Generate Summary', type: 'GENERATE_SUMMARY' },
         { name: 'Improve Grammar', type: 'IMPROVE_GRAMMAR' },
-        { name: 'Rewrite Content', type: 'REWRITE_CONTENT' },
-        { name: 'Expand Content', type: 'EXPAND_CONTENT' },
         { name: 'Generate SEO', type: 'GENERATE_SEO' }
       ]
     },
