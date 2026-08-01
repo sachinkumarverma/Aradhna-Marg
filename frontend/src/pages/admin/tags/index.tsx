@@ -19,7 +19,7 @@ export function AdminTags() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, control, formState: { isSubmitting, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, setValue, watch, control, formState: { isSubmitting, isValid } } = useForm({ mode: 'onChange' });
 
   // Fetch Tags
   const { data, isLoading } = useQuery({
@@ -83,6 +83,14 @@ export function AdminTags() {
 
   const tags = data?.data || [];
   const totalPages = Math.ceil((data?.meta?.total || 0) / 10);
+
+  const currentColor = watch('color') || '';
+  const isValidColor = (str: string) => {
+    const s = new Option().style;
+    s.color = str;
+    return s.color !== '';
+  };
+  const previewColor = isValidColor(currentColor) ? currentColor : '#FFFFFF';
 
   return (
     <div className="space-y-6 flex flex-col h-full">
@@ -277,12 +285,16 @@ export function AdminTags() {
                   <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-gray-800">Color</label>
                     <div className="flex items-center gap-3">
-                      <input 
-                        type="color"
-                        {...register('color')} 
-                        className="w-12 h-12 p-1 bg-white border border-gray-200 rounded-lg cursor-pointer"
+                      <div 
+                        className="w-10 h-10 border border-gray-200 rounded-lg flex-shrink-0" 
+                        style={{ backgroundColor: previewColor }}
                       />
-                      <span className="text-sm text-gray-500">Pick a color for the tag badge</span>
+                      <input 
+                        type="text"
+                        {...register('color')} 
+                        placeholder="#HEX or Color Name"
+                        className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                      />
                     </div>
                   </div>
 

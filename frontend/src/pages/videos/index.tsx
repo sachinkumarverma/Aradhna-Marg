@@ -19,7 +19,7 @@ export const VideosList = () => {
         if (searchQuery.trim()) params.search = searchQuery.trim();
         if (!includeShorts) params.excludeShorts = true;
 
-        const res = await apiClient.get('/admin/youtube', { params });
+        const res = await apiClient.get('/public/videos', { params });
         const data = res.data.data || [];
         setVideos(data);
       } catch (err) {

@@ -14,7 +14,7 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const res = await apiClient.get('/admin/youtube', { params: { limit: 8, page: 1 } });
+        const res = await apiClient.get('/public/videos', { params: { limit: 8, page: 1, excludeShorts: true } });
         const data = res.data.data;
         if (data) {
           setBhajans(data);

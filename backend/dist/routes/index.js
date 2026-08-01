@@ -27,5 +27,6 @@ router.use('/v1/puranas', puranas_routes_1.default);
 router.use('/settings', settings_routes_1.default);
 router.use('/v1/settings', settings_routes_1.default);
 router.use('/v1/seo', seo_1.seoRoutes);
+router.use('/public', public_routes_1.default);
 router.use('/v1/public', public_routes_1.default);
 exports.default = router;
