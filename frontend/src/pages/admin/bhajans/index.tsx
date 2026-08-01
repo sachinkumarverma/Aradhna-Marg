@@ -154,7 +154,8 @@ export const AdminBhajans: React.FC = () => {
         />
       </div>
 
-      {!isLoading && (
+
+      {Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10)) > 1 && (
         <div className="flex items-center justify-between py-2 bg-white px-4 rounded-b-xl border-t border-gray-100">
           <span className="text-sm text-gray-500">
             Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10))}</span>

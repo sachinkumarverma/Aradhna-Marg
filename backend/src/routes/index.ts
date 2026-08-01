@@ -18,6 +18,7 @@ router.use('/v1/health', healthRoutes);
 // router.use('/v1/bhajans', bhajanRoutes);
 router.use('/v1/categories', categoryRoutes);
 router.use('/v1/admin/categories', categoryRoutes);
+router.use('/admin/categories', categoryRoutes);
 router.use('/admin', adminRoutes);
 router.use('/v1/admin', adminRoutes);
 router.use('/v1/search', searchRoutes);

@@ -10,31 +10,40 @@ class DashboardController {
         { rows: [{ total: totalBhajans }] },
         { rows: [{ total: publishedBhajans }] },
         { rows: [{ total: pendingAi }] },
-        { rows: [{ total: totalCategories }] }
+        { rows: [{ total: failedAi }] },
+        { rows: [{ total: totalCategories }] },
+        { rows: [{ total: totalFestivals }] },
+        { rows: [{ total: totalGods }] }
       ] = await Promise.all([
         db.query(`SELECT COUNT(*) as total FROM bhajans WHERE youtube_video_id IS NULL AND deleted_at IS NULL`),
         db.query(`SELECT COUNT(*) as total FROM bhajans WHERE status = 'PUBLISHED' AND youtube_video_id IS NULL AND deleted_at IS NULL`),
-        db.query(`SELECT COUNT(*) as total FROM bhajans WHERE metadata_status = 'PENDING' AND youtube_video_id IS NULL AND deleted_at IS NULL`),
-        db.query(`SELECT COUNT(*) as total FROM categories WHERE deleted_at IS NULL`)
+        db.query(`SELECT COUNT(*) as total FROM ai_jobs WHERE status = 'PENDING'`),
+        db.query(`SELECT COUNT(*) as total FROM ai_jobs WHERE status = 'FAILED'`),
+        db.query(`SELECT COUNT(*) as total FROM categories`),
+        db.query(`SELECT COUNT(*) as total FROM festivals`),
+        db.query(`SELECT COUNT(*) as total FROM gods`)
       ]);
 
       const tb = parseInt(totalBhajans, 10) || 0;
       const pb = parseInt(publishedBhajans, 10) || 0;
       const pa = parseInt(pendingAi, 10) || 0;
+      const fa = parseInt(failedAi, 10) || 0;
       const tc = parseInt(totalCategories, 10) || 0;
+      const tf = parseInt(totalFestivals, 10) || 0;
+      const tg = parseInt(totalGods, 10) || 0;
 
       const stats = {
         totalBhajans: tb,
         published: pb,
         draft: tb - pb,
         pendingAi: pa,
-        failedAi: 0, // Mocked
-        pendingPdfs: 0, // Mocked
+        failedAi: fa,
+        pendingPdfs: 0, // Mocked PDFs (since there is no obvious PDF table)
         totalCategories: tc,
-        totalFestivals: 45, // Mocked
-        totalGods: 32, // Mocked
-        todayViews: 1250, // Mocked
-        monthViews: 45000 // Mocked
+        totalFestivals: tf,
+        totalGods: tg,
+        todayViews: 1250, // Real analytics integration would replace this
+        monthViews: 45000 // Real analytics integration would replace this
       };
 
       return sendSuccess(res, 'Dashboard stats fetched', stats);
@@ -46,7 +55,7 @@ class DashboardController {
   public getRecentActivity = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { rows } = await db.query(`
-        SELECT id, title, status, created_at, metadata_status
+        SELECT id, title, status, created_at
         FROM bhajans
         WHERE youtube_video_id IS NULL AND deleted_at IS NULL
         ORDER BY created_at DESC

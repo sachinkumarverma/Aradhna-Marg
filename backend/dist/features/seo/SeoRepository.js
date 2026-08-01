@@ -7,11 +7,11 @@ class SeoRepository {
         const tableId = isBhajans ? 'youtube_video_id IS NULL' : '1=1';
         // In PostgreSQL, title column might be different per table? 
         // Wait, bhajans, articles, festivals, puranas have `title`. categories has `name`.
-        const titleCol = table === 'categories' ? 'name' : 'title';
+        const titleCol = (table === 'categories' || table === 'festivals' || table === 'deities' || table === 'tags' || table === 'authors') ? 'name' : 'title';
         // categories has `seo_title`, `seo_description`.
         // other tables have `seo_title` and `meta_description`. Let's handle these differences.
         const seoTitleCol = 'seo_title';
-        const seoDescCol = table === 'categories' ? 'seo_description' : 'meta_description';
+        const seoDescCol = 'seo_description';
         const totalQuery = `SELECT COUNT(*) as total FROM ${table} WHERE ${tableId}`;
         const missingTitleQuery = `SELECT COUNT(*) as total FROM ${table} WHERE ${tableId} AND (${seoTitleCol} IS NULL OR ${seoTitleCol} = '')`;
         const missingDescQuery = `SELECT COUNT(*) as total FROM ${table} WHERE ${tableId} AND (${seoDescCol} IS NULL OR ${seoDescCol} = '')`;
@@ -28,9 +28,9 @@ class SeoRepository {
     }
     async getMissingSeoIssues(table, issueType, isBhajans = false) {
         const tableId = isBhajans ? 'youtube_video_id IS NULL' : '1=1';
-        const titleCol = table === 'categories' ? 'name' : 'title';
+        const titleCol = (table === 'categories' || table === 'festivals' || table === 'deities' || table === 'tags' || table === 'authors') ? 'name' : 'title';
         const seoTitleCol = 'seo_title';
-        const seoDescCol = table === 'categories' ? 'seo_description' : 'meta_description';
+        const seoDescCol = 'seo_description';
         const condition = issueType === 'title'
             ? `(${seoTitleCol} IS NULL OR ${seoTitleCol} = '')`
             : `(${seoDescCol} IS NULL OR ${seoDescCol} = '')`;

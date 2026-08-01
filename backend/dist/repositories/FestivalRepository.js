@@ -55,7 +55,7 @@ class FestivalRepository {
     async findAll(options = {}) {
         const { search, sort = 'created_at', order = 'desc', page = 1, limit = 10 } = options;
         const offset = (page - 1) * limit;
-        let whereClauses = ['deleted_at IS NULL'];
+        let whereClauses = [];
         const queryParams = [];
         if (search) {
             queryParams.push(`%${search}%`);

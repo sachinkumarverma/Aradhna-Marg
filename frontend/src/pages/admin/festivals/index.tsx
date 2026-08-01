@@ -152,7 +152,8 @@ export const AdminFestivals: React.FC = () => {
         />
       </div>
 
-      <div className="flex items-center justify-between py-3 bg-white px-4 rounded-b-xl border border-gray-200 border-t-0 -mt-6 z-10 relative shadow-sm">
+      {Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10)) > 1 && (
+        <div className="flex items-center justify-between py-3 bg-white px-4 rounded-b-xl border border-gray-200 border-t-0 -mt-6 z-10 relative shadow-sm">
         <span className="text-sm text-gray-500">
           Showing page <span className="font-bold text-gray-900">{data?.meta?.page || 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.meta?.total || 0) / (data?.meta?.limit || 10)) || 1}</span>
         </span>
@@ -175,6 +176,7 @@ export const AdminFestivals: React.FC = () => {
           </Button>
         </div>
       </div>
+      )}
 
       <Outlet />
     </div>
