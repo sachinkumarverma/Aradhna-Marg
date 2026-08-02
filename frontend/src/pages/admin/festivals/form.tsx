@@ -429,11 +429,7 @@ export const AdminFestivalForm = () => {
                     />
                   </div>
                 </div>
-
-
-
               </div>
-              <div className="h-10 col-span-1 lg:col-span-3"></div> {/* Bottom spacer */}
             </form>
           )}
         </div>

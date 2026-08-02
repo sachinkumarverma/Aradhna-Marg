@@ -369,7 +369,7 @@ export const AdminDeities = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="h-10 col-span-1 lg:col-span-3"></div>
+                  <div className="h-2 col-span-1 lg:col-span-3"></div>
                 </div>
               </form>
             </div>
