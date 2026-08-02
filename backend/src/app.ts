@@ -27,6 +27,24 @@ app.use(compression());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
+// Global String Trimming Middleware
+const trimStrings = (obj: any): any => {
+  if (typeof obj === 'string') return obj.trim();
+  if (obj !== null && typeof obj === 'object') {
+    Object.keys(obj).forEach(key => {
+      obj[key] = trimStrings(obj[key]);
+    });
+  }
+  return obj;
+};
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.body) trimStrings(req.body);
+  if (req.query) trimStrings(req.query);
+  if (req.params) trimStrings(req.params);
+  next();
+});
+
 // Logging Middleware
 app.use(
   morgan((tokens, req, res) => {

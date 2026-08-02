@@ -1,9 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, Music2, PlaySquare, BrainCircuit, 
-  Settings, FolderTree, Sparkles, Image, Settings2, FileText,
-  BookOpen, CalendarDays, Users, Tags, Search, Megaphone, Activity
+import {
+  LayoutDashboard, Music2, PlaySquare, BrainCircuit, Settings, FolderTree, Sparkles, FileText, BookOpen, CalendarDays, Users, Tags, Search, Activity
 } from 'lucide-react';
 import { cn } from '@utils/cn';
 
@@ -42,7 +40,7 @@ interface AdminSidebarProps {
 }
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClose }) => {
-  
+
   const renderLinks = (links: typeof DASHBOARD_NAV) => (
     <ul className="space-y-0.5">
       {links.map((link) => (
@@ -53,8 +51,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
             onClick={onClose}
             className={({ isActive }) => cn(
               "flex items-center gap-3 px-3 py-2 rounded-md text-[14px] font-bold transition-all duration-200",
-              isActive 
-                ? "bg-[#ff3b00] text-white shadow-md shadow-red-500/20" 
+              isActive
+                ? "bg-[#ff3b00] text-white shadow-md shadow-red-500/20"
                 : "text-[#00274c] hover:bg-gray-100 hover:text-[#d9480f]"
             )}
           >
@@ -75,7 +73,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
     <>
       {/* Mobile Backdrop */}
       {isMobileOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onClose}
         />
@@ -97,7 +95,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
           </div>
 
           {/* Navigation */}
-          <div className="px-4 py-6 flex-1 space-y-5 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
+          <div className="p-4 flex-1 space-y-5 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
             <div>
               {renderLinks(DASHBOARD_NAV)}
             </div>
@@ -122,14 +120,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
               {renderLinks(SYSTEM_NAV)}
             </div>
           </div>
-          
+
           {/* Bottom user profile mock */}
-          <div className="p-3 border-t border-gray-100 flex-shrink-0">
+          <div className="border-t border-gray-100 flex-shrink-0">
             <div className="flex items-center gap-3 px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
-              <img 
-                src="https://api.dicebear.com/7.x/micah/svg?seed=AdminUser&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4&backgroundType=gradientLinear" 
-                alt="Admin Avatar" 
-                className="w-10 h-10 rounded-full shadow-sm border-2 border-white bg-saffron/10" 
+              <img
+                src="https://api.dicebear.com/7.x/micah/svg?seed=AdminUser&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4&backgroundType=gradientLinear"
+                alt="Admin Avatar"
+                className="w-10 h-10 rounded-full shadow-sm border-2 border-white bg-saffron/10"
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-[#00274c] truncate">Admin User</p>

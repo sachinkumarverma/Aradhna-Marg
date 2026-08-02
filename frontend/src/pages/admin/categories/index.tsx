@@ -28,7 +28,7 @@ export const AdminCategories = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, control, watch, formState: { errors, isSubmitting, isValid, isDirty } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, setValue, control, watch, setError, formState: { errors, isSubmitting, isValid, isDirty } } = useForm({ mode: 'onChange' });
 
   // Fetch Categories
   const { data, isLoading } = useQuery({
@@ -53,7 +53,12 @@ export const AdminCategories = () => {
       closeDrawer();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to save category');
+      const msg = err.response?.data?.message || 'Failed to save category';
+      if (msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('duplicate')) {
+        setError('name', { type: 'manual', message: 'This category name already exists.' });
+      } else {
+        toast.error(msg);
+      }
     }
   });
 
@@ -278,10 +283,19 @@ export const AdminCategories = () => {
                       <div className="space-y-1.5">
                         <label className="text-sm font-semibold text-gray-800">Category Name *</label>
                         <input
-                          {...register('name', { required: true })}
-                          className="w-full px-4 py-2.5 bg-gray-50 border border-blue-100 rounded-md outline-none text-gray-900 focus:bg-white focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all"
+                          {...register('name', { 
+                            required: 'Category Name is required',
+                            validate: (value) => {
+                              const isDuplicate = data?.data?.some(
+                                (t: any) => t.name.toLowerCase() === value.trim().toLowerCase() && t.id !== editingId
+                              );
+                              return isDuplicate ? 'This category name already exists.' : true;
+                            }
+                          })}
+                          className={`w-full px-4 py-2.5 bg-gray-50 border rounded-md outline-none text-gray-900 focus:bg-white focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all ${errors.name ? 'border-red-500' : 'border-blue-100'}`}
                           placeholder="e.g. Morning Bhajans"
                         />
+                        {errors.name && <p className="text-red-500 text-xs font-medium mt-1.5 flex items-center gap-1"><XCircle className="w-3.5 h-3.5" />{errors.name.message as string}</p>}
                       </div>
 
                       <div className="space-y-1.5">

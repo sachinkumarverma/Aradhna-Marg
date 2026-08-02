@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Save, Loader2, Upload, Eye, X, Send } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Upload, Eye, X, Send, XCircle } from 'lucide-react';
 import { apiClient } from '@api/client';
 import { uploadFile } from '@api/upload';
 import toast from 'react-hot-toast';
@@ -38,7 +38,7 @@ export const AdminFestivalForm = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid, isDirty } } = useForm({
+  const { register, handleSubmit, control, watch, setValue, reset, setError, formState: { errors, isValid, isDirty } } = useForm({
     mode: 'onChange',
     defaultValues: {
       name: '',
@@ -127,7 +127,12 @@ export const AdminFestivalForm = () => {
       toast.success(isEditing ? 'Festival updated' : 'Festival created');
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to save');
+      const msg = err.response?.data?.message || 'Failed to save';
+      if (msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('duplicate')) {
+        setError('name', { type: 'manual', message: 'This festival name already exists.' });
+      } else {
+        toast.error(msg);
+      }
     }
   });
 
@@ -229,10 +234,10 @@ export const AdminFestivalForm = () => {
                     <label className="text-sm font-semibold text-gray-800">Festival Name *</label>
                     <input 
                       {...register('name', { required: 'Name is required' })}
-                      className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm font-medium"
+                      className={`w-full px-4 py-2.5 bg-white border rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm font-medium ${errors.name ? 'border-red-500' : 'border-blue-100'}`}
                       placeholder="e.g. Diwali, Holi..."
                     />
-                    {errors.name && <p className="text-xs text-red-500">{errors.name.message as string}</p>}
+                    {errors.name && <p className="text-red-500 text-xs font-medium mt-1.5 flex items-center gap-1"><XCircle className="w-3.5 h-3.5" />{errors.name.message as string}</p>}
                   </div>
 
 

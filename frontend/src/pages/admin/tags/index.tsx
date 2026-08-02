@@ -21,7 +21,7 @@ export function AdminTags() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, watch, control, formState: { isSubmitting, isValid, isDirty } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, setValue, watch, control, setError, formState: { isSubmitting, isValid, isDirty, errors } } = useForm({ mode: 'onChange' });
 
   // Fetch Tags
   const { data, isLoading } = useQuery({
@@ -46,7 +46,12 @@ export function AdminTags() {
       closeDrawer();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to save tag');
+      const msg = err.response?.data?.message || 'Failed to save tag';
+      if (msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('duplicate')) {
+        setError('name', { type: 'manual', message: 'This tag name already exists.' });
+      } else {
+        toast.error(msg);
+      }
     }
   });
 
@@ -251,10 +256,19 @@ export function AdminTags() {
                   <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-gray-800">Tag Name *</label>
                     <input 
-                      {...register('name', { required: true })} 
-                      className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                      {...register('name', { 
+                        required: 'Tag Name is required',
+                        validate: (value) => {
+                          const isDuplicate = data?.data?.some(
+                            (t: any) => t.name.toLowerCase() === value.trim().toLowerCase() && t.id !== editingId
+                          );
+                          return isDuplicate ? 'This tag name already exists.' : true;
+                        }
+                      })} 
+                      className={`w-full px-4 py-2.5 bg-white border rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all ${errors.name ? 'border-red-500' : 'border-blue-100'}`}
                       placeholder="e.g. Featured"
                     />
+                    {errors.name && <p className="text-red-500 text-xs font-medium mt-1.5 flex items-center gap-1"><XCircle className="w-3.5 h-3.5" />{errors.name.message as string}</p>}
                   </div>
 
                   <div className="space-y-1.5">
