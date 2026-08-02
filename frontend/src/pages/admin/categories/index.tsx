@@ -5,6 +5,7 @@ import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
 import { CategoryApi } from '@features/categories/CategoryApi';
 import toast from 'react-hot-toast';
+import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '@components/ui/Select';
 import { Button } from '@components/ui/Button';
@@ -28,7 +29,7 @@ export const AdminCategories = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, control, watch, setError, formState: { errors, isSubmitting, isValid, isDirty } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, setValue, control, watch, setError, formState: { errors, isSubmitting, isValid, isDirty, defaultValues } } = useForm({ mode: 'onChange' });
 
   // Fetch Categories
   const { data, isLoading } = useQuery({
@@ -91,6 +92,9 @@ export const AdminCategories = () => {
     reset({});
   };
 
+  const currentValues = watch();
+  const actuallyDirty = editingId ? isFormActuallyDirty(currentValues, defaultValues) : true;
+
   const onSubmit = (data: any) => {
     if (data.displayOrder) data.displayOrder = parseInt(data.displayOrder, 10);
     saveMutation.mutate(data);
@@ -150,10 +154,10 @@ export const AdminCategories = () => {
           </div>
         ) : (
           <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-t-md border border-blue-100 shadow-sm overflow-hidden flex flex-col">
-            <div className="overflow-x-auto flex-1">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-xs tracking-wider">
-                  <tr>
+            <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
+                <tr>
                     <th className="px-6 py-4 font-bold">Category</th>
                     <th className="px-6 py-4 font-bold">Status</th>
                     <th className="px-6 py-4 font-bold">Bhajans</th>
@@ -248,7 +252,7 @@ export const AdminCategories = () => {
               <button
                 type="submit"
                 form="category-form"
-                disabled={saveMutation.isPending || !isValid || (editingId ? !isDirty : false)}
+                disabled={saveMutation.isPending || !isValid || (editingId ? !actuallyDirty : false)}
                 className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

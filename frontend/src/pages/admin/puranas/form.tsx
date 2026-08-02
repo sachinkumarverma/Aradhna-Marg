@@ -30,6 +30,7 @@ import { createPortal } from 'react-dom';
 // @ts-ignore
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 export const AdminPuranForm = () => {
@@ -44,7 +45,7 @@ export const AdminPuranForm = () => {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid, isDirty } } = useForm({
+  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid, isDirty, defaultValues } } = useForm({
     mode: 'onChange',
     defaultValues: {
       title: '',
@@ -126,6 +127,8 @@ export const AdminPuranForm = () => {
     navigate('/admin/puranas');
   };
 
+  const currentValues = watch();
+  const actuallyDirty = isEditing ? isFormActuallyDirty(currentValues, defaultValues) : true;
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex justify-end">
@@ -152,7 +155,7 @@ export const AdminPuranForm = () => {
                 setValue('status', 'DRAFT');
                 handleSubmit(onSubmit)();
               }}
-              disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !isDirty : false)}
+              disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !actuallyDirty : false)}
               className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
@@ -163,7 +166,7 @@ export const AdminPuranForm = () => {
                 setValue('status', 'PUBLISHED');
                 handleSubmit(onSubmit)();
               }}
-              disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !isDirty : false)}
+              disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !actuallyDirty : false)}
               className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {(saveMutation.isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
@@ -186,69 +189,6 @@ export const AdminPuranForm = () => {
                     placeholder="e.g. Shiva Purana"
                   />
                   {errors.title && <p className="text-xs text-red-500">{errors.title.message as string}</p>}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-gray-800">Cover Image</label>
-                    <div className="flex flex-col">
-                      <ImageUploadWithCrop
-                        value={coverPreview || undefined}
-                        onChange={(dataUrl, file) => {
-                          setCoverFile(file);
-                          setCoverPreview(dataUrl);
-                          setValue('cover_image', 'pending');
-                        }}
-                        onRemove={() => { setCoverFile(null); setCoverPreview(null); setValue('cover_image', ''); }}
-                        aspectRatio={3 / 4}
-                        className="w-full max-w-xs aspect-[3/4] rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
-                        placeholder="Upload 3:4 Cover"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-gray-800">PDF File *</label>
-                    {pdfFile || watch('pdf_file') ? (
-                      <div className="relative rounded-md overflow-hidden border border-gray-200 bg-red-50 flex flex-col items-center justify-center h-[200px] group">
-                        <FileText className="w-12 h-12 text-red-500 mb-2" />
-                        <span className="text-sm font-medium text-red-700 px-4 text-center truncate w-full">
-                          {pdfFile ? pdfFile.name : 'PDF Uploaded'}
-                        </span>
-                        <div className="absolute top-3 right-3 flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => window.open(pdfFile ? URL.createObjectURL(pdfFile) : watch('pdf_file'), '_blank')}
-                            className="p-2 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => { setPdfFile(null); setValue('pdf_file', ''); }}
-                            className="p-2 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[200px]">
-                        <input type="file" accept="application/pdf" className="hidden" id="purana-pdf-upload" onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setPdfFile(file);
-                            setValue('pdf_file', 'pending'); // satisfy validation
-                          }
-                        }} />
-                        <label htmlFor="purana-pdf-upload" className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
-                          <FileText className="w-8 h-8 text-gray-400 group-hover:text-red-500 mb-3" />
-                          <p className="text-sm text-gray-600 font-medium">Click to upload PDF</p>
-                        </label>
-                      </div>
-                    )}
-                    {errors.pdf_file && <p className="text-xs text-red-500">{errors.pdf_file.message as string}</p>}
-                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -347,6 +287,71 @@ export const AdminPuranForm = () => {
                       />
                     )}
                   />
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                <h3 className="font-bold text-gray-900 border-b pb-3">Media Files</h3>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-gray-800">Cover Image</label>
+                  <div className="flex flex-col items-center">
+                    <ImageUploadWithCrop
+                      value={coverPreview || undefined}
+                      onChange={(dataUrl, file) => {
+                        setCoverFile(file);
+                        setCoverPreview(dataUrl);
+                        setValue('cover_image', 'pending');
+                      }}
+                      onRemove={() => { setCoverFile(null); setCoverPreview(null); setValue('cover_image', ''); }}
+                      aspectRatio={3 / 4}
+                      className="w-full max-w-[200px] aspect-[3/4] rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
+                      placeholder="Upload 3:4 Cover"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-gray-800">PDF File *</label>
+                  {pdfFile || watch('pdf_file') ? (
+                    <div className="relative rounded-md overflow-hidden border border-gray-200 bg-red-50 flex flex-col items-center justify-center h-[160px] group">
+                      <FileText className="w-10 h-10 text-red-500 mb-2" />
+                      <span className="text-sm font-medium text-red-700 px-4 text-center truncate w-full">
+                        {pdfFile ? pdfFile.name : 'PDF Uploaded'}
+                      </span>
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => window.open(pdfFile ? URL.createObjectURL(pdfFile) : watch('pdf_file'), '_blank')}
+                          className="p-1.5 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setPdfFile(null); setValue('pdf_file', ''); }}
+                          className="p-1.5 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[160px]">
+                      <input type="file" accept="application/pdf" className="hidden" id="purana-pdf-upload" onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setPdfFile(file);
+                          setValue('pdf_file', 'pending'); // satisfy validation
+                        }
+                      }} />
+                      <label htmlFor="purana-pdf-upload" className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
+                        <FileText className="w-8 h-8 text-gray-400 group-hover:text-red-500 mb-2" />
+                        <p className="text-sm text-gray-600 font-medium">Click to upload PDF</p>
+                      </label>
+                    </div>
+                  )}
+                  {errors.pdf_file && <p className="text-xs text-red-500">{errors.pdf_file.message as string}</p>}
                 </div>
               </div>
             </div>

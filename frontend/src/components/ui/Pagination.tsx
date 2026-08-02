@@ -40,7 +40,7 @@ export function Pagination({
   if (totalPages === 0) return null;
 
   return (
-    <div className="flex items-center justify-between py-3 px-4 sm:px-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-t border-blue-100 mt-auto">
+    <div className="flex items-center justify-between py-3 px-4 sm:px-6 bg-orange-50 border-t border-orange-100 mt-auto">
       <div className="text-sm text-gray-700 font-medium whitespace-nowrap hidden sm:block">
         <span className="font-bold text-gray-900">{totalRecords}</span> records
       </div>
@@ -49,7 +49,7 @@ export function Pagination({
         <button 
           disabled={page === 1}
           onClick={() => onPageChange(Math.max(1, page - 1))}
-          className="w-8 h-8 flex-shrink-0 flex items-center justify-center text-gray-400 hover:text-blue-600 disabled:opacity-50 disabled:hover:text-gray-400"
+          className="w-8 h-8 flex-shrink-0 flex items-center justify-center text-gray-400 hover:text-orange-900 disabled:opacity-50 disabled:hover:text-gray-400"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -64,7 +64,7 @@ export function Pagination({
               key={p}
               onClick={() => onPageChange(p as number)}
               className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
-                page === p ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-50'
+                page === p ? 'bg-orange-900 text-white' : 'text-orange-900 hover:bg-orange-100'
               }`}
             >
               {p}
@@ -75,7 +75,7 @@ export function Pagination({
         <button 
           disabled={page === totalPages}
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-          className="w-8 h-8 flex-shrink-0 flex items-center justify-center text-gray-400 hover:text-blue-600 disabled:opacity-50 disabled:hover:text-gray-400 transform rotate-180"
+          className="w-8 h-8 flex-shrink-0 flex items-center justify-center text-gray-400 hover:text-orange-900 disabled:opacity-50 disabled:hover:text-gray-400 transform rotate-180"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>

@@ -328,7 +328,7 @@ export function AdminAI() {
               </div>
             ) : (
               <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-xs tracking-wider sticky top-0">
+                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
                   <tr>
                     <th className="px-6 py-4 font-bold">Job Name</th>
                     <th className="px-6 py-4 font-bold">Content Type</th>

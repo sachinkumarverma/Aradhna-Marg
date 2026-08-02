@@ -230,12 +230,12 @@ export const AdminMedia = () => {
               ) : (
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-md overflow-hidden">
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 border-b">
+                    <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                       <tr>
-                        <th className="px-4 py-3 font-medium text-gray-500">Name</th>
-                        <th className="px-4 py-3 font-medium text-gray-500">Size</th>
-                        <th className="px-4 py-3 font-medium text-gray-500">Date</th>
-                        <th className="px-4 py-3 text-right font-medium text-gray-500">Actions</th>
+                        <th className="px-4 py-4">Name</th>
+                        <th className="px-4 py-4">Size</th>
+                        <th className="px-4 py-4">Date</th>
+                        <th className="px-4 py-4 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">

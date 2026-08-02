@@ -161,12 +161,12 @@ export const AdminSEO = () => {
           <div className="bg-gradient-to-br from-red-50 to-white rounded-md border border-red-100 shadow-sm overflow-hidden">
              <table className="w-full text-left border-collapse">
                <thead>
-                 <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
-                   <th className="px-6 py-3 font-semibold">Content Type</th>
-                   <th className="px-6 py-3 font-semibold text-center">Optimized</th>
-                   <th className="px-6 py-3 font-semibold text-center">Missing Title</th>
-                   <th className="px-6 py-3 font-semibold text-center">Missing Desc</th>
-                   <th className="px-6 py-3 font-semibold text-center">Duplicate Title</th>
+                 <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
+                   <th className="px-6 py-4">Content Type</th>
+                   <th className="px-6 py-4 font-semibold text-center">Optimized</th>
+                   <th className="px-6 py-4 font-semibold text-center">Missing Title</th>
+                   <th className="px-6 py-4 font-semibold text-center">Missing Desc</th>
+                   <th className="px-6 py-4 font-semibold text-center">Duplicate Title</th>
                  </tr>
                </thead>
                <tbody className="text-sm">
@@ -200,8 +200,8 @@ export const AdminSEO = () => {
         <div className="bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
-                <th className="px-6 py-3 font-semibold">Content Type</th>
+              <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
+                <th className="px-6 py-3">Content Type</th>
                 <th className="px-6 py-3 font-semibold">Title</th>
                 <th className="px-6 py-3 font-semibold">Issue</th>
                 <th className="px-6 py-3 font-semibold text-right">Action</th>

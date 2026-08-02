@@ -112,13 +112,13 @@ export const AdminDashboard: React.FC = () => {
             <h3 className="font-semibold text-gray-900">Recently Added Bhajans</h3>
           </div>
           <div className="p-0">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-500 border-b border-gray-100">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Event</th>
-                  <th className="px-5 py-3 font-medium">Target</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium">Time</th>
+                  <th className="px-5 py-4 font-bold">Event</th>
+                  <th className="px-5 py-4 font-bold">Target</th>
+                  <th className="px-5 py-4 font-bold">Status</th>
+                  <th className="px-5 py-4 font-bold">Time</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">

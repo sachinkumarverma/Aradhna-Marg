@@ -426,9 +426,9 @@ export const AdminYoutube = () => {
             <div className="overflow-x-auto rounded-t-md">
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
-                    <th className="px-6 py-4 font-bold w-[45%]">Video</th>
-                    <th className="px-6 py-4 font-bold text-center w-[10%] cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                  <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
+                    <th className="px-6 py-4 w-[45%]">Video</th>
+                    <th className="px-6 py-4 font-bold text-center w-[10%] cursor-pointer group hover:bg-orange-100/50 transition-colors" onClick={() => {
                       if (sortBy === 'import_status') {
                         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       } else {
@@ -439,11 +439,11 @@ export const AdminYoutube = () => {
                     }}>
                       <div className="flex items-center justify-center gap-1">
                         Status
-                        <ArrowUpDown className={`w-3 h-3 ${sortBy === 'import_status' ? 'text-saffron' : 'text-gray-400'}`} />
+                        <ArrowUpDown className={`w-3 h-3 transition-colors ${sortBy === 'import_status' ? 'text-orange-900' : 'text-orange-300 group-hover:text-orange-400'}`} />
                       </div>
                     </th>
                     <th className="px-6 py-4 font-bold w-[25%]">Linked Bhajan</th>
-                    <th className="px-6 py-4 font-bold w-[10%] cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                    <th className="px-6 py-4 font-bold w-[10%] cursor-pointer group hover:bg-orange-100/50 transition-colors" onClick={() => {
                       if (sortBy === 'published_at') {
                         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       } else {
@@ -454,7 +454,7 @@ export const AdminYoutube = () => {
                     }}>
                       <div className="flex items-center gap-1">
                         Published
-                        <ArrowUpDown className={`w-3 h-3 ${sortBy === 'published_at' ? 'text-saffron' : 'text-gray-400'}`} />
+                        <ArrowUpDown className={`w-3 h-3 transition-colors ${sortBy === 'published_at' ? 'text-orange-900' : 'text-orange-300 group-hover:text-orange-400'}`} />
                       </div>
                     </th>
                     <th className="px-6 py-4 font-bold text-right w-[10%]">Actions</th>
@@ -600,8 +600,8 @@ export const AdminYoutube = () => {
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
-                <th className="px-6 py-4 font-bold">Started</th>
+              <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
+                <th className="px-6 py-4">Started</th>
                 <th className="px-6 py-4 font-bold">Status</th>
                 <th className="px-6 py-4 font-bold">Details</th>
               </tr>

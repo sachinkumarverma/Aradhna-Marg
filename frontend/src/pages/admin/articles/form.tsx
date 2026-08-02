@@ -18,6 +18,7 @@ import { createPortal } from 'react-dom';
 // @ts-ignore
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 export const AdminArticleForm = () => {
@@ -32,7 +33,7 @@ export const AdminArticleForm = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid, isDirty } } = useForm({
+  const { register, handleSubmit, watch, control, setValue, reset, formState: { errors, isDirty, isValid, defaultValues } } = useForm({
     mode: 'onChange',
     defaultValues: {
       title: '',
@@ -143,6 +144,9 @@ export const AdminArticleForm = () => {
     setShowPreview(true);
   };
 
+  const currentValues = watch();
+  const actuallyDirty = isEditing ? isFormActuallyDirty(currentValues, defaultValues) : true;
+
   return (
     <>
       {createPortal(
@@ -176,7 +180,7 @@ export const AdminArticleForm = () => {
                     setValue('status', 'DRAFT');
                     handleSubmit(onSubmit)();
                   }}
-                  disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !isDirty : false)}
+                  disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !actuallyDirty : false)}
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />
@@ -187,7 +191,7 @@ export const AdminArticleForm = () => {
                     setValue('status', 'PUBLISHED');
                     handleSubmit(onSubmit)();
                   }}
-                  disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !isDirty : false)}
+                  disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !actuallyDirty : false)}
                   className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {(saveMutation.isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

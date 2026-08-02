@@ -18,6 +18,7 @@ import { createPortal } from 'react-dom';
 // @ts-ignore
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 
 export const AdminBhajanForm = () => {
   const { id } = useParams();
@@ -27,7 +28,7 @@ export const AdminBhajanForm = () => {
 
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid, isDirty } } = useForm({
+  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid, isDirty, defaultValues } } = useForm({
     mode: 'onChange',
     defaultValues: {
       title: '',
@@ -117,6 +118,8 @@ export const AdminBhajanForm = () => {
     navigate('/admin/bhajans');
   };
 
+  const currentValues = watch();
+  const actuallyDirty = isEditing ? isFormActuallyDirty(currentValues, defaultValues) : true;
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex justify-end">
@@ -143,7 +146,7 @@ export const AdminBhajanForm = () => {
                 setValue('status', 'DRAFT');
                 handleSubmit(onSubmit)();
               }}
-              disabled={saveMutation.isPending || !isValid || (isEditing ? !isDirty : false)}
+              disabled={saveMutation.isPending || !isValid || (isEditing ? !actuallyDirty : false)}
               className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
@@ -154,7 +157,7 @@ export const AdminBhajanForm = () => {
                 setValue('status', 'PUBLISHED');
                 handleSubmit(onSubmit)();
               }}
-              disabled={saveMutation.isPending || !isValid || (isEditing ? !isDirty : false)}
+              disabled={saveMutation.isPending || !isValid || (isEditing ? !actuallyDirty : false)}
               className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

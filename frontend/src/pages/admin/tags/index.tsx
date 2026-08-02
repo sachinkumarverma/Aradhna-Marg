@@ -5,11 +5,12 @@ import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
 import { TagApi } from '@features/tags/TagApi';
 import toast from 'react-hot-toast';
+import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '@components/ui/Select';
 import { Button } from '@components/ui/Button';
-import { 
-  Tag as TagIcon, Plus, Edit2, Trash2, RefreshCw, Save, ArrowLeft, CheckCircle2, XCircle
+import {
+  Tag as TagIcon, Plus, Edit2, Trash2, RefreshCw, Save, ArrowLeft, CheckCircle2, XCircle, ArrowUpDown
 } from 'lucide-react';
 
 export function AdminTags() {
@@ -17,17 +18,19 @@ export function AdminTags() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [sort, setSort] = useState('created_at');
+  const [order, setOrder] = useState<'asc' | 'desc'>('desc');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, watch, control, setError, formState: { isSubmitting, isValid, isDirty, errors } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, setValue, watch, control, setError, formState: { isSubmitting, isValid, isDirty, errors, defaultValues } } = useForm({ mode: 'onChange' });
 
   // Fetch Tags
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-tags', page, limit, search],
+    queryKey: ['admin-tags', page, limit, search, sort, order],
     queryFn: async () => {
-      return await TagApi.getTags({ page, limit, search: search || undefined });
+      return await TagApi.getTags({ page, limit, search: search || undefined, sort, order });
     }
   });
 
@@ -84,8 +87,11 @@ export function AdminTags() {
     reset({});
   };
 
-  const onSubmit = (data: any) => {
-    saveMutation.mutate(data);
+  const currentValues = watch();
+  const actuallyDirty = editingId ? isFormActuallyDirty(currentValues, defaultValues) : true;
+
+  const onSubmit = (formData: any) => {
+    saveMutation.mutate(formData);
   };
 
   const tags = data?.data || [];
@@ -130,13 +136,13 @@ export function AdminTags() {
             <table className="w-full text-sm text-left">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  {[1,2,3,4,5].map(i => <th key={i} className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></th>)}
+                  {[1, 2, 3, 4, 5].map(i => <th key={i} className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></th>)}
                 </tr>
               </thead>
               <tbody>
-                {[1,2,3,4,5,6,7,8,9,10].map(row => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(row => (
                   <tr key={row} className="border-b border-gray-50">
-                    {[1,2,3,4,5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
+                    {[1, 2, 3, 4, 5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
                   </tr>
                 ))}
               </tbody>
@@ -151,74 +157,89 @@ export function AdminTags() {
             <p className="text-xs text-gray-500 mt-1">Create your first tag.</p>
           </div>
         ) : (
-        <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm overflow-hidden flex flex-col mb-6">
-          <div className="overflow-x-auto flex-1">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-xs tracking-wider">
-              <tr>
-                <th className="px-6 py-3 font-bold">Tag</th>
-                <th className="px-6 py-3 font-bold text-center">Color</th>
-                <th className="px-6 py-3 font-bold text-center">Status</th>
-                <th className="px-6 py-3 font-bold">Created At</th>
-                <th className="px-6 py-3 font-bold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {tags.map((tag: any) => (
-                <tr key={tag.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-3">
-                      <div>
-                        <p className="font-semibold text-gray-900">{tag.name}</p>
-                        {tag.description && <p className="text-xs text-gray-500 truncate max-w-[200px]">{tag.description}</p>}
+          <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm overflow-hidden flex flex-col mb-6">
+            <div className="overflow-x-auto flex-1">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
+                  <tr>
+                    <th className="px-6 py-4 font-bold">Tag</th>
+                    <th className="px-6 py-4 font-bold text-center">Color</th>
+                    <th className="px-6 py-4 font-bold text-center">Status</th>
+                    <th 
+                      className="px-6 py-4 font-bold cursor-pointer group hover:bg-orange-100/50 transition-colors"
+                      onClick={() => {
+                        if (sort === 'created_at') {
+                          setOrder(order === 'asc' ? 'desc' : 'asc');
+                        } else {
+                          setSort('created_at');
+                          setOrder('desc');
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-1">
+                        Created At
+                        <ArrowUpDown className={`w-3 h-3 transition-colors ${sort === 'created_at' ? 'text-orange-900' : 'text-orange-300 group-hover:text-orange-400'}`} />
                       </div>
-                    </td>
-                    <td className="px-6 py-3">
-                       {tag.color && (
-                         <div className="w-5 h-5 rounded-full border border-gray-200 mx-auto" style={{ backgroundColor: tag.color }} />
-                       )}
-                    </td>
-                    <td className="px-6 py-3 text-center">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white
+                    </th>
+                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {tags.map((tag: any) => (
+                    <tr key={tag.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-6 py-3">
+                        <div>
+                          <p className="font-semibold text-gray-900">{tag.name}</p>
+                          {tag.description && <p className="text-xs text-gray-500 truncate max-w-[200px]">{tag.description}</p>}
+                        </div>
+                      </td>
+                      <td className="px-6 py-3">
+                        {tag.color && (
+                          <div className="w-5 h-5 rounded-full border border-gray-200 mx-auto" style={{ backgroundColor: tag.color }} />
+                        )}
+                      </td>
+                      <td className="px-6 py-3 text-center">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white
                         ${tag.status === 'ACTIVE' ? 'bg-green-600' : 'bg-red-600'}
                       `}>
-                        {tag.status === 'ACTIVE' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" strokeWidth={2.5} />}
-                        {tag.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 text-slate-800 font-medium">
-                      {new Date(tag.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '')}
-                    </td>
-                    <td className="px-6 py-3 text-right">
-                      <div className="flex items-center justify-end">
-                        <button onClick={() => openDrawer(tag)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
-                          <Edit2 className="w-4 h-4" strokeWidth={3.5} />
-                        </button>
-                        <button 
-                          onClick={() => {
-                            if(window.confirm('Are you sure you want to delete this tag?')) {
-                              deleteMutation.mutate(tag.id);
-                            }
-                          }} 
-                          className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" strokeWidth={3.5} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-          <Pagination 
-            page={page} 
-            totalPages={totalPages} 
-            totalRecords={totalRecords} 
-            limit={limit} 
-            onPageChange={setPage} 
-            onLimitChange={(l) => { setLimit(l); setPage(1); }} 
-          />
-        </div>
+                          {tag.status === 'ACTIVE' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" strokeWidth={2.5} />}
+                          {tag.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 text-slate-800 font-medium">
+                        {new Date(tag.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '')}
+                      </td>
+                      <td className="px-6 py-3 text-right">
+                        <div className="flex items-center justify-end">
+                          <button onClick={() => openDrawer(tag)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+                            <Edit2 className="w-4 h-4" strokeWidth={3.5} />
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (window.confirm('Are you sure you want to delete this tag?')) {
+                                deleteMutation.mutate(tag.id);
+                              }
+                            }}
+                            className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" strokeWidth={3.5} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalRecords={totalRecords}
+              limit={limit}
+              onPageChange={setPage}
+              onLimitChange={(l) => { setLimit(l); setPage(1); }}
+            />
+          </div>
         )}
       </div>
 
@@ -227,7 +248,7 @@ export function AdminTags() {
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeDrawer} />
           <div className="relative w-full max-w-md bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-            
+
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 bg-orange-100 border-b border-orange-200">
               <div className="flex items-center gap-4">
@@ -241,7 +262,7 @@ export function AdminTags() {
               <button
                 type="submit"
                 form="tag-form"
-                disabled={saveMutation.isPending || !isValid || (editingId ? !isDirty : false)}
+                disabled={saveMutation.isPending || !isValid || (editingId ? !actuallyDirty : false)}
                 className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -251,12 +272,12 @@ export function AdminTags() {
 
             <div className="flex-1 overflow-y-auto p-6">
               <form id="tag-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                
+
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                   <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-gray-800">Tag Name *</label>
-                    <input 
-                      {...register('name', { 
+                    <input
+                      {...register('name', {
                         required: 'Tag Name is required',
                         validate: (value) => {
                           const isDuplicate = data?.data?.some(
@@ -264,7 +285,7 @@ export function AdminTags() {
                           );
                           return isDuplicate ? 'This tag name already exists.' : true;
                         }
-                      })} 
+                      })}
                       className={`w-full px-4 py-2.5 bg-white border rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all ${errors.name ? 'border-red-500' : 'border-blue-100'}`}
                       placeholder="e.g. Featured"
                     />
@@ -273,8 +294,8 @@ export function AdminTags() {
 
                   <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-gray-800">Description</label>
-                    <textarea 
-                      {...register('description')} 
+                    <textarea
+                      {...register('description')}
                       rows={3}
                       className="w-full px-4 py-3 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm leading-relaxed"
                       placeholder="Write a short description..."
@@ -284,13 +305,13 @@ export function AdminTags() {
                   <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-gray-800">Color</label>
                     <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 border border-gray-200 rounded-md flex-shrink-0" 
+                      <div
+                        className="w-10 h-10 border border-gray-200 rounded-md flex-shrink-0"
                         style={{ backgroundColor: previewColor }}
                       />
-                      <input 
+                      <input
                         type="text"
-                        {...register('color')} 
+                        {...register('color')}
                         placeholder="#HEX or Color Name"
                         className="w-full px-4 py-2 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
                       />
@@ -322,7 +343,7 @@ export function AdminTags() {
             </div>
 
 
-            
+
           </div>
         </div>,
         document.body

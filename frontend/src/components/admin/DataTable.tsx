@@ -71,9 +71,9 @@ export function DataTable<T extends { id: string | number }>({
   return (
     <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm">
       <table className="w-full text-sm text-left">
-        <thead className="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-xs tracking-wider">
+        <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
           <tr>
-            <th className="px-6 py-4 font-bold">
+            <th className="px-6 py-4">
               <input type="checkbox" className="rounded border-gray-300 text-saffron focus:ring-saffron" />
             </th>
             {columns.map((col, idx) => (
