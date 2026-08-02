@@ -89,7 +89,7 @@ export const SessionManager: React.FC = () => {
             onClick={() => setShowWarning(false)}
             className="px-4 py-2 text-sm font-medium text-white bg-saffron hover:bg-saffron/90 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-saffron/50 shadow-sm"
           >
-            Continue Session
+            Extend Session
           </button>
         </div>
       </div>

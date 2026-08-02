@@ -170,10 +170,10 @@ export const AdminYoutube = () => {
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'NEW': return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white bg-blue-900 uppercase">NEW</span>;
-      case 'REVIEWED': return <span className="px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">Reviewed</span>;
-      case 'LINKED': return <span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Linked</span>;
-      case 'IGNORED': return <span className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold">Ignored</span>;
-      default: return <span className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold">{status}</span>;
+      case 'REVIEWED': return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white bg-green-800 uppercase">REVIEWED</span>;
+      case 'LINKED': return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white bg-orange-700 uppercase">LINKED</span>;
+      case 'IGNORED': return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white bg-red-600 uppercase">IGNORED</span>;
+      default: return <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider text-white bg-gray-600 uppercase">{status}</span>;
     }
   };
 
@@ -532,14 +532,14 @@ export const AdminYoutube = () => {
                               href={video.youtubeUrl} 
                               target="_blank" 
                               rel="noreferrer"
-                              className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                              className="p-1.5 cursor-pointer text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
                               title="Preview on YouTube"
                             >
                               <ExternalLink className="w-4 h-4" strokeWidth={2.5} />
                             </a>
                             <button 
                               onClick={() => setLinkDialogOpen(video.id)}
-                              className="p-1.5 text-green-600 hover:text-green-700 hover:bg-green-50 rounded transition-colors"
+                              className="p-1.5 cursor-pointer text-green-600 hover:text-green-700 hover:bg-green-50 rounded transition-colors"
                               title="Link to Bhajan"
                             >
                               <LinkIcon className="w-4 h-4" strokeWidth={2.5} />
@@ -547,7 +547,7 @@ export const AdminYoutube = () => {
                             <button 
                               onClick={() => statusMutation.mutate({ videoId: video.id, status: 'REVIEWED' })}
                               disabled={statusMutation.isPending || video.importStatus === 'REVIEWED'}
-                              className={`p-1.5 rounded transition-colors ${video.importStatus === 'REVIEWED' ? 'text-purple-300 cursor-not-allowed' : 'text-purple-600 hover:text-purple-700 hover:bg-purple-50'}`}
+                              className={`p-1.5 cursor-pointer rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${video.importStatus === 'REVIEWED' ? 'text-purple-400' : 'text-purple-600 hover:text-purple-700 hover:bg-purple-50'}`}
                               title="Mark Reviewed"
                             >
                               <ShieldCheck className="w-4 h-4" strokeWidth={2.5} />
@@ -555,7 +555,7 @@ export const AdminYoutube = () => {
                             <button 
                               onClick={() => statusMutation.mutate({ videoId: video.id, status: 'IGNORED' })}
                               disabled={statusMutation.isPending || video.importStatus === 'IGNORED'}
-                              className={`p-1.5 rounded transition-colors ${video.importStatus === 'IGNORED' ? 'text-orange-300 cursor-not-allowed' : 'text-orange-600 hover:text-orange-700 hover:bg-orange-50'}`}
+                              className={`p-1.5 cursor-pointer rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${video.importStatus === 'IGNORED' ? 'text-orange-400' : 'text-orange-600 hover:text-orange-700 hover:bg-orange-50'}`}
                               title="Ignore"
                             >
                               <XCircle className="w-4 h-4" strokeWidth={2.5} />
@@ -567,7 +567,7 @@ export const AdminYoutube = () => {
                                 }
                               }}
                               disabled={deleteMutation.isPending}
-                              className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                              className="p-1.5 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Delete"
                             >
                               <Trash2 className="w-4 h-4" strokeWidth={2.5} />
