@@ -32,7 +32,7 @@ export const AdminArticleForm = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid } } = useForm({
+  const { register, handleSubmit, control, watch, setValue, reset, formState: { errors, isValid, isDirty } } = useForm({
     mode: 'onChange',
     defaultValues: {
       title: '',
@@ -62,7 +62,7 @@ export const AdminArticleForm = () => {
   // Auto slug generation
   useEffect(() => {
     if (!isEditing && titleValue && !slugValue) {
-      setValue('slug', generateSlug(titleValue), { shouldValidate: true });
+      setValue('slug', generateSlug(titleValue), { shouldValidate: true, shouldDirty: true });
     }
   }, [titleValue, isEditing, slugValue, setValue]);
 
@@ -176,7 +176,7 @@ export const AdminArticleForm = () => {
                     setValue('status', 'DRAFT');
                     handleSubmit(onSubmit)();
                   }}
-                  disabled={saveMutation.isPending || isUploading || !isValid}
+                  disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !isDirty : false)}
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />
@@ -187,7 +187,7 @@ export const AdminArticleForm = () => {
                     setValue('status', 'PUBLISHED');
                     handleSubmit(onSubmit)();
                   }}
-                  disabled={saveMutation.isPending || isUploading || !isValid}
+                  disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !isDirty : false)}
                   className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {(saveMutation.isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

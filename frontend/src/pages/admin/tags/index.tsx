@@ -21,7 +21,7 @@ export function AdminTags() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, watch, control, formState: { isSubmitting, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, setValue, watch, control, formState: { isSubmitting, isValid, isDirty } } = useForm({ mode: 'onChange' });
 
   // Fetch Tags
   const { data, isLoading } = useQuery({
@@ -65,7 +65,7 @@ export function AdminTags() {
   const openDrawer = (tag?: any) => {
     if (tag) {
       setEditingId(tag.id);
-      Object.keys(tag).forEach(key => setValue(key, tag[key]));
+      reset(tag);
     } else {
       setEditingId(null);
       reset({ status: 'ACTIVE', color: '#EAB308' }); // default color
@@ -236,7 +236,7 @@ export function AdminTags() {
               <button
                 type="submit"
                 form="tag-form"
-                disabled={saveMutation.isPending || !isValid}
+                disabled={saveMutation.isPending || !isValid || (editingId ? !isDirty : false)}
                 className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

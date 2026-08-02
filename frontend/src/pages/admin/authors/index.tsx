@@ -22,7 +22,7 @@ export function AdminAuthors() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, control, watch, formState: { isSubmitting, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, setValue, control, watch, formState: { isSubmitting, isValid, isDirty } } = useForm({ mode: 'onChange' });
 
   // Fetch Authors
   const { data, isLoading } = useQuery({
@@ -69,7 +69,7 @@ export function AdminAuthors() {
   const openDrawer = (author?: any) => {
     if (author) {
       setEditingId(author.id);
-      Object.keys(author).forEach(key => setValue(key, author[key]));
+      reset(author);
     } else {
       setEditingId(null);
       reset({ status: 'ACTIVE' });
@@ -146,7 +146,7 @@ export function AdminAuthors() {
                 <thead className="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-xs tracking-wider">
                   <tr>
                     <th className="px-6 py-4 font-bold">Author</th>
-                    <th className="px-6 py-4 font-bold">Status</th>
+                    <th className="px-6 py-4 font-bold text-center">Status</th>
                     <th className="px-6 py-4 font-bold text-right">Actions</th>
                   </tr>
                 </thead>
@@ -168,28 +168,28 @@ export function AdminAuthors() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                        ${author.status === 'ACTIVE' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200'}
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
+                        ${author.status === 'ACTIVE' ? 'bg-green-600 text-white' : 'bg-gray-500 text-white'}
                       `}>
-                          {author.status === 'ACTIVE' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" strokeWidth={2.5} />}
+                          {author.status === 'ACTIVE' ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" strokeWidth={2.5} />}
                           {author.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => openDrawer(author)} className="p-2 text-saffron hover:text-orange-600 hover:bg-saffron/10 rounded-md transition-colors">
-                            <Edit2 className="w-4 h-4" strokeWidth={2.5} />
+                        <div className="flex items-center justify-end">
+                          <button onClick={() => openDrawer(author)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+                            <Edit2 className="w-4 h-4" strokeWidth={3.5} />
                           </button>
-                          <button
+                          <button 
                             onClick={() => {
-                              if (window.confirm('Are you sure you want to delete this author?')) {
+                              if(window.confirm('Are you sure you want to delete this author?')) {
                                 deleteMutation.mutate(author.id);
                               }
-                            }}
-                            className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            }} 
+                            className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
                           >
-                            <Trash2 className="w-4 h-4" strokeWidth={2.5} />
+                            <Trash2 className="w-4 h-4" strokeWidth={3.5} />
                           </button>
                         </div>
                       </td>
@@ -232,7 +232,7 @@ export function AdminAuthors() {
               <button
                 type="submit"
                 form="author-form"
-                disabled={saveMutation.isPending || !isValid}
+                disabled={saveMutation.isPending || !isValid || (editingId ? !isDirty : false)}
                 className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -322,11 +322,11 @@ export function AdminAuthors() {
                       <div className="flex flex-col items-center gap-4">
                         <ImageUploadWithCrop
                           value={watch('photo')}
-                          onChange={(val) => setValue('photo', val, { shouldValidate: true })}
-                          onRemove={() => setValue('photo', '', { shouldValidate: true })}
+                          onChange={(val) => setValue('photo', val, { shouldValidate: true, shouldDirty: true })}
+                          onRemove={() => setValue('photo', '', { shouldValidate: true, shouldDirty: true })}
                           aspectRatio={1}
                           shape="round"
-                          className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 hover:border-saffron transition-colors mx-auto block"
+                          className="w-48 h-48 rounded-full border-2 border-dashed border-gray-300 hover:border-saffron transition-colors mx-auto block"
                           placeholder="Upload"
                         />
                         <p className="text-xs text-gray-500 text-center mt-4">Click to upload a profile photo.</p>

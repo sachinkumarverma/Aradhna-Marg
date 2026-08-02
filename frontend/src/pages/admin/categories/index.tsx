@@ -28,7 +28,7 @@ export const AdminCategories = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, control, watch, formState: { errors, isSubmitting, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, setValue, control, watch, formState: { errors, isSubmitting, isValid, isDirty } } = useForm({ mode: 'onChange' });
 
   // Fetch Categories
   const { data, isLoading } = useQuery({
@@ -72,7 +72,7 @@ export const AdminCategories = () => {
   const openDrawer = (category?: any) => {
     if (category) {
       setEditingId(category.id);
-      Object.keys(category).forEach(key => setValue(key, category[key]));
+      reset(category);
     } else {
       setEditingId(null);
       reset({});
@@ -243,7 +243,7 @@ export const AdminCategories = () => {
               <button
                 type="submit"
                 form="category-form"
-                disabled={saveMutation.isPending || !isValid}
+                disabled={saveMutation.isPending || !isValid || (editingId ? !isDirty : false)}
                 className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -264,8 +264,8 @@ export const AdminCategories = () => {
                         <div className="w-full flex flex-col">
                           <ImageUploadWithCrop
                             value={watch('imageUrl')}
-                            onChange={(val) => setValue('imageUrl', val, { shouldValidate: true })}
-                            onRemove={() => setValue('imageUrl', '', { shouldValidate: true })}
+                            onChange={(val) => setValue('imageUrl', val, { shouldValidate: true, shouldDirty: true })}
+                            onRemove={() => setValue('imageUrl', '', { shouldValidate: true, shouldDirty: true })}
                             aspectRatio={16/9}
                             shape="rect"
                             className="w-full max-w-xl aspect-video rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
