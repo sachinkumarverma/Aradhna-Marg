@@ -11,6 +11,7 @@ import { Button } from '@components/ui/Button';
 import {
   Users, Plus, Edit2, Trash2, RefreshCw, Save, ArrowLeft, CheckCircle2, XCircle, Image as ImageIcon
 } from 'lucide-react';
+import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 export function AdminAuthors() {
   const queryClient = useQueryClient();
@@ -319,45 +320,21 @@ export function AdminAuthors() {
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                       <h3 className="font-bold text-gray-900 border-b pb-3">Media</h3>
                       <div className="flex flex-col items-center gap-4">
-                        <div className="relative group cursor-pointer">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            id="photo-upload"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setValue('photo', reader.result as string, { shouldValidate: true });
-                                };
-                                reader.readAsDataURL(file);
-                              }
-                            }}
-                          />
-                          <label htmlFor="photo-upload" className="block relative w-32 h-32 rounded-full border-2 border-dashed border-gray-300 overflow-hidden hover:border-saffron transition-colors cursor-pointer group">
-                            {watch('photo') ? (
-                              <>
-                                <img src={watch('photo')} alt="Preview" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <ImageIcon className="w-8 h-8 text-white" />
-                                </div>
-                              </>
-                            ) : (
-                              <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-gray-400 group-hover:text-saffron transition-colors">
-                                <ImageIcon className="w-8 h-8 mb-2" />
-                                <span className="text-xs font-medium">Upload</span>
-                              </div>
-                            )}
-                          </label>
-                        </div>
-                        <p className="text-xs text-gray-500 text-center">Click to upload a profile photo.</p>
+                        <ImageUploadWithCrop
+                          value={watch('photo')}
+                          onChange={(val) => setValue('photo', val, { shouldValidate: true })}
+                          onRemove={() => setValue('photo', '', { shouldValidate: true })}
+                          aspectRatio={1}
+                          shape="round"
+                          className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 hover:border-saffron transition-colors mx-auto block"
+                          placeholder="Upload"
+                        />
+                        <p className="text-xs text-gray-500 text-center mt-4">Click to upload a profile photo.</p>
                         <input type="hidden" {...register('photo')} />
                       </div>
                     </div>
                   </div>
-
+                  <div className="h-10 col-span-1 lg:col-span-3"></div>
                 </div>
               </form>
             </div>

@@ -250,7 +250,7 @@ export const AdminMedia = () => {
                             <span className="font-medium text-gray-900 truncate max-w-[200px] sm:max-w-xs">{file.fileName}</span>
                           </td>
                           <td className="px-4 py-3 text-gray-500">{(file.sizeBytes / 1024 / 1024).toFixed(2)} MB</td>
-                          <td className="px-4 py-3 text-gray-500">{new Date(file.createdAt).toLocaleDateString()}</td>
+                          <td className="px-4 py-3 text-slate-800 font-medium">{new Date(file.createdAt).toLocaleDateString()}</td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex justify-end gap-2">
                               <button onClick={() => copyUrl(file.url)} className="p-1.5 text-gray-500 hover:text-saffron hover:bg-saffron/10 rounded">

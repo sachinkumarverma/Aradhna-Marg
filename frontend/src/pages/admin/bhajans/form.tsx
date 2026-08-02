@@ -186,13 +186,12 @@ export const AdminBhajanForm = () => {
                 control={control}
                 rules={{ required: 'Lyrics are required' }}
                 render={({ field }) => (
-                  <div className="pb-10">
+                  <div>
                     <ReactQuill 
                       theme="snow" 
                       value={field.value || ''} 
                       onChange={field.onChange} 
                       className="bg-white rounded-b-md" 
-                      style={{ height: '350px' }} 
                     />
                   </div>
                 )}

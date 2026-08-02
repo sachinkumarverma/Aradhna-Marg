@@ -18,6 +18,7 @@ import { createPortal } from 'react-dom';
 // @ts-ignore
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 export const AdminArticleForm = () => {
   const { id } = useParams();
@@ -223,42 +224,20 @@ export const AdminArticleForm = () => {
 
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-800">Cover Image</label>
-              {coverPreview ? (
-                <div className="relative rounded-md overflow-hidden border border-gray-200 group">
-                  <img src={coverPreview} alt="Cover Preview" className="w-full h-64 object-cover" />
-                  <div className="absolute top-3 right-3 flex gap-2">
-                    <button 
-                      type="button" 
-                      onClick={() => window.open(coverPreview, '_blank')}
-                      className="p-2 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => { setCoverFile(null); setCoverPreview(null); setValue('image_url', ''); }} 
-                      className="p-2 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-8 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group">
-                  <input type="file" accept="image/*" className="hidden" id="cover-upload" onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setCoverFile(file);
-                      setCoverPreview(URL.createObjectURL(file));
-                    }
-                  }} />
-                  <label htmlFor="cover-upload" className="flex flex-col items-center cursor-pointer w-full h-full">
-                    <Upload className="w-8 h-8 text-gray-400 group-hover:text-saffron mb-3" />
-                    <p className="text-sm text-gray-600 font-medium">Click to upload cover image</p>
-                    <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 5MB</p>
-                  </label>
-                </div>
-              )}
+              <div className="flex flex-col">
+                <ImageUploadWithCrop
+                  value={coverPreview || undefined}
+                  onChange={(dataUrl, file) => {
+                    setCoverFile(file);
+                    setCoverPreview(dataUrl);
+                    setValue('image_url', 'pending');
+                  }}
+                  onRemove={() => { setCoverFile(null); setCoverPreview(null); setValue('image_url', ''); }}
+                  aspectRatio={16/9}
+                  className="w-full max-w-2xl aspect-video rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
+                  placeholder="Upload 16:9 Cover"
+                />
+              </div>
             </div>
 
             <div className="space-y-1.5">
@@ -268,13 +247,12 @@ export const AdminArticleForm = () => {
                 control={control}
                 rules={{ required: 'Content is required' }}
                 render={({ field }) => (
-                  <div className="pb-10">
+                  <div>
                     <ReactQuill 
                       theme="snow" 
                       value={field.value || ''} 
                       onChange={field.onChange} 
                       className="bg-white rounded-b-md" 
-                      style={{ height: '350px' }} 
                     />
                   </div>
                 )}

@@ -13,6 +13,7 @@ import {
   CheckCircle2, XCircle, ArrowLeft,
   Music, Heart, Star, Flame, Sun, Moon, Feather, Eye
 } from 'lucide-react';
+import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 const IconMap: Record<string, any> = {
   FolderTree, Music, Heart, Star, Flame, Sun, Moon, Feather
@@ -260,67 +261,16 @@ export const AdminCategories = () => {
 
                       <div className="space-y-2">
                         <label className="text-sm font-semibold text-gray-800 block">Banner Image</label>
-                        <div className="relative w-full">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            id="banner-upload"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setValue('imageUrl', reader.result as string, { shouldValidate: true });
-                                };
-                                reader.readAsDataURL(file);
-                              }
-                            }}
+                        <div className="w-full flex flex-col">
+                          <ImageUploadWithCrop
+                            value={watch('imageUrl')}
+                            onChange={(val) => setValue('imageUrl', val, { shouldValidate: true })}
+                            onRemove={() => setValue('imageUrl', '', { shouldValidate: true })}
+                            aspectRatio={16/9}
+                            shape="rect"
+                            className="w-full max-w-xl aspect-video rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
+                            placeholder="Upload 16:9 Banner"
                           />
-                          <div className="relative w-full h-40 rounded-md border-2 border-dashed border-gray-300 overflow-hidden hover:border-saffron transition-colors group bg-gray-50">
-                            {watch('imageUrl') ? (
-                              <div className="w-full h-full relative">
-                                <img src={watch('imageUrl')} alt="Banner Preview" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      const imgUrl = watch('imageUrl');
-                                      if (imgUrl.startsWith('data:')) {
-                                        const w = window.open('');
-                                        if (w) w.document.write(`<img src="${imgUrl}" style="max-width: 100%; max-height: 100%; display: block; margin: auto;" />`);
-                                      } else {
-                                        window.open(imgUrl, '_blank');
-                                      }
-                                    }}
-                                    title="Preview Image"
-                                    className="p-3 bg-white/20 hover:bg-white/40 rounded-full backdrop-blur-sm transition-colors z-20 cursor-pointer"
-                                  >
-                                    <Eye className="w-8 h-8 text-white shadow-sm" strokeWidth={2.5} />
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <label htmlFor="banner-upload" className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-gray-400 group-hover:text-saffron transition-colors">
-                                <ImageIcon className="w-8 h-8 mb-2" />
-                                <span className="text-xs font-medium">Upload Banner</span>
-                              </label>
-                            )}
-                          </div>
-                          {watch('imageUrl') && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setValue('imageUrl', '', { shouldValidate: true });
-                              }}
-                              className="absolute top-2 right-2 bg-gradient-to-br from-blue-50 to-indigo-50 text-gray-600 hover:text-red-500 rounded-full p-1 shadow-sm border border-blue-100 transition-colors z-10"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          )}
                         </div>
                         <input type="hidden" {...register('imageUrl')} />
                       </div>
@@ -457,6 +407,7 @@ export const AdminCategories = () => {
                     </div>
 
                   </div>
+                  <div className="h-10 col-span-1 lg:col-span-3"></div>
                 </div>
               </form>
             </div>

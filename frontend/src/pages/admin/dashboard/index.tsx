@@ -133,7 +133,7 @@ export const AdminDashboard: React.FC = () => {
                           {activity.status === 'PUBLISHED' ? 'Published' : 'Draft'}
                         </span>
                       </td>
-                      <td className="px-5 py-3 text-gray-500">
+                      <td className="px-5 py-3 text-slate-800 font-medium">
                         {new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(activity.created_at))}
                       </td>
                     </tr>

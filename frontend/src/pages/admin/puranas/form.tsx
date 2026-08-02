@@ -30,6 +30,7 @@ import { createPortal } from 'react-dom';
 // @ts-ignore
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 export const AdminPuranForm = () => {
   const { id } = useParams();
@@ -190,42 +191,20 @@ export const AdminPuranForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1.5">
                 <label className="text-sm font-semibold text-gray-800">Cover Image</label>
-                {coverPreview ? (
-                  <div className="relative rounded-md overflow-hidden border border-gray-200 group h-[200px]">
-                    <img src={coverPreview} alt="Cover Preview" className="w-full h-full object-cover" />
-                    <div className="absolute top-3 right-3 flex gap-2">
-                      <button 
-                        type="button" 
-                        onClick={() => window.open(coverPreview, '_blank')}
-                        className="p-2 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button 
-                        type="button" 
-                        onClick={() => { setCoverFile(null); setCoverPreview(null); setValue('cover_image', ''); }} 
-                        className="p-2 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[200px]">
-                    <input type="file" accept="image/*" className="hidden" id="purana-cover-upload" onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setCoverFile(file);
-                        setCoverPreview(URL.createObjectURL(file));
-                        setValue('cover_image', 'pending'); // to satisfy validation if required
-                      }
-                    }} />
-                    <label htmlFor="purana-cover-upload" className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
-                      <Upload className="w-8 h-8 text-gray-400 group-hover:text-saffron mb-3" />
-                      <p className="text-sm text-gray-600 font-medium">Click to upload cover</p>
-                    </label>
-                  </div>
-                )}
+              <div className="flex flex-col">
+                <ImageUploadWithCrop
+                  value={coverPreview || undefined}
+                  onChange={(dataUrl, file) => {
+                    setCoverFile(file);
+                    setCoverPreview(dataUrl);
+                    setValue('cover_image', 'pending');
+                  }}
+                  onRemove={() => { setCoverFile(null); setCoverPreview(null); setValue('cover_image', ''); }}
+                  aspectRatio={3/4}
+                  className="w-full max-w-xs aspect-[3/4] rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
+                  placeholder="Upload 3:4 Cover"
+                />
+              </div>
               </div>
 
               <div className="space-y-1.5">
@@ -278,13 +257,12 @@ export const AdminPuranForm = () => {
                 name="short_description"
                 control={control}
                 render={({ field }) => (
-                  <div className="pb-10">
+                  <div>
                     <ReactQuill 
                       theme="snow" 
                       value={field.value || ''} 
                       onChange={field.onChange} 
                       className="bg-white rounded-b-md" 
-                      style={{ height: '350px' }} 
                     />
                   </div>
                 )}

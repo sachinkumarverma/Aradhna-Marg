@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { Select } from '@components/ui/Select';
 import { Settings, Save, AlertCircle, RefreshCw, UploadCloud, X } from 'lucide-react';
 import { uploadFile } from '@api/upload';
+import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 const TABS = ['General', 'Contact', 'Social Media', 'YouTube Automation', 'SEO', 'Analytics', 'Advertisement', 'System'];
 
@@ -94,32 +95,23 @@ const GeneralSection = ({ defaults }: { defaults: any }) => {
     mutation.mutate(payload);
   };
 
-  const ImageUpload = ({ field, file, setFile, uploading, label }: any) => {
+  const ImageUpload = ({ field, file, setFile, uploading, label, ratio }: any) => {
     const val = watch(field);
     return (
       <Field label={label}>
-        {val ? (
-          <div className="relative rounded-md overflow-hidden border border-gray-200 h-[200px] w-full max-w-sm">
-            <img src={val} alt={label} className="w-full h-full object-cover bg-gray-50" />
-            <div className="absolute top-3 right-3 flex gap-2">
-              <button type="button" onClick={() => window.open(val, '_blank')} className="p-2 bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-500 rounded-full shadow-md border border-gray-100">
-                <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-              <button type="button" onClick={() => { setValue(field, '', { shouldDirty: true }); setFile(null); }} className="p-2 bg-gradient-to-br from-blue-50 to-indigo-50 text-red-500 rounded-full shadow-md border border-gray-100">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="border-2 border-dashed border-gray-200 rounded-md flex flex-col items-center justify-center h-[200px] w-full max-w-sm bg-white hover:bg-gray-50 cursor-pointer">
-            <input type="file" accept="image/*" className="hidden" id={`upload-${field}`} disabled={uploading}
-              onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; setFile(f); setValue(field, URL.createObjectURL(f), { shouldDirty: true }); }} />
-            <label htmlFor={`upload-${field}`} className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
-              {uploading ? <RefreshCw className="w-8 h-8 animate-spin text-saffron mb-3" /> : <UploadCloud className="w-8 h-8 text-gray-400 mb-3" />}
-              <p className="text-sm text-gray-600 font-medium">Click to upload {label}</p>
-            </label>
-          </div>
-        )}
+        <div className="w-full max-w-sm flex flex-col">
+          <ImageUploadWithCrop
+            value={val || undefined}
+            onChange={(dataUrl, fileObj) => {
+              setFile(fileObj);
+              setValue(field, dataUrl, { shouldDirty: true });
+            }}
+            onRemove={() => { setValue(field, '', { shouldDirty: true }); setFile(null); }}
+            aspectRatio={ratio}
+            className={`w-full ${ratio === 1 ? 'max-w-[280px] aspect-square' : 'aspect-video'} rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors`}
+            placeholder={`Upload ${label}`}
+          />
+        </div>
       </Field>
     );
   };
@@ -131,8 +123,8 @@ const GeneralSection = ({ defaults }: { defaults: any }) => {
         <Field label="Website Name"><Input {...register('siteName')} /></Field>
         <Field label="Copyright Text"><Input {...register('copyrightText')} /></Field>
         <div className="md:col-span-2"><Field label="Website Description"><Textarea {...register('siteDescription')} rows={3} /></Field></div>
-        <ImageUpload field="siteLogo" file={logoFile} setFile={setLogoFile} uploading={uploadingLogo} label="Logo Upload" />
-        <ImageUpload field="favicon" file={faviconFile} setFile={setFaviconFile} uploading={uploadingFavicon} label="Favicon Upload" />
+        <ImageUpload field="siteLogo" file={logoFile} setFile={setLogoFile} uploading={uploadingLogo} label="Logo Upload" ratio={1} />
+        <ImageUpload field="favicon" file={faviconFile} setFile={setFaviconFile} uploading={uploadingFavicon} label="Favicon Upload" ratio={1} />
       </div>
       <SaveButton isPending={mutation.isPending} />
     </form>

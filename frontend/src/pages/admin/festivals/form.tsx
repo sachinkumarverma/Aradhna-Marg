@@ -12,6 +12,7 @@ import { DatePicker } from '@components/ui/DatePicker';
 import { createPortal } from 'react-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 const generateSlug = (text: string) => {
   return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
@@ -254,13 +255,12 @@ export const AdminFestivalForm = () => {
                     name="content"
                     control={control}
                     render={({ field }) => (
-                      <div className="pb-10">
+                      <div>
                         <ReactQuill 
                           theme="snow"
                           value={field.value}
                           onChange={field.onChange}
                           className="bg-white rounded-b-md"
-                          style={{ height: '350px' }}
                           modules={{
                             toolbar: [
                               [{ 'header': [1, 2, 3, false] }],
@@ -414,43 +414,19 @@ export const AdminFestivalForm = () => {
 
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                   <h3 className="font-bold text-gray-900 border-b pb-3">Festival Banner</h3>
-                  <div className="space-y-1.5">
-                    {bannerPreview ? (
-                      <div className="relative rounded-md overflow-hidden border border-gray-200 group h-[150px]">
-                        <img src={bannerPreview} alt="Banner Preview" className="w-full h-full object-cover" />
-                        <div className="absolute top-2 right-2 flex gap-1.5">
-                          <button 
-                            type="button" 
-                            onClick={() => window.open(bannerPreview, '_blank')}
-                            className="p-1.5 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100" title="Preview"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                          <button 
-                            type="button" 
-                            onClick={() => { setBannerFile(null); setBannerPreview(null); setValue('bannerImage', ''); }} 
-                            className="p-1.5 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100" title="Discard"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[150px]">
-                        <input type="file" accept="image/*" className="hidden" id="banner-upload" onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setBannerFile(file);
-                            setBannerPreview(URL.createObjectURL(file));
-                            setValue('bannerImage', 'pending');
-                          }
-                        }} />
-                        <label htmlFor="banner-upload" className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
-                          <Upload className="w-6 h-6 text-gray-400 group-hover:text-saffron mb-2" />
-                          <p className="text-xs text-gray-600 font-medium">Upload banner</p>
-                        </label>
-                      </div>
-                    )}
+                  <div className="space-y-1.5 flex flex-col">
+                    <ImageUploadWithCrop
+                      value={bannerPreview || undefined}
+                      onChange={(dataUrl, file) => {
+                        setBannerFile(file);
+                        setBannerPreview(dataUrl);
+                        setValue('bannerImage', 'pending');
+                      }}
+                      onRemove={() => { setBannerFile(null); setBannerPreview(null); setValue('bannerImage', ''); }}
+                      aspectRatio={16/9}
+                      className="w-full max-w-2xl aspect-video rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
+                      placeholder="Upload 16:9 Banner"
+                    />
                   </div>
                 </div>
 

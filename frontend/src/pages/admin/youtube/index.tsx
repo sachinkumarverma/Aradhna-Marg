@@ -184,7 +184,7 @@ export const AdminYoutube = () => {
         <div>
           <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
             <PlaySquare className="w-6 h-6 text-red-600" />
-            YOUTUBE IMPORTER
+            YOUTUBE SYNCING
           </h1>
           <p className="text-sm text-gray-500 mt-1">Import, review, and link YouTube videos directly to your platform.</p>
         </div>
@@ -524,7 +524,7 @@ export const AdminYoutube = () => {
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-sm text-gray-600">{format(new Date(video.publishedAt), 'dd MMM yyyy')}</span>
+                          <span className="text-sm text-slate-800 font-medium">{format(new Date(video.publishedAt), 'dd MMM yyyy')}</span>
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex items-center justify-end gap-0">

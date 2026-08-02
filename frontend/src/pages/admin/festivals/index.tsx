@@ -75,7 +75,7 @@ export const AdminFestivals: React.FC = () => {
     },
     {
       header: 'Date',
-      accessor: (row: any) => <span className="text-sm text-gray-600">{row.festivalDate ? format(new Date(row.festivalDate), 'MMM dd, yyyy') : '-'}</span>
+      accessor: (row: any) => <span className="text-sm text-slate-800 font-medium">{row.festivalDate ? format(new Date(row.festivalDate), 'MMM dd, yyyy') : '-'}</span>
     },
     {
       header: 'Category',

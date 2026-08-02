@@ -98,7 +98,7 @@ export const AdminPuranas: React.FC = () => {
     },
     {
       header: 'Updated Date',
-      accessor: (row: any) => <span className="text-sm text-gray-500">{row.updated_at ? format(new Date(row.updated_at), 'MMM dd, yyyy') : '-'}</span>
+      accessor: (row: any) => <span className="text-sm text-slate-800 font-medium">{row.updated_at ? format(new Date(row.updated_at), 'MMM dd, yyyy') : '-'}</span>
     }
   ];
 

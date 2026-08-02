@@ -12,6 +12,7 @@ import {
   Plus, Edit2, Trash2, RefreshCw, Save, ArrowLeft, CheckCircle2, XCircle, Image as ImageIcon,
   Flame, Star, X, Sparkles
 } from 'lucide-react';
+import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
 export const AdminDeities = () => {
   const queryClient = useQueryClient();
@@ -352,57 +353,23 @@ export const AdminDeities = () => {
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                       <h3 className="font-bold text-gray-900 border-b pb-3">Media</h3>
                       <div className="flex flex-col items-center gap-4 w-full">
-                        <div className="relative w-full">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            id="photo-upload"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setValue('image', reader.result as string, { shouldValidate: true });
-                                };
-                                reader.readAsDataURL(file);
-                              }
-                            }}
+                        <div className="w-full flex flex-col items-center">
+                          <ImageUploadWithCrop
+                            value={watch('image')}
+                            onChange={(val) => setValue('image', val, { shouldValidate: true })}
+                            onRemove={() => setValue('image', '', { shouldValidate: true })}
+                            aspectRatio={1}
+                            shape="rect"
+                            className="w-full max-w-[200px] mx-auto aspect-square rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
+                            placeholder="Upload 1:1 Image"
                           />
-                          <label htmlFor="photo-upload" className="block relative w-full h-40 rounded-md border-2 border-dashed border-gray-300 overflow-hidden hover:border-saffron transition-colors cursor-pointer group bg-gray-50">
-                            {watch('image') ? (
-                              <>
-                                <img src={watch('image')} alt="Preview" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <ImageIcon className="w-8 h-8 text-white" />
-                                </div>
-                              </>
-                            ) : (
-                              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 group-hover:text-saffron transition-colors">
-                                <ImageIcon className="w-8 h-8 mb-2" />
-                                <span className="text-xs font-medium">Upload</span>
-                              </div>
-                            )}
-                          </label>
-                          {watch('image') && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setValue('image', '', { shouldValidate: true });
-                              }}
-                              className="absolute top-2 right-2 bg-gradient-to-br from-blue-50 to-indigo-50 text-gray-600 hover:text-red-500 rounded-full p-1 shadow-sm border border-blue-100 transition-colors z-10"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          )}
                         </div>
                         <p className="text-xs text-gray-500 text-center">Click to upload deity image.</p>
                         <input type="hidden" {...register('image')} />
                       </div>
                     </div>
                   </div>
-
+                  <div className="h-10 col-span-1 lg:col-span-3"></div>
                 </div>
               </form>
             </div>

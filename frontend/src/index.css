@@ -57,6 +57,18 @@ main.overflow-y-auto::-webkit-scrollbar-thumb {
   @apply bg-transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb,
+.scrollbar-thin::-webkit-scrollbar-thumb,
 .overflow-x-auto::-webkit-scrollbar-thumb {
   @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+}
+
+/* ReactQuill Editor Styles */
+.ql-container {
+  @apply bg-white;
+}
+.ql-editor {
+  min-height: 250px;
+}
+.ql-toolbar {
+  @apply bg-white;
 }

@@ -98,7 +98,7 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Published',
-      accessor: (row: any) => <span className="text-sm text-gray-500">{row.publish_date ? format(new Date(row.publish_date), 'MMM dd, yyyy') : '-'}</span>
+      accessor: (row: any) => <span className="text-sm text-slate-800 font-medium">{row.publish_date ? format(new Date(row.publish_date), 'MMM dd, yyyy') : '-'}</span>
     }
   ];
 

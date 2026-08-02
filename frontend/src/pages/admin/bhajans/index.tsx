@@ -93,7 +93,7 @@ export const AdminBhajans: React.FC = () => {
     },
     {
       header: 'Created',
-      accessor: (row: any) => <span className="text-sm text-gray-500">{format(new Date(row.created_at), 'MMM dd, yyyy')}</span>
+      accessor: (row: any) => <span className="text-sm text-slate-800 font-medium">{format(new Date(row.created_at), 'MMM dd, yyyy')}</span>
     }
   ];
 

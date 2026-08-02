@@ -180,7 +180,7 @@ export function AdminTags() {
                         {tag.status}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-gray-600">
+                    <td className="px-6 py-3 text-slate-800 font-medium">
                       {new Date(tag.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '')}
                     </td>
                     <td className="px-6 py-3 text-right">

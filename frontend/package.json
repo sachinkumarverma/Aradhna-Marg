@@ -19,6 +19,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-dropzone": "^19.1.1",
+    "react-easy-crop": "^6.2.3",
     "react-helmet-async": "^3.0.0",
     "react-hook-form": "^7.83.0",
     "react-hot-toast": "^2.6.0",
