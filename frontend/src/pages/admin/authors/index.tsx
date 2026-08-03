@@ -128,7 +128,7 @@ export function AdminAuthors() {
                 </tr>
               </thead>
               <tbody>
-                {[1,2,3,4,5,6,7,8,9,10].map(row => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(row => (
                   <tr key={row} className="border-b border-gray-50">
                     {[1, 2, 3, 4, 5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
                   </tr>
@@ -186,12 +186,12 @@ export function AdminAuthors() {
                           <button onClick={() => openDrawer(author)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
                             <Edit2 className="w-4 h-4" strokeWidth={3.5} />
                           </button>
-                          <button 
+                          <button
                             onClick={() => {
-                              if(window.confirm('Are you sure you want to delete this author?')) {
+                              if (window.confirm('Are you sure you want to delete this author?')) {
                                 deleteMutation.mutate(author.id);
                               }
-                            }} 
+                            }}
                             className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
                           >
                             <Trash2 className="w-4 h-4" strokeWidth={3.5} />
@@ -201,22 +201,22 @@ export function AdminAuthors() {
                     </tr>
                   ))}
                 </tbody>
-              
-          </table>
+
+              </table>
+            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalRecords={data?.meta?.total || 0}
+              limit={limit}
+              onPageChange={setPage}
+              onLimitChange={(l) => { setLimit(l); setPage(1); }}
+            />
           </div>
-          <Pagination 
-            page={page} 
-            totalPages={totalPages} 
-            totalRecords={data?.meta?.total || 0} 
-            limit={limit} 
-            onPageChange={setPage} 
-            onLimitChange={(l) => { setLimit(l); setPage(1); }} 
-          />
-        </div>
-      )}
+        )}
       </div>
 
-      
+
 
       {/* Drawer */}
       {isDrawerOpen && createPortal(

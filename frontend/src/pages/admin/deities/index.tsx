@@ -149,9 +149,9 @@ export const AdminDeities = () => {
                 <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                   <tr>
                     <th className="px-6 py-4 font-bold">Deity</th>
-                    <th className="px-6 py-4 font-bold">Featured</th>
-                    <th className="px-6 py-4 font-bold">Order</th>
-                    <th className="px-6 py-4 font-bold">Status</th>
+                    <th className="px-6 py-4 font-bold text-center">Featured</th>
+                    <th className="px-6 py-4 font-bold text-center">Order</th>
+                    <th className="px-6 py-4 font-bold text-center">Status</th>
                     <th className="px-6 py-4 font-bold text-right">Actions</th>
                   </tr>
                 </thead>
@@ -161,40 +161,42 @@ export const AdminDeities = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {deity.image ? (
-                            <img src={deity.image} alt={deity.name} className="w-20 h-10 rounded-md object-cover border border-gray-200" />
+                            <img src={deity.image} alt={deity.name} className="w-12 h-12 rounded-md object-cover border border-gray-200" />
                           ) : (
-                            <div className="w-20 h-10 rounded-md bg-gray-100 flex items-center justify-center border border-gray-200">
-                              <Flame className="w-5 h-5 text-gray-400" />
+                            <div className="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center border border-gray-200">
+                              <Flame className="w-6 h-6 text-gray-400" />
                             </div>
                           )}
                           <div>
                             <p className="font-semibold text-gray-900">{deity.name}</p>
-                            <p className="text-xs text-gray-500">{deity.slug}</p>
+                            {deity.description && <p className="text-xs text-gray-500 truncate max-w-[250px]">{deity.description}</p>}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        {deity.featured ? (
-                          <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                        ) : (
-                          <Star className="w-5 h-5 text-gray-300" />
-                        )}
+                        <div className="flex justify-center">
+                          {deity.featured ? (
+                            <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                          ) : (
+                            <Star className="w-5 h-5 text-gray-300" />
+                          )}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 text-gray-600">
+                      <td className="px-6 py-4 text-center font-semibold text-gray-900">
                         {deity.displayOrder || '-'}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                        ${deity.status === 'ACTIVE' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-700 border-gray-200'}
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
+                        ${deity.status === 'ACTIVE' ? 'bg-green-600 text-white' : 'bg-gray-500 text-white'}
                       `}>
-                          {deity.status === 'ACTIVE' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" strokeWidth={2.5} />}
+                          {deity.status === 'ACTIVE' ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" strokeWidth={2.5} />}
                           {deity.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => openDrawer(deity)} className="p-2 text-saffron hover:text-orange-600 hover:bg-saffron/10 rounded-md transition-colors">
-                            <Edit2 className="w-4 h-4" strokeWidth={2.5} />
+                        <div className="flex items-center justify-end">
+                          <button onClick={() => openDrawer(deity)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+                            <Edit2 className="w-4 h-4" strokeWidth={3.5} />
                           </button>
                           <button
                             onClick={() => {
@@ -202,9 +204,9 @@ export const AdminDeities = () => {
                                 deleteMutation.mutate(deity.id);
                               }
                             }}
-                            className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
                           >
-                            <Trash2 className="w-4 h-4" strokeWidth={2.5} />
+                            <Trash2 className="w-4 h-4" strokeWidth={3.5} />
                           </button>
                         </div>
                       </td>

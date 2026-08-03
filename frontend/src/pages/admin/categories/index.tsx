@@ -159,9 +159,9 @@ export const AdminCategories = () => {
               <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                 <tr>
                     <th className="px-6 py-4 font-bold">Category</th>
-                    <th className="px-6 py-4 font-bold">Status</th>
-                    <th className="px-6 py-4 font-bold">Bhajans</th>
-                    <th className="px-6 py-4 font-bold">Order</th>
+                    <th className="px-6 py-4 font-bold text-center">Status</th>
+                    <th className="px-6 py-4 font-bold text-center">Bhajans</th>
+                    <th className="px-6 py-4 font-bold text-center">Order</th>
                     <th className="px-6 py-4 font-bold text-right">Actions</th>
                   </tr>
                 </thead>
@@ -170,38 +170,38 @@ export const AdminCategories = () => {
                     <tr key={category.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-md bg-saffron/10 flex items-center justify-center border border-saffron/20">
+                          <div className="w-12 h-12 rounded-md bg-saffron/10 flex items-center justify-center border border-saffron/20 shrink-0">
                             {(() => {
                               const IconComponent = category.iconUrl && IconMap[category.iconUrl] ? IconMap[category.iconUrl] : FolderTree;
-                              return <IconComponent className="w-5 h-5 text-saffron" />;
+                              return <IconComponent className="w-6 h-6 text-saffron" />;
                             })()}
                           </div>
                           <div>
                             <p className="font-semibold text-gray-900">{category.name}</p>
-                            <p className="text-xs text-gray-500">/{category.slug}</p>
+                            {category.description && <p className="text-xs text-gray-500 truncate max-w-[250px]">{category.description}</p>}
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                        ${category.status === 'PUBLISHED' ? 'bg-green-50 text-green-700 border-green-200' :
-                            category.status === 'DRAFT' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                              'bg-gray-50 text-gray-700 border-gray-200'}
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
+                        ${category.status === 'PUBLISHED' ? 'bg-green-600 text-white' :
+                            category.status === 'DRAFT' ? 'bg-amber-600 text-white' :
+                              'bg-gray-500 text-white'}
                       `}>
-                          {category.status === 'PUBLISHED' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" strokeWidth={2.5} />}
+                          {category.status === 'PUBLISHED' ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" strokeWidth={2.5} />}
                           {category.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-600 font-medium">
+                      <td className="px-6 py-4 font-semibold text-gray-900 text-center">
                         {category.bhajanCount}
                       </td>
-                      <td className="px-6 py-4 text-gray-600">
+                      <td className="px-6 py-4 font-semibold text-gray-900 text-center">
                         {category.displayOrder}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => openDrawer(category)} className="p-2 text-saffron hover:text-orange-600 hover:bg-saffron/10 rounded-md transition-colors">
-                            <Edit2 className="w-4 h-4" strokeWidth={2.5} />
+                        <div className="flex items-center justify-end">
+                          <button onClick={() => openDrawer(category)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+                            <Edit2 className="w-4 h-4" strokeWidth={3.5} />
                           </button>
                           <button
                             onClick={() => {
@@ -209,9 +209,9 @@ export const AdminCategories = () => {
                                 deleteMutation.mutate(category.id);
                               }
                             }}
-                            className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
                           >
-                            <Trash2 className="w-4 h-4" strokeWidth={2.5} />
+                            <Trash2 className="w-4 h-4" strokeWidth={3.5} />
                           </button>
                         </div>
                       </td>

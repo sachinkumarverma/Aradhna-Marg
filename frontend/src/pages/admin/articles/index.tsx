@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, FileText } from 'lucide-react';
+import { Plus, FileText, CheckCircle2, XCircle } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '@components/admin/DataTable';
 import { Button } from '@components/ui/Button';
@@ -59,16 +59,16 @@ export const AdminArticles: React.FC = () => {
       accessor: (row: any) => (
         <div className="flex items-center gap-3">
           {row.media_files?.url ? (
-            <img src={row.media_files.url} alt="" className="w-10 h-10 object-cover rounded-md border border-gray-200" />
+            <img src={row.media_files.url} alt="" className="w-12 h-12 object-cover rounded-md border border-gray-200 shrink-0" />
           ) : (
-            <div className="w-10 h-10 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs">No img</div>
+            <div className="w-12 h-12 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs shrink-0">No img</div>
           )}
           <div>
             <p className="font-bold text-gray-900 flex items-center gap-2">
               {row.title}
               {row.featured && <span className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Featured</span>}
             </p>
-            <p className="text-xs text-gray-500 truncate max-w-[200px]">/{row.slug}</p>
+            {row.excerpt && <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.excerpt}</p>}
           </div>
         </div>
       )
@@ -83,11 +83,14 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Status',
+      className: 'text-center',
       accessor: (row: any) => (
-        <span className={`px-2 py-1 rounded-md text-xs font-medium border ${row.status === 'PUBLISHED' ? 'bg-green-50 text-green-700 border-green-200' :
-            row.status === 'DRAFT' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-              'bg-gray-100 text-gray-700 border-gray-200'
+        <span className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+            row.status === 'PUBLISHED' ? 'bg-green-600 text-white' :
+            row.status === 'DRAFT' ? 'bg-amber-600 text-white' :
+              'bg-gray-500 text-white'
           }`}>
+          {row.status === 'PUBLISHED' ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" strokeWidth={2.5} />}
           {row.status}
         </span>
       )

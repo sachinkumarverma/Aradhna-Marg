@@ -103,8 +103,8 @@ export function DataTable<T extends { id: string | number }>({
                     </button>
                   )}
                   {onEdit && (
-                    <button onClick={() => onEdit(row)} className="p-1.5 text-saffron hover:text-orange-700 hover:bg-saffron/10 rounded-md transition-colors" title="Edit">
-                      <Edit2 className="w-4 h-4" strokeWidth={2.5} />
+                    <button onClick={() => onEdit(row)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors" title="Edit">
+                      <Edit2 className="w-4 h-4" strokeWidth={3.5} />
                     </button>
                   )}
                   {onActionClick && (
@@ -113,8 +113,8 @@ export function DataTable<T extends { id: string | number }>({
                     </button>
                   )}
                   {onDelete && (
-                    <button onClick={() => onDelete(row)} className="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors" title="Delete">
-                      <Trash2 className="w-4 h-4" strokeWidth={2.5} />
+                    <button onClick={() => onDelete(row)} className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors" title="Delete">
+                      <Trash2 className="w-4 h-4" strokeWidth={3.5} />
                     </button>
                   )}
                 </div>
