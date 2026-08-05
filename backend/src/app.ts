@@ -12,6 +12,9 @@ import { globalErrorHandler, notFoundHandler } from './middlewares/error';
 import { base64UploadMiddleware } from './middlewares/base64Upload.middleware';
 import { logger } from './utils/logger';
 
+// Register cron jobs
+import './features/youtube/jobs/youtube.cron';
+
 const app: Application = express();
 
 // Add Request ID generator middleware
