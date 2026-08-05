@@ -35,6 +35,12 @@ export const AdminYoutube = () => {
     }
   });
 
+  useEffect(() => {
+    if (settings?.youtubeSyncInterval) {
+      setSyncInterval(settings.youtubeSyncInterval);
+    }
+  }, [settings?.youtubeSyncInterval]);
+
   // Fetch Stats
   const { data: stats } = useQuery({
     queryKey: ['youtube-stats'],

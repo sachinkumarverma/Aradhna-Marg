@@ -76,7 +76,7 @@ export class SettingsRepository {
     if (dto.instagramUrl !== undefined) dbData.instagram_url = dto.instagramUrl;
     if (dto.youtubeUrl !== undefined) dbData.youtube_url = dto.youtubeUrl;
     if (dto.twitterUrl !== undefined) dbData.twitter_url = dto.twitterUrl;
-    if (dto.linkedinUrl !== undefined) dbData.linkedinUrl = dto.linkedinUrl;
+    if (dto.linkedinUrl !== undefined) dbData.linkedin_url = dto.linkedinUrl;
     if (dto.youtubeChannelId !== undefined) dbData.youtube_channel_id = dto.youtubeChannelId;
     if (dto.youtubeChannelUrl !== undefined) dbData.youtube_channel_url = dto.youtubeChannelUrl;
     if (dto.youtubeAutoSync !== undefined) dbData.youtube_auto_sync = dto.youtubeAutoSync;

@@ -106,8 +106,8 @@ class YoutubeSyncService {
       // Log sync history
       try {
         await db.query(
-          `INSERT INTO youtube_sync_logs (channel_id, status, started_at) VALUES ($1, $2, NOW())`,
-          [channelId, 'COMPLETED']
+          `INSERT INTO youtube_sync_logs (channel_id, status, started_at, error_message) VALUES ($1, $2, NOW(), $3)`,
+          [channelId, 'COMPLETED', `Imported: ${importedCount}, Updated: ${updatedCount}`]
         );
       } catch (err) {
         // Ignore if table doesn't exist

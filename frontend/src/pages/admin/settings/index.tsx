@@ -168,7 +168,26 @@ const SocialSection = ({ defaults }: { defaults: any }) => {
 const YoutubeSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
   const mutation = useSectionSave('/settings/youtube', qc);
-  const { register, handleSubmit, control } = useForm({ values: defaults });
+  const { register, handleSubmit, control, watch } = useForm({ values: defaults });
+
+  const lastSync = defaults?.youtubeLastSync ? new Date(defaults.youtubeLastSync) : null;
+  const currentInterval = watch('youtubeSyncInterval') || defaults?.youtubeSyncInterval;
+  
+  let nextSyncStr = 'N/A';
+  if (lastSync && currentInterval) {
+    const nextSync = new Date(lastSync);
+    if (currentInterval === '1h') nextSync.setHours(nextSync.getHours() + 1);
+    else if (currentInterval === '6h') nextSync.setHours(nextSync.getHours() + 6);
+    else if (currentInterval === '12h') nextSync.setHours(nextSync.getHours() + 12);
+    else if (currentInterval === '24h') nextSync.setHours(nextSync.getHours() + 24);
+    
+    if (nextSync.getTime() < new Date().getTime()) {
+      nextSyncStr = 'Pending (Next Cron execution)';
+    } else {
+      nextSyncStr = format(nextSync, 'dd MMM yyyy, hh:mm a');
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">YouTube Sync Settings</h3>
@@ -189,7 +208,7 @@ const YoutubeSection = ({ defaults }: { defaults: any }) => {
             <Controller name="youtubeSyncInterval" control={control} defaultValue="daily"
               render={({ field }) => (
                 <Select value={field.value} onChange={field.onChange} searchable={false}
-                  options={[{ label: 'Hourly', value: 'hourly' }, { label: 'Daily', value: 'daily' }, { label: 'Weekly', value: 'weekly' }]} />
+                  options={[{ label: 'Every 1 Hour', value: '1h' }, { label: 'Every 6 Hours', value: '6h' }, { label: 'Every 12 Hours', value: '12h' }, { label: 'Daily', value: '24h' }]} />
               )} />
           </div>
           <div className="pt-2 border-t border-gray-200 space-y-2">
@@ -197,7 +216,7 @@ const YoutubeSection = ({ defaults }: { defaults: any }) => {
                 Last Sync: <strong className="text-gray-900">{defaults?.youtubeLastSync ? format(new Date(defaults.youtubeLastSync), 'dd MMM yyyy, hh:mm a') : 'Never'}</strong>
               </p>
               <p className="text-sm mt-1 text-gray-500">
-                Next Scheduled: <strong className="text-gray-900">{defaults?.youtubeNextSync ? format(new Date(defaults.youtubeNextSync), 'dd MMM yyyy, hh:mm a') : 'N/A'}</strong>
+                Next Scheduled: <strong className="text-gray-900">{nextSyncStr}</strong>
               </p>
           </div>
         </div>
