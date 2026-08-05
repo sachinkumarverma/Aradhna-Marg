@@ -169,17 +169,15 @@ export const AdminCategories = () => {
                   {categories.map((category: any) => (
                     <tr key={category.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-md bg-saffron/10 flex items-center justify-center border border-saffron/20 shrink-0">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
                             {(() => {
                               const IconComponent = category.iconUrl && IconMap[category.iconUrl] ? IconMap[category.iconUrl] : FolderTree;
-                              return <IconComponent className="w-6 h-6 text-saffron" />;
+                              return <IconComponent className="w-4 h-4 text-saffron shrink-0" />;
                             })()}
+                            <p className="font-semibold text-gray-900 truncate">{category.name}</p>
                           </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">{category.name}</p>
-                            {category.description && <p className="text-xs text-gray-500 truncate max-w-[250px]">{category.description}</p>}
-                          </div>
+                          {category.description && <p className="text-xs text-gray-500 truncate max-w-[300px] ml-6">{category.description}</p>}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center">

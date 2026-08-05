@@ -5,11 +5,11 @@ export const createCategorySchema = z.object({
   slug: z.string().optional(),
   description: z.string().optional(),
   imageUrl: z.string().url().optional().or(z.literal('')),
-  iconUrl: z.string().url().optional().or(z.literal('')),
+  iconUrl: z.string().optional().or(z.literal('')),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
   displayOrder: z.number().int().optional(),
-  status: z.enum(['active', 'inactive']).optional(),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).optional(),
   showInNavigation: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
 });

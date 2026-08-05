@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error("Missing Supabase environment variables: SUPABASE_URL and SUPABASE_ANON_KEY must be set");
@@ -31,8 +31,10 @@ export async function uploadBase64Image(base64Str: string): Promise<string> {
     const ext = mimeType.split('/')[1] || 'webp';
     const fileName = `uploads/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
 
+    const bucketName = process.env.SUPABASE_STORAGE_BUCKET || 'aradhna-images';
+    
     const { data, error } = await supabase.storage
-      .from('aradhna-images')
+      .from(bucketName)
       .upload(fileName, buffer, {
         contentType: mimeType,
         upsert: false
@@ -44,7 +46,7 @@ export async function uploadBase64Image(base64Str: string): Promise<string> {
     }
 
     const { data: { publicUrl } } = supabase.storage
-      .from('aradhna-images')
+      .from(bucketName)
       .getPublicUrl(fileName);
 
     return publicUrl;

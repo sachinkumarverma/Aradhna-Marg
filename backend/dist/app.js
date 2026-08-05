@@ -13,6 +13,7 @@ const uuid_1 = require("uuid");
 const routes_1 = __importDefault(require("./routes"));
 const seo_routes_1 = __importDefault(require("./seo/routes/seo.routes"));
 const error_1 = require("./middlewares/error");
+const base64Upload_middleware_1 = require("./middlewares/base64Upload.middleware");
 const logger_1 = require("./utils/logger");
 const app = (0, express_1.default)();
 // Add Request ID generator middleware
@@ -25,8 +26,30 @@ app.use((req, res, next) => {
 app.use(security_1.securityMiddleware);
 app.use((0, cors_1.default)());
 app.use((0, compression_1.default)());
-app.use(express_1.default.json({ limit: '1mb' }));
-app.use(express_1.default.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express_1.default.json({ limit: '10mb' }));
+app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
+// Base64 Image Upload Middleware
+app.use(base64Upload_middleware_1.base64UploadMiddleware);
+// Global String Trimming Middleware
+const trimStrings = (obj) => {
+    if (typeof obj === 'string')
+        return obj.trim();
+    if (obj !== null && typeof obj === 'object') {
+        Object.keys(obj).forEach(key => {
+            obj[key] = trimStrings(obj[key]);
+        });
+    }
+    return obj;
+};
+app.use((req, res, next) => {
+    if (req.body)
+        trimStrings(req.body);
+    if (req.query)
+        trimStrings(req.query);
+    if (req.params)
+        trimStrings(req.params);
+    next();
+});
 // Logging Middleware
 app.use((0, morgan_1.default)((tokens, req, res) => {
     return [

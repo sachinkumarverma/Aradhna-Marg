@@ -69,7 +69,7 @@ class CategoryRepository {
         const params = [
             dto.name, dto.slug, dto.description || null, dto.imageUrl || null, dto.iconUrl || null,
             dto.seoTitle || null, dto.seoDescription || null, dto.displayOrder || 0,
-            dto.status || 'active', dto.showInNavigation ?? true, dto.isFeatured ?? false
+            dto.status || 'PUBLISHED', dto.showInNavigation ?? true, dto.isFeatured ?? false
         ];
         try {
             const result = await DatabaseClient_1.db.query(query, params);
