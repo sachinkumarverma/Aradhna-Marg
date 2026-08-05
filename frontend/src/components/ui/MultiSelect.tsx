@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, X } from 'lucide-react';
+import { ChevronDown, Check, X, Loader2 } from 'lucide-react';
 import { cn } from '@utils/cn';
 import type { SelectOption } from './Select';
 
@@ -9,6 +9,7 @@ interface MultiSelectProps {
   onChange: (values: string[]) => void;
   placeholder?: string;
   className?: string;
+  isLoading?: boolean;
 }
 
 export const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -16,7 +17,8 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   values,
   onChange,
   placeholder = 'Select options...',
-  className
+  className,
+  isLoading = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -99,8 +101,12 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden">
-          <div className="max-h-60 overflow-y-auto py-1">
-            {filteredOptions.length === 0 ? (
+          <div className="max-h-60 overflow-auto scrollbar-thin py-1">
+            {isLoading ? (
+              <div className="flex items-center justify-center px-3 py-6 text-gray-500">
+                <Loader2 className="w-5 h-5 animate-spin text-saffron" />
+              </div>
+            ) : filteredOptions.length === 0 ? (
               <div className="px-3 py-2 text-sm text-gray-500 text-center">No options found</div>
             ) : (
               filteredOptions.map((opt) => {
@@ -123,7 +129,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                     )}>
                       {isSelected && <Check className="w-3 h-3 text-white" />}
                     </div>
-                    <span className={cn("truncate", isSelected ? 'font-medium text-saffron' : 'text-gray-700')}>{opt.label}</span>
+                    <span className={cn("whitespace-nowrap pr-4", isSelected ? 'font-medium text-saffron' : 'text-gray-700')}>{opt.label}</span>
                   </div>
                 );
               })

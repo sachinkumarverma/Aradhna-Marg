@@ -92,13 +92,13 @@ export const AdminArticleForm = () => {
   });
 
   // Data fetching for dropdowns
-  const { data: catData } = useQuery({ queryKey: ['categories'], queryFn: async () => (await apiClient.get('/admin/categories?limit=100')).data.data });
-  const { data: deitiesData } = useQuery({ queryKey: ['deities'], queryFn: async () => (await apiClient.get('/admin/deities?limit=100')).data.data });
-  const { data: authorsData } = useQuery({ queryKey: ['authors'], queryFn: async () => (await apiClient.get('/admin/authors?limit=100')).data.data });
-  const { data: festivalsData } = useQuery({ queryKey: ['festivals'], queryFn: async () => (await apiClient.get('/admin/festivals?limit=100')).data.data });
-  const { data: tagsData } = useQuery({ queryKey: ['tags'], queryFn: async () => (await apiClient.get('/admin/tags?limit=100')).data.data });
-  const { data: bhajansData } = useQuery({ queryKey: ['bhajans'], queryFn: async () => (await apiClient.get('/admin/bhajans?limit=100')).data.data });
-  const { data: articlesData } = useQuery({ queryKey: ['articles'], queryFn: async () => (await apiClient.get('/admin/articles?limit=100')).data.data });
+  const { data: catData, isLoading: isCatLoading } = useQuery({ queryKey: ['categories'], queryFn: async () => (await apiClient.get('/admin/categories?limit=100')).data.data });
+  const { data: deitiesData, isLoading: isDeitiesLoading } = useQuery({ queryKey: ['deities'], queryFn: async () => (await apiClient.get('/admin/deities?limit=100')).data.data });
+  const { data: authorsData, isLoading: isAuthorsLoading } = useQuery({ queryKey: ['authors'], queryFn: async () => (await apiClient.get('/admin/authors?limit=100')).data.data });
+  const { data: festivalsData, isLoading: isFestivalsLoading } = useQuery({ queryKey: ['festivals'], queryFn: async () => (await apiClient.get('/admin/festivals?limit=100')).data.data });
+  const { data: tagsData, isLoading: isTagsLoading } = useQuery({ queryKey: ['tags'], queryFn: async () => (await apiClient.get('/admin/tags?limit=100')).data.data });
+  const { data: bhajansData, isLoading: isBhajansLoading } = useQuery({ queryKey: ['bhajans'], queryFn: async () => (await apiClient.get('/admin/bhajans?limit=100')).data.data });
+  const { data: articlesData, isLoading: isArticlesLoading } = useQuery({ queryKey: ['articles'], queryFn: async () => (await apiClient.get('/admin/articles?limit=100')).data.data });
 
   const mapOpts = (arr: any[], idKey = 'id', labelKey = 'name') => (arr || []).map(a => ({ value: a[idKey], label: a[labelKey] || a.title }));
 
@@ -308,6 +308,7 @@ export const AdminArticleForm = () => {
                             value={field.value}
                             onChange={field.onChange}
                             placeholder="Search category..."
+                            isLoading={isCatLoading}
                             error={!!errors.category_id}
                           />
                         )}
@@ -321,7 +322,7 @@ export const AdminArticleForm = () => {
                         name="author_id"
                         control={control}
                         render={({ field }) => (
-                          <Select options={mapOpts(authorsData)} value={field.value} onChange={field.onChange} placeholder="Select author..." />
+                          <Select options={mapOpts(authorsData)} value={field.value} onChange={field.onChange} placeholder="Select author..." isLoading={isAuthorsLoading} />
                         )}
                       />
                     </div>
@@ -332,7 +333,7 @@ export const AdminArticleForm = () => {
                         name="tags"
                         control={control}
                         render={({ field }) => (
-                          <MultiSelect options={mapOpts(tagsData)} values={field.value} onChange={field.onChange} placeholder="Select tags..." />
+                          <MultiSelect options={mapOpts(tagsData)} values={field.value} onChange={field.onChange} placeholder="Select tags..." isLoading={isTagsLoading} />
                         )}
                       />
                     </div>

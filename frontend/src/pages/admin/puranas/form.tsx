@@ -85,6 +85,15 @@ export const AdminPuranForm = () => {
     enabled: isEditing
   });
 
+  // Fetch authors for select
+  const { data: authorOptions = [], isLoading: isLoadingAuthors } = useQuery({
+    queryKey: ['admin-authors-options'],
+    queryFn: async () => {
+      const res = await apiClient.get('/admin/authors', { params: { limit: 1000 } });
+      return res.data.data.map((a: any) => ({ label: a.name, value: a.name }));
+    }
+  });
+
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       if (isEditing) return apiClient.put(`/admin/puranas/${id}`, data);
@@ -262,10 +271,18 @@ export const AdminPuranForm = () => {
 
                 <div className="space-y-1.5">
                   <label className="text-sm font-semibold text-gray-700">Author</label>
-                  <input
-                    {...register('author')}
-                    className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none focus:border-saffron focus:ring-1 focus:ring-saffron text-sm"
-                    placeholder="Optional author name..."
+                  <Controller
+                    name="author"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        options={authorOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select author..."
+                        isLoading={isLoadingAuthors}
+                      />
+                    )}
                   />
                 </div>
 

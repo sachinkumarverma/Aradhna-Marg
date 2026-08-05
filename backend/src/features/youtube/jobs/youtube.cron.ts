@@ -10,10 +10,18 @@ cronManager.register({
   status: 'IDLE',
   run: async () => {
     try {
-      // Get Channel ID from Settings
       let settings;
       try {
-        const result = await db.query(`SELECT youtube_channel_id FROM settings LIMIT 1`);
+        const result = await db.query(`
+          SELECT 
+            id,
+            youtube_channel_id, 
+            youtube_auto_sync, 
+            youtube_sync_interval, 
+            youtube_last_sync 
+          FROM settings 
+          LIMIT 1
+        `);
         settings = result.rows[0];
       } catch (e) {
         // Ignore table not found
@@ -21,6 +29,22 @@ cronManager.register({
       
       if (!settings?.youtube_channel_id) {
         logger.warn('Cron skipped: No YouTube Channel ID configured in settings.');
+        return;
+      }
+
+      if (settings.youtube_auto_sync === false) {
+        logger.info('Cron skipped: Auto-sync is disabled in settings.');
+        return;
+      }
+
+      // Check if enough time has passed based on the dynamic interval (in hours)
+      const intervalHours = parseInt(settings.youtube_sync_interval) || 6; // Default 6 hours
+      const lastSync = settings.youtube_last_sync ? new Date(settings.youtube_last_sync).getTime() : 0;
+      const now = Date.now();
+      const elapsedHours = (now - lastSync) / (1000 * 60 * 60);
+
+      if (elapsedHours < intervalHours) {
+        logger.info(`Cron skipped: Only ${elapsedHours.toFixed(1)}h elapsed out of ${intervalHours}h interval.`);
         return;
       }
 
@@ -35,7 +59,14 @@ cronManager.register({
 
       const publishedAfter = lastLog?.started_at ? new Date(lastLog.started_at).toISOString() : undefined;
 
+      logger.info(`Starting dynamic YouTube sync for channel ${settings.youtube_channel_id}`);
       await youtubeSyncService.syncChannel(settings.youtube_channel_id, publishedAfter);
+
+      // Update last sync time in settings
+      if (settings.id) {
+        await db.query(`UPDATE settings SET youtube_last_sync = NOW() WHERE id = $1`, [settings.id]);
+        logger.info('Updated youtube_last_sync in settings.');
+      }
     } catch (error: any) {
       logger.error('Scheduled YouTube Sync Failed', error.message || error);
       throw error;

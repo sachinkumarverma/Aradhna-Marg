@@ -19,13 +19,7 @@ const generateSlug = (text: string) => {
   return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 };
 
-const categories = [
-  { label: 'National', value: 'National' },
-  { label: 'Religious', value: 'Religious' },
-  { label: 'Fast', value: 'Fast' },
-  { label: 'Celebration', value: 'Celebration' },
-  { label: 'Other', value: 'Other' },
-];
+
 
 export const AdminFestivalForm = () => {
   const { id } = useParams();
@@ -69,7 +63,7 @@ export const AdminFestivalForm = () => {
   }, [nameValue, isEditing, slugValue, setValue]);
 
   // Fetch bhajans for multiselect
-  const { data: bhajans } = useQuery({
+  const { data: bhajans, isLoading: isLoadingBhajans } = useQuery({
     queryKey: ['admin-bhajans-options'],
     queryFn: async () => {
       const res = await apiClient.get('/admin/bhajans', { params: { limit: 1000 } });
@@ -78,11 +72,20 @@ export const AdminFestivalForm = () => {
   });
 
   // Fetch articles for multiselect
-  const { data: articles } = useQuery({
+  const { data: articles, isLoading: isLoadingArticles } = useQuery({
     queryKey: ['admin-articles-options'],
     queryFn: async () => {
       const res = await apiClient.get('/admin/articles', { params: { limit: 1000 } });
       return res.data.data.map((a: any) => ({ label: a.title, value: a.id }));
+    }
+  });
+
+  // Fetch categories for select
+  const { data: categoryOptions = [], isLoading: isLoadingCategories } = useQuery({
+    queryKey: ['admin-categories-options'],
+    queryFn: async () => {
+      const res = await apiClient.get('/admin/categories', { params: { limit: 1000 } });
+      return res.data.data.map((c: any) => ({ label: c.name, value: c.name }));
     }
   });
 
@@ -343,7 +346,7 @@ export const AdminFestivalForm = () => {
                       control={control}
                       render={({ field }) => (
                         <Select 
-                          options={categories}
+                          options={categoryOptions}
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Select category..."
@@ -399,6 +402,7 @@ export const AdminFestivalForm = () => {
                           values={field.value || []}
                           onChange={field.onChange}
                           placeholder="Search and select bhajans..."
+                          isLoading={isLoadingBhajans}
                         />
                       )}
                     />
@@ -415,6 +419,7 @@ export const AdminFestivalForm = () => {
                           values={field.value || []}
                           onChange={field.onChange}
                           placeholder="Search and select articles..."
+                          isLoading={isLoadingArticles}
                         />
                       )}
                     />

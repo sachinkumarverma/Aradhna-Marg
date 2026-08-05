@@ -9,11 +9,13 @@ import settingsRoutes from './settings.routes';
 import puranaRoutes from './puranas.routes';
 import { seoRoutes } from '@features/seo';
 import publicRoutes from './public.routes';
+import cronRoutes from './cron.routes';
 
 const router = Router();
 
 // API Version 1
 router.use('/v1/health', healthRoutes);
+router.use('/v1/cron', cronRoutes);
 
 // router.use('/v1/bhajans', bhajanRoutes);
 router.use('/v1/categories', categoryRoutes);

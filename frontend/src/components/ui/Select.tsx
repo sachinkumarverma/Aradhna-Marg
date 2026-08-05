@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, Search } from 'lucide-react';
+import { ChevronDown, Check, Search, Loader2 } from 'lucide-react';
 import { cn } from '@utils/cn';
 
 export interface SelectOption {
@@ -17,6 +17,7 @@ interface SelectProps {
   className?: string;
   error?: boolean;
   menuPlacement?: 'top' | 'bottom';
+  isLoading?: boolean;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -27,7 +28,8 @@ export const Select: React.FC<SelectProps> = ({
   searchable = true,
   className,
   error,
-  menuPlacement = 'bottom'
+  menuPlacement = 'bottom',
+  isLoading = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -60,8 +62,8 @@ export const Select: React.FC<SelectProps> = ({
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className={cn('flex items-center gap-2 truncate', !selectedOption && 'text-gray-400')}>
-          {selectedOption?.icon && <span className="w-4 h-4 flex items-center justify-center">{selectedOption.icon}</span>}
-          {selectedOption ? selectedOption.label : placeholder}
+          {selectedOption?.icon && <span className="w-4 h-4 flex items-center justify-center min-w-4">{selectedOption.icon}</span>}
+          <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         </span>
         <ChevronDown className={cn('w-4 h-4 text-gray-400 transition-transform', isOpen && 'rotate-180')} />
       </div>
@@ -85,8 +87,12 @@ export const Select: React.FC<SelectProps> = ({
               />
             </div>
           )}
-          <div className="max-h-60 overflow-y-auto py-1">
-            {filteredOptions.length === 0 ? (
+          <div className="max-h-60 overflow-auto scrollbar-thin py-1">
+            {isLoading ? (
+              <div className="flex items-center justify-center px-3 py-6 text-gray-500">
+                <Loader2 className="w-5 h-5 animate-spin text-saffron" />
+              </div>
+            ) : filteredOptions.length === 0 ? (
               <div className="px-3 py-2 text-sm text-gray-500 text-center">No options found</div>
             ) : (
               filteredOptions.map((opt) => (
@@ -102,11 +108,11 @@ export const Select: React.FC<SelectProps> = ({
                     setSearch('');
                   }}
                 >
-                  <div className="flex items-center gap-2 truncate">
-                    {opt.icon && <span className={cn("w-4 h-4 flex items-center justify-center", value === opt.value ? 'text-saffron' : 'text-gray-500')}>{opt.icon}</span>}
+                  <div className="flex items-center gap-2 whitespace-nowrap pr-4">
+                    {opt.icon && <span className={cn("w-4 h-4 flex items-center justify-center min-w-4", value === opt.value ? 'text-saffron' : 'text-gray-500')}>{opt.icon}</span>}
                     <span>{opt.label}</span>
                   </div>
-                  {value === opt.value && <Check className="w-4 h-4" />}
+                  {value === opt.value && <Check className="w-4 h-4 min-w-4" />}
                 </div>
               ))
             )}
