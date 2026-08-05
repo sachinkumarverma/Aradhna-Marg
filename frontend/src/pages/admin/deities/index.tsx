@@ -122,13 +122,13 @@ export const AdminDeities = () => {
             <table className="w-full text-sm text-left">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  {[1, 2, 3, 4, 5].map(i => <th key={i} className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></th>)}
+                  {[1, 2, 3, 4, 5].map(i => <th key={i} className="px-6 py-2.5"><div className="h-4 bg-gray-200 rounded w-20"></div></th>)}
                 </tr>
               </thead>
               <tbody>
                 {[1,2,3,4,5,6,7,8,9,10].map(row => (
                   <tr key={row} className="border-b border-gray-50">
-                    {[1, 2, 3, 4, 5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
+                    {[1, 2, 3, 4, 5].map(col => <td key={col} className="px-6 py-2.5"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
                   </tr>
                 ))}
               </tbody>
@@ -158,7 +158,7 @@ export const AdminDeities = () => {
                 <tbody className="divide-y divide-gray-100">
                   {deities.map((deity: any) => (
                     <tr key={deity.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <div className="flex items-center gap-3">
                           {deity.image ? (
                             <img src={deity.image} alt={deity.name} className="w-12 h-12 rounded-md object-cover border border-gray-200" />
@@ -173,7 +173,7 @@ export const AdminDeities = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2.5">
                         <div className="flex justify-center">
                           {deity.featured ? (
                             <Star className="w-5 h-5 text-yellow-400 fill-current" />
@@ -182,10 +182,10 @@ export const AdminDeities = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-center font-semibold text-gray-900">
+                      <td className="px-6 py-2.5 text-center font-semibold text-gray-900">
                         {deity.displayOrder || '-'}
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-2.5 text-center">
                         <span className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
                         ${deity.status === 'ACTIVE' ? 'bg-green-600 text-white' : 'bg-gray-500 text-white'}
                       `}>
@@ -193,7 +193,7 @@ export const AdminDeities = () => {
                           {deity.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-2.5 text-right">
                         <div className="flex items-center justify-end">
                           <button onClick={() => openDrawer(deity)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
                             <Edit2 className="w-4 h-4" strokeWidth={3.5} />
@@ -237,7 +237,7 @@ export const AdminDeities = () => {
 
           <div className="relative w-full max-w-4xl bg-gray-50 h-full flex flex-col shadow-2xl animate-in slide-in-from-right">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between px-6 py-4 bg-orange-100 border-b border-orange-200">
+            <div className="flex items-center justify-between px-6 py-2.5 bg-orange-100 border-b border-orange-200">
               <div className="flex items-center gap-4">
                 <button
                   onClick={closeDrawer}

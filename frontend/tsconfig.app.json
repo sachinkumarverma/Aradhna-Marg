@@ -15,6 +15,7 @@
       "@api/*": ["./src/api/*"],
       "@features/*": ["./src/features/*"],
       "@utils/*": ["./src/utils/*"],
+      "@lib/*": ["./src/lib/*"],
       "@common/*": ["./src/common/*"],
       "@pages/*": ["./src/pages/*"],
       "@assets/*": ["./src/assets/*"]

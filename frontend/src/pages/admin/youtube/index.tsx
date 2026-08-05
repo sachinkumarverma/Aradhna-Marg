@@ -312,7 +312,7 @@ export const AdminYoutube = () => {
                 <button 
                   type="submit" 
                   disabled={saveSettingsMutation.isPending}
-                  className="px-6 py-2.5 bg-gray-900 text-white font-bold rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                  className="px-6 py-4 bg-gray-900 text-white font-bold rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
                 >
                   {saveSettingsMutation.isPending ? 'Saving...' : 'Save Configuration'}
                 </button>

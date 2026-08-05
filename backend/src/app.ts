@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import routes from './routes';
 import seoRoutes from './seo/routes/seo.routes';
 import { globalErrorHandler, notFoundHandler } from './middlewares/error';
+import { base64UploadMiddleware } from './middlewares/base64Upload.middleware';
 import { logger } from './utils/logger';
 
 const app: Application = express();
@@ -24,8 +25,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(securityMiddleware);
 app.use(cors());
 app.use(compression());
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Base64 Image Upload Middleware
+app.use(base64UploadMiddleware);
 
 // Global String Trimming Middleware
 const trimStrings = (obj: any): any => {
