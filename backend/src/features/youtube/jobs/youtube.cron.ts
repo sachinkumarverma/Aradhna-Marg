@@ -1,5 +1,5 @@
 import { cronManager } from '@/cron/manager';
-import { youtubeSyncService } from '@features/youtube/YoutubeSyncService';
+import { youtubeService } from '@features/youtube/YoutubeService';
 import { db } from '@common/database/DatabaseClient';
 import { logger } from '@utils/logger';
 
@@ -48,25 +48,8 @@ cronManager.register({
         return;
       }
 
-      // Get last sync date from logs
-      let lastLog;
-      try {
-        const result = await db.query(`SELECT started_at FROM youtube_sync_logs WHERE status = 'COMPLETED' ORDER BY started_at DESC LIMIT 1`);
-        lastLog = result.rows[0];
-      } catch (e) {
-        // Ignore table not found
-      }
-
-      const publishedAfter = lastLog?.started_at ? new Date(lastLog.started_at).toISOString() : undefined;
-
       logger.info(`Starting dynamic YouTube sync for channel ${settings.youtube_channel_id}`);
-      await youtubeSyncService.syncChannel(settings.youtube_channel_id, publishedAfter);
-
-      // Update last sync time in settings
-      if (settings.id) {
-        await db.query(`UPDATE settings SET youtube_last_sync = NOW() WHERE id = $1`, [settings.id]);
-        logger.info('Updated youtube_last_sync in settings.');
-      }
+      await youtubeService.syncNow();
     } catch (error: any) {
       logger.error('Scheduled YouTube Sync Failed', error.message || error);
       throw error;
