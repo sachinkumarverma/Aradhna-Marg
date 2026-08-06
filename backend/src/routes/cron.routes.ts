@@ -14,9 +14,12 @@ router.get('/trigger/:jobName', async (req, res, next) => {
       return;
     }
 
-    await cronManager.runJob(jobName);
+    // Run asynchronously to prevent HTTP timeouts and "output too large" errors from Gateway Timeouts
+    cronManager.runJob(jobName).catch(err => {
+      console.error(`Background job ${jobName} failed:`, err);
+    });
     
-    res.json({ success: true, message: `Job ${jobName} executed successfully` });
+    res.json({ success: true, message: `Job ${jobName} triggered successfully` });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }
