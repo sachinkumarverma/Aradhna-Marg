@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Save, Loader2, Eye, Send, Upload, X } from 'lucide-react';
+import { Languages,  ArrowLeft, Save, Loader2, Eye, Send, Upload, X  } from 'lucide-react';
 import { TranslationPanel } from '../../../features/translations/TranslationPanel';
 import { apiClient } from '@api/client';
 import { uploadFile } from '@api/upload';
@@ -340,14 +340,12 @@ export const AdminArticleForm = () => {
                   />
 
                   {!(!!watch('title_en' as any) || !!watch('excerpt_en' as any) || !!watch('content_en' as any)) ? (
-                    <div className="bg-white rounded-md shadow-sm border border-gray-200 p-12 text-center">
-                      <div className="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                        </svg>
+                    <div className="bg-white rounded-xl border border-gray-200 py-16 px-6 text-center shadow-sm">
+                      <div className="w-16 h-16 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-5">
+                        <Languages className="w-8 h-8" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">English Translation</h3>
-                      <p className="text-gray-500 max-w-md mx-auto">No English translation has been generated yet.<br/>Click "Generate English Translation" above to start.</p>
+                      <h3 className="text-lg font-bold text-[#1a1a2e] mb-2">English Translation</h3>
+                      <p className="text-gray-500 text-[14px] max-w-sm mx-auto leading-relaxed">No English translation has been generated yet.<br/>Click "Generate English Translation" above to start.</p>
                     </div>
                   ) : (
                     <>
