@@ -9,6 +9,7 @@ import { youtubeRoutes } from '@features/youtube';
 import { adminAuthorController } from '@admin/controllers/author.controller';
 import { deityRoutes } from '@features/deities';
 import { adminAiController } from '@admin/controllers/ai.controller';
+import { translationRoutes } from '@features/translations';
 import { requireAdmin } from '@middlewares/auth';
 import { authController } from '@admin/controllers/auth.controller';
 
@@ -69,6 +70,9 @@ router.delete('/authors/:id', adminAuthorController.delete);
 
 // Deities Management
 router.use('/deities', deityRoutes);
+
+// Translations Management
+router.use('/translations', translationRoutes);
 
 // Future endpoints:
 // router.use('/seo', seoController);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, Music2, PlaySquare, BrainCircuit, Settings, FolderTree, Sparkles, FileText, BookOpen, CalendarDays, Users, Tags, Search, Activity
+  LayoutDashboard, Music2, PlaySquare, BrainCircuit, Settings, FolderTree, Sparkles, FileText, BookOpen, CalendarDays, Users, Tags, Search, Activity, Languages
 } from 'lucide-react';
 import { cn } from '@utils/cn';
 
@@ -24,6 +24,7 @@ const ORGANIZE_NAV = [
 ];
 
 const AUTOMATION_NAV = [
+  { name: 'TRANSLATIONS', path: '/admin/translations', icon: Languages },
   { name: 'YOUTUBE SYNC', path: '/admin/youtube', icon: PlaySquare },
   { name: 'AI PROCESSING', path: '/admin/ai', icon: BrainCircuit },
   { name: 'SEO ENGINE', path: '/admin/seo', icon: Search },
