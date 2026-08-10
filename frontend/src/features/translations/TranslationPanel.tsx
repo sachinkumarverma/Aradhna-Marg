@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { TranslationApi } from './TranslationApi';
 import { toast } from 'react-hot-toast';
 import { Sparkles, RefreshCw, Check, Loader2, Edit3 } from 'lucide-react';
+import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 
 interface TranslationPanelProps {
   contentType: 'ARTICLE' | 'PURAN' | 'FESTIVAL';
@@ -24,6 +25,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
   targetLang
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const generateMutation = useMutation({
     mutationFn: async () => {
@@ -47,8 +49,13 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
 
   const handleGenerate = () => {
     if (hasTranslation) {
-      if (!window.confirm("Regenerate English Translation?\n\nThis will replace the current English translation. Any manual changes made to the English version will be lost.")) return;
+      setIsConfirmOpen(true);
+      return;
     }
+    generateMutation.mutate();
+  };
+
+  const handleConfirmRegenerate = () => {
     generateMutation.mutate();
   };
 
@@ -119,6 +126,16 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           Edit
         </button>
       </div>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Regenerate English Translation?"
+        message="This will replace the current English translation. Any manual changes made to the English version will be lost."
+        confirmText="Regenerate"
+        onConfirm={handleConfirmRegenerate}
+        onCancel={() => setIsConfirmOpen(false)}
+        isDestructive={false}
+      />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { AutoResizeTextarea } from "@components/ui/AutoResizeTextarea";
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -255,7 +256,7 @@ export const AdminPuranForm = () => {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-sm font-semibold text-gray-700">SEO Description</label>
-                    <textarea
+                    <AutoResizeTextarea
                       {...register('seo_description')}
                       rows={3}
                       className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
@@ -285,7 +286,7 @@ export const AdminPuranForm = () => {
                   />
 
                   {!(!!watch('title_en' as any) || !!watch('description_en' as any)) ? (
-                    <div className="bg-white rounded-xl border border-gray-200 py-16 px-6 text-center shadow-sm">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 py-16 px-6 text-center shadow-sm">
                       <div className="w-16 h-16 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-5">
                         <Languages className="w-8 h-8" />
                       </div>
@@ -347,7 +348,7 @@ export const AdminPuranForm = () => {
 
                           <div className="space-y-1.5">
                             <label className="text-sm font-semibold text-gray-700">SEO Meta Description</label>
-                            <textarea 
+                            <AutoResizeTextarea 
                               {...register('seo_description_en' as any)}
                               rows={3}
                               className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
