@@ -1,0 +1,31 @@
+name: Incremental YouTube Sync
+
+on:
+  schedule:
+    # Ping the server every hour. The backend will respect the precise 
+    # interval (1h, 6h, 12h, 24h) set by the admin in the UI.
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger YouTube Sync
+        run: |
+          echo "Triggering YouTube Sync..."
+          response=$(curl -s -w "\n%{http_code}" -X GET "${{ secrets.API_URL }}/api/v1/cron/trigger/IncrementalYouTubeSync?secret=${{ secrets.CRON_SECRET }}")
+          
+          # Extract body and status code
+          body=$(echo "$response" | head -n -1)
+          status_code=$(echo "$response" | tail -n 1)
+          
+          echo "Status Code: $status_code"
+          echo "Response Body: $body"
+          
+          if [ "$status_code" -ne 200 ]; then
+            echo "Error: Trigger failed with status $status_code"
+            exit 1
+          fi
+          
+          echo "YouTube sync triggered successfully!"
