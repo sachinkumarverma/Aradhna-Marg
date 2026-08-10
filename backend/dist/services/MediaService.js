@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mediaService = exports.MediaService = void 0;
-const MediaRepository_1 = require("../repositories/MediaRepository");
+const MediaRepository_1 = require("@repositories/MediaRepository");
 const uuid_1 = require("uuid");
 const sharp_1 = __importDefault(require("sharp"));
 const path_1 = __importDefault(require("path"));

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.puranRepository = exports.PuranRepository = void 0;
 const base_repository_1 = require("./base.repository");
-const DatabaseClient_1 = require("../common/database/DatabaseClient");
+const DatabaseClient_1 = require("@common/database/DatabaseClient");
 class PuranRepository extends base_repository_1.BaseRepository {
     constructor() {
         super('puranas');

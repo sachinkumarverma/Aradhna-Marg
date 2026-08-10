@@ -1,18 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const dashboard_controller_1 = require("../controllers/dashboard.controller");
-const article_controller_1 = require("../controllers/article.controller");
-const puran_controller_1 = require("../controllers/puran.controller");
-const festival_controller_1 = require("../controllers/festival.controller");
-const bhajans_1 = require("../../features/bhajans");
-const tags_1 = require("../../features/tags");
-const youtube_1 = require("../../features/youtube");
-const author_controller_1 = require("../controllers/author.controller");
-const deities_1 = require("../../features/deities");
-const ai_controller_1 = require("../controllers/ai.controller");
-const auth_1 = require("../../middlewares/auth");
-const auth_controller_1 = require("../controllers/auth.controller");
+const dashboard_controller_1 = require("@admin/controllers/dashboard.controller");
+const article_controller_1 = require("@admin/controllers/article.controller");
+const puran_controller_1 = require("@admin/controllers/puran.controller");
+const festival_controller_1 = require("@admin/controllers/festival.controller");
+const bhajans_1 = require("@features/bhajans");
+const tags_1 = require("@features/tags");
+const youtube_1 = require("@features/youtube");
+const author_controller_1 = require("@admin/controllers/author.controller");
+const deities_1 = require("@features/deities");
+const ai_controller_1 = require("@admin/controllers/ai.controller");
+const translations_1 = require("@features/translations");
+const auth_1 = require("@middlewares/auth");
+const auth_controller_1 = require("@admin/controllers/auth.controller");
 const router = (0, express_1.Router)();
 // Public auth routes — no JWT required
 router.post('/auth/login', auth_controller_1.authController.login);
@@ -59,6 +60,8 @@ router.put('/authors/:id', author_controller_1.adminAuthorController.update);
 router.delete('/authors/:id', author_controller_1.adminAuthorController.delete);
 // Deities Management
 router.use('/deities', deities_1.deityRoutes);
+// Translations Management
+router.use('/translations', translations_1.translationRoutes);
 // Future endpoints:
 // router.use('/seo', seoController);
 // router.use('/jobs', jobsController);

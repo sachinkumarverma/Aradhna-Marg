@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminFestivalController = void 0;
-const apiResponse_1 = require("../../responses/apiResponse");
-const FestivalService_1 = require("../../services/FestivalService");
+const apiResponse_1 = require("@/responses/apiResponse");
+const FestivalService_1 = require("@services/FestivalService");
 class AdminFestivalController {
     list = async (req, res, next) => {
         try {

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const SettingsController_1 = require("../controllers/SettingsController");
+const SettingsController_1 = require("@controllers/SettingsController");
 const router = (0, express_1.Router)();
 // ── Full read ────────────────────────────────────────────────────────────────
 router.get('/', SettingsController_1.settingsController.getSettings);

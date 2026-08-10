@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.YouTubeWorker = void 0;
 const BaseWorker_1 = require("./BaseWorker");
-const types_1 = require("../../jobs/types");
-const EventBus_1 = require("../../jobs/events/EventBus");
-const logger_1 = require("../../utils/logger");
+const types_1 = require("@/jobs/types");
+const EventBus_1 = require("@/jobs/events/EventBus");
+const logger_1 = require("@utils/logger");
 class YouTubeWorker extends BaseWorker_1.BaseWorker {
     constructor(queue) {
         super(queue, types_1.JobType.YOUTUBE_SYNC_INCREMENTAL, 10000); // poll every 10s

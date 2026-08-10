@@ -45,7 +45,6 @@ const AdminFestivalForm = lazy(() => import('../pages/admin/festivals/form').the
 const AdminSEO = lazy(() => import('../pages/admin/seo').then(m => ({ default: m.AdminSEO })));
 const AdminMedia = lazy(() => import('../pages/admin/media').then(m => ({ default: m.AdminMedia })));
 const AdminSettings = lazy(() => import('../pages/admin/settings').then(m => ({ default: m.AdminSettings })));
-const AdminTranslations = lazy(() => import('../pages/admin/translations').then(m => ({ default: m.AdminTranslations })));
 const AdminArticles = lazy(() => import('../pages/admin/articles').then(m => ({ default: m.AdminArticles })));
 const AdminArticleForm = lazy(() => import('../pages/admin/articles/form').then(m => ({ default: m.AdminArticleForm })));
 const AdminPuranas = lazy(() => import('../pages/admin/puranas').then(m => ({ default: m.AdminPuranas })));
@@ -215,10 +214,6 @@ const router = createBrowserRouter([
       {
         path: 'ai',
         element: <AdminAI />
-      },
-      {
-        path: 'translations',
-        element: <AdminTranslations />
       },
       {
         path: 'seo',

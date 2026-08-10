@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIProviderFactory = void 0;
 const groq_provider_1 = require("./groq.provider");
 const openai_provider_1 = require("./openai.provider");
-const config_1 = require("../../config");
-const appError_1 = require("../../errors/appError");
+const config_1 = require("@/config");
+const appError_1 = require("@/errors/appError");
 class AIProviderFactory {
     static getProvider() {
         switch (config_1.config.AI_PROVIDER) {

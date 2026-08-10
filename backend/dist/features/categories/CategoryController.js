@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.categoryController = exports.CategoryController = void 0;
 const CategoryService_1 = require("./CategoryService");
-const apiResponse_1 = require("../../responses/apiResponse");
+const apiResponse_1 = require("@/responses/apiResponse");
 const CategoryValidator_1 = require("./CategoryValidator");
-const appError_1 = require("../../errors/appError");
+const appError_1 = require("@/errors/appError");
 class CategoryController {
     async getCategories(req, res, next) {
         try {

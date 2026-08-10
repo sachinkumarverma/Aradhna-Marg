@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.youtubeClient = void 0;
 const googleapis_1 = require("googleapis");
-const config_1 = require("../../../config");
-const appError_1 = require("../../../errors/appError");
-const logger_1 = require("../../../utils/logger");
+const config_1 = require("@/config");
+const appError_1 = require("@/errors/appError");
+const logger_1 = require("@utils/logger");
 class YoutubeClient {
     youtube;
     constructor() {
@@ -21,6 +21,7 @@ class YoutubeClient {
         try {
             let allVideos = [];
             let nextPageToken = undefined;
+            let pagesFetched = 0;
             // First, get the Uploads playlist ID for the channel
             const channelRes = await this.youtube.channels.list({
                 part: ['contentDetails'],
@@ -32,6 +33,7 @@ class YoutubeClient {
             }
             // Paginate through playlist items
             do {
+                pagesFetched++;
                 const playlistRes = await this.youtube.playlistItems.list({
                     part: ['snippet', 'contentDetails'],
                     playlistId: uploadsPlaylistId,
@@ -49,7 +51,15 @@ class YoutubeClient {
                     if (publishedAfter) {
                         const filtered = videos.filter(v => new Date(v.snippet.publishedAt) > new Date(publishedAfter));
                         allVideos = [...allVideos, ...filtered];
-                        // If we found older videos in this page, we can potentially break early if youtube returns them chronologically
+                        // Optimization: Since uploads playlist is reverse chronological,
+                        // if we find videos that are older than our publishedAfter date,
+                        // we have reached the known videos and can break early!
+                        // However, we always fetch at least 2 pages (100 videos) so that 
+                        // the most recent videos have their stats (views, etc) updated!
+                        if (filtered.length < videos.length && pagesFetched >= 2) {
+                            logger_1.logger.info('Incremental sync reached older videos. Breaking early.');
+                            break;
+                        }
                     }
                     else {
                         allVideos = [...allVideos, ...videos];

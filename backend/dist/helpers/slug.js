@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateUniqueSlug = exports.generateBaseSlug = void 0;
-const DatabaseClient_1 = require("../common/database/DatabaseClient");
+const DatabaseClient_1 = require("@common/database/DatabaseClient");
 /**
  * Generates a URL-friendly slug from a string.
  */

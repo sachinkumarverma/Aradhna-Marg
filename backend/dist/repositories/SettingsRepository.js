@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.settingsRepository = exports.SettingsRepository = void 0;
-const DatabaseClient_1 = require("../common/database/DatabaseClient");
+const DatabaseClient_1 = require("@common/database/DatabaseClient");
 class SettingsRepository {
     tableName = 'settings';
     mapToModel(row) {
@@ -93,7 +93,7 @@ class SettingsRepository {
         if (dto.twitterUrl !== undefined)
             dbData.twitter_url = dto.twitterUrl;
         if (dto.linkedinUrl !== undefined)
-            dbData.linkedinUrl = dto.linkedinUrl;
+            dbData.linkedin_url = dto.linkedinUrl;
         if (dto.youtubeChannelId !== undefined)
             dbData.youtube_channel_id = dto.youtubeChannelId;
         if (dto.youtubeChannelUrl !== undefined)

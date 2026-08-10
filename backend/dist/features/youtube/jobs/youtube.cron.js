@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const manager_1 = require("../../../cron/manager");
-const YoutubeSyncService_1 = require("../../youtube/YoutubeSyncService");
-const DatabaseClient_1 = require("../../../common/database/DatabaseClient");
-const logger_1 = require("../../../utils/logger");
+const manager_1 = require("@/cron/manager");
+const YoutubeService_1 = require("@features/youtube/YoutubeService");
+const DatabaseClient_1 = require("@common/database/DatabaseClient");
+const logger_1 = require("@utils/logger");
 manager_1.cronManager.register({
     name: 'IncrementalYouTubeSync',
     description: 'Syncs new videos from YouTube every 6 hours',
@@ -11,10 +11,18 @@ manager_1.cronManager.register({
     status: 'IDLE',
     run: async () => {
         try {
-            // Get Channel ID from Settings
             let settings;
             try {
-                const result = await DatabaseClient_1.db.query(`SELECT youtube_channel_id FROM settings LIMIT 1`);
+                const result = await DatabaseClient_1.db.query(`
+          SELECT 
+            id,
+            youtube_channel_id, 
+            youtube_auto_sync, 
+            youtube_sync_interval, 
+            youtube_last_sync 
+          FROM settings 
+          LIMIT 1
+        `);
                 settings = result.rows[0];
             }
             catch (e) {
@@ -24,17 +32,21 @@ manager_1.cronManager.register({
                 logger_1.logger.warn('Cron skipped: No YouTube Channel ID configured in settings.');
                 return;
             }
-            // Get last sync date from logs
-            let lastLog;
-            try {
-                const result = await DatabaseClient_1.db.query(`SELECT started_at FROM youtube_sync_logs WHERE status = 'COMPLETED' ORDER BY started_at DESC LIMIT 1`);
-                lastLog = result.rows[0];
+            if (settings.youtube_auto_sync === false) {
+                logger_1.logger.info('Cron skipped: Auto-sync is disabled in settings.');
+                return;
             }
-            catch (e) {
-                // Ignore table not found
+            // Check if enough time has passed based on the dynamic interval (in hours)
+            const intervalHours = parseInt(settings.youtube_sync_interval) || 6; // Default 6 hours
+            const lastSync = settings.youtube_last_sync ? new Date(settings.youtube_last_sync).getTime() : 0;
+            const now = Date.now();
+            const elapsedHours = (now - lastSync) / (1000 * 60 * 60);
+            if (elapsedHours < intervalHours) {
+                logger_1.logger.info(`Cron skipped: Only ${elapsedHours.toFixed(1)}h elapsed out of ${intervalHours}h interval.`);
+                return;
             }
-            const publishedAfter = lastLog?.started_at ? new Date(lastLog.started_at).toISOString() : undefined;
-            await YoutubeSyncService_1.youtubeSyncService.syncChannel(settings.youtube_channel_id, publishedAfter);
+            logger_1.logger.info(`Starting dynamic YouTube sync for channel ${settings.youtube_channel_id}`);
+            await YoutubeService_1.youtubeService.syncNow();
         }
         catch (error) {
             logger_1.logger.error('Scheduled YouTube Sync Failed', error.message || error);

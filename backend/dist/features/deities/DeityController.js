@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deityController = exports.DeityController = void 0;
 const DeityService_1 = require("./DeityService");
-const apiResponse_1 = require("../../responses/apiResponse");
+const apiResponse_1 = require("@/responses/apiResponse");
 class DeityController {
     async getDeities(req, res, next) {
         try {

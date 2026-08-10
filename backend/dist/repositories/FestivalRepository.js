@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.festivalRepository = exports.FestivalRepository = void 0;
-const DatabaseClient_1 = require("../common/database/DatabaseClient");
-const appError_1 = require("../errors/appError");
+const DatabaseClient_1 = require("@common/database/DatabaseClient");
+const appError_1 = require("@/errors/appError");
 class FestivalRepository {
     tableName = 'festivals';
     mapToModel(row) {
@@ -50,6 +50,13 @@ class FestivalRepository {
             dbData.seo_title = dto.seoTitle;
         if (dto.seoDescription !== undefined)
             dbData.seo_description = dto.seoDescription;
+        // English fields
+        if (dto.name_en !== undefined)
+            dbData.name_en = dto.name_en;
+        if (dto.seoTitle_en !== undefined)
+            dbData.seo_title_en = dto.seoTitle_en;
+        if (dto.seoDescription_en !== undefined)
+            dbData.seo_description_en = dto.seoDescription_en;
         return dbData;
     }
     async findAll(options = {}) {

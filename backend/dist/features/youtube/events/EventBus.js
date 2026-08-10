@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.eventBus = exports.EVENTS = void 0;
 const events_1 = require("events");
-const logger_1 = require("../../../utils/logger");
+const logger_1 = require("@utils/logger");
 // Event Names
 exports.EVENTS = {
     VIDEO_IMPORTED: 'VIDEO_IMPORTED',

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminBhajanController = void 0;
-const apiResponse_1 = require("../../responses/apiResponse");
+const apiResponse_1 = require("@/responses/apiResponse");
 const BhajanService_1 = require("./BhajanService");
 class AdminBhajanController {
     list = async (req, res, next) => {

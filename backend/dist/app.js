@@ -15,6 +15,8 @@ const seo_routes_1 = __importDefault(require("./seo/routes/seo.routes"));
 const error_1 = require("./middlewares/error");
 const base64Upload_middleware_1 = require("./middlewares/base64Upload.middleware");
 const logger_1 = require("./utils/logger");
+// Register cron jobs
+require("./features/youtube/jobs/youtube.cron");
 const app = (0, express_1.default)();
 // Add Request ID generator middleware
 app.use((req, res, next) => {

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const DatabaseClient_1 = require("../common/database/DatabaseClient");
-const apiResponse_1 = require("../responses/apiResponse");
+const DatabaseClient_1 = require("@common/database/DatabaseClient");
+const apiResponse_1 = require("@/responses/apiResponse");
 const router = (0, express_1.Router)();
 router.get('/videos', async (req, res, next) => {
     try {

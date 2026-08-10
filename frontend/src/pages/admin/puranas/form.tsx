@@ -16,15 +16,7 @@ const generateSlug = (text: string) => {
 
 const languages = [
   { label: 'Hindi', value: 'Hindi' },
-  { label: 'English', value: 'English' },
-  { label: 'Sanskrit', value: 'Sanskrit' },
-  { label: 'Gujarati', value: 'Gujarati' },
-  { label: 'Marathi', value: 'Marathi' },
-  { label: 'Punjabi', value: 'Punjabi' },
-  { label: 'Tamil', value: 'Tamil' },
-  { label: 'Telugu', value: 'Telugu' },
-  { label: 'Kannada', value: 'Kannada' },
-  { label: 'Bengali', value: 'Bengali' },
+  { label: 'English', value: 'English' }
 ];
 
 import { createPortal } from 'react-dom';
@@ -478,7 +470,7 @@ export const AdminPuranForm = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-gray-200 rounded-md bg-white p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group h-[160px]">
+                    <div className="border-2 border-dashed border-gray-300 rounded-md bg-gray-50 p-4 flex flex-col items-center justify-center text-center hover:border-saffron transition-colors cursor-pointer group h-[160px]">
                       <input type="file" accept="application/pdf" className="hidden" id="purana-pdf-upload" onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -487,7 +479,7 @@ export const AdminPuranForm = () => {
                         }
                       }} />
                       <label htmlFor="purana-pdf-upload" className="flex flex-col items-center cursor-pointer w-full h-full justify-center">
-                        <FileText className="w-8 h-8 text-gray-400 group-hover:text-red-500 mb-2" />
+                        <FileText className="w-8 h-8 text-gray-400 group-hover:text-saffron mb-2 transition-colors" />
                         <p className="text-sm text-gray-600 font-medium">Click to upload PDF</p>
                       </label>
                     </div>

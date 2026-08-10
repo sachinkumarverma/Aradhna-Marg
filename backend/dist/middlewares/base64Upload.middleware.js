@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.base64UploadMiddleware = void 0;
-const supabaseStorage_1 = require("../utils/supabaseStorage");
+const supabaseStorage_1 = require("@/utils/supabaseStorage");
 // Helper function to recursively find and upload base64 images
 async function processObject(obj) {
     if (!obj || typeof obj !== 'object')

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIValidator = void 0;
-const logger_1 = require("../../utils/logger");
+const logger_1 = require("@utils/logger");
 class AIValidator {
     /**
      * Validates AI JSON output against a Zod schema.

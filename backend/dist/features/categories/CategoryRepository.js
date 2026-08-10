@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.categoryRepository = exports.CategoryRepository = void 0;
-const DatabaseClient_1 = require("../../common/database/DatabaseClient");
+const DatabaseClient_1 = require("@common/database/DatabaseClient");
 // Using the types from the interfaces
-const appError_1 = require("../../errors/appError");
+const appError_1 = require("@/errors/appError");
 class CategoryRepository {
     mapToModel(row) {
         return {

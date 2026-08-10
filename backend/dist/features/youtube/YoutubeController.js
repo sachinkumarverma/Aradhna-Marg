@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.youtubeController = exports.YoutubeController = void 0;
-const apiResponse_1 = require("../../responses/apiResponse");
+const apiResponse_1 = require("@/responses/apiResponse");
 const YoutubeService_1 = require("./YoutubeService");
 class YoutubeController {
     async getVideos(req, res, next) {

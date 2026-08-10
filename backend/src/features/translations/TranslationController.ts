@@ -9,10 +9,10 @@ export class TranslationController {
     try {
       const { contentType, contentId, sourceLang, targetLang } = req.body;
       const translation = await translationService.generateTranslation(
-        contentType as ContentType,
-        contentId,
-        sourceLang,
-        targetLang
+        contentType as any,
+        contentId as string,
+        sourceLang as string,
+        targetLang as string
       );
       return sendSuccess(res, 'Translation generated successfully', translation);
     } catch (error) {
@@ -48,9 +48,9 @@ export class TranslationController {
     try {
       const { contentType, contentId, targetLanguage } = req.params;
       const translation = await translationRepository.getTranslation(
-        contentType,
-        contentId,
-        targetLanguage
+        contentType as any,
+        contentId as string,
+        targetLanguage as string
       );
       
       if (!translation) {
@@ -68,7 +68,7 @@ export class TranslationController {
       const { id } = req.params;
       const updates = req.body;
       
-      const translation = await translationRepository.updateTranslationStatus(id, updates);
+      const translation = await translationRepository.updateTranslationStatus(id as string, updates);
       return sendSuccess(res, 'Translation updated successfully', translation);
     } catch (error) {
       next(error);

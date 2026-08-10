@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mediaController = exports.MediaController = void 0;
-const MediaService_1 = require("../services/MediaService");
-const apiResponse_1 = require("../responses/apiResponse");
-const appError_1 = require("../errors/appError");
+const MediaService_1 = require("@services/MediaService");
+const apiResponse_1 = require("@/responses/apiResponse");
+const appError_1 = require("@/errors/appError");
 class MediaController {
     // Folders
     async createFolder(req, res, next) {

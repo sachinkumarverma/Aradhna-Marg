@@ -24,7 +24,6 @@ const ORGANIZE_NAV = [
 ];
 
 const AUTOMATION_NAV = [
-  { name: 'TRANSLATIONS', path: '/admin/translations', icon: Languages },
   { name: 'YOUTUBE SYNC', path: '/admin/youtube', icon: PlaySquare },
   { name: 'AI PROCESSING', path: '/admin/ai', icon: BrainCircuit },
   { name: 'SEO ENGINE', path: '/admin/seo', icon: Search },

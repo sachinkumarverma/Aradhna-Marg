@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mediaRepository = exports.MediaRepository = void 0;
-const DatabaseClient_1 = require("../common/database/DatabaseClient");
+const DatabaseClient_1 = require("@common/database/DatabaseClient");
 class MediaRepository {
     foldersTable = 'media_folders';
     filesTable = 'media_files';

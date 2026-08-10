@@ -116,7 +116,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           className="flex items-center justify-center gap-2 bg-[#E7F3EB] text-[#2E9E5B] hover:bg-[#d5ecd9] px-4 py-2 rounded-lg text-[13px] font-medium transition-colors"
         >
           <Edit3 className="w-3.5 h-3.5" />
-          Edit Translation
+          Edit
         </button>
       </div>
     </div>

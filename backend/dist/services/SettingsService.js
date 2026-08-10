@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.settingsService = exports.SettingsService = void 0;
-const SettingsRepository_1 = require("../repositories/SettingsRepository");
-const appError_1 = require("../errors/appError");
+const SettingsRepository_1 = require("@repositories/SettingsRepository");
+const appError_1 = require("@/errors/appError");
 class SettingsService {
     async getSettings() {
         const settings = await SettingsRepository_1.settingsRepository.getSettings();

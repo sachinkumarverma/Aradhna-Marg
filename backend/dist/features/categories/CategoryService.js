@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.categoryService = exports.CategoryService = void 0;
 const CategoryRepository_1 = require("./CategoryRepository");
-const appError_1 = require("../../errors/appError");
+const appError_1 = require("@/errors/appError");
 class CategoryService {
     async getCategories(options) {
         return CategoryRepository_1.categoryRepository.findAll(options);

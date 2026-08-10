@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.articleService = exports.ArticleService = void 0;
-const ArticleRepository_1 = require("../repositories/ArticleRepository");
-const slugify_1 = require("../utils/slugify");
+const ArticleRepository_1 = require("@repositories/ArticleRepository");
+const slugify_1 = require("@utils/slugify");
 class ArticleService {
     async getList(query) {
         return ArticleRepository_1.articleRepository.getList({

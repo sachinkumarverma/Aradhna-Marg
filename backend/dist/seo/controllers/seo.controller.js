@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.seoController = void 0;
-const SitemapGenerator_1 = require("../../seo/generators/SitemapGenerator");
-const RobotsGenerator_1 = require("../../seo/generators/RobotsGenerator");
+const SitemapGenerator_1 = require("@/seo/generators/SitemapGenerator");
+const RobotsGenerator_1 = require("@/seo/generators/RobotsGenerator");
 class SEOController {
     getRobotsTxt = async (req, res, next) => {
         try {

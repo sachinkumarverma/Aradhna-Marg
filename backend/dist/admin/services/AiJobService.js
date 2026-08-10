@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiJobService = void 0;
-const AiJobRepository_1 = require("../repositories/AiJobRepository");
+const AiJobRepository_1 = require("@admin/repositories/AiJobRepository");
 class AiJobService {
     repository;
     constructor() {
