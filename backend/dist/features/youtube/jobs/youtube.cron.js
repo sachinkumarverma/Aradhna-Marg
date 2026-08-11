@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const manager_1 = require("@/cron/manager");
-const YoutubeService_1 = require("@features/youtube/YoutubeService");
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
-const logger_1 = require("@utils/logger");
+const manager_1 = require("../../../cron/manager");
+const YoutubeService_1 = require("../../youtube/YoutubeService");
+const DatabaseClient_1 = require("../../../common/database/DatabaseClient");
+const logger_1 = require("../../../utils/logger");
 manager_1.cronManager.register({
     name: 'IncrementalYouTubeSync',
     description: 'Syncs new videos from YouTube every 6 hours',

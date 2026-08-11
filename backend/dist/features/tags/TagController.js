@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tagController = exports.TagController = void 0;
 const TagService_1 = require("./TagService");
-const apiResponse_1 = require("@/responses/apiResponse");
+const apiResponse_1 = require("../../responses/apiResponse");
 class TagController {
     async getTags(req, res, next) {
         try {

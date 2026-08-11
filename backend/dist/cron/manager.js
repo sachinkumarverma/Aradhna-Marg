@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cronManager = void 0;
 const node_cron_1 = __importDefault(require("node-cron"));
-const logger_1 = require("@utils/logger");
+const logger_1 = require("../utils/logger");
 class CronManager {
     jobs = new Map();
     tasks = new Map();

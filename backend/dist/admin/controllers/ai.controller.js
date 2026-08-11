@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminAiController = void 0;
-const apiResponse_1 = require("@/responses/apiResponse");
-const AiJobService_1 = require("@admin/services/AiJobService");
+const apiResponse_1 = require("../../responses/apiResponse");
+const AiJobService_1 = require("../services/AiJobService");
 class AdminAiController {
     service;
     constructor() {

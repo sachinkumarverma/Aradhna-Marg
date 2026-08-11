@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAdmin = void 0;
-const appError_1 = require("@/errors/appError");
-const logger_1 = require("@utils/logger");
+const appError_1 = require("../errors/appError");
+const logger_1 = require("../utils/logger");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const config_1 = require("@/config");
+const config_1 = require("../config");
 const requireAdmin = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;

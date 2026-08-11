@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dashboardController = void 0;
-const apiResponse_1 = require("@/responses/apiResponse");
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
+const apiResponse_1 = require("../../responses/apiResponse");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
 class DashboardController {
     getStats = async (req, res, next) => {
         try {

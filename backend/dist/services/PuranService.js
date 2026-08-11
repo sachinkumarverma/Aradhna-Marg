@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.puranService = exports.PuranService = void 0;
-const PuranRepository_1 = require("@repositories/PuranRepository");
-const slugify_1 = require("@utils/slugify");
+const PuranRepository_1 = require("../repositories/PuranRepository");
+const slugify_1 = require("../utils/slugify");
 class PuranService {
     async getList(query) {
         return PuranRepository_1.puranRepository.getList({

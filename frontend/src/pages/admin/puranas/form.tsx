@@ -21,9 +21,7 @@ const languages = [
 ];
 
 import { createPortal } from 'react-dom';
-// @ts-ignore
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
+import { RichTextEditor } from "@components/ui/RichTextEditor";
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
@@ -229,9 +227,8 @@ export const AdminPuranForm = () => {
                     control={control}
                     render={({ field }) => (
                       <div>
-                        <ReactQuill
-                          theme="snow"
-                          value={field.value || ''}
+                        <RichTextEditor 
+                          value={field.value}
                           onChange={field.onChange}
                           className="bg-white rounded-b-md"
                         />
@@ -312,20 +309,10 @@ export const AdminPuranForm = () => {
                           control={control}
                           render={({ field }) => (
                             <div>
-                              <ReactQuill 
-                                theme="snow"
+                              <RichTextEditor 
                                 value={field.value || ''}
                                 onChange={field.onChange}
                                 className="bg-white rounded-b-md"
-                                modules={{
-                                  toolbar: [
-                                    [{ 'header': [1, 2, 3, false] }],
-                                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                                    [{'list': 'ordered'}, {'list': 'bullet'}],
-                                    ['link', 'image'],
-                                    ['clean']
-                                  ],
-                                }}
                               />
                             </div>
                           )}

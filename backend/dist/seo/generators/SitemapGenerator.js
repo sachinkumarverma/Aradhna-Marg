@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sitemapGenerator = exports.SitemapGenerator = void 0;
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
-const logger_1 = require("@utils/logger");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
+const logger_1 = require("../../utils/logger");
 class SitemapGenerator {
     baseUrl = 'https://aradhnamarg.com';
     /**

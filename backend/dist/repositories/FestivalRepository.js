@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.festivalRepository = exports.FestivalRepository = void 0;
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
-const appError_1 = require("@/errors/appError");
+const DatabaseClient_1 = require("../common/database/DatabaseClient");
+const appError_1 = require("../errors/appError");
 class FestivalRepository {
     tableName = 'festivals';
     mapToModel(row) {

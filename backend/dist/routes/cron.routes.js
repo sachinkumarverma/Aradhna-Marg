@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const manager_1 = require("@/cron/manager");
+const manager_1 = require("../cron/manager");
 const router = (0, express_1.Router)();
 // Protect this route with a secret key
 router.get('/trigger/:jobName', async (req, res, next) => {

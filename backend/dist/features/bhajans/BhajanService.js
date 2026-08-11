@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bhajanService = exports.BhajanService = void 0;
 const BhajanRepository_1 = require("./BhajanRepository");
-const slugify_1 = require("@utils/slugify");
+const slugify_1 = require("../../utils/slugify");
 class BhajanService {
     async getList(query) {
         const page = parseInt(query.page) || 1;

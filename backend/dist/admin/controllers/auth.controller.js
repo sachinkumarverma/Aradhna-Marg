@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const apiResponse_1 = require("@/responses/apiResponse");
-const appError_1 = require("@/errors/appError");
-const config_1 = require("@/config");
-const logger_1 = require("@utils/logger");
+const apiResponse_1 = require("../../responses/apiResponse");
+const appError_1 = require("../../errors/appError");
+const config_1 = require("../../config");
+const logger_1 = require("../../utils/logger");
 class AuthController {
     /**
      * POST /api/auth/login

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.seoController = exports.SeoController = void 0;
 const SeoService_1 = require("./SeoService");
-const apiResponse_1 = require("@/responses/apiResponse");
+const apiResponse_1 = require("../../responses/apiResponse");
 class SeoController {
     async getOverview(req, res, next) {
         try {

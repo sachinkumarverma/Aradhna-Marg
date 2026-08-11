@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.youtubeSyncService = void 0;
 const youtubeClient_1 = require("./helpers/youtubeClient");
-const logger_1 = require("@utils/logger");
+const logger_1 = require("../../utils/logger");
 const EventBus_1 = require("./events/EventBus");
-const slug_1 = require("@/helpers/slug");
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
+const slug_1 = require("../../helpers/slug");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
 class YoutubeSyncService {
     /**
      * Orchestrates the sync of videos from a channel.

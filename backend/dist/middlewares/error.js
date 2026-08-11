@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.notFoundHandler = exports.globalErrorHandler = void 0;
-const appError_1 = require("@/errors/appError");
-const apiResponse_1 = require("@/responses/apiResponse");
-const logger_1 = require("@utils/logger");
-const config_1 = require("@/config");
+const appError_1 = require("../errors/appError");
+const apiResponse_1 = require("../responses/apiResponse");
+const logger_1 = require("../utils/logger");
+const config_1 = require("../config");
 const globalErrorHandler = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;

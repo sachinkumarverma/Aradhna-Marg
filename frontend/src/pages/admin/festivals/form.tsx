@@ -12,8 +12,7 @@ import { Select } from '@components/ui/Select';
 import { MultiSelect } from '@components/ui/MultiSelect';
 import { DatePicker } from '@components/ui/DatePicker';
 import { createPortal } from 'react-dom';
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
+import { RichTextEditor } from "@components/ui/RichTextEditor";
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
@@ -298,20 +297,10 @@ export const AdminFestivalForm = () => {
                     control={control}
                     render={({ field }) => (
                       <div>
-                        <ReactQuill 
-                          theme="snow"
+                        <RichTextEditor 
                           value={field.value}
                           onChange={field.onChange}
                           className="bg-white rounded-b-md"
-                          modules={{
-                            toolbar: [
-                              [{ 'header': [1, 2, 3, false] }],
-                              ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                              [{'list': 'ordered'}, {'list': 'bullet'}],
-                              ['link', 'image'],
-                              ['clean']
-                            ],
-                          }}
                         />
                       </div>
                     )}
@@ -403,20 +392,10 @@ export const AdminFestivalForm = () => {
                           control={control}
                           render={({ field }) => (
                             <div>
-                              <ReactQuill 
-                                theme="snow"
+                              <RichTextEditor 
                                 value={field.value || ''}
                                 onChange={field.onChange}
                                 className="bg-white rounded-b-md"
-                                modules={{
-                                  toolbar: [
-                                    [{ 'header': [1, 2, 3, false] }],
-                                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                                    [{'list': 'ordered'}, {'list': 'bullet'}],
-                                    ['link', 'image'],
-                                    ['clean']
-                                  ],
-                                }}
                               />
                             </div>
                           )}

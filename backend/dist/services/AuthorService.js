@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorService = exports.AuthorService = void 0;
-const AuthorRepository_1 = require("@repositories/AuthorRepository");
-const appError_1 = require("@/errors/appError");
+const AuthorRepository_1 = require("../repositories/AuthorRepository");
+const appError_1 = require("../errors/appError");
 class AuthorService {
     async getAuthors(options) {
         return AuthorRepository_1.authorRepository.findAll(options);

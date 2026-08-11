@@ -4,9 +4,9 @@ exports.translationService = exports.TranslationService = void 0;
 const LibreTranslateProvider_1 = require("./LibreTranslateProvider");
 const GoogleTranslateProvider_1 = require("./GoogleTranslateProvider");
 const TranslationRepository_1 = require("./TranslationRepository");
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
-const appError_1 = require("@/errors/appError");
-const logger_1 = require("@utils/logger");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
+const appError_1 = require("../../errors/appError");
+const logger_1 = require("../../utils/logger");
 class TranslationService {
     libreProvider;
     googleProvider;
@@ -129,12 +129,12 @@ class TranslationService {
         if (!text || text.trim() === '') {
             return { translated: '', provider: 'none' };
         }
-        const providerSelection = process.env.TRANSLATION_PROVIDER || 'libretranslate';
-        let primaryProvider = this.libreProvider;
-        let secondaryProvider = this.googleProvider;
-        if (providerSelection === 'google') {
-            primaryProvider = this.googleProvider;
-            secondaryProvider = this.libreProvider;
+        const providerSelection = process.env.TRANSLATION_PROVIDER || 'google';
+        let primaryProvider = this.googleProvider;
+        let secondaryProvider = this.libreProvider;
+        if (providerSelection === 'libretranslate') {
+            primaryProvider = this.libreProvider;
+            secondaryProvider = this.googleProvider;
         }
         try {
             const translated = await primaryProvider.translate(text, sourceLang, targetLang, format);

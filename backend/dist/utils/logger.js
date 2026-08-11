@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logger = void 0;
 const pino_1 = __importDefault(require("pino"));
-const config_1 = require("@/config");
+const config_1 = require("../config");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const logDir = path_1.default.join(process.cwd(), 'logs');

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.translationController = exports.TranslationController = void 0;
 const TranslationService_1 = require("./TranslationService");
 const TranslationRepository_1 = require("./TranslationRepository");
-const apiResponse_1 = require("@/responses/apiResponse");
+const apiResponse_1 = require("../../responses/apiResponse");
 class TranslationController {
     async generateTranslation(req, res, next) {
         try {

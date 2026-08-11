@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const apiResponse_1 = require("@/responses/apiResponse");
-const appError_1 = require("@/errors/appError");
-const logger_1 = require("@utils/logger");
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
+const apiResponse_1 = require("../responses/apiResponse");
+const appError_1 = require("../errors/appError");
+const logger_1 = require("../utils/logger");
+const DatabaseClient_1 = require("../common/database/DatabaseClient");
 const router = (0, express_1.Router)();
 router.get('/', async (req, res, next) => {
     try {

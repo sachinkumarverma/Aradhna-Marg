@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.festivalService = exports.FestivalService = void 0;
-const FestivalRepository_1 = require("@repositories/FestivalRepository");
+const FestivalRepository_1 = require("../repositories/FestivalRepository");
 class FestivalService {
     async getList(query) {
         const { search, sort, order, page, limit } = query;

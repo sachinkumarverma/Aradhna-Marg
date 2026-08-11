@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiJobRepository = void 0;
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
-const appError_1 = require("@/errors/appError");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
+const appError_1 = require("../../errors/appError");
 class AiJobRepository {
     tableName = 'ai_jobs';
     async findAll(page = 1, limit = 10, status) {

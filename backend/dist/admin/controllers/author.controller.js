@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminAuthorController = void 0;
-const apiResponse_1 = require("@/responses/apiResponse");
-const AuthorService_1 = require("@services/AuthorService");
+const apiResponse_1 = require("../../responses/apiResponse");
+const AuthorService_1 = require("../../services/AuthorService");
 class AdminAuthorController {
     list = async (req, res, next) => {
         try {

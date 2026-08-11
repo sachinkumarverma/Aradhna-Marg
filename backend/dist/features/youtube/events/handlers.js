@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerYouTubeEventHandlers = void 0;
 const EventBus_1 = require("./EventBus");
-const QueueManager_1 = require("@features/youtube/jobs/QueueManager");
-const logger_1 = require("@utils/logger");
+const QueueManager_1 = require("../../youtube/jobs/QueueManager");
+const logger_1 = require("../../../utils/logger");
 const registerYouTubeEventHandlers = () => {
     EventBus_1.eventBus.subscribe(EventBus_1.EVENTS.VIDEO_IMPORTED, async (payload) => {
         const { videoId, metadata } = payload;

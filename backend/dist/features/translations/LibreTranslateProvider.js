@@ -5,13 +5,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LibreTranslateProvider = void 0;
 const axios_1 = __importDefault(require("axios"));
-const appError_1 = require("@/errors/appError");
+const appError_1 = require("../../errors/appError");
 class LibreTranslateProvider {
     name = 'libretranslate';
     async translate(text, sourceLang, targetLang, format = 'text') {
-        const url = process.env.LIBRETRANSLATE_URL;
+        let url = process.env.LIBRETRANSLATE_URL;
         if (!url) {
             throw new appError_1.AppError('LibreTranslate URL is not configured.', 500);
+        }
+        // Sanitize URL to prevent 301 redirects (which turn POST into GET and cause "Request Line is too large" errors)
+        url = url.trim();
+        if (!url.startsWith('http')) {
+            url = `https://${url}`;
+        }
+        if (url.endsWith('/')) {
+            url = url.slice(0, -1);
         }
         try {
             const response = await axios_1.default.post(`${url}/translate`, {

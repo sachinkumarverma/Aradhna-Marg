@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tagService = exports.TagService = void 0;
 const TagRepository_1 = require("./TagRepository");
-const appError_1 = require("@/errors/appError");
+const appError_1 = require("../../errors/appError");
 class TagService {
     async getTags(options) {
         return TagRepository_1.tagRepository.findAll(options);

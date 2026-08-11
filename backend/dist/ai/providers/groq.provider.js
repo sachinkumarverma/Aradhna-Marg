@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GroqProvider = void 0;
 const groq_sdk_1 = __importDefault(require("groq-sdk"));
-const config_1 = require("@/config");
-const appError_1 = require("@/errors/appError");
-const logger_1 = require("@utils/logger");
+const config_1 = require("../../config");
+const appError_1 = require("../../errors/appError");
+const logger_1 = require("../../utils/logger");
 class GroqProvider {
     client;
     constructor() {

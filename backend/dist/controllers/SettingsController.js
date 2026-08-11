@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.settingsController = exports.SettingsController = void 0;
-const SettingsService_1 = require("@services/SettingsService");
-const settings_validator_1 = require("@/validators/settings.validator");
-const apiResponse_1 = require("@/responses/apiResponse");
-const appError_1 = require("@/errors/appError");
+const SettingsService_1 = require("../services/SettingsService");
+const settings_validator_1 = require("../validators/settings.validator");
+const apiResponse_1 = require("../responses/apiResponse");
+const appError_1 = require("../errors/appError");
 /** Generic helper: validate with a schema and persist only that section's fields */
 async function updateSection(schema, req, res, next, successMsg) {
     try {

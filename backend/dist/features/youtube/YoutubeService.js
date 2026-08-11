@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.youtubeService = exports.YoutubeService = void 0;
 const axios_1 = __importDefault(require("axios"));
 const YoutubeRepository_1 = require("./YoutubeRepository");
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
-const appError_1 = require("@/errors/appError");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
+const appError_1 = require("../../errors/appError");
 class YoutubeService {
     async getVideos(search, status, type, sortBy = 'published_at', sortOrder = 'desc', page = 1, limit = 20) {
         return await YoutubeRepository_1.youtubeVideoRepository.getVideos(search, status, type, sortBy, sortOrder, page, limit);

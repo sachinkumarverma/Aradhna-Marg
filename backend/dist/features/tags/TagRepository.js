@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tagRepository = exports.TagRepository = void 0;
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
-const appError_1 = require("@/errors/appError");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
+const appError_1 = require("../../errors/appError");
 class TagRepository {
     mapToModel(row) {
         return {

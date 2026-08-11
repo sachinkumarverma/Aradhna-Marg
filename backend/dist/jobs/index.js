@@ -7,7 +7,7 @@ const YouTubeWorker_1 = require("./workers/YouTubeWorker");
 const AIWorker_1 = require("./workers/AIWorker");
 const EventBus_1 = require("./events/EventBus");
 const types_1 = require("./types");
-const logger_1 = require("@utils/logger");
+const logger_1 = require("../utils/logger");
 class BackgroundJobSystem {
     queue = new MemoryQueue_1.MemoryQueue();
     scheduler = new CronScheduler_1.CronScheduler(this.queue);

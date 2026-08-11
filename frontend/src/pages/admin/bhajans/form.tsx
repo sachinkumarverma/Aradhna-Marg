@@ -15,9 +15,7 @@ const generateSlug = (text: string) => {
 };
 
 import { createPortal } from 'react-dom';
-// @ts-ignore
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
+import { RichTextEditor } from "@components/ui/RichTextEditor";
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 
 export const AdminBhajanForm = () => {
@@ -190,8 +188,7 @@ export const AdminBhajanForm = () => {
                 rules={{ required: 'Lyrics are required' }}
                 render={({ field }) => (
                   <div>
-                    <ReactQuill 
-                      theme="snow" 
+                    <RichTextEditor 
                       value={field.value || ''} 
                       onChange={field.onChange} 
                       className="bg-white rounded-b-md" 

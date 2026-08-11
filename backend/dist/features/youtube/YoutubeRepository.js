@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.youtubeVideoRepository = exports.YoutubeVideoRepository = void 0;
-const DatabaseClient_1 = require("@common/database/DatabaseClient");
+const DatabaseClient_1 = require("../../common/database/DatabaseClient");
 class YoutubeVideoRepository {
     tableName = 'youtube_videos';
     async getVideos(search, status, type, sortBy = 'published_at', sortOrder = 'desc', page = 1, limit = 20) {

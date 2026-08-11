@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.youtubeClient = void 0;
 const googleapis_1 = require("googleapis");
-const config_1 = require("@/config");
-const appError_1 = require("@/errors/appError");
-const logger_1 = require("@utils/logger");
+const config_1 = require("../../../config");
+const appError_1 = require("../../../errors/appError");
+const logger_1 = require("../../../utils/logger");
 class YoutubeClient {
     youtube;
     constructor() {

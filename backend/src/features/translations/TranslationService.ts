@@ -140,14 +140,14 @@ export class TranslationService {
       return { translated: '', provider: 'none' };
     }
 
-    const providerSelection = process.env.TRANSLATION_PROVIDER || 'libretranslate';
+    const providerSelection = process.env.TRANSLATION_PROVIDER || 'google';
 
-    let primaryProvider = this.libreProvider;
-    let secondaryProvider = this.googleProvider;
+    let primaryProvider = this.googleProvider;
+    let secondaryProvider = this.libreProvider;
 
-    if (providerSelection === 'google') {
-      primaryProvider = this.googleProvider;
-      secondaryProvider = this.libreProvider;
+    if (providerSelection === 'libretranslate') {
+      primaryProvider = this.libreProvider;
+      secondaryProvider = this.googleProvider;
     }
 
     try {
