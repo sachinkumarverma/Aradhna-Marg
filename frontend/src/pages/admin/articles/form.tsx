@@ -69,12 +69,19 @@ export const AdminArticleForm = () => {
   }, [titleValue, isEditing, slugValue, setValue]);
 
   // Fetch data if editing
-  useQuery({
+  const articleQuery = useQuery({
     queryKey: ['admin-article', id],
     queryFn: async () => {
       if (!id) return null;
       const res = await apiClient.get(`/admin/articles/${id}`);
-      const data = res.data.data;
+      return res.data.data;
+    },
+    enabled: isEditing
+  });
+
+  useEffect(() => {
+    if (articleQuery.data) {
+      const data = articleQuery.data;
       reset({
         ...data,
         publish_date: data.publish_date ? new Date(data.publish_date).toISOString().slice(0, 16) : '',
@@ -87,10 +94,8 @@ export const AdminArticleForm = () => {
       if (data.image_url) {
         setCoverPreview(data.image_url);
       }
-      return data;
-    },
-    enabled: isEditing
-  });
+    }
+  }, [articleQuery.data, reset]);
 
   // Data fetching for dropdowns
   const { data: catData, isLoading: isCatLoading } = useQuery({ queryKey: ['categories'], queryFn: async () => (await apiClient.get('/admin/categories?limit=100')).data.data });
@@ -112,10 +117,8 @@ export const AdminArticleForm = () => {
     onSuccess: (res) => {
       setLastSaved(new Date());
       queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
-      if (!isEditing && res.data?.data?.id) {
-        navigate(`/admin/articles/${res.data.data.id}/edit`, { replace: true });
-      }
       toast.success(isEditing ? 'Article updated' : 'Article created');
+      navigate('/admin/articles');
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Failed to save');
@@ -568,23 +571,37 @@ export const AdminArticleForm = () => {
             </div>
             <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-cream">
               <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-md shadow-sm border border-gray-100">
-                <h1 className="text-4xl md:text-5xl font-extrabold text-darkBrown mb-6 font-serif">{watch('title') || 'Untitled Article'}</h1>
-                {watch('excerpt') && (
-                  <p className="text-xl text-gray-600 mb-8 leading-relaxed italic border-l-4 border-saffron pl-4">
-                    {watch('excerpt')}
-                  </p>
-                )}
+                {(() => {
+                  const previewTitle = activeLanguage === 'translation' ? (watch('title_en' as any) || watch('title')) : watch('title');
+                  const previewExcerpt = activeLanguage === 'translation' ? (watch('excerpt_en' as any) || watch('excerpt')) : watch('excerpt');
+                  const rawContent = activeLanguage === 'translation' ? (watch('content_en' as any) || watch('content')) : watch('content');
+                  const isEmptyContent = !rawContent || rawContent === '<p><br></p>' || rawContent === '<p></p>';
+                  const previewContentHtml = isEmptyContent 
+                    ? '<p class="text-gray-400 italic">Start writing your article to see the preview here...</p>' 
+                    : rawContent.replace(/&nbsp;|[\u00A0\u202F\u2007]/g, ' ');
 
-                {coverPreview && (
-                  <div className="mb-10 rounded-md overflow-hidden shadow-md">
-                    <img src={coverPreview} alt="Cover" className="w-full h-auto object-cover max-h-[400px]" />
-                  </div>
-                )}
+                  return (
+                    <>
+                      <h1 className="text-4xl md:text-5xl font-extrabold text-darkBrown mb-6 font-serif">{previewTitle || 'Untitled Article'}</h1>
+                      {previewExcerpt && (
+                        <p className="text-xl text-gray-600 mb-8 leading-relaxed italic border-l-4 border-saffron pl-4">
+                          {previewExcerpt}
+                        </p>
+                      )}
 
-                <div
-                  className="prose prose-lg max-w-none text-gray-800 leading-loose [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-darkBrown [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-darkBrown [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_a]:text-saffron [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_blockquote]:border-l-4 [&_blockquote]:border-saffron [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:my-6 [&_img]:rounded-md [&_img]:shadow-md"
-                  dangerouslySetInnerHTML={{ __html: watch('content') || '<p class="text-gray-400 italic">Start writing your article to see the preview here...</p>' }}
-                />
+                      {coverPreview && (
+                        <div className="mb-10 rounded-md overflow-hidden shadow-md">
+                          <img src={coverPreview} alt="Cover" className="w-full h-auto object-cover max-h-[400px]" />
+                        </div>
+                      )}
+
+                      <div
+                        className="prose prose-lg max-w-none text-gray-800 leading-loose [&_*]:!whitespace-normal [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-darkBrown [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-darkBrown [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_a]:text-saffron [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_blockquote]:border-l-4 [&_blockquote]:border-saffron [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:my-6 [&_img]:rounded-md [&_img]:shadow-md"
+                        dangerouslySetInnerHTML={{ __html: previewContentHtml }}
+                      />
+                    </>
+                  );
+                })()}
               </div>
             </div>
           </div>

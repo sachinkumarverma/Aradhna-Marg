@@ -22,7 +22,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange,
     const clipboardData = e.clipboardData;
     if (!clipboardData) return;
 
-    const plainText = clipboardData.getData('text/plain');
+    // Scrub non-breaking spaces which prevent natural word wrapping
+    const plainText = clipboardData.getData('text/plain').replace(/[\u00A0\u202F\u2007]/g, ' ');
     const htmlData = clipboardData.getData('text/html');
 
     // If plain text contains HTML tags (e.g., user copied HTML source code)

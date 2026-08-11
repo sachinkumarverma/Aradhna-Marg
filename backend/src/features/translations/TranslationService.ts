@@ -125,7 +125,7 @@ export class TranslationService {
     try {
       for (const [key, value] of Object.entries(content)) {
         if (!value) continue;
-        const format = (key === 'content' || key === 'description' || key === 'short_description') ? 'html' : 'text';
+        const format = (key === 'content' || key === 'description') ? 'html' : 'text';
         translatedContent[key] = await safeTrans(value, format) || undefined;
       }
       return { translations: translatedContent, provider: lastProvider };

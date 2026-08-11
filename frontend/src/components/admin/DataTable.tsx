@@ -73,9 +73,6 @@ export function DataTable<T extends { id: string | number }>({
       <table className="w-full text-sm text-left">
         <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
           <tr>
-            <th className="px-6 py-4">
-              <input type="checkbox" className="rounded border-gray-300 text-saffron focus:ring-saffron" />
-            </th>
             {columns.map((col, idx) => (
               <th key={idx} className={cn("px-6 py-4 font-bold", col.className)}>
                 {col.header}
@@ -87,16 +84,13 @@ export function DataTable<T extends { id: string | number }>({
         <tbody className="divide-y divide-gray-100">
           {data.map((row) => (
             <tr key={row.id} className="hover:bg-gray-50/50 transition-colors group">
-              <td className="px-6 py-4">
-                <input type="checkbox" className="rounded border-gray-300 text-saffron focus:ring-saffron" />
-              </td>
               {columns.map((col, idx) => (
                 <td key={idx} className={cn("px-6 py-4", col.className)}>
                   {typeof col.accessor === 'function' ? col.accessor(row) : (row[col.accessor] as React.ReactNode)}
                 </td>
               ))}
               <td className="px-6 py-4">
-                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center justify-end gap-2 transition-opacity">
                   {onPreview && (
                     <button onClick={() => onPreview(row)} className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors" title="Preview">
                       <Eye className="w-4 h-4" strokeWidth={2.5} />

@@ -12,6 +12,7 @@ import { adminAiController } from '@admin/controllers/ai.controller';
 import { translationRoutes } from '@features/translations';
 import { requireAdmin } from '@middlewares/auth';
 import { authController } from '@admin/controllers/auth.controller';
+import mediaRoutes from '@/routes/media.routes';
 
 const router = Router();
 
@@ -73,6 +74,9 @@ router.use('/deities', deityRoutes);
 
 // Translations Management
 router.use('/translations', translationRoutes);
+
+// Media Management
+router.use('/media', mediaRoutes);
 
 // Future endpoints:
 // router.use('/seo', seoController);

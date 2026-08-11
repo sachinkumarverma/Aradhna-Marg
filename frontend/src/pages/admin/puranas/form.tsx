@@ -65,18 +65,23 @@ export const AdminPuranForm = () => {
   }, [titleValue, isEditing, slugValue, setValue]);
 
   // Fetch data if editing
-  useQuery({
-    queryKey: ['admin-puran', id],
+  const puranQuery = useQuery({
+    queryKey: ['admin-purana', id],
     queryFn: async () => {
       if (!id) return null;
       const res = await apiClient.get(`/admin/puranas/${id}`);
-      const data = res.data.data;
-      reset(data);
-      if (data.cover_image) setCoverPreview(data.cover_image);
-      return data;
+      return res.data.data;
     },
     enabled: isEditing
   });
+
+  useEffect(() => {
+    if (puranQuery.data) {
+      const data = puranQuery.data;
+      reset(data);
+      if (data.cover_image) setCoverPreview(data.cover_image);
+    }
+  }, [puranQuery.data, reset]);
 
   // Fetch authors for select
   const { data: authorOptions = [], isLoading: isLoadingAuthors } = useQuery({
@@ -95,10 +100,8 @@ export const AdminPuranForm = () => {
     onSuccess: (res) => {
       setLastSaved(new Date());
       queryClient.invalidateQueries({ queryKey: ['admin-puranas'] });
-      if (!isEditing && res.data?.data?.id) {
-        navigate(`/admin/puranas/${res.data.data.id}/edit`, { replace: true });
-      }
       toast.success(isEditing ? 'Purana updated' : 'Purana created');
+      navigate('/admin/puranas');
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Failed to save');

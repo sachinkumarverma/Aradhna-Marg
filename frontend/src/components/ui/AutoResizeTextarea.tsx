@@ -28,12 +28,25 @@ export const AutoResizeTextarea = React.forwardRef<HTMLTextAreaElement, AutoResi
       }
     };
 
-    // Use a ResizeObserver or simple effect to adjust height on initial load
-    // and whenever the window resizes
     useEffect(() => {
       adjustHeight();
       window.addEventListener('resize', adjustHeight);
-      return () => window.removeEventListener('resize', adjustHeight);
+
+      const textarea = internalRef.current;
+      let observer: ResizeObserver | null = null;
+      if (textarea && typeof ResizeObserver !== 'undefined') {
+        observer = new ResizeObserver(() => {
+          if (textarea.offsetParent !== null) { // only adjust if visible
+            adjustHeight();
+          }
+        });
+        observer.observe(textarea);
+      }
+
+      return () => {
+        window.removeEventListener('resize', adjustHeight);
+        if (observer) observer.disconnect();
+      };
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

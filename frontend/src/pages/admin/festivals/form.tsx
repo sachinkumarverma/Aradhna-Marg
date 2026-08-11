@@ -97,7 +97,14 @@ export const AdminFestivalForm = () => {
     queryFn: async () => {
       if (!id) return null;
       const res = await apiClient.get(`/admin/festivals/${id}`);
-      const data = res.data.data;
+      return res.data.data;
+    },
+    enabled: isEditing
+  });
+
+  useEffect(() => {
+    if (festivalQuery.data) {
+      const data = festivalQuery.data;
       reset({
         name: data.name || '',
         slug: data.slug || '',
@@ -111,13 +118,16 @@ export const AdminFestivalForm = () => {
         seoTitle: data.seoTitle || '',
         seoDescription: data.seoDescription || '',
         bhajanIds: data.bhajanIds || [],
-        articleIds: data.articleIds || []
+        articleIds: data.articleIds || [],
+        name_en: data.name_en || '',
+        shortDescription_en: data.shortDescription_en || '',
+        content_en: data.content_en || '',
+        seoTitle_en: data.seoTitle_en || '',
+        seoDescription_en: data.seoDescription_en || ''
       });
       if (data.bannerImage) setBannerPreview(data.bannerImage);
-      return data;
-    },
-    enabled: isEditing
-  });
+    }
+  }, [festivalQuery.data, reset]);
 
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -127,10 +137,8 @@ export const AdminFestivalForm = () => {
     onSuccess: (res) => {
       setLastSaved(new Date());
       queryClient.invalidateQueries({ queryKey: ['admin-festivals'] });
-      if (!isEditing && res.data?.data?.id) {
-        navigate(`/admin/festivals/${res.data.data.id}/edit`, { replace: true });
-      }
       toast.success(isEditing ? 'Festival updated' : 'Festival created');
+      navigate('/admin/festivals');
     },
     onError: (err: any) => {
       const msg = err.response?.data?.message || 'Failed to save';
@@ -584,23 +592,37 @@ export const AdminFestivalForm = () => {
         </div>
         <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-cream">
           <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-md shadow-sm border border-gray-100">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-darkBrown mb-6 font-serif">{watch('name') || 'Untitled Festival'}</h1>
-            {watch('shortDescription') && (
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed italic border-l-4 border-saffron pl-4">
-                {watch('shortDescription')}
-              </p>
-            )}
-            
-            {bannerPreview && (
-              <div className="mb-10 rounded-md overflow-hidden shadow-md">
-                <img src={bannerPreview} alt="Banner" className="w-full h-auto object-cover max-h-[400px]" />
-              </div>
-            )}
-            
-            <div 
-              className="prose prose-lg max-w-none text-gray-800 leading-loose [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-darkBrown [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-darkBrown [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_a]:text-saffron [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_blockquote]:border-l-4 [&_blockquote]:border-saffron [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:my-6 [&_img]:rounded-md [&_img]:shadow-md" 
-              dangerouslySetInnerHTML={{ __html: watch('content') || '<p class="text-gray-400 italic">Start writing the festival details to see the preview here...</p>' }} 
-            />
+            {(() => {
+              const previewName = activeLanguage === 'translation' ? (watch('name_en' as any) || watch('name')) : watch('name');
+              const previewDesc = activeLanguage === 'translation' ? (watch('shortDescription_en' as any) || watch('shortDescription')) : watch('shortDescription');
+              const rawContent = activeLanguage === 'translation' ? (watch('content_en' as any) || watch('content')) : watch('content');
+              const isEmptyContent = !rawContent || rawContent === '<p><br></p>' || rawContent === '<p></p>';
+              const previewContentHtml = isEmptyContent 
+                ? '<p class="text-gray-400 italic">Start writing the festival details to see the preview here...</p>' 
+                : rawContent.replace(/&nbsp;|[\u00A0\u202F\u2007]/g, ' ');
+
+              return (
+                <>
+                  <h1 className="text-4xl md:text-5xl font-extrabold text-darkBrown mb-6 font-serif">{previewName || 'Untitled Festival'}</h1>
+                  {previewDesc && (
+                    <p className="text-xl text-gray-600 mb-8 leading-relaxed italic border-l-4 border-saffron pl-4">
+                      {previewDesc}
+                    </p>
+                  )}
+                  
+                  {bannerPreview && (
+                    <div className="mb-10 rounded-md overflow-hidden shadow-md">
+                      <img src={bannerPreview} alt="Banner" className="w-full h-auto object-cover max-h-[400px]" />
+                    </div>
+                  )}
+                  
+                  <div 
+                    className="prose prose-lg max-w-none text-gray-800 leading-loose [&_*]:!whitespace-normal [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-darkBrown [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-darkBrown [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:mb-6 [&_a]:text-saffron [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_blockquote]:border-l-4 [&_blockquote]:border-saffron [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:my-6 [&_img]:rounded-md [&_img]:shadow-md" 
+                    dangerouslySetInnerHTML={{ __html: previewContentHtml }} 
+                  />
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>

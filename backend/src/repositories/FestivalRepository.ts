@@ -24,6 +24,11 @@ export class FestivalRepository {
       deletedAt: row.deleted_at,
       bhajanIds: row.festival_bhajans?.map((fb: any) => fb.bhajan_id) || [],
       articleIds: row.festival_articles?.map((fa: any) => fa.article_id) || [],
+      name_en: row.name_en,
+      shortDescription_en: row.short_description_en,
+      content_en: row.content_en,
+      seoTitle_en: row.seo_title_en,
+      seoDescription_en: row.seo_description_en,
     };
   }
 
@@ -43,6 +48,8 @@ export class FestivalRepository {
     
     // English fields
     if ((dto as any).name_en !== undefined) dbData.name_en = (dto as any).name_en;
+    if ((dto as any).shortDescription_en !== undefined) dbData.short_description_en = (dto as any).shortDescription_en;
+    if ((dto as any).content_en !== undefined) dbData.content_en = (dto as any).content_en;
     if ((dto as any).seoTitle_en !== undefined) dbData.seo_title_en = (dto as any).seoTitle_en;
     if ((dto as any).seoDescription_en !== undefined) dbData.seo_description_en = (dto as any).seoDescription_en;
     
