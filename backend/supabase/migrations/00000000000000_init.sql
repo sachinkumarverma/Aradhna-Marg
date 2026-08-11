@@ -2,385 +2,472 @@
 -- ARADHNA MARG DATABASE SCHEMA
 -- ==========================================
 
--- 1. EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- For advanced text search if needed
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
--- 2. ENUMS
 CREATE TYPE content_status AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
 CREATE TYPE ad_position AS ENUM ('HEADER', 'SIDEBAR', 'INLINE', 'BOTTOM', 'MOBILE_STICKY');
 
--- ==========================================
--- 3. CORE TABLES (No Foreign Dependencies)
--- ==========================================
-
--- CATEGORIES
-CREATE TABLE categories (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,
-    description TEXT,
-    image_url TEXT,
-    icon_url TEXT,
-    seo_title VARCHAR(255),
-    seo_description TEXT,
-    display_order INTEGER DEFAULT 0,
-    status content_status DEFAULT 'PUBLISHED',
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS advertisements (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  position TEXT NOT NULL,
+  desktop_code text,
+  tablet_code text,
+  mobile_code text,
+  status TEXT DEFAULT 'PUBLISHED'::content_status,
+  start_date TIMESTAMPTZ,
+  end_date TIMESTAMPTZ,
+  priority integer DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- GODS
-CREATE TABLE gods (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,
-    description TEXT,
-    image_url TEXT,
-    banner_url TEXT,
-    color_theme VARCHAR(50),
-    seo_title VARCHAR(255),
-    seo_description TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS ai_jobs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  job_name VARCHAR(255) NOT NULL,
+  content_type VARCHAR(100) NOT NULL,
+  action_type VARCHAR(100) NOT NULL,
+  status VARCHAR(50) DEFAULT 'PENDING'::character varying,
+  progress integer DEFAULT 0,
+  total_items integer DEFAULT 1,
+  processed_items integer DEFAULT 0,
+  started_at TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  error_message text,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- FESTIVALS
-CREATE TABLE festivals (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,
-    description TEXT,
-    image_url TEXT,
-    start_date DATE,
-    end_date DATE,
-    seo_title VARCHAR(255),
-    seo_description TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS article_bhajans (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  article_id uuid UNIQUE REFERENCES articles(id) ON DELETE CASCADE,
+  bhajan_id uuid UNIQUE REFERENCES bhajans(id) ON DELETE CASCADE
 );
 
--- AUTHORS
-CREATE TABLE authors (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,
-    biography TEXT,
-    photo_url TEXT,
-    website_url TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS article_festivals (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  article_id uuid UNIQUE REFERENCES articles(id) ON DELETE CASCADE,
+  festival_id uuid UNIQUE REFERENCES festivals(id) ON DELETE CASCADE
 );
 
--- TAGS
-CREATE TABLE tags (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) UNIQUE NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS article_gods (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  article_id uuid UNIQUE REFERENCES articles(id) ON DELETE CASCADE,
+  god_id uuid UNIQUE REFERENCES gods(id) ON DELETE CASCADE
 );
 
--- ADVERTISEMENTS
-CREATE TABLE advertisements (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(255) NOT NULL,
-    position ad_position NOT NULL,
-    desktop_code TEXT,
-    tablet_code TEXT,
-    mobile_code TEXT,
-    status content_status DEFAULT 'PUBLISHED',
-    start_date TIMESTAMPTZ,
-    end_date TIMESTAMPTZ,
-    priority INTEGER DEFAULT 0,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS article_tags (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  article_id uuid UNIQUE REFERENCES articles(id) ON DELETE CASCADE,
+  tag_id uuid UNIQUE REFERENCES tags(id) ON DELETE CASCADE
 );
 
--- SETTINGS (Singleton Pattern via constraint)
-CREATE TABLE settings (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    site_name VARCHAR(255) NOT NULL DEFAULT 'Aradhna Marg',
-    logo_url TEXT,
-    favicon_url TEXT,
-    theme VARCHAR(50) DEFAULT 'default',
-    google_analytics_id VARCHAR(50),
-    google_adsense_id VARCHAR(50),
-    youtube_channel_id VARCHAR(255),
-    contact_email VARCHAR(255),
-    contact_phone VARCHAR(50),
-    social_links JSONB DEFAULT '{}',
-    default_seo JSONB DEFAULT '{}',
-    is_singleton BOOLEAN DEFAULT TRUE UNIQUE CHECK (is_singleton),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS articles (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  excerpt text,
+  content text,
+  featured_image_id uuid REFERENCES media_files(id) ON DELETE CASCADE,
+  category_id uuid REFERENCES categories(id) ON DELETE CASCADE,
+  author_id uuid REFERENCES authors(id) ON DELETE CASCADE,
+  status TEXT DEFAULT 'DRAFT'::content_status,
+  featured boolean DEFAULT false,
+  publish_date TIMESTAMPTZ,
+  seo_title VARCHAR(255),
+  seo_description text,
+  view_count bigint DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ,
+  search_vector tsvector,
+  title_en VARCHAR(255),
+  excerpt_en text,
+  content_en text,
+  seo_title_en VARCHAR(255),
+  seo_description_en text
 );
 
--- ==========================================
--- 4. BHAJANS TABLE (Main Entity)
--- ==========================================
-CREATE TABLE bhajans (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    youtube_video_id VARCHAR(255) UNIQUE, -- Nullable if not from YouTube
-    title VARCHAR(255) NOT NULL,
-    hindi_title VARCHAR(255),
-    slug VARCHAR(255) UNIQUE NOT NULL,
-    description TEXT,
-    lyrics TEXT,
-    clean_lyrics TEXT,
-    short_description TEXT,
-    thumbnail_url TEXT,
-    pdf_url TEXT,
-    embedded_video_url TEXT,
-    language VARCHAR(50) DEFAULT 'Hindi',
-    views BIGINT DEFAULT 0,
-    reading_time INTEGER DEFAULT 0, -- in seconds
-    duration INTEGER DEFAULT 0, -- in seconds (video duration)
-    status content_status DEFAULT 'PUBLISHED',
-    published_date TIMESTAMPTZ,
-    seo_title VARCHAR(255),
-    seo_description TEXT,
-    meta_keywords TEXT,
-    canonical_url TEXT,
-    open_graph_image TEXT,
-    category_id UUID REFERENCES categories(id) ON DELETE RESTRICT,
-    god_id UUID REFERENCES gods(id) ON DELETE RESTRICT,
-    festival_id UUID REFERENCES festivals(id) ON DELETE SET NULL,
-    author_id UUID REFERENCES authors(id) ON DELETE SET NULL,
-    popularity_score NUMERIC DEFAULT 0,
-    ai_generated_flag BOOLEAN DEFAULT FALSE,
-    manual_override_flag BOOLEAN DEFAULT FALSE,
-    search_vector tsvector,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS authors (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  short_description text,
+  photo text,
+  website_url text,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  status VARCHAR(20) DEFAULT 'ACTIVE'::character varying,
+  seo_title VARCHAR(255),
+  seo_description text,
+  deleted_at TIMESTAMPTZ
 );
 
--- ==========================================
--- 5. JUNCTION & RELATED TABLES
--- ==========================================
-
--- BHAJAN TAGS
-CREATE TABLE bhajan_tags (
-    bhajan_id UUID REFERENCES bhajans(id) ON DELETE CASCADE,
-    tag_id UUID REFERENCES tags(id) ON DELETE CASCADE,
-    PRIMARY KEY (bhajan_id, tag_id)
+CREATE TABLE IF NOT EXISTS bhajan_gods (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  bhajan_id uuid UNIQUE REFERENCES bhajans(id) ON DELETE CASCADE,
+  god_id uuid UNIQUE REFERENCES gods(id) ON DELETE CASCADE
 );
 
--- RELATED BHAJANS
-CREATE TABLE related_bhajans (
-    bhajan_id UUID REFERENCES bhajans(id) ON DELETE CASCADE,
-    related_bhajan_id UUID REFERENCES bhajans(id) ON DELETE CASCADE,
-    similarity_score NUMERIC DEFAULT 0,
-    PRIMARY KEY (bhajan_id, related_bhajan_id),
-    CHECK (bhajan_id != related_bhajan_id)
+CREATE TABLE IF NOT EXISTS bhajan_tags (
+  bhajan_id uuid PRIMARY KEY REFERENCES bhajans(id) ON DELETE CASCADE,
+  tag_id uuid PRIMARY KEY REFERENCES tags(id) ON DELETE CASCADE
 );
 
--- ==========================================
--- 6. LOGS & ANALYTICS TABLES
--- ==========================================
-
-CREATE TABLE youtube_sync_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    channel_id VARCHAR(255) NOT NULL,
-    video_id VARCHAR(255),
-    status VARCHAR(50) NOT NULL,
-    started_at TIMESTAMPTZ DEFAULT NOW(),
-    completed_at TIMESTAMPTZ,
-    error_message TEXT
+CREATE TABLE IF NOT EXISTS bhajans (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  youtube_video_id VARCHAR(255) UNIQUE,
+  title VARCHAR(255) NOT NULL,
+  hindi_title VARCHAR(255),
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  description text,
+  lyrics text,
+  clean_lyrics text,
+  short_description text,
+  thumbnail_url text,
+  pdf_url text,
+  embedded_video_url text,
+  language VARCHAR(50) DEFAULT 'Hindi'::character varying,
+  views bigint DEFAULT 0,
+  reading_time integer DEFAULT 0,
+  duration integer DEFAULT 0,
+  status TEXT DEFAULT 'PUBLISHED'::content_status,
+  published_date TIMESTAMPTZ,
+  seo_title VARCHAR(255),
+  seo_description text,
+  meta_keywords text,
+  canonical_url text,
+  open_graph_image text,
+  category_id uuid REFERENCES categories(id) ON DELETE CASCADE,
+  god_id uuid REFERENCES gods(id) ON DELETE CASCADE,
+  festival_id uuid REFERENCES festivals(id) ON DELETE CASCADE,
+  author_id uuid REFERENCES authors(id) ON DELETE CASCADE,
+  popularity_score numeric DEFAULT 0,
+  ai_generated_flag boolean DEFAULT false,
+  manual_override_flag boolean DEFAULT false,
+  search_vector tsvector,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  original_youtube_url text,
+  seo_keywords text,
+  deleted_at TIMESTAMPTZ
 );
 
-CREATE TABLE pdf_generation_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    bhajan_id UUID REFERENCES bhajans(id) ON DELETE CASCADE,
-    status VARCHAR(50) NOT NULL,
-    storage_path TEXT,
-    generation_time_ms INTEGER,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS categories (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  description text,
+  image_url text,
+  icon_url text,
+  seo_title VARCHAR(255),
+  seo_description text,
+  display_order integer DEFAULT 0,
+  status TEXT DEFAULT 'PUBLISHED'::content_status,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  show_in_navigation boolean DEFAULT false,
+  is_featured boolean DEFAULT false
 );
 
-CREATE TABLE seo_generation_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    bhajan_id UUID REFERENCES bhajans(id) ON DELETE CASCADE,
-    ai_model VARCHAR(100),
-    generated_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS content_translations (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  content_type VARCHAR(50) UNIQUE NOT NULL,
+  content_id uuid UNIQUE NOT NULL,
+  source_language VARCHAR(10) NOT NULL,
+  target_language VARCHAR(10) UNIQUE NOT NULL,
+  title VARCHAR(255),
+  excerpt text,
+  description text,
+  content text,
+  festival_details text,
+  seo_title VARCHAR(255),
+  seo_description text,
+  provider VARCHAR(50),
+  translation_status VARCHAR(50) DEFAULT 'NOT_TRANSLATED'::character varying,
+  source_version integer DEFAULT 1,
+  translated_at TIMESTAMPTZ,
+  reviewed_at TIMESTAMPTZ,
+  approved_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE search_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    search_term VARCHAR(255) NOT NULL,
-    ip_address VARCHAR(45),
-    country VARCHAR(100),
-    device VARCHAR(100),
-    timestamp TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS cron_job_logs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  job_name VARCHAR(255) NOT NULL,
+  status VARCHAR(50) NOT NULL,
+  duration_ms integer,
+  started_at TIMESTAMPTZ DEFAULT NOW(),
+  finished_at TIMESTAMPTZ
 );
 
-CREATE TABLE page_views (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    page_type VARCHAR(100),
-    slug VARCHAR(255),
-    ip_hash VARCHAR(255),
-    country VARCHAR(100),
-    city VARCHAR(100),
-    device VARCHAR(100),
-    browser VARCHAR(100),
-    referrer TEXT,
-    timestamp TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS deities (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  short_description text,
+  image text,
+  display_order integer DEFAULT 0,
+  featured boolean DEFAULT false,
+  status VARCHAR(20) DEFAULT 'ACTIVE'::character varying,
+  seo_title VARCHAR(255),
+  seo_description text,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ,
+  created_by uuid,
+  updated_by uuid
 );
 
-CREATE TABLE cron_job_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    job_name VARCHAR(255) NOT NULL,
-    status VARCHAR(50) NOT NULL,
-    duration_ms INTEGER,
-    started_at TIMESTAMPTZ DEFAULT NOW(),
-    finished_at TIMESTAMPTZ
+CREATE TABLE IF NOT EXISTS festival_articles (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  festival_id uuid UNIQUE REFERENCES festivals(id) ON DELETE CASCADE,
+  article_id uuid UNIQUE REFERENCES articles(id) ON DELETE CASCADE
 );
 
--- ==========================================
--- 7. INDEXES
--- ==========================================
--- B-Tree for fast exact matches and ordering
-CREATE INDEX idx_bhajans_slug ON bhajans(slug);
-CREATE INDEX idx_bhajans_video_id ON bhajans(youtube_video_id);
-CREATE INDEX idx_bhajans_category ON bhajans(category_id);
-CREATE INDEX idx_bhajans_god ON bhajans(god_id);
-CREATE INDEX idx_bhajans_festival ON bhajans(festival_id);
-CREATE INDEX idx_bhajans_status ON bhajans(status);
-CREATE INDEX idx_bhajans_published ON bhajans(published_date DESC);
-CREATE INDEX idx_bhajans_views ON bhajans(views DESC);
-CREATE INDEX idx_bhajans_popularity ON bhajans(popularity_score DESC);
+CREATE TABLE IF NOT EXISTS festival_bhajans (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  festival_id uuid UNIQUE REFERENCES festivals(id) ON DELETE CASCADE,
+  bhajan_id uuid UNIQUE REFERENCES bhajans(id) ON DELETE CASCADE
+);
 
--- GIN Index for Full Text Search
-CREATE INDEX idx_bhajans_fts ON bhajans USING GIN(search_vector);
+CREATE TABLE IF NOT EXISTS festivals (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  short_description text,
+  banner_image text,
+  festival_date date,
+  end_date date,
+  seo_title VARCHAR(255),
+  seo_description text,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  name_en VARCHAR(255),
+  short_description_en text,
+  content_en text,
+  seo_title_en VARCHAR(255),
+  seo_description_en text,
+  content text,
+  category text,
+  featured boolean DEFAULT false,
+  status text DEFAULT 'Draft'::text
+);
 
--- Indexes for page views scaling
-CREATE INDEX idx_page_views_slug ON page_views(slug, timestamp);
-CREATE INDEX idx_search_logs_term ON search_logs(search_term);
+CREATE TABLE IF NOT EXISTS gods (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  description text,
+  image_url text,
+  banner_url text,
+  color_theme VARCHAR(50),
+  seo_title VARCHAR(255),
+  seo_description text,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
--- ==========================================
--- 8. FUNCTIONS & TRIGGERS
--- ==========================================
+CREATE TABLE IF NOT EXISTS media_files (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  file_name VARCHAR(255) NOT NULL,
+  original_name VARCHAR(255) NOT NULL,
+  folder_id uuid REFERENCES media_folders(id) ON DELETE CASCADE,
+  mime_type VARCHAR(100) NOT NULL,
+  size_bytes bigint NOT NULL,
+  url text NOT NULL,
+  thumbnail_url text,
+  dimensions VARCHAR(50),
+  storage_path text NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
--- Function: Auto-update updated_at column
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-   NEW.updated_at = NOW();
-   RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+CREATE TABLE IF NOT EXISTS media_folders (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  parent_id uuid REFERENCES media_folders(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
--- Triggers for updated_at
-CREATE TRIGGER trg_categories_updated_at BEFORE UPDATE ON categories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER trg_gods_updated_at BEFORE UPDATE ON gods FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER trg_festivals_updated_at BEFORE UPDATE ON festivals FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER trg_authors_updated_at BEFORE UPDATE ON authors FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER trg_advertisements_updated_at BEFORE UPDATE ON advertisements FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER trg_settings_updated_at BEFORE UPDATE ON settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER trg_bhajans_updated_at BEFORE UPDATE ON bhajans FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TABLE IF NOT EXISTS page_views (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  page_type VARCHAR(100),
+  slug VARCHAR(255),
+  ip_hash VARCHAR(255),
+  country VARCHAR(100),
+  city VARCHAR(100),
+  device VARCHAR(100),
+  browser VARCHAR(100),
+  referrer text,
+  timestamp TIMESTAMPTZ DEFAULT NOW()
+);
 
--- Function: Full Text Search Vector Generation
-CREATE OR REPLACE FUNCTION bhajans_search_vector_trigger()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.search_vector :=
-    setweight(to_tsvector('english', COALESCE(NEW.title, '')), 'A') ||
-    setweight(to_tsvector('simple', COALESCE(NEW.hindi_title, '')), 'A') ||
-    setweight(to_tsvector('english', COALESCE(NEW.description, '')), 'B') ||
-    setweight(to_tsvector('english', COALESCE(NEW.clean_lyrics, NEW.lyrics, '')), 'C');
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+CREATE TABLE IF NOT EXISTS pdf_generation_logs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  bhajan_id uuid REFERENCES bhajans(id) ON DELETE CASCADE,
+  status VARCHAR(50) NOT NULL,
+  storage_path text,
+  generation_time_ms integer,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-CREATE TRIGGER trg_bhajans_fts
-BEFORE INSERT OR UPDATE OF title, hindi_title, description, lyrics, clean_lyrics
-ON bhajans
-FOR EACH ROW
-EXECUTE FUNCTION bhajans_search_vector_trigger();
+CREATE TABLE IF NOT EXISTS puranas (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  short_description text,
+  cover_image text,
+  pdf_file text,
+  language VARCHAR(100),
+  author VARCHAR(255),
+  status TEXT DEFAULT 'DRAFT'::content_status,
+  seo_title VARCHAR(255),
+  seo_description text,
+  view_count bigint DEFAULT 0,
+  download_count bigint DEFAULT 0,
+  display_order integer DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ,
+  created_by uuid,
+  updated_by uuid,
+  title_en VARCHAR(255),
+  description_en text,
+  seo_title_en VARCHAR(255),
+  seo_description_en text
+);
 
--- Function: Generate Unique Slug
-CREATE OR REPLACE FUNCTION generate_unique_slug(target_slug text, table_name text)
-RETURNS text AS $$
-DECLARE
-    final_slug text := target_slug;
-    counter integer := 2;
-    slug_exists boolean;
-BEGIN
-    LOOP
-        EXECUTE format('SELECT EXISTS(SELECT 1 FROM %I WHERE slug = $1)', table_name)
-        INTO slug_exists USING final_slug;
-        
-        IF NOT slug_exists THEN
-            RETURN final_slug;
-        END IF;
-        
-        final_slug := target_slug || '-' || counter;
-        counter := counter + 1;
-    END LOOP;
-END;
-$$ LANGUAGE plpgsql;
+CREATE TABLE IF NOT EXISTS related_articles (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  article_id uuid UNIQUE REFERENCES articles(id) ON DELETE CASCADE,
+  related_id uuid UNIQUE REFERENCES articles(id) ON DELETE CASCADE
+);
 
--- Function: Increment Views
-CREATE OR REPLACE FUNCTION increment_bhajan_views(bhajan_uuid UUID)
-RETURNS void AS $$
-BEGIN
-  UPDATE bhajans SET views = views + 1 WHERE id = bhajan_uuid;
-END;
-$$ LANGUAGE plpgsql;
+CREATE TABLE IF NOT EXISTS related_bhajans (
+  bhajan_id uuid PRIMARY KEY REFERENCES bhajans(id) ON DELETE CASCADE,
+  related_bhajan_id uuid PRIMARY KEY REFERENCES bhajans(id) ON DELETE CASCADE,
+  similarity_score numeric DEFAULT 0
+);
 
--- ==========================================
--- 9. VIEWS
--- ==========================================
+CREATE TABLE IF NOT EXISTS search_logs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  search_term VARCHAR(255) NOT NULL,
+  ip_address VARCHAR(45),
+  country VARCHAR(100),
+  device VARCHAR(100),
+  timestamp TIMESTAMPTZ DEFAULT NOW()
+);
 
-CREATE OR REPLACE VIEW view_latest_bhajans AS
-SELECT id, title, slug, thumbnail_url, published_date, views
-FROM bhajans
-WHERE status = 'PUBLISHED'
-ORDER BY published_date DESC;
+CREATE TABLE IF NOT EXISTS seo_generation_logs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  bhajan_id uuid REFERENCES bhajans(id) ON DELETE CASCADE,
+  ai_model VARCHAR(100),
+  generated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-CREATE OR REPLACE VIEW view_popular_bhajans AS
-SELECT id, title, slug, thumbnail_url, published_date, views, popularity_score
-FROM bhajans
-WHERE status = 'PUBLISHED'
-ORDER BY popularity_score DESC, views DESC;
+CREATE TABLE IF NOT EXISTS settings (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  site_name VARCHAR(255) NOT NULL DEFAULT 'Aradhna Marg'::character varying,
+  logo_url text,
+  favicon_url text,
+  theme VARCHAR(50) DEFAULT 'default'::character varying,
+  google_analytics_id VARCHAR(50),
+  google_adsense_id VARCHAR(50),
+  youtube_channel_id VARCHAR(255),
+  contact_email VARCHAR(255),
+  contact_phone VARCHAR(50),
+  social_links jsonb DEFAULT '{}'::jsonb,
+  default_seo jsonb DEFAULT '{}'::jsonb,
+  is_singleton boolean UNIQUE DEFAULT true,
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  site_description text,
+  site_logo text,
+  favicon text,
+  default_language VARCHAR(50) DEFAULT 'en'::character varying,
+  default_theme VARCHAR(50) DEFAULT 'light'::character varying,
+  copyright_text text,
+  timezone VARCHAR(50) DEFAULT 'UTC'::character varying,
+  date_format VARCHAR(50) DEFAULT 'MM/DD/YYYY'::character varying,
+  contact_address text,
+  whatsapp_number VARCHAR(50),
+  facebook_url VARCHAR(255),
+  instagram_url VARCHAR(255),
+  youtube_url VARCHAR(255),
+  twitter_url VARCHAR(255),
+  linkedin_url VARCHAR(255),
+  youtube_channel_url VARCHAR(255),
+  youtube_auto_sync boolean DEFAULT false,
+  youtube_sync_interval VARCHAR(50) DEFAULT 'daily'::character varying,
+  youtube_incremental_sync boolean DEFAULT true,
+  seo_site_title VARCHAR(255),
+  seo_meta_description text,
+  seo_meta_keywords text,
+  seo_robots VARCHAR(100) DEFAULT 'index, follow'::character varying,
+  seo_canonical_domain VARCHAR(255),
+  seo_og_image text,
+  google_search_console VARCHAR(255),
+  microsoft_clarity VARCHAR(255),
+  enable_analytics boolean DEFAULT false,
+  enable_ads boolean DEFAULT false,
+  ad_top_banner text,
+  ad_inline text,
+  ad_sidebar text,
+  ad_footer text,
+  maintenance_mode boolean DEFAULT false,
+  enable_registration boolean DEFAULT false,
+  enable_comments boolean DEFAULT false,
+  enable_cache boolean DEFAULT true,
+  enable_pdf_generation boolean DEFAULT false,
+  youtube_last_sync TIMESTAMPTZ,
+  youtube_next_sync TIMESTAMPTZ
+);
 
-CREATE OR REPLACE VIEW view_recently_synced AS
-SELECT id, title, slug, youtube_video_id, created_at
-FROM bhajans
-WHERE youtube_video_id IS NOT NULL
-ORDER BY created_at DESC;
+CREATE TABLE IF NOT EXISTS tags (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(100) NOT NULL,
+  slug VARCHAR(100) UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  description text,
+  color VARCHAR(50),
+  status VARCHAR(20) DEFAULT 'ACTIVE'::character varying,
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ,
+  created_by uuid,
+  updated_by uuid
+);
 
--- ==========================================
--- 10. MATERIALIZED VIEWS
--- ==========================================
+CREATE TABLE IF NOT EXISTS youtube_sync_logs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  channel_id VARCHAR(255) NOT NULL,
+  video_id VARCHAR(255),
+  status VARCHAR(50) NOT NULL,
+  started_at TIMESTAMPTZ DEFAULT NOW(),
+  completed_at TIMESTAMPTZ,
+  error_message text
+);
 
--- Trending Bhajans (High views in last 7 days)
-CREATE MATERIALIZED VIEW mv_trending_bhajans AS
-SELECT b.id, b.title, b.slug, b.thumbnail_url, COUNT(pv.id) as recent_views
-FROM bhajans b
-LEFT JOIN page_views pv ON pv.slug = b.slug AND pv.timestamp >= NOW() - INTERVAL '7 days'
-WHERE b.status = 'PUBLISHED'
-GROUP BY b.id
-ORDER BY recent_views DESC
-WITH DATA;
+CREATE TABLE IF NOT EXISTS youtube_videos (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  youtube_video_id text UNIQUE NOT NULL,
+  title text NOT NULL,
+  description text,
+  thumbnail text,
+  youtube_url text,
+  published_at TIMESTAMPTZ,
+  duration text,
+  channel_id text,
+  channel_name text,
+  view_count integer DEFAULT 0,
+  like_count integer DEFAULT 0,
+  tags ARRAY,
+  playlist text,
+  import_status text DEFAULT 'NEW'::text,
+  linked_bhajan_id uuid REFERENCES bhajans(id) ON DELETE CASCADE,
+  last_synced TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-CREATE UNIQUE INDEX idx_mv_trending_bhajans_id ON mv_trending_bhajans(id);
-
--- Popular Categories
-CREATE MATERIALIZED VIEW mv_popular_categories AS
-SELECT c.id, c.name, c.slug, c.image_url, SUM(b.views) as total_category_views
-FROM categories c
-JOIN bhajans b ON b.category_id = c.id
-WHERE c.status = 'PUBLISHED' AND b.status = 'PUBLISHED'
-GROUP BY c.id
-ORDER BY total_category_views DESC
-WITH DATA;
-
-CREATE UNIQUE INDEX idx_mv_popular_categories_id ON mv_popular_categories(id);
-
--- Function to refresh Materialized Views
-CREATE OR REPLACE FUNCTION refresh_materialized_views()
-RETURNS void AS $$
-BEGIN
-    REFRESH MATERIALIZED VIEW CONCURRENTLY mv_trending_bhajans;
-    REFRESH MATERIALIZED VIEW CONCURRENTLY mv_popular_categories;
-END;
-$$ LANGUAGE plpgsql;
