@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { youtubeClient } from './helpers/youtubeClient';
 import { logger } from '@utils/logger';
 import { eventBus, EVENTS } from './events/EventBus';

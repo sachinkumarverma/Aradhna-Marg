@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { articleRepository } from '@repositories/ArticleRepository';
 import { slugify } from '@utils/slugify';
 
@@ -23,7 +24,7 @@ export class ArticleService {
     const { deities, festivals, tags, bhajans, related_articles, ...articleData } = data;
     
     if (!articleData.slug && articleData.title) {
-      articleData.slug = slugify(articleData.title);
+      articleData.slug = randomUUID();
     }
 
     const created = await articleRepository.create(articleData);

@@ -5,9 +5,10 @@ import toast from 'react-hot-toast';
 import { apiClient } from '@api/client';
 import { format } from 'date-fns';
 import { Select } from '@components/ui/Select';
-import { Settings, Save, AlertCircle, RefreshCw, UploadCloud, X } from 'lucide-react';
+import { Settings, Save, AlertCircle, RefreshCw, UploadCloud, X, Pencil } from 'lucide-react';
 import { uploadFile } from '@api/upload';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
+import { AutoResizeTextarea } from '@components/ui/AutoResizeTextarea';
 
 const TABS = ['General', 'Contact', 'Social Media', 'YouTube Automation', 'SEO', 'Analytics', 'Advertisement', 'System'];
 
@@ -20,13 +21,63 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
   </div>
 );
 
-const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
-  <input {...props} className="w-full px-3 py-2 border rounded-md bg-white focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
-);
+const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
+  const [isLocked, setIsLocked] = useState(true);
+  return (
+    <div className="relative flex items-center group">
+      <input 
+        {...props} 
+        ref={ref} 
+        readOnly={isLocked}
+        className={`w-full px-3 py-2 border rounded-md transition-all outline-none ${
+          isLocked 
+            ? 'bg-gray-50 border-gray-200 text-gray-500 pr-10 focus:ring-0 focus:border-gray-200 cursor-default' 
+            : 'bg-white border-gray-300 text-gray-900 pr-10 focus:ring-2 focus:ring-saffron/20 focus:border-saffron'
+        } ${props.className || ''}`} 
+      />
+      {isLocked && (
+        <button
+          type="button"
+          onClick={() => setIsLocked(false)}
+          className="absolute right-2 p-1.5 text-gray-400 hover:text-saffron transition-colors rounded hover:bg-orange-50 opacity-50 group-hover:opacity-100"
+          title="Edit field"
+        >
+          <Pencil className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  );
+});
+Input.displayName = 'Input';
 
-const Textarea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
-  <textarea {...props} className="w-full px-3 py-2 border rounded-md bg-white focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none" />
-);
+const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>((props, ref) => {
+  const [isLocked, setIsLocked] = useState(true);
+  return (
+    <div className="relative group">
+      <AutoResizeTextarea 
+        {...props} 
+        ref={ref} 
+        readOnly={isLocked}
+        className={`w-full px-3 py-2 border rounded-md transition-all outline-none ${
+          isLocked 
+            ? 'bg-gray-50 border-gray-200 text-gray-500 pr-10 focus:ring-0 focus:border-gray-200 cursor-default' 
+            : 'bg-white border-gray-300 text-gray-900 pr-10 focus:ring-2 focus:ring-saffron/20 focus:border-saffron'
+        } ${props.className || ''}`} 
+      />
+      {isLocked && (
+        <button
+          type="button"
+          onClick={() => setIsLocked(false)}
+          className="absolute right-2 top-2 p-1.5 text-gray-400 hover:text-saffron transition-colors rounded hover:bg-orange-50 opacity-50 group-hover:opacity-100"
+          title="Edit field"
+        >
+          <Pencil className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  );
+});
+Textarea.displayName = 'Textarea';
 
 const SaveButton = ({ isPending }: { isPending: boolean }) => (
   <div className="pt-4 border-t border-gray-100 flex justify-end">
@@ -268,7 +319,34 @@ const AdvertisementSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
   const mutation = useSectionSave('/settings/advertisement', qc);
   const { register, handleSubmit } = useForm({ values: defaults });
-  const AdTextarea = (props: any) => <textarea {...props} className="w-full px-3 py-2 border rounded-md bg-white font-mono text-xs focus:ring-2 focus:ring-saffron/20 outline-none" />;
+  const AdTextarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>((props, ref) => {
+    const [isLocked, setIsLocked] = useState(true);
+    return (
+      <div className="relative group">
+        <textarea 
+          {...props} 
+          ref={ref} 
+          readOnly={isLocked}
+          className={`w-full px-3 py-2 border rounded-md transition-all font-mono text-xs outline-none ${
+            isLocked 
+              ? 'bg-gray-50 border-gray-200 text-gray-500 pr-10 focus:ring-0 focus:border-gray-200 cursor-default' 
+              : 'bg-white border-gray-300 text-gray-900 pr-10 focus:ring-2 focus:ring-saffron/20 focus:border-saffron'
+          } ${props.className || ''}`} 
+        />
+        {isLocked && (
+          <button
+            type="button"
+            onClick={() => setIsLocked(false)}
+            className="absolute right-2 top-2 p-1.5 text-gray-400 hover:text-saffron transition-colors rounded hover:bg-orange-50 opacity-50 group-hover:opacity-100"
+            title="Edit field"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+    );
+  });
+  AdTextarea.displayName = 'AdTextarea';
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">Monetization &amp; Ads</h3>

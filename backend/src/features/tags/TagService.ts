@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { tagRepository } from './TagRepository';
 import { CreateTagDTO, UpdateTagDTO, TagQueryOptions } from './TagDTO';
 import { NotFoundError } from '@/errors/appError';
@@ -15,7 +16,7 @@ export class TagService {
 
   async createTag(data: CreateTagDTO) {
     if (!data.slug) {
-      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      data.slug = randomUUID();
     }
     return tagRepository.create(data);
   }
@@ -24,7 +25,7 @@ export class TagService {
     await this.getTag(id);
     
     if (data.name && !data.slug) {
-      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      data.slug = randomUUID();
     }
     return tagRepository.update(id, data);
   }

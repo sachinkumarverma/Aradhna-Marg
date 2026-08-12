@@ -1,5 +1,7 @@
+import { randomUUID } from 'crypto';
 import { festivalRepository } from '@repositories/FestivalRepository';
 import { CreateFestivalDTO, UpdateFestivalDTO, Festival } from '@models/Festival';
+import { slugify } from '@utils/slugify';
 
 export class FestivalService {
   async getList(query: any): Promise<{ data: Festival[], count: number }> {
@@ -21,16 +23,20 @@ export class FestivalService {
     return festival;
   }
 
+  private generateSlug(): string {
+    return randomUUID();
+  }
+
   async create(data: CreateFestivalDTO): Promise<Festival> {
     if (!data.slug) {
-      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      data.slug = this.generateSlug(data);
     }
     return festivalRepository.create(data);
   }
 
   async update(id: string, data: UpdateFestivalDTO): Promise<Festival> {
     if (data.name && !data.slug) {
-      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      data.slug = this.generateSlug(data);
     }
     return festivalRepository.update(id, data);
   }

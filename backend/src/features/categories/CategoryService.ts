@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { categoryRepository } from './CategoryRepository';
 import { CreateCategoryDTO, UpdateCategoryDTO, CategoryQueryOptions } from './CategoryDTO';
 import { NotFoundError } from '@/errors/appError';
@@ -15,7 +16,7 @@ export class CategoryService {
 
   async createCategory(data: CreateCategoryDTO) {
     if (!data.slug) {
-      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      data.slug = randomUUID();
     }
     return categoryRepository.create(data);
   }
@@ -24,7 +25,7 @@ export class CategoryService {
     await this.getCategory(id);
     
     if (data.name && !data.slug) {
-      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      data.slug = randomUUID();
     }
     return categoryRepository.update(id, data);
   }

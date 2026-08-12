@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { bhajanRepository } from './BhajanRepository';
 import { slugify } from '@utils/slugify';
 
@@ -25,7 +26,7 @@ export class BhajanService {
     const { additionalDeities, ...bhajanData } = data;
     
     if (!bhajanData.slug && bhajanData.title) {
-      bhajanData.slug = slugify(bhajanData.title);
+      bhajanData.slug = randomUUID();
     }
 
     const created = await bhajanRepository.create(bhajanData);

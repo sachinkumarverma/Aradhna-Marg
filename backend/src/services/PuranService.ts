@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { puranRepository } from '@repositories/PuranRepository';
 import { slugify } from '@utils/slugify';
 
@@ -19,14 +20,14 @@ export class PuranService {
 
   public async create(data: any) {
     if (!data.slug && data.title) {
-      data.slug = slugify(data.title);
+      data.slug = randomUUID();
     }
     return puranRepository.create(data);
   }
 
   public async update(id: string, data: any) {
     if (data.title && !data.slug) {
-        data.slug = slugify(data.title);
+        data.slug = randomUUID();
     }
     return puranRepository.update(id, data);
   }

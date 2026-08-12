@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { deityRepository } from './DeityRepository';
 import { CreateDeityDTO, UpdateDeityDTO, DeityQueryOptions } from './DeityDTO';
 
@@ -12,14 +13,14 @@ export class DeityService {
 
   async createDeity(data: CreateDeityDTO, userId?: string) {
     if (!data.slug) {
-      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      data.slug = randomUUID();
     }
     return deityRepository.create({ ...data, createdBy: userId });
   }
 
   async updateDeity(id: string, data: UpdateDeityDTO, userId?: string) {
     if (data.name && !data.slug) {
-      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      data.slug = randomUUID();
     }
     return deityRepository.update(id, { ...data, updatedBy: userId });
   }
