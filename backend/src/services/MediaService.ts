@@ -5,22 +5,15 @@ import path from 'path';
 import fs from 'fs';
 
 /**
- * Handles saving uploaded files to local disk and serving them.
- * Files are saved to <project-root>/backend/public/uploads/
- * and served as static files via Express.
+ * Handles uploading files to Supabase Storage and storing metadata in DB.
  */
+import { supabase } from '@/utils/supabaseStorage';
 export class MediaService {
-  // Absolute path to the uploads directory
-  private readonly uploadDir: string;
-  // Public URL prefix (served by Express static middleware)
-  private readonly publicPrefix: string;
+  // Supabase bucket configuration
+  private readonly bucketName: string;
 
   constructor() {
-    this.uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    this.publicPrefix = '/uploads';
-
-    // Ensure directory exists on startup
-    fs.mkdirSync(this.uploadDir, { recursive: true });
+    this.bucketName = process.env.SUPABASE_STORAGE_BUCKET || 'aradhna-images';
   }
 
   // ── Folders ─────────────────────────────────────────────────────────────────
@@ -67,27 +60,54 @@ export class MediaService {
 
       finalExt = 'webp';
       finalMimeType = 'image/webp';
+    }
 
+    const filename = `${fileId}.${finalExt}`;
+    const filePath = `uploads/${filename}`;
+    
+    // Upload main file to Supabase
+    const { error: uploadError } = await supabase.storage
+      .from(this.bucketName)
+      .upload(filePath, processedBuffer, {
+        contentType: finalMimeType,
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('Supabase upload error:', uploadError);
+      throw new Error('Failed to upload file to storage bucket');
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from(this.bucketName)
+      .getPublicUrl(filePath);
+
+    if (isImage) {
       // Generate thumbnail
       const thumbBuffer = await sharp(file.buffer)
         .resize({ width: 200, height: 200, fit: 'cover' })
         .webp({ quality: 60 })
         .toBuffer();
 
-      const thumbFilename = `${fileId}_thumb.webp`;
-      const thumbPath = path.join(this.uploadDir, thumbFilename);
-      fs.writeFileSync(thumbPath, thumbBuffer);
-      thumbnailUrl = `${this.publicPrefix}/${thumbFilename}`;
+      const thumbFilename = `uploads/${fileId}_thumb.webp`;
+      
+      const { error: thumbUploadError } = await supabase.storage
+        .from(this.bucketName)
+        .upload(thumbFilename, thumbBuffer, {
+          contentType: 'image/webp',
+          upsert: false
+        });
+
+      if (!thumbUploadError) {
+        const { data: { publicUrl: thumbPublicUrl } } = supabase.storage
+          .from(this.bucketName)
+          .getPublicUrl(thumbFilename);
+        thumbnailUrl = thumbPublicUrl;
+      }
     }
 
-    // Save main file to disk
-    const filename = `${fileId}.${finalExt}`;
-    const filePath = path.join(this.uploadDir, filename);
-    fs.writeFileSync(filePath, processedBuffer);
-    const publicUrl = `${this.publicPrefix}/${filename}`;
-
     return mediaRepository.createFile({
-      fileName: `${fileId}.${finalExt}`,
+      fileName: filename,
       originalName: file.originalname,
       folderId,
       mimeType: finalMimeType,
@@ -95,7 +115,7 @@ export class MediaService {
       url: publicUrl,
       thumbnailUrl,
       dimensions,
-      storagePath: filePath,
+      storagePath: filePath, // Storing Supabase path in storagePath
     });
   }
 
@@ -111,18 +131,22 @@ export class MediaService {
     const file = await mediaRepository.getFile(id);
     if (!file) throw new Error('File not found');
 
-    // Remove physical files from disk (ignore errors if already deleted)
+    // Remove files from Supabase (ignore errors if already deleted)
     try {
-      if (file.storagePath && fs.existsSync(file.storagePath)) {
-        fs.unlinkSync(file.storagePath);
+      const pathsToRemove: string[] = [];
+      if (file.storagePath) {
+        pathsToRemove.push(file.storagePath);
       }
-      if (file.thumbnailUrl) {
-        const thumbFilename = path.basename(file.storagePath).replace(/\.[^/.]+$/, '') + '_thumb.webp';
-        const thumbPath = path.join(this.uploadDir, thumbFilename);
-        if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+      if (file.thumbnailUrl && file.storagePath) {
+        const thumbFilename = file.storagePath.replace(/\.[^/.]+$/, '') + '_thumb.webp';
+        pathsToRemove.push(thumbFilename);
       }
-    } catch {
-      // Best-effort cleanup
+      
+      if (pathsToRemove.length > 0) {
+        await supabase.storage.from(this.bucketName).remove(pathsToRemove);
+      }
+    } catch (err) {
+      console.error('Failed to cleanup Supabase storage files', err);
     }
 
     await mediaRepository.deleteFile(id);

@@ -50,7 +50,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange,
         quill.clipboard.dangerouslyPasteHTML(range.index, sanitized, 'user');
         // Move cursor to end of pasted content
         setTimeout(() => {
-          quill.setSelection(range.index + quill.clipboard.convert(sanitized).length(), 0, 'api');
+          const delta = quill.clipboard.convert({ html: sanitized });
+          quill.setSelection(range.index + delta.length(), 0, 'api');
         }, 0);
       }
     }

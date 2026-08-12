@@ -10,7 +10,7 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 // Initialize Supabase client
-const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function uploadBase64Image(base64Str: string): Promise<string> {
   if (!base64Str || !base64Str.startsWith('data:image/')) {

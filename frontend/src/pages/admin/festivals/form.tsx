@@ -50,7 +50,12 @@ export const AdminFestivalForm = () => {
       seoTitle: '',
       seoDescription: '',
       bhajanIds: [] as string[],
-      articleIds: [] as string[]
+      articleIds: [] as string[],
+      name_en: '',
+      shortDescription_en: '',
+      content_en: '',
+      seoTitle_en: '',
+      seoDescription_en: ''
     }
   });
 

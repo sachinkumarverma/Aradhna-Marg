@@ -17,6 +17,13 @@ export interface Festival {
   // Related content placeholders
   bhajanIds?: string[];
   articleIds?: string[];
+  
+  // English Translation fields
+  name_en?: string;
+  shortDescription_en?: string;
+  content_en?: string;
+  seoTitle_en?: string;
+  seoDescription_en?: string;
 }
 
 export interface CreateFestivalDTO {
@@ -33,6 +40,13 @@ export interface CreateFestivalDTO {
   seoDescription?: string;
   bhajanIds?: string[];
   articleIds?: string[];
+
+  // English Translation fields
+  name_en?: string;
+  shortDescription_en?: string;
+  content_en?: string;
+  seoTitle_en?: string;
+  seoDescription_en?: string;
 }
 
 export type UpdateFestivalDTO = Partial<CreateFestivalDTO>;
