@@ -24,18 +24,14 @@ class AuthController {
       }
 
       // Sign a JWT valid for 24 hours
-      const token = jwt.sign(
-        { username, role: 'admin' },
-        config.JWT_SECRET,
-        { expiresIn: '24h' }
-      );
+      const token = jwt.sign({ username, role: 'admin' }, config.JWT_SECRET, { expiresIn: '24h' });
 
       logger.info(`Admin login successful for user: ${username}`);
 
       return sendSuccess(res, 'Login successful', {
         token,
         user: { username, role: 'admin' },
-        expiresIn: '24h',
+        expiresIn: '24h'
       });
     } catch (error) {
       next(error);

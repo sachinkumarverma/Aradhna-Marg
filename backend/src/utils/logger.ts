@@ -16,22 +16,22 @@ if (config.NODE_ENV === 'development') {
     options: {
       colorize: true,
       translateTime: 'SYS:standard',
-      ignore: 'pid,hostname',
-    },
+      ignore: 'pid,hostname'
+    }
   });
 } else {
   targets.push({
     target: 'pino/file',
     options: {
       destination: path.join(logDir, 'app.log'),
-      mkdir: true,
-    },
+      mkdir: true
+    }
   });
 }
 
 export const logger = pino({
   level: config.NODE_ENV === 'development' ? 'debug' : 'info',
   transport: {
-    targets,
-  },
+    targets
+  }
 });

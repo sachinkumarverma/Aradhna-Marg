@@ -33,7 +33,7 @@ export class MemoryCache implements ICacheService {
   public async clearPattern(pattern: string): Promise<void> {
     const regex = new RegExp(`^${pattern.replace('*', '.*')}$`);
     let deleted = 0;
-    
+
     for (const key of this.store.keys()) {
       if (regex.test(key)) {
         this.store.delete(key);

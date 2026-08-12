@@ -46,7 +46,7 @@ export const updateSettingsSchema = z.object({
   enableRegistration: z.boolean().nullish(),
   enableComments: z.boolean().nullish(),
   enableCache: z.boolean().nullish(),
-  enablePdfGeneration: z.boolean().nullish(),
+  enablePdfGeneration: z.boolean().nullish()
 });
 
 // ── Per-section schemas ──────────────────────────────────────────────────────
@@ -60,14 +60,14 @@ export const generalSettingsSchema = z.object({
   defaultTheme: z.string().nullish(),
   copyrightText: z.string().nullish(),
   timezone: z.string().nullish(),
-  dateFormat: z.string().nullish(),
+  dateFormat: z.string().nullish()
 });
 
 export const contactSettingsSchema = z.object({
   contactEmail: z.string().email().nullish().or(z.literal('').nullish()),
   contactPhone: z.string().nullish(),
   contactAddress: z.string().nullish(),
-  whatsappNumber: z.string().nullish(),
+  whatsappNumber: z.string().nullish()
 });
 
 export const socialSettingsSchema = z.object({
@@ -75,7 +75,7 @@ export const socialSettingsSchema = z.object({
   instagramUrl: z.string().url().nullish().or(z.literal('').nullish()),
   youtubeUrl: z.string().url().nullish().or(z.literal('').nullish()),
   twitterUrl: z.string().url().nullish().or(z.literal('').nullish()),
-  linkedinUrl: z.string().url().nullish().or(z.literal('').nullish()),
+  linkedinUrl: z.string().url().nullish().or(z.literal('').nullish())
 });
 
 export const youtubeSettingsSchema = z.object({
@@ -83,7 +83,7 @@ export const youtubeSettingsSchema = z.object({
   youtubeChannelUrl: z.string().url().nullish().or(z.literal('').nullish()),
   youtubeAutoSync: z.boolean().nullish(),
   youtubeSyncInterval: z.string().nullish(),
-  youtubeIncrementalSync: z.boolean().nullish(),
+  youtubeIncrementalSync: z.boolean().nullish()
 });
 
 export const seoSettingsSchema = z.object({
@@ -92,14 +92,14 @@ export const seoSettingsSchema = z.object({
   seoMetaKeywords: z.string().nullish(),
   seoRobots: z.string().nullish(),
   seoCanonicalDomain: z.string().url().nullish().or(z.literal('').nullish()),
-  seoOgImage: z.string().url().nullish().or(z.literal('').nullish()),
+  seoOgImage: z.string().url().nullish().or(z.literal('').nullish())
 });
 
 export const analyticsSettingsSchema = z.object({
   googleAnalyticsId: z.string().nullish(),
   googleSearchConsole: z.string().nullish(),
   microsoftClarity: z.string().nullish(),
-  enableAnalytics: z.boolean().nullish(),
+  enableAnalytics: z.boolean().nullish()
 });
 
 export const advertisementSettingsSchema = z.object({
@@ -107,7 +107,7 @@ export const advertisementSettingsSchema = z.object({
   adTopBanner: z.string().nullish(),
   adInline: z.string().nullish(),
   adSidebar: z.string().nullish(),
-  adFooter: z.string().nullish(),
+  adFooter: z.string().nullish()
 });
 
 export const systemSettingsSchema = z.object({
@@ -115,6 +115,5 @@ export const systemSettingsSchema = z.object({
   enableRegistration: z.boolean().nullish(),
   enableComments: z.boolean().nullish(),
   enableCache: z.boolean().nullish(),
-  enablePdfGeneration: z.boolean().nullish(),
+  enablePdfGeneration: z.boolean().nullish()
 });
-

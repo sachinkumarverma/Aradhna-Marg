@@ -6,7 +6,11 @@ class AdminAuthorController {
   public list = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { data, total } = await authorService.getAuthors(req.query);
-      return sendSuccess(res, 'Authors fetched', data, { total, page: parseInt(req.query.page as string) || 1, limit: parseInt(req.query.limit as string) || 10 });
+      return sendSuccess(res, 'Authors fetched', data, {
+        total,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 10
+      });
     } catch (error) {
       next(error);
     }
@@ -54,7 +58,7 @@ class AdminAuthorController {
       if (!ids || !Array.isArray(ids) || ids.length === 0) {
         throw new Error('Invalid IDs array');
       }
-      
+
       if (action === 'DELETE') {
         await authorService.bulkDeleteAuthors(ids);
       } else if (action === 'ACTIVATE') {
@@ -62,9 +66,9 @@ class AdminAuthorController {
       } else if (action === 'DEACTIVATE') {
         await authorService.bulkEditAuthors(ids, { status: 'INACTIVE' });
       } else {
-         throw new Error('Invalid bulk action');
+        throw new Error('Invalid bulk action');
       }
-      
+
       return sendSuccess(res, `Successfully triggered ${action} on ${ids.length} items`, {});
     } catch (error) {
       next(error);

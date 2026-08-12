@@ -34,9 +34,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filteredOptions = options.filter(
-    (opt) => opt.label.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredOptions = options.filter((opt) => opt.label.toLowerCase().includes(search.toLowerCase()));
 
   const selectedOptions = options.filter((opt) => values.includes(opt.value));
 
@@ -60,7 +58,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
         {selectedOptions.length === 0 && !search && (
           <span className="text-gray-400 absolute left-3 select-none pointer-events-none">{placeholder}</span>
         )}
-        
+
         {selectedOptions.map((opt) => (
           <span
             key={opt.value}
@@ -84,18 +82,27 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           onChange={(e) => setSearch(e.target.value)}
           onFocus={() => setIsOpen(true)}
         />
-        
+
         <div className="absolute right-3 flex items-center gap-1">
           {values.length > 0 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); onChange([]); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange([]);
+              }}
               className="p-1 hover:bg-gray-200 rounded-full text-gray-400 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-          <ChevronDown className={cn('w-4 h-4 text-gray-400 transition-transform cursor-pointer', isOpen && 'rotate-180')} onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }} />
+          <ChevronDown
+            className={cn('w-4 h-4 text-gray-400 transition-transform cursor-pointer', isOpen && 'rotate-180')}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(!isOpen);
+            }}
+          />
         </div>
       </div>
 
@@ -123,13 +130,22 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                       setSearch('');
                     }}
                   >
-                    <div className={cn(
-                      "w-4 h-4 border rounded mr-3 flex items-center justify-center transition-colors",
-                      isSelected ? "bg-saffron border-saffron" : "border-gray-300"
-                    )}>
+                    <div
+                      className={cn(
+                        'w-4 h-4 border rounded mr-3 flex items-center justify-center transition-colors',
+                        isSelected ? 'bg-saffron border-saffron' : 'border-gray-300'
+                      )}
+                    >
                       {isSelected && <Check className="w-3 h-3 text-white" />}
                     </div>
-                    <span className={cn("whitespace-nowrap pr-4", isSelected ? 'font-medium text-saffron' : 'text-gray-700')}>{opt.label}</span>
+                    <span
+                      className={cn(
+                        'whitespace-nowrap pr-4',
+                        isSelected ? 'font-medium text-saffron' : 'text-gray-700'
+                      )}
+                    >
+                      {opt.label}
+                    </span>
                   </div>
                 );
               })

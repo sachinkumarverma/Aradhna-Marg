@@ -6,14 +6,14 @@ import { getPaginationData, formatPaginatedResponse } from '@utils/pagination';
 class SearchController {
   public search = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const q = req.query.q as string || '';
+      const q = (req.query.q as string) || '';
       const sort = req.query.sort as any;
       const { page, limit } = getPaginationData(req.query as any);
 
       const filters = {
         hasPdf: req.query.hasPdf === 'true' ? true : undefined,
         hasVideo: req.query.hasVideo === 'true' ? true : undefined,
-        categoryId: req.query.categoryId as string,
+        categoryId: req.query.categoryId as string
       };
 
       const result = await searchService.executeSearch({
@@ -34,7 +34,7 @@ class SearchController {
 
   public getSuggestions = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const q = req.query.q as string || '';
+      const q = (req.query.q as string) || '';
       const suggestions = await searchService.getSuggestions(q);
       return sendSuccess(res, 'Suggestions fetched', { suggestions });
     } catch (error) {

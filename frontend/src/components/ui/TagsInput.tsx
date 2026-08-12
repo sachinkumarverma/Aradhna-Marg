@@ -10,7 +10,12 @@ interface TagsInputProps {
 export const TagsInput: React.FC<TagsInputProps> = ({ value, onChange, placeholder = 'Press Enter to add tag' }) => {
   const [inputValue, setInputValue] = useState('');
 
-  const tags = value ? value.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const tags = value
+    ? value
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean)
+    : [];
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -24,13 +29,16 @@ export const TagsInput: React.FC<TagsInputProps> = ({ value, onChange, placehold
   };
 
   const removeTag = (tagToRemove: string) => {
-    onChange(tags.filter(t => t !== tagToRemove).join(', '));
+    onChange(tags.filter((t) => t !== tagToRemove).join(', '));
   };
 
   return (
     <div className="w-full bg-white border border-gray-200 rounded-md focus-within:ring-2 focus-within:ring-saffron/20 focus-within:border-saffron transition-all p-1 flex flex-wrap gap-1 min-h-[42px]">
       {tags.map((tag, i) => (
-        <span key={i} className="flex items-center gap-0.5 px-1.5 py-px bg-orange-50 text-orange-700 border border-orange-200 text-xs rounded font-medium">
+        <span
+          key={i}
+          className="flex items-center gap-0.5 px-1.5 py-px bg-orange-50 text-orange-700 border border-orange-200 text-xs rounded font-medium"
+        >
           {tag}
           <button
             type="button"

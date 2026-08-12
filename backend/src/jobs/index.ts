@@ -22,13 +22,13 @@ export class BackgroundJobSystem {
     ];
 
     // Start polling
-    this.workers.forEach(worker => worker.start());
+    this.workers.forEach((worker) => worker.start());
 
     // 2. Start Cron Scheduler
     this.scheduler.start();
 
     // 3. Configure Event Bus Subscriptions (The Decoupled Architecture)
-    
+
     // When a video is imported, queue AI processing
     eventBus.subscribe(PlatformEvent.VIDEO_IMPORTED, async (payload) => {
       logger.info(`[EventBus] Reaction: Queuing AI Processing for ${payload.videoId}`);
@@ -57,7 +57,7 @@ export class BackgroundJobSystem {
 
   public stop() {
     this.scheduler.stop();
-    this.workers.forEach(worker => worker.stop());
+    this.workers.forEach((worker) => worker.stop());
     logger.info('[JobSystem] Gracefully stopped.');
   }
 

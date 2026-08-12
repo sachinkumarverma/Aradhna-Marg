@@ -39,7 +39,7 @@ export const formatPaginatedResponse = <T>(
       total,
       totalPages,
       hasNextPage: page < totalPages,
-      hasPreviousPage: page > 1,
-    },
+      hasPreviousPage: page > 1
+    }
   };
 };

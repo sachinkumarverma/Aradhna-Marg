@@ -10,17 +10,17 @@ export class AIWorker extends BaseWorker {
 
   protected async process(job: IJobPayload): Promise<void> {
     const { videoId, title } = job.payload;
-    
+
     logger.info(`[AIWorker] Processing AI generation for ${videoId}...`);
-    
+
     // Simulate AI generation via Groq/OpenAI (mocked)
-    await new Promise(res => setTimeout(res, 2000));
-    
+    await new Promise((res) => setTimeout(res, 2000));
+
     const extractedData = {
-      lyrics: "Mock Lyrics extracted from audio/description",
-      category: "Aarti",
-      god: "Shiva",
-      tags: ["Monday", "Morning"]
+      lyrics: 'Mock Lyrics extracted from audio/description',
+      category: 'Aarti',
+      god: 'Shiva',
+      tags: ['Monday', 'Morning']
     };
 
     // 1. Update Database (mocked)

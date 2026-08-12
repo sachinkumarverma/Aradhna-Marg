@@ -17,11 +17,19 @@ export class TranslationService {
     this.googleProvider = new GoogleTranslateProvider();
   }
 
-  async translateHtml(html: string, sourceLang: string, targetLang: string): Promise<{ translated: string, provider: string }> {
+  async translateHtml(
+    html: string,
+    sourceLang: string,
+    targetLang: string
+  ): Promise<{ translated: string; provider: string }> {
     return this.executeWithFallback(html, sourceLang, targetLang, 'html');
   }
 
-  async translateText(text: string, sourceLang: string, targetLang: string): Promise<{ translated: string, provider: string }> {
+  async translateText(
+    text: string,
+    sourceLang: string,
+    targetLang: string
+  ): Promise<{ translated: string; provider: string }> {
     return this.executeWithFallback(text, sourceLang, targetLang, 'text');
   }
 
@@ -33,13 +41,21 @@ export class TranslationService {
     let sourceContent: any;
     try {
       if (contentType === 'ARTICLE') {
-        const res = await db.query(`SELECT title, excerpt, content, seo_title, seo_description FROM articles WHERE id = $1`, [contentId]);
+        const res = await db.query(
+          `SELECT title, excerpt, content, seo_title, seo_description FROM articles WHERE id = $1`,
+          [contentId]
+        );
         sourceContent = res.rows[0];
       } else if (contentType === 'PURAN') {
-        const res = await db.query(`SELECT title, description, seo_title, seo_description FROM puranas WHERE id = $1`, [contentId]);
+        const res = await db.query(`SELECT title, description, seo_title, seo_description FROM puranas WHERE id = $1`, [
+          contentId
+        ]);
         sourceContent = res.rows[0];
       } else if (contentType === 'FESTIVAL') {
-        const res = await db.query(`SELECT name as title, description, seo_title, seo_description FROM festivals WHERE id = $1`, [contentId]);
+        const res = await db.query(
+          `SELECT name as title, description, seo_title, seo_description FROM festivals WHERE id = $1`,
+          [contentId]
+        );
         sourceContent = res.rows[0];
       }
     } catch (e) {
@@ -75,30 +91,29 @@ export class TranslationService {
       };
 
       if (contentType === 'ARTICLE') {
-        dto.title = await safeTrans(sourceContent.title) || undefined;
-        dto.excerpt = await safeTrans(sourceContent.excerpt) || undefined;
-        dto.content = await safeTrans(sourceContent.content, 'html') || undefined;
-        dto.seoTitle = await safeTrans(sourceContent.seo_title) || undefined;
-        dto.seoDescription = await safeTrans(sourceContent.seo_description) || undefined;
+        dto.title = (await safeTrans(sourceContent.title)) || undefined;
+        dto.excerpt = (await safeTrans(sourceContent.excerpt)) || undefined;
+        dto.content = (await safeTrans(sourceContent.content, 'html')) || undefined;
+        dto.seoTitle = (await safeTrans(sourceContent.seo_title)) || undefined;
+        dto.seoDescription = (await safeTrans(sourceContent.seo_description)) || undefined;
       } else if (contentType === 'PURAN') {
-        dto.title = await safeTrans(sourceContent.title) || undefined;
-        dto.description = await safeTrans(sourceContent.description, 'html') || undefined;
-        dto.seoTitle = await safeTrans(sourceContent.seo_title) || undefined;
-        dto.seoDescription = await safeTrans(sourceContent.seo_description) || undefined;
+        dto.title = (await safeTrans(sourceContent.title)) || undefined;
+        dto.description = (await safeTrans(sourceContent.description, 'html')) || undefined;
+        dto.seoTitle = (await safeTrans(sourceContent.seo_title)) || undefined;
+        dto.seoDescription = (await safeTrans(sourceContent.seo_description)) || undefined;
       } else if (contentType === 'FESTIVAL') {
-        dto.title = await safeTrans(sourceContent.title) || undefined;
-        dto.description = await safeTrans(sourceContent.description) || undefined;
+        dto.title = (await safeTrans(sourceContent.title)) || undefined;
+        dto.description = (await safeTrans(sourceContent.description)) || undefined;
         // Wait, festivals table doesn't have 'festival_details', only 'description'.
         // Assuming 'description' holds the rich text details as per schema check.
-        dto.seoTitle = await safeTrans(sourceContent.seo_title) || undefined;
-        dto.seoDescription = await safeTrans(sourceContent.seo_description) || undefined;
+        dto.seoTitle = (await safeTrans(sourceContent.seo_title)) || undefined;
+        dto.seoDescription = (await safeTrans(sourceContent.seo_description)) || undefined;
       }
 
       dto.provider = lastProvider;
       dto.translationStatus = 'NEEDS_REVIEW';
 
       return await translationRepository.upsertTranslation(dto);
-
     } catch (error: any) {
       logger.error('Translation Generation Failed', error);
       dto.translationStatus = 'FAILED';
@@ -125,8 +140,8 @@ export class TranslationService {
     try {
       for (const [key, value] of Object.entries(content)) {
         if (!value) continue;
-        const format = (key === 'content' || key === 'description') ? 'html' : 'text';
-        translatedContent[key] = await safeTrans(value, format) || undefined;
+        const format = key === 'content' || key === 'description' ? 'html' : 'text';
+        translatedContent[key] = (await safeTrans(value, format)) || undefined;
       }
       return { translations: translatedContent, provider: lastProvider };
     } catch (error: any) {
@@ -135,7 +150,12 @@ export class TranslationService {
     }
   }
 
-  private async executeWithFallback(text: string, sourceLang: string, targetLang: string, format: 'text' | 'html'): Promise<{ translated: string, provider: string }> {
+  private async executeWithFallback(
+    text: string,
+    sourceLang: string,
+    targetLang: string,
+    format: 'text' | 'html'
+  ): Promise<{ translated: string; provider: string }> {
     if (!text || text.trim() === '') {
       return { translated: '', provider: 'none' };
     }
@@ -154,8 +174,10 @@ export class TranslationService {
       const translated = await primaryProvider.translate(text, sourceLang, targetLang, format);
       return { translated, provider: primaryProvider.name };
     } catch (error: any) {
-      logger.warn(`Primary translation provider (${primaryProvider.name}) failed: ${error.message}. Attempting fallback...`);
-      
+      logger.warn(
+        `Primary translation provider (${primaryProvider.name}) failed: ${error.message}. Attempting fallback...`
+      );
+
       try {
         const translated = await secondaryProvider.translate(text, sourceLang, targetLang, format);
         return { translated, provider: secondaryProvider.name };

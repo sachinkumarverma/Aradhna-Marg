@@ -11,9 +11,9 @@ export const registerYouTubeEventHandlers = () => {
     await queueManager.enqueue('AI_PROCESSING_QUEUE', { videoId, metadata });
 
     // 2. Queue SEO Generation (Meta titles, description, keywords based on AI output)
-    // Note: SEO should technically wait for AI Processing to complete. 
+    // Note: SEO should technically wait for AI Processing to complete.
     // In a mature system, AI processing completion event would trigger SEO.
-    // For architecture completeness, we show enqueueing here, but in practice, 
+    // For architecture completeness, we show enqueueing here, but in practice,
     // AI_PROCESSING_QUEUE's worker would emit AI_COMPLETED, which then triggers this.
 
     // 3. Queue PDF Generation (Generate lyrics PDF once lyrics are ready)

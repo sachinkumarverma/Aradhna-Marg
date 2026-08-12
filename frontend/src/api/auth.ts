@@ -42,11 +42,7 @@ export const logout = async (): Promise<void> => {
   try {
     const token = getToken();
     if (token) {
-      await axios.post(
-        `${API_BASE}/admin/auth/logout`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.post(`${API_BASE}/admin/auth/logout`, {}, { headers: { Authorization: `Bearer ${token}` } });
     }
   } catch {
     // Ignore errors — we always clear the local session
@@ -61,7 +57,7 @@ export const verifySession = async (): Promise<boolean> => {
 
   try {
     await axios.get(`${API_BASE}/admin/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
     return true;
   } catch {

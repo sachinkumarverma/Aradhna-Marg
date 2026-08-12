@@ -62,7 +62,6 @@ export const PuranDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20 pt-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         {/* Header Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
           <div className="md:flex">
@@ -77,20 +76,18 @@ export const PuranDetail: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Details */}
             <div className="p-8 md:w-2/3 flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-3">
                 <span className="bg-saffron/10 text-saffron px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                   {data.language || 'Unknown Language'}
                 </span>
-                {data.author && (
-                  <span className="text-gray-500 text-sm font-medium">By {data.author}</span>
-                )}
+                {data.author && <span className="text-gray-500 text-sm font-medium">By {data.author}</span>}
               </div>
-              
+
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 font-serif">{data.title}</h1>
-              
+
               <div className="flex items-center gap-6 text-sm text-gray-600 border-t border-gray-100 pt-6">
                 <div className="flex items-center gap-2">
                   <Eye className="w-5 h-5 text-gray-400" />
@@ -109,9 +106,7 @@ export const PuranDetail: React.FC = () => {
         {data.short_description && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4 border-b pb-4">About this Purana</h2>
-            <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {data.short_description}
-            </div>
+            <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">{data.short_description}</div>
           </div>
         )}
 
@@ -146,16 +141,26 @@ export const PuranDetail: React.FC = () => {
             <h3 className="text-2xl font-bold text-gray-900 mb-6 font-serif">Related Puranas</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {data.related.map((puran: any) => (
-                <Link to={`/puranas/${puran.slug}`} key={puran.id} className="bg-white rounded-md shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                <Link
+                  to={`/puranas/${puran.slug}`}
+                  key={puran.id}
+                  className="bg-white rounded-md shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group"
+                >
                   <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                     {puran.cover_image ? (
-                      <img src={puran.cover_image} alt={puran.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <img
+                        src={puran.cover_image}
+                        alt={puran.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                     ) : (
                       <BookOpen className="w-12 h-12 text-gray-300" />
                     )}
                   </div>
                   <div className="p-4">
-                    <span className="text-[10px] font-bold text-saffron uppercase tracking-wider mb-1 block">{puran.language}</span>
+                    <span className="text-[10px] font-bold text-saffron uppercase tracking-wider mb-1 block">
+                      {puran.language}
+                    </span>
                     <h4 className="font-bold text-gray-900 line-clamp-2">{puran.title}</h4>
                   </div>
                 </Link>
@@ -163,7 +168,6 @@ export const PuranDetail: React.FC = () => {
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

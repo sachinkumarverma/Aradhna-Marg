@@ -11,7 +11,7 @@ export const createCategorySchema = z.object({
   displayOrder: z.number().int().optional(),
   status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).optional(),
   showInNavigation: z.boolean().optional(),
-  isFeatured: z.boolean().optional(),
+  isFeatured: z.boolean().optional()
 });
 
 export const updateCategorySchema = createCategorySchema.partial();

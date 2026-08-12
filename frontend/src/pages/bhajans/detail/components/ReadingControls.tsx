@@ -27,18 +27,29 @@ export const ReadingControls: React.FC<ReadingControlsProps> = ({
   isScrolling,
   onToggleScroll,
   scrollSpeed,
-  onChangeSpeed,
+  onChangeSpeed
 }) => {
   return (
     <div className="sticky top-24 z-30 bg-white/80 backdrop-blur-lg border border-black/5 rounded-2xl p-4 shadow-sm mb-8 flex flex-wrap items-center justify-between gap-4">
-      
       <div className="flex items-center gap-4">
         <div className="flex items-center bg-gray-100 rounded-md p-1">
-          <Button variant="ghost" size="icon" onClick={onDecreaseFont} disabled={!canDecrease} className="h-8 w-8 rounded-md">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onDecreaseFont}
+            disabled={!canDecrease}
+            className="h-8 w-8 rounded-md"
+          >
             <Minus className="w-4 h-4" />
           </Button>
           <span className="w-10 text-center text-sm font-medium">{fontSize}px</span>
-          <Button variant="ghost" size="icon" onClick={onIncreaseFont} disabled={!canIncrease} className="h-8 w-8 rounded-md">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onIncreaseFont}
+            disabled={!canIncrease}
+            className="h-8 w-8 rounded-md"
+          >
             <Plus className="w-4 h-4" />
           </Button>
         </div>
@@ -53,8 +64,8 @@ export const ReadingControls: React.FC<ReadingControlsProps> = ({
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium text-darkBrown/60 hidden sm:inline-block">Auto Scroll</span>
         <div className="flex items-center bg-gray-100 rounded-md p-1">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             onClick={onToggleScroll}
             className={`h-8 px-3 rounded-md flex items-center gap-2 ${isScrolling ? 'bg-saffron text-white hover:bg-saffron/90 hover:text-white' : ''}`}
@@ -62,7 +73,7 @@ export const ReadingControls: React.FC<ReadingControlsProps> = ({
             {isScrolling ? <Square className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
             {isScrolling ? 'Stop' : 'Play'}
           </Button>
-          
+
           <div className="flex items-center px-2 gap-1">
             {[1, 2, 3].map((s) => (
               <button
@@ -76,7 +87,6 @@ export const ReadingControls: React.FC<ReadingControlsProps> = ({
           </div>
         </div>
       </div>
-
     </div>
   );
 };

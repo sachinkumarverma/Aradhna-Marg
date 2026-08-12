@@ -35,7 +35,7 @@ export class DeityRepository {
       ORDER BY display_order ASC, created_at DESC
       LIMIT $2 OFFSET $3;
     `;
-    
+
     const countQuery = `
       SELECT COUNT(*) as total FROM deities
       WHERE name ILIKE $1 OR slug ILIKE $1;
@@ -81,8 +81,15 @@ export class DeityRepository {
       RETURNING *;
     `;
     const params = [
-      data.name, data.slug, data.shortDescription, data.image, data.displayOrder || 0,
-      data.featured || false, data.status || 'ACTIVE', data.seoTitle, data.seoDescription,
+      data.name,
+      data.slug,
+      data.shortDescription,
+      data.image,
+      data.displayOrder || 0,
+      data.featured || false,
+      data.status || 'ACTIVE',
+      data.seoTitle,
+      data.seoDescription,
       data.createdBy
     ];
 
@@ -109,8 +116,17 @@ export class DeityRepository {
       RETURNING *;
     `;
     const params = [
-      id, data.name, data.slug, data.shortDescription, data.image, data.displayOrder,
-      data.featured, data.status, data.seoTitle, data.seoDescription, data.updatedBy
+      id,
+      data.name,
+      data.slug,
+      data.shortDescription,
+      data.image,
+      data.displayOrder,
+      data.featured,
+      data.status,
+      data.seoTitle,
+      data.seoDescription,
+      data.updatedBy
     ];
 
     const result = await db.query(query, params);

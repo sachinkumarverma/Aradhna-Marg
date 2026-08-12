@@ -17,9 +17,9 @@ export class MemoryQueue implements IQueueService {
       retries: 0,
       maxRetries: 3,
       state: JobState.QUEUED,
-      createdAt: new Date(),
+      createdAt: new Date()
     };
-    
+
     this.jobs.set(id, job);
     logger.info(`[Queue] Job Enqueued: ${type} [${id}]`);
     return id;
@@ -27,7 +27,7 @@ export class MemoryQueue implements IQueueService {
 
   public async dequeue(type: JobType): Promise<IJobPayload | null> {
     const queuedJobs = Array.from(this.jobs.values())
-      .filter(j => j.type === type && j.state === JobState.QUEUED)
+      .filter((j) => j.type === type && j.state === JobState.QUEUED)
       .sort((a, b) => a.priority - b.priority || a.createdAt.getTime() - b.createdAt.getTime());
 
     if (queuedJobs.length === 0) return null;
@@ -36,7 +36,7 @@ export class MemoryQueue implements IQueueService {
     job.state = JobState.RUNNING;
     job.startedAt = new Date();
     this.jobs.set(job.id, job);
-    
+
     return job;
   }
 
@@ -46,7 +46,7 @@ export class MemoryQueue implements IQueueService {
       job.state = JobState.COMPLETED;
       job.completedAt = new Date();
       this.jobs.set(jobId, job);
-      // In a real memory queue, you might delete it to save RAM, 
+      // In a real memory queue, you might delete it to save RAM,
       // or move it to an archive DB table.
       logger.info(`[Queue] Job Completed: ${jobId}`);
     }
@@ -58,7 +58,7 @@ export class MemoryQueue implements IQueueService {
 
     job.error = error.message;
     job.stackTrace = error.stack;
-    
+
     if (job.retries < job.maxRetries) {
       job.state = JobState.RETRYING;
       job.retries += 1;
@@ -69,7 +69,7 @@ export class MemoryQueue implements IQueueService {
       this.deadLetterQueue.set(jobId, job);
       logger.error({ error }, `[Queue] Job Moved to DLQ: ${jobId}`);
     }
-    
+
     this.jobs.set(jobId, job);
   }
 
@@ -95,9 +95,9 @@ export class MemoryQueue implements IQueueService {
   public async getStats(): Promise<{ queued: number; running: number; failed: number }> {
     const jobsArr = Array.from(this.jobs.values());
     return {
-      queued: jobsArr.filter(j => j.state === JobState.QUEUED).length,
-      running: jobsArr.filter(j => j.state === JobState.RUNNING).length,
-      failed: jobsArr.filter(j => j.state === JobState.FAILED).length,
+      queued: jobsArr.filter((j) => j.state === JobState.QUEUED).length,
+      running: jobsArr.filter((j) => j.state === JobState.RUNNING).length,
+      failed: jobsArr.filter((j) => j.state === JobState.FAILED).length
     };
   }
 }

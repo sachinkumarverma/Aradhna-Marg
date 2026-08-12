@@ -17,7 +17,7 @@ export interface Festival {
   // Related content placeholders
   bhajanIds?: string[];
   articleIds?: string[];
-  
+
   // English Translation fields
   name_en?: string;
   shortDescription_en?: string;

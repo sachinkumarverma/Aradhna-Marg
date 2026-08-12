@@ -1,7 +1,15 @@
 import { apiClient } from '@api/client';
 
 export class YoutubeApi {
-  static async getVideos(params?: { search?: string; status?: string; type?: string; sortBy?: string; sortOrder?: string; page?: number; limit?: number }) {
+  static async getVideos(params?: {
+    search?: string;
+    status?: string;
+    type?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    page?: number;
+    limit?: number;
+  }) {
     const response = await apiClient.get('/admin/youtube/videos', { params });
     return response.data;
   }

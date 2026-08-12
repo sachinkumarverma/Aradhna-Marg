@@ -33,20 +33,27 @@ export function DataTable<T extends { id: string | number }>({
   emptyTitle,
   emptySubtext
 }: DataTableProps<T>) {
-
   if (isLoading) {
     return (
       <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm animate-pulse">
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
-              {[1,2,3,4,5].map(i => <th key={i} className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></th>)}
+              {[1, 2, 3, 4, 5].map((i) => (
+                <th key={i} className="px-6 py-4">
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {[1,2,3,4,5,6,7,8,9,10].map(row => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row) => (
               <tr key={row} className="border-b border-gray-50">
-                {[1,2,3,4,5].map(col => <td key={col} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
+                {[1, 2, 3, 4, 5].map((col) => (
+                  <td key={col} className="px-6 py-4">
+                    <div className="h-4 bg-gray-100 rounded w-full"></div>
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -74,7 +81,7 @@ export function DataTable<T extends { id: string | number }>({
         <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
           <tr>
             {columns.map((col, idx) => (
-              <th key={idx} className={cn("px-6 py-4 font-bold", col.className)}>
+              <th key={idx} className={cn('px-6 py-4 font-bold', col.className)}>
                 {col.header}
               </th>
             ))}
@@ -85,29 +92,45 @@ export function DataTable<T extends { id: string | number }>({
           {data.map((row) => (
             <tr key={row.id} className="hover:bg-gray-50/50 transition-colors group">
               {columns.map((col, idx) => (
-                <td key={idx} className={cn("px-6 py-4", col.className)}>
+                <td key={idx} className={cn('px-6 py-4', col.className)}>
                   {typeof col.accessor === 'function' ? col.accessor(row) : (row[col.accessor] as React.ReactNode)}
                 </td>
               ))}
               <td className="px-6 py-4">
                 <div className="flex items-center justify-end gap-2 transition-opacity">
                   {onPreview && (
-                    <button onClick={() => onPreview(row)} className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors" title="Preview">
+                    <button
+                      onClick={() => onPreview(row)}
+                      className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                      title="Preview"
+                    >
                       <Eye className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                   )}
                   {onEdit && (
-                    <button onClick={() => onEdit(row)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors" title="Edit">
+                    <button
+                      onClick={() => onEdit(row)}
+                      className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                      title="Edit"
+                    >
                       <Edit2 className="w-4 h-4" strokeWidth={3.5} />
                     </button>
                   )}
                   {onActionClick && (
-                    <button onClick={() => onActionClick('REGENERATE_AI', row)} className="p-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors" title="Regenerate AI Metadata">
+                    <button
+                      onClick={() => onActionClick('REGENERATE_AI', row)}
+                      className="p-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
+                      title="Regenerate AI Metadata"
+                    >
                       <Sparkles className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                   )}
                   {onDelete && (
-                    <button onClick={() => onDelete(row)} className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors" title="Delete">
+                    <button
+                      onClick={() => onDelete(row)}
+                      className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                      title="Delete"
+                    >
                       <Trash2 className="w-4 h-4" strokeWidth={3.5} />
                     </button>
                   )}

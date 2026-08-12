@@ -14,23 +14,22 @@ export const StickyBottomBar: React.FC<StickyBottomBarProps> = ({
   onToggleReadingMode,
   isReadingMode,
   onCopy,
-  hasCopied,
+  hasCopied
 }) => {
   return (
     <AnimatePresence>
-      <motion.div 
+      <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         exit={{ y: 100 }}
         className="fixed bottom-4 left-4 right-4 z-40 md:hidden"
       >
         <div className="bg-white/90 backdrop-blur-xl border border-black/10 rounded-2xl p-2 shadow-2xl flex items-center justify-around">
-          
-          <button 
+          <button
             onClick={onToggleReadingMode}
             className={cn(
-              "flex flex-col items-center gap-1 p-2 rounded-md flex-1 transition-colors",
-              isReadingMode ? "text-saffron bg-saffron/10" : "text-darkBrown/70 hover:bg-black/5"
+              'flex flex-col items-center gap-1 p-2 rounded-md flex-1 transition-colors',
+              isReadingMode ? 'text-saffron bg-saffron/10' : 'text-darkBrown/70 hover:bg-black/5'
             )}
           >
             <BookOpen className="w-5 h-5" />
@@ -42,7 +41,7 @@ export const StickyBottomBar: React.FC<StickyBottomBarProps> = ({
             <span className="text-[10px] font-medium">PDF</span>
           </button>
 
-          <button 
+          <button
             onClick={onCopy}
             className="flex flex-col items-center gap-1 p-2 rounded-md flex-1 text-darkBrown/70 hover:bg-black/5 transition-colors"
           >
@@ -54,7 +53,6 @@ export const StickyBottomBar: React.FC<StickyBottomBarProps> = ({
             <Share2 className="w-5 h-5" />
             <span className="text-[10px] font-medium">Share</span>
           </button>
-
         </div>
       </motion.div>
     </AnimatePresence>

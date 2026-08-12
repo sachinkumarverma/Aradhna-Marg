@@ -13,7 +13,7 @@ export const useAutoScroll = () => {
       const step = () => {
         window.scrollBy(0, speed);
         // Stop if hit bottom
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
           setIsScrolling(false);
           return;
         }
@@ -31,6 +31,6 @@ export const useAutoScroll = () => {
     isScrolling,
     speed,
     toggleScroll,
-    changeSpeed,
+    changeSpeed
   };
 };

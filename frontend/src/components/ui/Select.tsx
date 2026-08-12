@@ -62,17 +62,21 @@ export const Select: React.FC<SelectProps> = ({
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className={cn('flex items-center gap-2 truncate', !selectedOption && 'text-gray-400')}>
-          {selectedOption?.icon && <span className="w-4 h-4 flex items-center justify-center min-w-4">{selectedOption.icon}</span>}
+          {selectedOption?.icon && (
+            <span className="w-4 h-4 flex items-center justify-center min-w-4">{selectedOption.icon}</span>
+          )}
           <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         </span>
         <ChevronDown className={cn('w-4 h-4 text-gray-400 transition-transform', isOpen && 'rotate-180')} />
       </div>
 
       {isOpen && (
-        <div className={cn(
-          "absolute z-50 w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden",
-          menuPlacement === 'top' ? "bottom-full mb-1" : "top-full mt-1"
-        )}>
+        <div
+          className={cn(
+            'absolute z-50 w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden',
+            menuPlacement === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
+          )}
+        >
           {searchable && (
             <div className="flex items-center px-3 py-2 border-b border-gray-100 bg-white">
               <Search className="w-4 h-4 text-gray-400 mr-2" />
@@ -109,7 +113,16 @@ export const Select: React.FC<SelectProps> = ({
                   }}
                 >
                   <div className="flex items-center gap-2 whitespace-nowrap pr-4">
-                    {opt.icon && <span className={cn("w-4 h-4 flex items-center justify-center min-w-4", value === opt.value ? 'text-saffron' : 'text-gray-500')}>{opt.icon}</span>}
+                    {opt.icon && (
+                      <span
+                        className={cn(
+                          'w-4 h-4 flex items-center justify-center min-w-4',
+                          value === opt.value ? 'text-saffron' : 'text-gray-500'
+                        )}
+                      >
+                        {opt.icon}
+                      </span>
+                    )}
                     <span>{opt.label}</span>
                   </div>
                   {value === opt.value && <Check className="w-4 h-4 min-w-4" />}

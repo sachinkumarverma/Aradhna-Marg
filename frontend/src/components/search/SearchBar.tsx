@@ -49,16 +49,16 @@ export const SearchBar: React.FC = () => {
 
   return (
     <div className="relative w-full max-w-2xl mx-auto z-50" ref={wrapperRef}>
-      <div 
+      <div
         className={cn(
-          "relative flex items-center bg-white rounded-2xl transition-all duration-300",
-          isOpen ? "shadow-2xl ring-2 ring-saffron/50 rounded-b-none" : "shadow-md hover:shadow-lg"
+          'relative flex items-center bg-white rounded-2xl transition-all duration-300',
+          isOpen ? 'shadow-2xl ring-2 ring-saffron/50 rounded-b-none' : 'shadow-md hover:shadow-lg'
         )}
       >
         <Search className="w-5 h-5 text-saffron absolute left-4" />
-        <input 
+        <input
           ref={inputRef}
-          type="text" 
+          type="text"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -66,11 +66,11 @@ export const SearchBar: React.FC = () => {
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder="Search bhajans, gods, or festivals..." 
+          placeholder="Search bhajans, gods, or festivals..."
           className="w-full h-14 bg-transparent pl-12 pr-12 outline-none text-darkBrown placeholder:text-darkBrown/40"
         />
         {query && (
-          <button 
+          <button
             onClick={() => setQuery('')}
             className="absolute right-4 p-1 rounded-full hover:bg-gray-100 text-gray-400"
           >
@@ -82,7 +82,7 @@ export const SearchBar: React.FC = () => {
       {/* Dropdown */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -90,7 +90,6 @@ export const SearchBar: React.FC = () => {
             className="absolute top-full left-0 right-0 bg-white border-t border-gray-100 rounded-b-2xl shadow-2xl overflow-hidden"
           >
             <div className="p-2 max-h-[60vh] overflow-y-auto">
-              
               {/* Typeahead Suggestions */}
               {query.length >= 2 ? (
                 <div>
@@ -100,7 +99,7 @@ export const SearchBar: React.FC = () => {
                     </div>
                   ) : suggestions.length > 0 ? (
                     suggestions.map((s, i) => (
-                      <button 
+                      <button
                         key={i}
                         onClick={() => handleSearch(s)}
                         className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-md text-left transition-colors"
@@ -124,15 +123,18 @@ export const SearchBar: React.FC = () => {
                         <span>Recent</span>
                       </div>
                       {recentSearches.map((r, i) => (
-                        <div key={i} className="flex items-center justify-between w-full hover:bg-gray-50 rounded-md group transition-colors">
-                          <button 
+                        <div
+                          key={i}
+                          className="flex items-center justify-between w-full hover:bg-gray-50 rounded-md group transition-colors"
+                        >
+                          <button
                             onClick={() => handleSearch(r)}
                             className="flex-1 flex items-center gap-3 p-3 text-left"
                           >
                             <Clock className="w-4 h-4 text-gray-400" />
                             <span className="text-darkBrown">{r}</span>
                           </button>
-                          <button 
+                          <button
                             onClick={() => removeSearch(r)}
                             className="p-3 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
                           >
@@ -147,11 +149,13 @@ export const SearchBar: React.FC = () => {
                   {trending.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between px-3 mb-2 text-xs font-bold text-saffron uppercase tracking-wider">
-                        <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Trending Now</span>
+                        <span className="flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3" /> Trending Now
+                        </span>
                       </div>
                       <div className="flex flex-wrap gap-2 p-2">
                         {trending.map((t, i) => (
-                          <button 
+                          <button
                             key={i}
                             onClick={() => handleSearch(t)}
                             className="px-3 py-1.5 bg-saffron/10 text-saffron hover:bg-saffron hover:text-white rounded-md text-sm font-medium transition-colors"

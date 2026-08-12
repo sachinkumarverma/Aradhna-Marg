@@ -9,7 +9,7 @@ import {
   seoSettingsSchema,
   analyticsSettingsSchema,
   advertisementSettingsSchema,
-  systemSettingsSchema,
+  systemSettingsSchema
 } from '@/validators/settings.validator';
 import { sendSuccess } from '@/responses/apiResponse';
 import { ValidationError } from '@/errors/appError';
@@ -20,7 +20,7 @@ async function updateSection(
   req: Request,
   res: Response,
   next: NextFunction,
-  successMsg: string,
+  successMsg: string
 ) {
   try {
     const parsed = schema.safeParse(req.body);
@@ -85,4 +85,3 @@ export class SettingsController {
 }
 
 export const settingsController = new SettingsController();
-

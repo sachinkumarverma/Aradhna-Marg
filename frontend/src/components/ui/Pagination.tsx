@@ -46,17 +46,20 @@ export function Pagination({
       </div>
 
       <div className="flex items-center gap-1 overflow-x-auto mx-auto sm:mx-4 hide-scrollbar">
-        <button 
+        <button
           disabled={page === 1}
           onClick={() => onPageChange(Math.max(1, page - 1))}
           className="w-8 h-8 flex-shrink-0 flex items-center justify-center text-gray-400 hover:text-orange-900 disabled:opacity-50 disabled:hover:text-gray-400"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
-        
-        {getPageNumbers().map((p, idx) => (
+
+        {getPageNumbers().map((p, idx) =>
           p === '...' ? (
-            <span key={`dots-${idx}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-sm font-medium">
+            <span
+              key={`dots-${idx}`}
+              className="w-8 h-8 flex items-center justify-center text-gray-400 text-sm font-medium"
+            >
               ...
             </span>
           ) : (
@@ -70,9 +73,9 @@ export function Pagination({
               {p}
             </button>
           )
-        ))}
+        )}
 
-        <button 
+        <button
           disabled={page === totalPages}
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           className="w-8 h-8 flex-shrink-0 flex items-center justify-center text-gray-400 hover:text-orange-900 disabled:opacity-50 disabled:hover:text-gray-400 transform rotate-180"
@@ -85,7 +88,7 @@ export function Pagination({
         <span className="hidden lg:inline">Rows per page</span>
         <div className="w-16 sm:w-18">
           <Select
-            options={limitOptions.map(l => ({ label: l.toString(), value: l.toString() }))}
+            options={limitOptions.map((l) => ({ label: l.toString(), value: l.toString() }))}
             value={limit.toString()}
             onChange={(val) => onLimitChange(Number(val))}
             searchable={false}

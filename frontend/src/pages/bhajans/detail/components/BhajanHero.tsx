@@ -43,7 +43,12 @@ export const BhajanHero: React.FC<BhajanHeroProps> = ({ title, godName, views, d
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10 h-9" leftIcon={<Share2 className="w-4 h-4" />}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-white/20 text-white hover:bg-white/10 h-9"
+            leftIcon={<Share2 className="w-4 h-4" />}
+          >
             Share
           </Button>
         </div>

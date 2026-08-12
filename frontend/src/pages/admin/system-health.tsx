@@ -1,6 +1,17 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Activity, CheckCircle2, XCircle, RefreshCw, Server, Database, Cloud, PlaySquare, Bot, Clock } from 'lucide-react';
+import {
+  Activity,
+  CheckCircle2,
+  XCircle,
+  RefreshCw,
+  Server,
+  Database,
+  Cloud,
+  PlaySquare,
+  Bot,
+  Clock
+} from 'lucide-react';
 import { apiClient } from '@api/client';
 import { format } from 'date-fns';
 
@@ -19,8 +30,22 @@ export const AdminSystemHealth: React.FC = () => {
     return <XCircle className="w-5 h-5 text-red-500" />;
   };
 
-  const ServiceCard = ({ title, icon: Icon, status, bgClassName = "bg-gradient-to-br from-blue-50 to-white", borderClassName = "border-blue-100" }: { title: string, icon: any, status?: string, bgClassName?: string, borderClassName?: string }) => (
-    <div className={`${bgClassName} p-5 rounded-md border ${borderClassName} shadow-sm flex items-center justify-between`}>
+  const ServiceCard = ({
+    title,
+    icon: Icon,
+    status,
+    bgClassName = 'bg-gradient-to-br from-blue-50 to-white',
+    borderClassName = 'border-blue-100'
+  }: {
+    title: string;
+    icon: any;
+    status?: string;
+    bgClassName?: string;
+    borderClassName?: string;
+  }) => (
+    <div
+      className={`${bgClassName} p-5 rounded-md border ${borderClassName} shadow-sm flex items-center justify-between`}
+    >
       <div className="flex items-center gap-3">
         <div className="p-2 bg-gray-50 rounded-md">
           <Icon className="w-5 h-5 text-gray-600" />
@@ -46,9 +71,11 @@ export const AdminSystemHealth: React.FC = () => {
             <Activity className="w-6 h-6 text-saffron" />
             SYSTEM HEALTH
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Read-only monitoring of all core services and application status.</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Read-only monitoring of all core services and application status.
+          </p>
         </div>
-        <button 
+        <button
           onClick={() => refetch()}
           disabled={isFetching}
           className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
@@ -65,22 +92,59 @@ export const AdminSystemHealth: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ServiceCard title="API Server" icon={Server} status={isLoading ? undefined : data?.api_status} bgClassName="bg-gradient-to-br from-blue-50 to-white" borderClassName="border-blue-100" />
-        <ServiceCard title="Supabase DB" icon={Database} status={isLoading ? undefined : data?.database_status} bgClassName="bg-gradient-to-br from-green-50 to-white" borderClassName="border-green-100" />
-        <ServiceCard title="Supabase Storage" icon={Cloud} status={isLoading ? undefined : data?.storage_status} bgClassName="bg-gradient-to-br from-orange-50 to-white" borderClassName="border-orange-100" />
-        <ServiceCard title="YouTube API" icon={PlaySquare} status={isLoading ? undefined : data?.youtube_api_status} bgClassName="bg-gradient-to-br from-red-50 to-white" borderClassName="border-red-100" />
-        <ServiceCard title="Groq AI" icon={Bot} status={isLoading ? undefined : data?.groq_ai_status} bgClassName="bg-gradient-to-br from-purple-50 to-white" borderClassName="border-purple-100" />
-        <ServiceCard title="Cron Jobs" icon={Clock} status={isLoading ? undefined : data?.cron_jobs_status} bgClassName="bg-gradient-to-br from-amber-50 to-white" borderClassName="border-amber-100" />
+        <ServiceCard
+          title="API Server"
+          icon={Server}
+          status={isLoading ? undefined : data?.api_status}
+          bgClassName="bg-gradient-to-br from-blue-50 to-white"
+          borderClassName="border-blue-100"
+        />
+        <ServiceCard
+          title="Supabase DB"
+          icon={Database}
+          status={isLoading ? undefined : data?.database_status}
+          bgClassName="bg-gradient-to-br from-green-50 to-white"
+          borderClassName="border-green-100"
+        />
+        <ServiceCard
+          title="Supabase Storage"
+          icon={Cloud}
+          status={isLoading ? undefined : data?.storage_status}
+          bgClassName="bg-gradient-to-br from-orange-50 to-white"
+          borderClassName="border-orange-100"
+        />
+        <ServiceCard
+          title="YouTube API"
+          icon={PlaySquare}
+          status={isLoading ? undefined : data?.youtube_api_status}
+          bgClassName="bg-gradient-to-br from-red-50 to-white"
+          borderClassName="border-red-100"
+        />
+        <ServiceCard
+          title="Groq AI"
+          icon={Bot}
+          status={isLoading ? undefined : data?.groq_ai_status}
+          bgClassName="bg-gradient-to-br from-purple-50 to-white"
+          borderClassName="border-purple-100"
+        />
+        <ServiceCard
+          title="Cron Jobs"
+          icon={Clock}
+          status={isLoading ? undefined : data?.cron_jobs_status}
+          bgClassName="bg-gradient-to-br from-amber-50 to-white"
+          borderClassName="border-amber-100"
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        
         {/* Last Checked */}
         <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-md border border-green-100 shadow-sm">
           <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Last Checked</h3>
           {data ? (
             <div>
-              <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{format(new Date(data.server_time), 'dd MMM yyyy')}</p>
+              <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">
+                {format(new Date(data.server_time), 'dd MMM yyyy')}
+              </p>
               <p className="text-gray-500">{format(new Date(data.server_time), 'h:mm:ss a')}</p>
             </div>
           ) : (
@@ -95,8 +159,16 @@ export const AdminSystemHealth: React.FC = () => {
             <div>
               <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{data.environment}</p>
               <div className="mt-1 space-y-0.5">
-                <p className="text-sm text-gray-500">Uptime: {Math.floor(data.uptime_seconds / 3600)}h {Math.floor((data.uptime_seconds % 3600) / 60)}m</p>
-                <p className="text-sm text-gray-500">Started: {format(new Date(new Date(data.server_time).getTime() - (data.uptime_seconds * 1000)), 'dd MMM, h:mm:ss a')}</p>
+                <p className="text-sm text-gray-500">
+                  Uptime: {Math.floor(data.uptime_seconds / 3600)}h {Math.floor((data.uptime_seconds % 3600) / 60)}m
+                </p>
+                <p className="text-sm text-gray-500">
+                  Started:{' '}
+                  {format(
+                    new Date(new Date(data.server_time).getTime() - data.uptime_seconds * 1000),
+                    'dd MMM, h:mm:ss a'
+                  )}
+                </p>
               </div>
             </div>
           ) : (
@@ -126,9 +198,7 @@ export const AdminSystemHealth: React.FC = () => {
             <div className="h-14 flex items-center text-gray-400">Loading...</div>
           )}
         </div>
-
       </div>
-
     </div>
   );
 };

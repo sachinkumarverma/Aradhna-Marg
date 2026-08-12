@@ -27,7 +27,7 @@ export class PuranService {
 
   public async update(id: string, data: any) {
     if (data.title && !data.slug) {
-        data.slug = randomUUID();
+      data.slug = randomUUID();
     }
     return puranRepository.update(id, data);
   }

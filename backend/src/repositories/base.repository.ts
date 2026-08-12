@@ -11,9 +11,9 @@ export class BaseRepository<T> implements IBaseRepository<T> {
   public async findAll(options?: { select?: string; order?: { column: string; ascending?: boolean } }): Promise<T[]> {
     const selectStr = options?.select || '*';
     let query = `SELECT ${selectStr} FROM ${this.tableName} WHERE deleted_at IS NULL`;
-    
+
     if (options?.order) {
-      const orderDir = options.order.ascending ?? true ? 'ASC' : 'DESC';
+      const orderDir = (options.order.ascending ?? true) ? 'ASC' : 'DESC';
       query += ` ORDER BY ${options.order.column} ${orderDir}`;
     }
 
@@ -22,12 +22,16 @@ export class BaseRepository<T> implements IBaseRepository<T> {
   }
 
   public async findById(id: string): Promise<T | null> {
-    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL LIMIT 1`, [id]);
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL LIMIT 1`, [
+      id
+    ]);
     return (rows[0] as unknown as T) || null;
   }
 
   public async findBySlug(slug: string): Promise<T | null> {
-    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE slug = $1 AND deleted_at IS NULL LIMIT 1`, [slug]);
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE slug = $1 AND deleted_at IS NULL LIMIT 1`, [
+      slug
+    ]);
     return (rows[0] as unknown as T) || null;
   }
 
@@ -35,7 +39,7 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     const keys = Object.keys(data);
     const values = Object.values(data);
     const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-    
+
     const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
     const { rows } = await db.query(query, values);
     return rows[0] as unknown as T;
@@ -44,10 +48,10 @@ export class BaseRepository<T> implements IBaseRepository<T> {
   public async update(id: string, data: Partial<T>): Promise<T> {
     const keys = Object.keys(data);
     const values = Object.values(data);
-    
+
     const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
     values.push(id); // ID is the last parameter
-    
+
     const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING *`;
     const { rows } = await db.query(query, values);
     return rows[0] as unknown as T;
@@ -58,12 +62,16 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     return true;
   }
 
-  public async paginate(page: number, limit: number, filters?: Record<string, any>): Promise<{ data: T[]; total: number; page: number; limit: number }> {
+  public async paginate(
+    page: number,
+    limit: number,
+    filters?: Record<string, any>
+  ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const offset = (page - 1) * limit;
-    
-    let whereClauses = ['deleted_at IS NULL'];
+
+    const whereClauses = ['deleted_at IS NULL'];
     const params: any[] = [];
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -74,7 +82,7 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     }
 
     const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-    
+
     const dataQuery = `SELECT * FROM ${this.tableName} ${whereStr} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
     const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} ${whereStr}`;
 
@@ -82,19 +90,19 @@ export class BaseRepository<T> implements IBaseRepository<T> {
       db.query(dataQuery, [...params, limit, offset]),
       db.query(countQuery, params)
     ]);
-    
+
     return {
       data: (dataResult.rows as unknown as T[]) || [],
       total: parseInt(countResult.rows[0].total, 10) || 0,
       page,
-      limit,
+      limit
     };
   }
 
-  public async search(queryText: string, options?: { select?: string, limit?: number }): Promise<T[]> {
+  public async search(queryText: string, options?: { select?: string; limit?: number }): Promise<T[]> {
     const selectStr = options?.select || '*';
     const limit = options?.limit || 20;
-    
+
     // Very basic fallback since full text search requires specific columns.
     const query = `
       SELECT ${selectStr} FROM ${this.tableName} 
@@ -103,7 +111,7 @@ export class BaseRepository<T> implements IBaseRepository<T> {
       )
       LIMIT $2
     `;
-    
+
     const { rows } = await db.query(query, [`%${queryText}%`, limit]);
     return rows as unknown as T[];
   }

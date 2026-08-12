@@ -42,7 +42,7 @@ class QueueManager {
       payload,
       status: 'PENDING',
       attempts: 0,
-      options,
+      options
     };
 
     if (!this.queues.has(queueName)) {
@@ -53,7 +53,7 @@ class QueueManager {
     logger.debug(`[ENQUEUED] Job ${job.id} to ${queueName}`);
 
     // Trigger processing asynchronously if not already running
-    this.processQueue(queueName).catch(err => logger.error({ err }, `Queue error ${queueName}`));
+    this.processQueue(queueName).catch((err) => logger.error({ err }, `Queue error ${queueName}`));
   }
 
   private async processQueue(queueName: string) {
@@ -68,8 +68,8 @@ class QueueManager {
       return;
     }
 
-    while (queue.some(j => j.status === 'PENDING')) {
-      const jobIndex = queue.findIndex(j => j.status === 'PENDING');
+    while (queue.some((j) => j.status === 'PENDING')) {
+      const jobIndex = queue.findIndex((j) => j.status === 'PENDING');
       if (jobIndex === -1) break;
 
       const job = queue[jobIndex];
@@ -81,13 +81,13 @@ class QueueManager {
         job.status = 'COMPLETED';
         logger.debug(`[JOB COMPLETED] ${job.id} in ${queueName}`);
         // Remove from queue in real scenario to prevent memory leak
-        queue.splice(jobIndex, 1); 
+        queue.splice(jobIndex, 1);
       } catch (error) {
         logger.error({ error }, `[JOB FAILED] ${job.id} in ${queueName} (Attempt ${job.attempts})`);
         if (job.attempts < (job.options.retryLimit || 0)) {
           job.status = 'PENDING';
           // Wait before retry
-          await new Promise(res => setTimeout(res, job.options.retryDelayMs));
+          await new Promise((res) => setTimeout(res, job.options.retryDelayMs));
         } else {
           job.status = 'FAILED';
           logger.error(`[JOB ABANDONED] ${job.id} exceeded retry limit.`);

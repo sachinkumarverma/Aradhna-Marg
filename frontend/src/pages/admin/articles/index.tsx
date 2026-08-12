@@ -32,7 +32,7 @@ export const AdminArticles: React.FC = () => {
   });
 
   const bulkMutation = useMutation({
-    mutationFn: async ({ ids, action }: { ids: string[], action: string }) => {
+    mutationFn: async ({ ids, action }: { ids: string[]; action: string }) => {
       await apiClient.post('/admin/articles/bulk', { ids, action });
     },
     onSuccess: (_, variables) => {
@@ -59,14 +59,24 @@ export const AdminArticles: React.FC = () => {
       accessor: (row: any) => (
         <div className="flex items-center gap-3">
           {row.media_files?.url ? (
-            <img src={row.media_files.url} alt="" className="w-12 h-12 object-cover rounded-md border border-gray-200 shrink-0" />
+            <img
+              src={row.media_files.url}
+              alt=""
+              className="w-12 h-12 object-cover rounded-md border border-gray-200 shrink-0"
+            />
           ) : (
-            <div className="w-12 h-12 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs shrink-0">No img</div>
+            <div className="w-12 h-12 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs shrink-0">
+              No img
+            </div>
           )}
           <div>
             <p className="font-bold text-gray-900 flex items-center gap-2">
               {row.title}
-              {row.featured && <span className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Featured</span>}
+              {row.featured && (
+                <span className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                  Featured
+                </span>
+              )}
             </p>
             {row.excerpt && <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.excerpt}</p>}
           </div>
@@ -85,12 +95,20 @@ export const AdminArticles: React.FC = () => {
       header: 'Status',
       className: 'text-center',
       accessor: (row: any) => (
-        <span className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-            row.status === 'PUBLISHED' ? 'bg-green-600 text-white' :
-            row.status === 'DRAFT' ? 'bg-amber-600 text-white' :
-              'bg-gray-500 text-white'
-          }`}>
-          {row.status === 'PUBLISHED' ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" strokeWidth={2.5} />}
+        <span
+          className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+            row.status === 'PUBLISHED'
+              ? 'bg-green-600 text-white'
+              : row.status === 'DRAFT'
+                ? 'bg-amber-600 text-white'
+                : 'bg-gray-500 text-white'
+          }`}
+        >
+          {row.status === 'PUBLISHED' ? (
+            <CheckCircle2 className="w-3 h-3" />
+          ) : (
+            <XCircle className="w-3 h-3" strokeWidth={2.5} />
+          )}
           {row.status}
         </span>
       )
@@ -101,7 +119,11 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Published',
-      accessor: (row: any) => <span className="text-sm text-slate-800 font-medium">{row.publish_date ? format(new Date(row.publish_date), 'MMM dd, yyyy') : '-'}</span>
+      accessor: (row: any) => (
+        <span className="text-sm text-slate-800 font-medium">
+          {row.publish_date ? format(new Date(row.publish_date), 'MMM dd, yyyy') : '-'}
+        </span>
+      )
     }
   ];
 
@@ -116,16 +138,18 @@ export const AdminArticles: React.FC = () => {
           <p className="text-sm text-gray-500 mt-1">Manage spiritual knowledge, stories, and lifestyle articles.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => navigate('/admin/articles/new')} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>Create Article</Button>
+          <Button
+            onClick={() => navigate('/admin/articles/new')}
+            variant="primary"
+            leftIcon={<Plus className="w-4 h-4" />}
+          >
+            Create Article
+          </Button>
         </div>
       </div>
 
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
-        <SearchInput
-          placeholder="Search articles..."
-          value={search}
-          onChange={setSearch}
-        />
+        <SearchInput placeholder="Search articles..." value={search} onChange={setSearch} />
         <div className="flex items-center gap-3">
           <Select
             value={statusFilter}
@@ -165,18 +189,19 @@ export const AdminArticles: React.FC = () => {
         />
       </div>
 
-      
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 overflow-hidden relative z-10">
-        <Pagination 
-          page={page} 
-          totalPages={totalPages} 
-          totalRecords={data?.meta?.total || 0} 
-          limit={limit} 
-          onPageChange={setPage} 
-          onLimitChange={(l) => { setLimit(l); setPage(1); }} 
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          totalRecords={data?.meta?.total || 0}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(l) => {
+            setLimit(l);
+            setPage(1);
+          }}
         />
       </div>
-    
 
       <Outlet />
     </div>

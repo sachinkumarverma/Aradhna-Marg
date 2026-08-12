@@ -6,7 +6,7 @@ import { NotFoundError } from '@/errors/appError';
 export class SettingsService {
   async getSettings(): Promise<Settings> {
     const settings = await settingsRepository.getSettings();
-    
+
     if (!settings) {
       // Return a default object if settings don't exist yet, or initialize them
       // In this system, since there should always be a singleton, we can either throw or create.
@@ -14,7 +14,7 @@ export class SettingsService {
       const initial = await settingsRepository.createInitialSettings({
         siteName: 'Aradhna Marg',
         defaultLanguage: 'en',
-        defaultTheme: 'light',
+        defaultTheme: 'light'
       });
       return initial;
     }
@@ -24,7 +24,7 @@ export class SettingsService {
 
   async updateSettings(updates: UpdateSettingsDTO): Promise<Settings> {
     const currentSettings = await settingsRepository.getSettings();
-    
+
     if (!currentSettings) {
       throw new NotFoundError('Settings not found');
     }

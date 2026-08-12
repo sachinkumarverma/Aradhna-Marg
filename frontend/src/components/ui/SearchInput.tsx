@@ -10,7 +10,13 @@ interface SearchInputProps {
   debounceMs?: number;
 }
 
-export const SearchInput: React.FC<SearchInputProps> = ({ value, onChange, placeholder = 'Search...', className, debounceMs = 300 }) => {
+export const SearchInput: React.FC<SearchInputProps> = ({
+  value,
+  onChange,
+  placeholder = 'Search...',
+  className,
+  debounceMs = 300
+}) => {
   const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
@@ -28,7 +34,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({ value, onChange, place
   }, [localValue, debounceMs, onChange, value]);
 
   return (
-    <div className={cn("relative group w-full sm:w-96", className)}>
+    <div className={cn('relative group w-full sm:w-96', className)}>
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-saffron transition-colors" />
       <input
         type="text"

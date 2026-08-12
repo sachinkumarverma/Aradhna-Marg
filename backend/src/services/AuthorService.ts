@@ -3,7 +3,14 @@ import { CreateAuthorDTO, UpdateAuthorDTO } from '@models/Author';
 import { NotFoundError } from '@/errors/appError';
 
 export class AuthorService {
-  async getAuthors(options: { search?: string, sort?: string, order?: 'asc' | 'desc', page?: number, limit?: number, status?: string }) {
+  async getAuthors(options: {
+    search?: string;
+    sort?: string;
+    order?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+    status?: string;
+  }) {
     return authorRepository.findAll(options);
   }
 

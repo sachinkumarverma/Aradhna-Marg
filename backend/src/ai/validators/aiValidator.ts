@@ -24,7 +24,7 @@ export class AIValidator {
         return schema.parse(parsedObject);
       } catch (error: any) {
         logger.warn(`AI JSON Validation failed on attempt ${currentAttempt + 1}`, error.message);
-        
+
         if (currentAttempt >= maxRetries) {
           throw new Error('AI failed to produce valid JSON after maximum retries.');
         }

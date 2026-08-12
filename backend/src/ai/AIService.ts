@@ -8,7 +8,7 @@ const SeoOutputSchema = z.object({
   seoTitle: z.string(),
   seoDescription: z.string(),
   keywords: z.array(z.string()),
-  tags: z.array(z.string()),
+  tags: z.array(z.string())
 });
 
 type SeoOutput = z.infer<typeof SeoOutputSchema>;
@@ -27,19 +27,18 @@ export class AIService {
   /**
    * Generates SEO metadata for a Bhajan.
    */
-  public async generateSEO(title: string, description: string, categoryName?: string, godName?: string): Promise<SeoOutput> {
+  public async generateSEO(
+    title: string,
+    description: string,
+    categoryName?: string,
+    godName?: string
+  ): Promise<SeoOutput> {
     const systemPrompt = generateSeoSystemPrompt;
     const userPrompt = buildGenerateSeoUserPrompt(title, description, categoryName, godName);
 
     const rawOutput = await this.provider.generate(systemPrompt, userPrompt, { jsonMode: true });
 
-    return await AIValidator.validateOrRepair(
-      this.provider,
-      SeoOutputSchema,
-      rawOutput,
-      systemPrompt,
-      userPrompt
-    );
+    return await AIValidator.validateOrRepair(this.provider, SeoOutputSchema, rawOutput, systemPrompt, userPrompt);
   }
 
   // Future Methods:

@@ -5,12 +5,12 @@ export const STORAGE_KEYS = {
   FONT_SIZE: 'bhajan_font_size',
   READING_MODE: 'bhajan_reading_mode',
   RECENT_SEARCHES: 'recent_searches',
-  LANGUAGE: 'language',
+  LANGUAGE: 'language'
 } as const;
 
 class StorageServiceImpl {
   // --- Authentication (sessionStorage) ---
-  
+
   setToken(token: string) {
     sessionStorage.setItem(STORAGE_KEYS.TOKEN, token);
   }
@@ -46,7 +46,7 @@ class StorageServiceImpl {
   }
 
   // --- User Preferences (localStorage) ---
-  
+
   setTheme(theme: string) {
     localStorage.setItem(STORAGE_KEYS.THEME, theme);
   }
@@ -84,7 +84,7 @@ class StorageServiceImpl {
       return [];
     }
   }
-  
+
   setLanguage(language: string) {
     localStorage.setItem(STORAGE_KEYS.LANGUAGE, language);
   }

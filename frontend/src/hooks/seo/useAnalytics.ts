@@ -27,19 +27,19 @@ export const useAnalytics = () => {
 
   // Pre-configured core platform events
   const trackBhajanView = (bhajanId: string, title: string) => {
-    trackEvent({ eventName: 'view_bhajan', properties: { bhajan_id: bhajanId, bhajan_title: title }});
+    trackEvent({ eventName: 'view_bhajan', properties: { bhajan_id: bhajanId, bhajan_title: title } });
   };
 
   const trackPDFDownload = (bhajanId: string, title: string) => {
-    trackEvent({ eventName: 'download_pdf', properties: { bhajan_id: bhajanId, bhajan_title: title }});
+    trackEvent({ eventName: 'download_pdf', properties: { bhajan_id: bhajanId, bhajan_title: title } });
   };
 
   const trackReadingModeToggle = (enabled: boolean) => {
-    trackEvent({ eventName: 'toggle_reading_mode', properties: { enabled }});
+    trackEvent({ eventName: 'toggle_reading_mode', properties: { enabled } });
   };
 
   const trackSearch = (query: string, resultsCount: number) => {
-    trackEvent({ eventName: 'search', properties: { search_term: query, results_count: resultsCount }});
+    trackEvent({ eventName: 'search', properties: { search_term: query, results_count: resultsCount } });
   };
 
   return {

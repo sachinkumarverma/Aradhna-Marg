@@ -12,12 +12,14 @@ class SearchRepository {
     const { query, filters, sort, page = 1, limit = 20 } = options;
     const offset = (page - 1) * limit;
 
-    let whereClauses = [`status = 'PUBLISHED'`];
+    const whereClauses = [`status = 'PUBLISHED'`];
     const queryParams: any[] = [];
 
     if (query?.trim()) {
       queryParams.push(`%${query.trim()}%`);
-      whereClauses.push(`(title ILIKE $${queryParams.length} OR hindi_title ILIKE $${queryParams.length} OR content ILIKE $${queryParams.length})`);
+      whereClauses.push(
+        `(title ILIKE $${queryParams.length} OR hindi_title ILIKE $${queryParams.length} OR content ILIKE $${queryParams.length})`
+      );
     }
 
     if (filters?.hasPdf) {
@@ -31,10 +33,18 @@ class SearchRepository {
 
     let orderStr = 'ORDER BY created_at DESC';
     switch (sort) {
-      case 'NEWEST': orderStr = 'ORDER BY published_at DESC'; break;
-      case 'OLDEST': orderStr = 'ORDER BY published_at ASC'; break;
-      case 'VIEWS':  orderStr = 'ORDER BY views DESC'; break;
-      case 'POPULARITY': orderStr = 'ORDER BY popularity_score DESC'; break;
+      case 'NEWEST':
+        orderStr = 'ORDER BY published_at DESC';
+        break;
+      case 'OLDEST':
+        orderStr = 'ORDER BY published_at ASC';
+        break;
+      case 'VIEWS':
+        orderStr = 'ORDER BY views DESC';
+        break;
+      case 'POPULARITY':
+        orderStr = 'ORDER BY popularity_score DESC';
+        break;
     }
 
     const dataQuery = `
@@ -58,10 +68,11 @@ class SearchRepository {
   }
 
   public async logSearch(query: string, resultCount: number, metadata?: any): Promise<void> {
-    await db.query(
-      `INSERT INTO search_logs (search_query, results_count, metadata) VALUES ($1, $2, $3)`,
-      [query, resultCount, JSON.stringify(metadata || {})]
-    );
+    await db.query(`INSERT INTO search_logs (search_query, results_count, metadata) VALUES ($1, $2, $3)`, [
+      query,
+      resultCount,
+      JSON.stringify(metadata || {})
+    ]);
   }
 
   public async getTrendingSearches(): Promise<string[]> {

@@ -6,7 +6,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Missing Supabase environment variables: SUPABASE_URL and SUPABASE_ANON_KEY must be set");
+  throw new Error('Missing Supabase environment variables: SUPABASE_URL and SUPABASE_ANON_KEY must be set');
 }
 
 // Initialize Supabase client
@@ -32,22 +32,20 @@ export async function uploadBase64Image(base64Str: string): Promise<string> {
     const fileName = `uploads/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
 
     const bucketName = process.env.SUPABASE_STORAGE_BUCKET || 'aradhna-images';
-    
-    const { data, error } = await supabase.storage
-      .from(bucketName)
-      .upload(fileName, buffer, {
-        contentType: mimeType,
-        upsert: false
-      });
+
+    const { data, error } = await supabase.storage.from(bucketName).upload(fileName, buffer, {
+      contentType: mimeType,
+      upsert: false
+    });
 
     if (error) {
       console.error('Supabase storage upload error:', error);
       return base64Str; // Fallback to storing base64 if upload fails
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucketName)
-      .getPublicUrl(fileName);
+    const {
+      data: { publicUrl }
+    } = supabase.storage.from(bucketName).getPublicUrl(fileName);
 
     return publicUrl;
   } catch (error) {

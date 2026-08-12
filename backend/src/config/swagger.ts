@@ -7,24 +7,24 @@ export const swaggerConfig = {
       description: 'API documentation for the production-grade Aradhna Marg.',
       contact: {
         name: 'API Support',
-        url: 'https://bhajanplatform.com',
-      },
+        url: 'https://bhajanplatform.com'
+      }
     },
     servers: [
       {
         url: '/api/v1',
-        description: 'Development Server',
-      },
+        description: 'Development Server'
+      }
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-      },
-    },
+          bearerFormat: 'JWT'
+        }
+      }
+    }
   },
-  apis: ['./src/routes/*.ts'], // Future endpoints will be documented here
+  apis: ['./src/routes/*.ts'] // Future endpoints will be documented here
 };

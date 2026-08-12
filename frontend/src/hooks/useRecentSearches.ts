@@ -17,9 +17,9 @@ export const useRecentSearches = () => {
     const cleanTerm = term.trim();
     if (!cleanTerm) return;
 
-    setRecentSearches(prev => {
+    setRecentSearches((prev) => {
       // Remove if it exists to push to front
-      const filtered = prev.filter(t => t.toLowerCase() !== cleanTerm.toLowerCase());
+      const filtered = prev.filter((t) => t.toLowerCase() !== cleanTerm.toLowerCase());
       const updated = [cleanTerm, ...filtered].slice(0, MAX_RECENT);
       StorageService.setRecentSearches(updated);
       return updated;
@@ -32,8 +32,8 @@ export const useRecentSearches = () => {
   };
 
   const removeSearch = (term: string) => {
-    setRecentSearches(prev => {
-      const updated = prev.filter(t => t !== term);
+    setRecentSearches((prev) => {
+      const updated = prev.filter((t) => t !== term);
       StorageService.setRecentSearches(updated);
       return updated;
     });

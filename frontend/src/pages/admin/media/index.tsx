@@ -4,9 +4,17 @@ import { SearchInput } from '@components/ui/SearchInput';
 import { apiClient } from '@api/client';
 import toast from 'react-hot-toast';
 import {
-  Folder, Image as ImageIcon, FileText,
-  UploadCloud, Trash2, Download, Copy, Grid, List,
-  ChevronRight, FolderPlus
+  Folder,
+  Image as ImageIcon,
+  FileText,
+  UploadCloud,
+  Trash2,
+  Download,
+  Copy,
+  Grid,
+  List,
+  ChevronRight,
+  FolderPlus
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
@@ -29,7 +37,9 @@ export const AdminMedia = () => {
   const { data: files = [], isLoading: loadingFiles } = useQuery({
     queryKey: ['media-files', currentFolderId, search],
     queryFn: async () => {
-      const res = await apiClient.get('/admin/media/files', { params: { folderId: currentFolderId || undefined, search: search || undefined } });
+      const res = await apiClient.get('/admin/media/files', {
+        params: { folderId: currentFolderId || undefined, search: search || undefined }
+      });
       return res.data.data;
     }
   });
@@ -54,13 +64,13 @@ export const AdminMedia = () => {
 
   // Dropzone Setup
   const onDrop = (acceptedFiles: File[]) => {
-    acceptedFiles.forEach(file => uploadMutation.mutate(file));
+    acceptedFiles.forEach((file) => uploadMutation.mutate(file));
   };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   // Delete Mutation
   const deleteMutation = useMutation({
-    mutationFn: async ({ id, type }: { id: string, type: 'file' | 'folder' }) => {
+    mutationFn: async ({ id, type }: { id: string; type: 'file' | 'folder' }) => {
       if (type === 'file') {
         await apiClient.delete(`/admin/media/files/${id}`);
       } else {
@@ -111,14 +121,12 @@ export const AdminMedia = () => {
       {/* Action Bar */}
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md border border-blue-100 shadow-sm flex flex-wrap gap-4 justify-between items-center">
         <div className="flex items-center gap-4 flex-1 min-w-[300px]">
-          <SearchInput
-            placeholder="Search files..."
-            value={search}
-            onChange={setSearch}
-            className="flex-1 max-w-md"
-          />
+          <SearchInput placeholder="Search files..." value={search} onChange={setSearch} className="flex-1 max-w-md" />
 
-          <button onClick={handleCreateFolder} className="px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50 flex items-center gap-2">
+          <button
+            onClick={handleCreateFolder}
+            className="px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50 flex items-center gap-2"
+          >
             <FolderPlus className="w-4 h-4" /> New Folder
           </button>
         </div>
@@ -141,7 +149,9 @@ export const AdminMedia = () => {
 
       {/* Breadcrumbs */}
       <div className="flex items-center gap-2 text-sm text-gray-600">
-        <button onClick={() => setCurrentFolderId(null)} className="hover:text-saffron">Root</button>
+        <button onClick={() => setCurrentFolderId(null)} className="hover:text-saffron">
+          Root
+        </button>
         {currentFolderId && (
           <>
             <ChevronRight className="w-4 h-4" />
@@ -153,8 +163,9 @@ export const AdminMedia = () => {
       {/* Upload Zone */}
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-md p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-saffron bg-saffron/5' : 'border-gray-300 hover:border-gray-400 bg-gray-50'
-          }`}
+        className={`border-2 border-dashed rounded-md p-8 text-center cursor-pointer transition-colors ${
+          isDragActive ? 'border-saffron bg-saffron/5' : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+        }`}
       >
         <input {...getInputProps()} />
         <UploadCloud className={`w-10 h-10 mx-auto mb-3 ${isDragActive ? 'text-saffron' : 'text-gray-400'}`} />
@@ -182,7 +193,10 @@ export const AdminMedia = () => {
                       <span className="font-medium text-gray-900 truncate">{folder.name}</span>
                     </div>
                     <button
-                      onClick={(e) => { e.stopPropagation(); deleteMutation.mutate({ id: folder.id, type: 'folder' }); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteMutation.mutate({ id: folder.id, type: 'folder' });
+                      }}
                       className="p-1 text-red-500 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <Trash2 className="w-4 h-4" strokeWidth={2.5} />
@@ -201,27 +215,47 @@ export const AdminMedia = () => {
               {viewMode === 'grid' ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {files.map((file: any) => (
-                    <div key={file.id} className="group bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-md overflow-hidden hover:shadow-md transition-shadow relative">
+                    <div
+                      key={file.id}
+                      className="group bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-md overflow-hidden hover:shadow-md transition-shadow relative"
+                    >
                       <div className="aspect-square bg-gray-100 flex items-center justify-center p-2 relative">
                         {file.thumbnailUrl ? (
-                          <img src={file.thumbnailUrl} alt={file.fileName} className="w-full h-full object-cover rounded" />
+                          <img
+                            src={file.thumbnailUrl}
+                            alt={file.fileName}
+                            className="w-full h-full object-cover rounded"
+                          />
                         ) : (
                           <FileText className="w-12 h-12 text-gray-400" />
                         )}
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <button onClick={() => copyUrl(file.url)} className="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full">
+                          <button
+                            onClick={() => copyUrl(file.url)}
+                            className="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full"
+                          >
                             <Copy className="w-4 h-4" />
                           </button>
-                          <a href={file.url} target="_blank" download className="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full">
+                          <a
+                            href={file.url}
+                            target="_blank"
+                            download
+                            className="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full"
+                          >
                             <Download className="w-4 h-4" />
                           </a>
-                          <button onClick={() => deleteMutation.mutate({ id: file.id, type: 'file' })} className="p-2 bg-red-500/80 hover:bg-red-500 text-white rounded-full">
+                          <button
+                            onClick={() => deleteMutation.mutate({ id: file.id, type: 'file' })}
+                            className="p-2 bg-red-500/80 hover:bg-red-500 text-white rounded-full"
+                          >
                             <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                           </button>
                         </div>
                       </div>
                       <div className="p-3">
-                        <p className="font-medium text-gray-900 text-sm truncate" title={file.fileName}>{file.fileName}</p>
+                        <p className="font-medium text-gray-900 text-sm truncate" title={file.fileName}>
+                          {file.fileName}
+                        </p>
                         <p className="text-xs text-gray-500 mt-1">{(file.sizeBytes / 1024 / 1024).toFixed(2)} MB</p>
                       </div>
                     </div>
@@ -247,16 +281,26 @@ export const AdminMedia = () => {
                             ) : (
                               <FileText className="w-8 h-8 text-gray-400" />
                             )}
-                            <span className="font-medium text-gray-900 truncate max-w-[200px] sm:max-w-xs">{file.fileName}</span>
+                            <span className="font-medium text-gray-900 truncate max-w-[200px] sm:max-w-xs">
+                              {file.fileName}
+                            </span>
                           </td>
                           <td className="px-4 py-3 text-gray-500">{(file.sizeBytes / 1024 / 1024).toFixed(2)} MB</td>
-                          <td className="px-4 py-3 text-slate-800 font-medium">{new Date(file.createdAt).toLocaleDateString()}</td>
+                          <td className="px-4 py-3 text-slate-800 font-medium">
+                            {new Date(file.createdAt).toLocaleDateString()}
+                          </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex justify-end gap-2">
-                              <button onClick={() => copyUrl(file.url)} className="p-1.5 text-gray-500 hover:text-saffron hover:bg-saffron/10 rounded">
+                              <button
+                                onClick={() => copyUrl(file.url)}
+                                className="p-1.5 text-gray-500 hover:text-saffron hover:bg-saffron/10 rounded"
+                              >
                                 <Copy className="w-4 h-4" />
                               </button>
-                              <button onClick={() => deleteMutation.mutate({ id: file.id, type: 'file' })} className="p-1.5 text-red-500 hover:text-red-600 hover:bg-red-50 rounded">
+                              <button
+                                onClick={() => deleteMutation.mutate({ id: file.id, type: 'file' })}
+                                className="p-1.5 text-red-500 hover:text-red-600 hover:bg-red-50 rounded"
+                              >
                                 <Trash2 className="w-4 h-4" strokeWidth={2.5} />
                               </button>
                             </div>

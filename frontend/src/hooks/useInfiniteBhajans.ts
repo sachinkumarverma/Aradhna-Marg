@@ -17,6 +17,6 @@ export const useInfiniteBhajans = (collectionType: string, filters: any = {}) =>
         return lastPage.meta.currentPage + 1;
       }
       return undefined;
-    },
+    }
   });
 };

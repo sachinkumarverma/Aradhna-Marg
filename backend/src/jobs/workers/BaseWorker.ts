@@ -5,7 +5,7 @@ import { logger } from '@utils/logger';
 export abstract class BaseWorker {
   protected isRunning: boolean = false;
   private workerInterval: NodeJS.Timeout | null = null;
-  
+
   constructor(
     protected queue: IQueueService,
     protected jobType: JobType,
@@ -16,7 +16,7 @@ export abstract class BaseWorker {
     if (this.isRunning) return;
     this.isRunning = true;
     logger.info(`[Worker] Started polling for ${this.jobType}`);
-    
+
     this.workerInterval = setInterval(() => this.poll(), this.pollIntervalMs);
   }
 
@@ -35,9 +35,8 @@ export abstract class BaseWorker {
       if (!job) return; // No jobs available
 
       logger.info(`[Worker] Processing ${this.jobType} job: ${job.id}`);
-      
+
       await this.processWithRetry(job);
-      
     } catch (error) {
       logger.error({ error }, `[Worker] Uncaught Queue Exception`);
     }
@@ -46,10 +45,10 @@ export abstract class BaseWorker {
   // Wrapper for processing with Error boundaries
   protected async processWithRetry(job: IJobPayload): Promise<void> {
     try {
-        await this.process(job);
-        await this.queue.ack(job.id);
+      await this.process(job);
+      await this.queue.ack(job.id);
     } catch (error: any) {
-        await this.queue.fail(job.id, error);
+      await this.queue.fail(job.id, error);
     }
   }
 

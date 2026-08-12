@@ -26,7 +26,7 @@ cronManager.register({
       } catch (e) {
         // Ignore table not found
       }
-      
+
       if (!settings?.youtube_channel_id) {
         logger.warn('Cron skipped: No YouTube Channel ID configured in settings.');
         return;

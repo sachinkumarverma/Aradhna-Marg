@@ -38,7 +38,7 @@ app.use(base64UploadMiddleware);
 const trimStrings = (obj: any): any => {
   if (typeof obj === 'string') return obj.trim();
   if (obj !== null && typeof obj === 'object') {
-    Object.keys(obj).forEach(key => {
+    Object.keys(obj).forEach((key) => {
       obj[key] = trimStrings(obj[key]);
     });
   }
@@ -54,21 +54,24 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Logging Middleware
 app.use(
-  morgan((tokens, req, res) => {
-    return [
-      `[${tokens.date(req, res, 'iso')}]`,
-      tokens['remote-addr'](req, res),
-      `ID:${req.headers['x-request-id']}`,
-      tokens.method(req, res),
-      tokens.url(req, res),
-      tokens.status(req, res),
-      `${tokens['response-time'](req, res)}ms`,
-    ].join(' ');
-  }, {
-    stream: {
-      write: (message: string) => logger.info(message.trim()),
+  morgan(
+    (tokens, req, res) => {
+      return [
+        `[${tokens.date(req, res, 'iso')}]`,
+        tokens['remote-addr'](req, res),
+        `ID:${req.headers['x-request-id']}`,
+        tokens.method(req, res),
+        tokens.url(req, res),
+        tokens.status(req, res),
+        `${tokens['response-time'](req, res)}ms`
+      ].join(' ');
     },
-  })
+    {
+      stream: {
+        write: (message: string) => logger.info(message.trim())
+      }
+    }
+  )
 );
 
 // Public SEO Files (robots.txt, sitemap.xml)

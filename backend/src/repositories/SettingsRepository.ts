@@ -53,7 +53,7 @@ export class SettingsRepository {
       enableCache: row.enable_cache,
       enablePdfGeneration: row.enable_pdf_generation,
       createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      updatedAt: row.updated_at
     };
   }
 
@@ -104,7 +104,7 @@ export class SettingsRepository {
     if (dto.enableComments !== undefined) dbData.enable_comments = dto.enableComments;
     if (dto.enableCache !== undefined) dbData.enable_cache = dto.enableCache;
     if (dto.enablePdfGeneration !== undefined) dbData.enable_pdf_generation = dto.enablePdfGeneration;
-    
+
     dbData.updated_at = new Date().toISOString();
     return dbData;
   }
@@ -121,7 +121,7 @@ export class SettingsRepository {
     const values = Object.values(dbData);
     const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
     values.push(id);
-    
+
     const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING *`;
     const { rows } = await db.query(query, values);
 
@@ -135,7 +135,7 @@ export class SettingsRepository {
     const keys = Object.keys(dbData);
     const values = Object.values(dbData);
     const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-    
+
     const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
     const { rows } = await db.query(query, values);
 

@@ -9,14 +9,14 @@ export const validateRequest = (schema: ZodSchema) => {
         body: req.body,
         query: req.query,
         params: req.params,
-        headers: req.headers,
+        headers: req.headers
       });
       next();
     } catch (error) {
       if (error instanceof ZodError) {
         const errors = error.issues.map((e: any) => ({
           field: e.path.join('.'),
-          message: e.message,
+          message: e.message
         }));
         next(new ValidationError('Validation failed', errors));
       } else {

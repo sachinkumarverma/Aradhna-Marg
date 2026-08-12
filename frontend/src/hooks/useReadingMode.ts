@@ -6,7 +6,7 @@ export const useReadingMode = () => {
   const [isDark, setIsDark] = useState(() => StorageService.getReadingMode());
 
   const toggleReadingMode = () => setIsReadingMode(!isReadingMode);
-  
+
   const toggleDarkMode = () => {
     setIsDark(!isDark);
     StorageService.setReadingMode(!isDark);

@@ -8,7 +8,11 @@ export interface IBaseRepository<T> {
   create(data: Partial<T>): Promise<T>;
   update(id: string, data: Partial<T>): Promise<T>;
   delete(id: string): Promise<boolean>;
-  paginate(page: number, limit: number, filters?: any): Promise<{ data: T[]; total: number; page: number; limit: number }>;
+  paginate(
+    page: number,
+    limit: number,
+    filters?: any
+  ): Promise<{ data: T[]; total: number; page: number; limit: number }>;
   search(query: string, options?: any): Promise<T[]>;
 }
 

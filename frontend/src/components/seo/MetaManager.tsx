@@ -33,7 +33,7 @@ export const MetaManager: React.FC<MetaManagerProps> = ({
       <meta name="description" content={description} />
       {keywords && keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
       <meta name="robots" content={robots} />
-      
+
       {/* Canonical URL */}
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 

@@ -7,7 +7,7 @@ async function processObject(obj: any): Promise<void> {
 
   for (const key of Object.keys(obj)) {
     const value = obj[key];
-    
+
     if (typeof value === 'string' && value.startsWith('data:image/')) {
       // It's a base64 image string, let's upload it
       obj[key] = await uploadBase64Image(value);

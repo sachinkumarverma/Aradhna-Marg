@@ -9,7 +9,7 @@ export enum JobType {
   CACHE_CLEANUP = 'CACHE_CLEANUP',
   ANALYTICS_AGGREGATION = 'ANALYTICS_AGGREGATION',
   HEALTH_CHECK = 'HEALTH_CHECK',
-  BACKUP = 'BACKUP',
+  BACKUP = 'BACKUP'
 }
 
 export enum JobState {
@@ -19,13 +19,13 @@ export enum JobState {
   FAILED = 'FAILED',
   RETRYING = 'RETRYING',
   CANCELLED = 'CANCELLED',
-  PAUSED = 'PAUSED',
+  PAUSED = 'PAUSED'
 }
 
 export enum JobPriority {
   HIGH = 1,
   MEDIUM = 2,
-  LOW = 3,
+  LOW = 3
 }
 
 export interface IJobPayload {
@@ -53,5 +53,5 @@ export enum PlatformEvent {
   SEARCH_INDEXED = 'SEARCH_INDEXED',
   COLLECTION_UPDATED = 'COLLECTION_UPDATED',
   SYNC_COMPLETED = 'SYNC_COMPLETED',
-  SYNC_FAILED = 'SYNC_FAILED',
+  SYNC_FAILED = 'SYNC_FAILED'
 }

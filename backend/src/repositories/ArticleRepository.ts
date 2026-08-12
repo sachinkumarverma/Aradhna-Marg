@@ -21,7 +21,7 @@ export class ArticleRepository extends BaseRepository<any> {
     const { page, limit, search, status, category, author, featured, sort } = params;
     const offset = (page - 1) * limit;
 
-    let whereClauses = ['a.deleted_at IS NULL'];
+    const whereClauses = ['a.deleted_at IS NULL'];
     const queryParams: any[] = [];
 
     if (status) {
@@ -48,7 +48,7 @@ export class ArticleRepository extends BaseRepository<any> {
     }
 
     const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-    
+
     let orderStr = 'ORDER BY a.created_at DESC';
     if (sort === 'oldest') orderStr = 'ORDER BY a.created_at ASC';
     else if (sort === 'views') orderStr = 'ORDER BY a.view_count DESC';
@@ -67,7 +67,7 @@ export class ArticleRepository extends BaseRepository<any> {
       ${orderStr} 
       LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
     `;
-    
+
     const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} a ${whereStr}`;
 
     const [dataResult, countResult] = await Promise.all([
@@ -111,19 +111,25 @@ export class ArticleRepository extends BaseRepository<any> {
 
   public async bulkAction(ids: string[], action: string) {
     if (ids.length === 0) return;
-    
+
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(',');
-    
+
     if (action === 'DELETE') {
       await db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id IN (${placeholders})`, ids);
     } else if (action === 'FEATURE' || action === 'UNFEATURE') {
       const featured = action === 'FEATURE';
-      await db.query(`UPDATE ${this.tableName} SET featured = $1 WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`, [featured, ...ids]);
+      await db.query(
+        `UPDATE ${this.tableName} SET featured = $1 WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`,
+        [featured, ...ids]
+      );
     } else {
       let status = 'DRAFT';
       if (action === 'PUBLISH') status = 'PUBLISHED';
       if (action === 'ARCHIVE') status = 'ARCHIVED';
-      await db.query(`UPDATE ${this.tableName} SET status = $1 WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`, [status, ...ids]);
+      await db.query(
+        `UPDATE ${this.tableName} SET status = $1 WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`,
+        [status, ...ids]
+      );
     }
   }
 }

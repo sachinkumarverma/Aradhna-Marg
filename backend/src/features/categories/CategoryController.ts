@@ -13,7 +13,7 @@ export class CategoryController {
         sort: sort as string,
         order: order as 'asc' | 'desc',
         page: page ? parseInt(page as string, 10) : undefined,
-        limit: limit ? parseInt(limit as string, 10) : undefined,
+        limit: limit ? parseInt(limit as string, 10) : undefined
       });
       return sendSuccess(res, 'Categories retrieved successfully', result.data, { total: result.total });
     } catch (error) {

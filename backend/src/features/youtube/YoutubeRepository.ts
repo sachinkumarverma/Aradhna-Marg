@@ -4,11 +4,19 @@ import { YoutubeVideo } from '@models/YoutubeVideo';
 export class YoutubeVideoRepository {
   private readonly tableName = 'youtube_videos';
 
-  async getVideos(search?: string, status?: string, type?: string, sortBy = 'published_at', sortOrder = 'desc', page = 1, limit = 20) {
+  async getVideos(
+    search?: string,
+    status?: string,
+    type?: string,
+    sortBy = 'published_at',
+    sortOrder = 'desc',
+    page = 1,
+    limit = 20
+  ) {
     if (type) {
       // For type filtering, fetch all matching videos without limit, filter them in memory, then paginate
       const params: any[] = [];
-      let whereClauses: string[] = [];
+      const whereClauses: string[] = [];
 
       if (search) {
         whereClauses.push(`title ILIKE $${params.length + 1}`);
@@ -24,8 +32,8 @@ export class YoutubeVideoRepository {
 
       const allDataQuery = `SELECT * FROM ${this.tableName} ${whereStr} ${orderByStr}`;
       const result = await db.query(allDataQuery, params);
-      
-      let filtered = result.rows.filter(v => {
+
+      let filtered = result.rows.filter((v) => {
         const str = (v.duration || '').toLowerCase();
         let secs = 0;
         const hMatch = str.match(/(\d+)h/);
@@ -39,7 +47,7 @@ export class YoutubeVideoRepository {
         if (type === 'VIDEO') return !isShort;
         return true;
       });
-      
+
       const total = filtered.length;
       const offset = (page - 1) * limit;
       filtered = filtered.slice(offset, offset + limit);
@@ -47,7 +55,7 @@ export class YoutubeVideoRepository {
     }
 
     const params: any[] = [];
-    let whereClauses: string[] = [];
+    const whereClauses: string[] = [];
 
     if (search) {
       whereClauses.push(`title ILIKE $${params.length + 1}`);
@@ -88,7 +96,7 @@ export class YoutubeVideoRepository {
         `SELECT COUNT(*) as total FROM ${this.tableName} WHERE import_status = 'IGNORED'`
       ];
 
-      const results = await Promise.all(queries.map(q => db.query(q)));
+      const results = await Promise.all(queries.map((q) => db.query(q)));
       return {
         total: parseInt(results[0].rows[0].total, 10) || 0,
         linked: parseInt(results[1].rows[0].total, 10) || 0,
@@ -105,26 +113,31 @@ export class YoutubeVideoRepository {
 
   async upsertVideos(videos: Partial<YoutubeVideo>[]) {
     if (videos.length === 0) return { imported: 0, updated: 0 };
-    
-    const dbVideos = videos.map(v => this.mapToDb(v));
-    const incomingIds = dbVideos.map(v => v.youtube_video_id);
-    
+
+    const dbVideos = videos.map((v) => this.mapToDb(v));
+    const incomingIds = dbVideos.map((v) => v.youtube_video_id);
+
     const placeholders = incomingIds.map((_, i) => `$${i + 1}`).join(',');
-    let existingIds = new Set<string>();
-    
+    const existingIds = new Set<string>();
+
     try {
-      const existingResult = await db.query(`SELECT youtube_video_id FROM ${this.tableName} WHERE youtube_video_id IN (${placeholders})`, incomingIds);
-      existingResult.rows.forEach(r => existingIds.add(r.youtube_video_id));
+      const existingResult = await db.query(
+        `SELECT youtube_video_id FROM ${this.tableName} WHERE youtube_video_id IN (${placeholders})`,
+        incomingIds
+      );
+      existingResult.rows.forEach((r) => existingIds.add(r.youtube_video_id));
     } catch (error: any) {
       if (error.code === '42P01' || error.message?.includes('does not exist')) {
-        throw new Error('Database table "youtube_videos" is missing. Please run the SQL migration in your PostgreSQL database to create it.');
+        throw new Error(
+          'Database table "youtube_videos" is missing. Please run the SQL migration in your PostgreSQL database to create it.'
+        );
       }
       throw error;
     }
-    
+
     let newCount = 0;
     let updateCount = 0;
-    
+
     for (const v of dbVideos) {
       if (existingIds.has(v.youtube_video_id)) {
         updateCount++;
@@ -132,7 +145,7 @@ export class YoutubeVideoRepository {
         newCount++;
       }
     }
-    
+
     // We can use an UPSERT query for each video or a massive batch upsert.
     for (const v of dbVideos) {
       const query = `
@@ -157,12 +170,24 @@ export class YoutubeVideoRepository {
           last_synced = EXCLUDED.last_synced
       `;
       const params = [
-        v.youtube_video_id, v.title, v.description, v.thumbnail, v.youtube_url, v.published_at, v.duration,
-        v.channel_id, v.channel_name, v.view_count, v.like_count, v.tags || null, v.import_status, v.last_synced
+        v.youtube_video_id,
+        v.title,
+        v.description,
+        v.thumbnail,
+        v.youtube_url,
+        v.published_at,
+        v.duration,
+        v.channel_id,
+        v.channel_name,
+        v.view_count,
+        v.like_count,
+        v.tags || null,
+        v.import_status,
+        v.last_synced
       ];
       await db.query(query, params);
     }
-    
+
     return {
       imported: newCount,
       updated: updateCount
@@ -234,18 +259,16 @@ export class YoutubeVideoRepository {
   }
 
   async linkBhajan(videoId: string, bhajanId: string | null) {
-    await db.query(
-      `UPDATE ${this.tableName} SET linked_bhajan_id = $1, import_status = $2 WHERE id = $3`,
-      [bhajanId, bhajanId ? 'LINKED' : 'NEW', videoId]
-    );
+    await db.query(`UPDATE ${this.tableName} SET linked_bhajan_id = $1, import_status = $2 WHERE id = $3`, [
+      bhajanId,
+      bhajanId ? 'LINKED' : 'NEW',
+      videoId
+    ]);
     return { success: true };
   }
 
   async updateStatus(videoId: string, status: string) {
-    await db.query(
-      `UPDATE ${this.tableName} SET import_status = $1 WHERE id = $2`,
-      [status, videoId]
-    );
+    await db.query(`UPDATE ${this.tableName} SET import_status = $1 WHERE id = $2`, [status, videoId]);
     return { success: true };
   }
 

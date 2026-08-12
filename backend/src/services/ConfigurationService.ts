@@ -33,7 +33,7 @@ export class ConfigurationService {
         syncInterval: settings.youtubeSyncInterval || 'daily',
         incrementalSync: settings.youtubeIncrementalSync ?? true,
         lastSync: settings.youtubeLastSync,
-        nextScheduledSync: settings.youtubeNextSync,
+        nextScheduledSync: settings.youtubeNextSync
       }
     };
   }

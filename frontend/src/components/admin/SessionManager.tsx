@@ -10,17 +10,20 @@ const WARNING_BEFORE = 5 * 60 * 1000; // 5 minutes
 export const SessionManager: React.FC = () => {
   const navigate = useNavigate();
   const [showWarning, setShowWarning] = useState(false);
-  
-  const handleLogout = useCallback(async (message: string) => {
-    await logout();
-    toast.error(message, { duration: 5000, id: 'session-toast' });
-    navigate('/admin/login', { replace: true });
-  }, [navigate]);
+
+  const handleLogout = useCallback(
+    async (message: string) => {
+      await logout();
+      toast.error(message, { duration: 5000, id: 'session-toast' });
+      navigate('/admin/login', { replace: true });
+    },
+    [navigate]
+  );
 
   // Handle global 401 responses
   useEffect(() => {
     const onSessionExpired = () => {
-      handleLogout("Your session has expired. Please log in again.");
+      handleLogout('Your session has expired. Please log in again.');
     };
     window.addEventListener('session-expired', onSessionExpired);
     return () => window.removeEventListener('session-expired', onSessionExpired);
@@ -41,13 +44,23 @@ export const SessionManager: React.FC = () => {
       }, INACTIVITY_TIMEOUT - WARNING_BEFORE);
 
       timeoutId = setTimeout(() => {
-        handleLogout("Your session expired due to inactivity. Please log in again.");
+        handleLogout('Your session expired due to inactivity. Please log in again.');
       }, INACTIVITY_TIMEOUT);
     };
 
     // Events that denote user activity
-    const events = ['mousemove', 'mousedown', 'click', 'keypress', 'scroll', 'DOMMouseScroll', 'mousewheel', 'touchmove', 'MSPointerMove'];
-    
+    const events = [
+      'mousemove',
+      'mousedown',
+      'click',
+      'keypress',
+      'scroll',
+      'DOMMouseScroll',
+      'mousewheel',
+      'touchmove',
+      'MSPointerMove'
+    ];
+
     // Throttle the event listeners a bit to not overwhelm the main thread
     let isThrottled = false;
     const handleActivity = () => {
@@ -55,15 +68,17 @@ export const SessionManager: React.FC = () => {
       if (!isThrottled) {
         resetTimer();
         isThrottled = true;
-        setTimeout(() => { isThrottled = false; }, 1000); // 1s throttle
+        setTimeout(() => {
+          isThrottled = false;
+        }, 1000); // 1s throttle
       }
     };
 
-    events.forEach(evt => window.addEventListener(evt, handleActivity, { passive: true }));
+    events.forEach((evt) => window.addEventListener(evt, handleActivity, { passive: true }));
     resetTimer();
 
     return () => {
-      events.forEach(evt => window.removeEventListener(evt, handleActivity));
+      events.forEach((evt) => window.removeEventListener(evt, handleActivity));
       clearTimeout(timeoutId);
       clearTimeout(warningId);
     };
@@ -79,13 +94,13 @@ export const SessionManager: React.FC = () => {
           Your session will expire in 5 minutes due to inactivity. Do you want to continue your session?
         </p>
         <div className="flex gap-3 justify-end">
-          <button 
-            onClick={() => handleLogout("You have been logged out.")}
+          <button
+            onClick={() => handleLogout('You have been logged out.')}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
             Logout Now
           </button>
-          <button 
+          <button
             onClick={() => setShowWarning(false)}
             className="px-4 py-2 text-sm font-medium text-white bg-saffron hover:bg-saffron/90 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-saffron/50 shadow-sm"
           >

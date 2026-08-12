@@ -9,7 +9,7 @@ class YoutubeClient {
   constructor() {
     this.youtube = google.youtube({
       version: 'v3',
-      auth: config.YOUTUBE_API_KEY,
+      auth: config.YOUTUBE_API_KEY
     });
   }
 
@@ -26,7 +26,7 @@ class YoutubeClient {
       // First, get the Uploads playlist ID for the channel
       const channelRes = await this.youtube.channels.list({
         part: ['contentDetails'],
-        id: [channelId],
+        id: [channelId]
       });
 
       const uploadsPlaylistId = channelRes.data.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
@@ -41,30 +41,30 @@ class YoutubeClient {
           part: ['snippet', 'contentDetails'],
           playlistId: uploadsPlaylistId,
           maxResults: 50,
-          pageToken: nextPageToken,
+          pageToken: nextPageToken
         });
 
-        const videoIds = playlistRes.data.items?.map((item: any) => item.contentDetails?.videoId).filter(Boolean) as string[];
-        
+        const videoIds = playlistRes.data.items
+          ?.map((item: any) => item.contentDetails?.videoId)
+          .filter(Boolean) as string[];
+
         if (videoIds.length > 0) {
           // Fetch full video details including statistics and contentDetails
           const videoRes = await this.youtube.videos.list({
             part: ['snippet', 'statistics', 'contentDetails', 'status'],
-            id: videoIds,
+            id: videoIds
           });
 
           const videos = videoRes.data.items || [];
-          
+
           if (publishedAfter) {
-            const filtered = videos.filter(v => 
-              new Date(v.snippet!.publishedAt!) > new Date(publishedAfter)
-            );
+            const filtered = videos.filter((v) => new Date(v.snippet!.publishedAt!) > new Date(publishedAfter));
             allVideos = [...allVideos, ...filtered];
-            
+
             // Optimization: Since uploads playlist is reverse chronological,
             // if we find videos that are older than our publishedAfter date,
             // we have reached the known videos and can break early!
-            // However, we always fetch at least 2 pages (100 videos) so that 
+            // However, we always fetch at least 2 pages (100 videos) so that
             // the most recent videos have their stats (views, etc) updated!
             if (filtered.length < videos.length && pagesFetched >= 2) {
               logger.info('Incremental sync reached older videos. Breaking early.');

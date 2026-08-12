@@ -8,10 +8,10 @@ const LogLevel = {
   INFO: 1,
   SUCCESS: 2,
   WARNING: 3,
-  ERROR: 4,
+  ERROR: 4
 } as const;
 
-type LogLevel = typeof LogLevel[keyof typeof LogLevel];
+type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
 
 const envLogLevel = import.meta.env.PROD ? LogLevel.INFO : LogLevel.DEBUG;
 
@@ -45,5 +45,5 @@ export const logger = {
   info: (message: string, meta?: any) => log(LogLevel.INFO, 'INFO', message, meta),
   success: (message: string, meta?: any) => log(LogLevel.SUCCESS, 'SUCCESS', message, meta),
   warn: (message: string, meta?: any) => log(LogLevel.WARNING, 'WARN', message, meta),
-  error: (message: string, error?: any) => log(LogLevel.ERROR, 'ERROR', message, error),
+  error: (message: string, error?: any) => log(LogLevel.ERROR, 'ERROR', message, error)
 };

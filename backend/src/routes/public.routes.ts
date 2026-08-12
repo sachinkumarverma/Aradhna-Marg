@@ -12,8 +12,8 @@ router.get('/videos', async (req: Request, res: Response, next: NextFunction) =>
     const excludeShorts = req.query.excludeShorts === 'true';
     const offset = (page - 1) * limit;
 
-    let whereConditions = ["import_status != 'IGNORED'"];
-    let queryParams: any[] = [];
+    const whereConditions = ["import_status != 'IGNORED'"];
+    const queryParams: any[] = [];
     let paramIndex = 1;
 
     if (search) {
@@ -30,9 +30,9 @@ router.get('/videos', async (req: Request, res: Response, next: NextFunction) =>
       ORDER BY published_at DESC
     `;
     const { rows } = await db.query(query, queryParams);
-    
+
     let filtered = rows;
-    
+
     if (excludeShorts) {
       filtered = filtered.filter((row: any) => {
         const str = (row.duration || '').toLowerCase();
@@ -40,11 +40,11 @@ router.get('/videos', async (req: Request, res: Response, next: NextFunction) =>
         const hMatch = str.match(/(\d+)h/);
         const mMatch = str.match(/(\d+)m/);
         const sMatch = str.match(/(\d+)s/);
-        
+
         if (hMatch) secs += parseInt(hMatch[1], 10) * 3600;
         if (mMatch) secs += parseInt(mMatch[1], 10) * 60;
         if (sMatch) secs += parseInt(sMatch[1], 10);
-        
+
         // If duration is > 3 minutes (180 secs) or no duration parsed (treat as full video), keep it.
         // A short is secs > 0 and secs <= 180.
         const isShort = secs > 0 && secs <= 180;
@@ -54,8 +54,13 @@ router.get('/videos', async (req: Request, res: Response, next: NextFunction) =>
 
     const total = filtered.length;
     const paginatedRows = filtered.slice(offset, offset + limit);
-    
-    return sendSuccess(res, 'Videos retrieved', paginatedRows, { total, page, limit, totalPages: Math.ceil(total / limit) });
+
+    return sendSuccess(res, 'Videos retrieved', paginatedRows, {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    });
   } catch (error) {
     next(error);
   }
@@ -65,16 +70,16 @@ router.get('/videos', async (req: Request, res: Response, next: NextFunction) =>
 router.get('/videos/:slug', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { slug } = req.params;
-    
+
     // First try to find a bhajan with this slug
     let query = `SELECT * FROM bhajans WHERE slug = $1 LIMIT 1`;
     let result = await db.query(query, [slug]);
-    
+
     if (result.rows.length === 0) {
       // If no bhajan, try youtube_videos by youtube_video_id
       query = `SELECT * FROM youtube_videos WHERE youtube_video_id = $1 LIMIT 1`;
       result = await db.query(query, [slug]);
-      
+
       if (result.rows.length > 0) {
         const ytData = result.rows[0];
         const data = {
@@ -86,16 +91,16 @@ router.get('/videos/:slug', async (req: Request, res: Response, next: NextFuncti
           views: ytData.view_count,
           duration: null,
           is_string_duration: true,
-          string_duration: ytData.duration || "00:00",
+          string_duration: ytData.duration || '00:00',
           published_date: ytData.published_at,
           lyrics: ytData.description
         };
         return sendSuccess(res, 'Video retrieved', data);
       }
-      
+
       return sendSuccess(res, 'Not found', null);
     }
-    
+
     return sendSuccess(res, 'Bhajan retrieved', result.rows[0]);
   } catch (error) {
     next(error);

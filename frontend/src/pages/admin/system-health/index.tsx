@@ -35,7 +35,7 @@ export function AdminSystemHealth() {
             </p>
           </div>
         </div>
-        
+
         <button
           onClick={handleRefresh}
           disabled={isRefreshing}
@@ -107,7 +107,7 @@ export function AdminSystemHealth() {
           </div>
           <h3 className="font-bold text-slate-800 text-lg">System Metrics</h3>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           <div>
             <p className="text-sm text-slate-500 mb-1">API Version</p>
@@ -133,7 +133,6 @@ export function AdminSystemHealth() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

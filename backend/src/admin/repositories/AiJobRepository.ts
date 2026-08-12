@@ -32,17 +32,17 @@ export class AiJobRepository {
       db.query(countQuery, params)
     ]);
 
-    return { 
-      data: dataResult.rows as AiJob[], 
-      count: parseInt(countResult.rows[0].total, 10) 
+    return {
+      data: dataResult.rows as AiJob[],
+      count: parseInt(countResult.rows[0].total, 10)
     };
   }
-  
+
   async getStats(): Promise<any> {
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString();
-    
+
     const queries = [
       `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'PENDING'`,
       `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'PROCESSING'`,
@@ -58,7 +58,7 @@ export class AiJobRepository {
       db.query(queries[3]),
       db.query(queries[4], [todayStr])
     ]);
-    
+
     return {
       pending: parseInt(results[0].rows[0].total, 10) || 0,
       processing: parseInt(results[1].rows[0].total, 10) || 0,
@@ -70,7 +70,7 @@ export class AiJobRepository {
 
   async findById(id: string): Promise<AiJob> {
     const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE id = $1`, [id]);
-    
+
     if (rows.length === 0) throw new NotFoundError('AI Job not found');
     return rows[0] as AiJob;
   }
@@ -81,14 +81,8 @@ export class AiJobRepository {
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *
     `;
-    const params = [
-      dto.job_name,
-      dto.content_type,
-      dto.action_type,
-      dto.total_items || 1,
-      'PENDING'
-    ];
-    
+    const params = [dto.job_name, dto.content_type, dto.action_type, dto.total_items || 1, 'PENDING'];
+
     const { rows } = await db.query(query, params);
     return rows[0] as AiJob;
   }
@@ -103,17 +97,17 @@ export class AiJobRepository {
       params.push(errorMessage);
       paramIndex++;
     }
-    
+
     if (status === 'PROCESSING') {
       updateClause += `, started_at = NOW()`;
     }
-    
+
     if (status === 'COMPLETED' || status === 'FAILED') {
       updateClause += `, completed_at = NOW()`;
     }
 
     params.push(id);
-    
+
     const query = `
       UPDATE ${this.tableName} 
       SET ${updateClause}
@@ -125,7 +119,7 @@ export class AiJobRepository {
     if (rows.length === 0) throw new NotFoundError('AI Job not found');
     return rows[0] as AiJob;
   }
-  
+
   async delete(id: string): Promise<void> {
     await db.query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
   }

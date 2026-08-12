@@ -28,7 +28,11 @@ export class TranslationRepository {
     };
   }
 
-  async getTranslation(contentType: string, contentId: string, targetLanguage: string): Promise<ContentTranslation | null> {
+  async getTranslation(
+    contentType: string,
+    contentId: string,
+    targetLanguage: string
+  ): Promise<ContentTranslation | null> {
     const query = `
       SELECT * FROM content_translations 
       WHERE content_type = $1 AND content_id = $2 AND target_language = $3
@@ -63,13 +67,24 @@ export class TranslationRepository {
         translated_at = NOW()
       RETURNING *;
     `;
-    
+
     const params = [
-      dto.contentType, dto.contentId, dto.sourceLanguage, dto.targetLanguage,
-      dto.title, dto.excerpt, dto.description, dto.content, dto.festivalDetails, dto.seoTitle, dto.seoDescription,
-      dto.provider, dto.translationStatus, dto.sourceVersion
+      dto.contentType,
+      dto.contentId,
+      dto.sourceLanguage,
+      dto.targetLanguage,
+      dto.title,
+      dto.excerpt,
+      dto.description,
+      dto.content,
+      dto.festivalDetails,
+      dto.seoTitle,
+      dto.seoDescription,
+      dto.provider,
+      dto.translationStatus,
+      dto.sourceVersion
     ];
-    
+
     const result = await db.query(query, params);
     return this.mapToModel(result.rows[0]);
   }
@@ -79,18 +94,39 @@ export class TranslationRepository {
     const params: any[] = [];
     let paramIndex = 1;
 
-    if (updates.title !== undefined) { setClauses.push(`title = $${paramIndex++}`); params.push(updates.title); }
-    if (updates.excerpt !== undefined) { setClauses.push(`excerpt = $${paramIndex++}`); params.push(updates.excerpt); }
-    if (updates.description !== undefined) { setClauses.push(`description = $${paramIndex++}`); params.push(updates.description); }
-    if (updates.content !== undefined) { setClauses.push(`content = $${paramIndex++}`); params.push(updates.content); }
-    if (updates.festivalDetails !== undefined) { setClauses.push(`festival_details = $${paramIndex++}`); params.push(updates.festivalDetails); }
-    if (updates.seoTitle !== undefined) { setClauses.push(`seo_title = $${paramIndex++}`); params.push(updates.seoTitle); }
-    if (updates.seoDescription !== undefined) { setClauses.push(`seo_description = $${paramIndex++}`); params.push(updates.seoDescription); }
-    
-    if (updates.translationStatus !== undefined) { 
-      setClauses.push(`translation_status = $${paramIndex++}`); 
+    if (updates.title !== undefined) {
+      setClauses.push(`title = $${paramIndex++}`);
+      params.push(updates.title);
+    }
+    if (updates.excerpt !== undefined) {
+      setClauses.push(`excerpt = $${paramIndex++}`);
+      params.push(updates.excerpt);
+    }
+    if (updates.description !== undefined) {
+      setClauses.push(`description = $${paramIndex++}`);
+      params.push(updates.description);
+    }
+    if (updates.content !== undefined) {
+      setClauses.push(`content = $${paramIndex++}`);
+      params.push(updates.content);
+    }
+    if (updates.festivalDetails !== undefined) {
+      setClauses.push(`festival_details = $${paramIndex++}`);
+      params.push(updates.festivalDetails);
+    }
+    if (updates.seoTitle !== undefined) {
+      setClauses.push(`seo_title = $${paramIndex++}`);
+      params.push(updates.seoTitle);
+    }
+    if (updates.seoDescription !== undefined) {
+      setClauses.push(`seo_description = $${paramIndex++}`);
+      params.push(updates.seoDescription);
+    }
+
+    if (updates.translationStatus !== undefined) {
+      setClauses.push(`translation_status = $${paramIndex++}`);
       params.push(updates.translationStatus);
-      
+
       if (updates.translationStatus === 'APPROVED') {
         setClauses.push(`approved_at = NOW()`);
       } else if (updates.translationStatus === 'NEEDS_REVIEW') {
@@ -107,7 +143,7 @@ export class TranslationRepository {
       WHERE id = $${paramIndex}
       RETURNING *;
     `;
-    
+
     const result = await db.query(query, params);
     return this.mapToModel(result.rows[0]);
   }

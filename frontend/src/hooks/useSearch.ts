@@ -14,11 +14,11 @@ export const useSearch = (query: string, filters: SearchFilters, sort: string, p
     queryKey: ['search', query, filters, sort, page],
     queryFn: async () => {
       const { data } = await apiClient.get('/search', {
-        params: { q: query, sort, page, ...filters },
+        params: { q: query, sort, page, ...filters }
       });
       return data.data; // { data: [...], meta: {...} } from API Response
     },
-    enabled: !!query || Object.keys(filters).length > 0,
+    enabled: !!query || Object.keys(filters).length > 0
   });
 };
 
@@ -30,7 +30,7 @@ export const useSearchSuggestions = (query: string) => {
       return data.data.suggestions as string[];
     },
     enabled: query.length >= 2,
-    staleTime: 60000,
+    staleTime: 60000
   });
 };
 
@@ -41,6 +41,6 @@ export const useTrendingSearches = () => {
       const { data } = await apiClient.get('/search/trending');
       return data.data.trending as string[];
     },
-    staleTime: 300000,
+    staleTime: 300000
   });
 };

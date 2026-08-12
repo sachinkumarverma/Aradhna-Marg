@@ -50,13 +50,12 @@ export const Home: React.FC = () => {
         Premium full-width gradient + pattern 
       */}
       <section className="relative w-full overflow-hidden bg-black isolate aspect-[16/9] md:aspect-[21/9] lg:aspect-[16/9] mt-20 pb-16 flex items-center">
-        
         {/* Background Image Carousel with Overlay */}
         {heroImages.map((img, i) => (
-          <div 
+          <div
             key={i}
             className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${i === bgIndex ? 'opacity-100' : 'opacity-0'}`}
-            style={{ 
+            style={{
               backgroundImage: `url("${img}")`,
               backgroundPosition: 'center 20%'
             }}
@@ -64,20 +63,21 @@ export const Home: React.FC = () => {
         ))}
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-center h-full w-full">
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-            className="max-w-3xl"
-          >
-            <motion.h1 variants={fadeUpVariant} className="text-4xl sm:text-5xl md:text-7xl font-black text-white tracking-tight leading-[1.1] mb-4 md:mb-6">
-              Find Your Favourite <br/>
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-3xl">
+            <motion.h1
+              variants={fadeUpVariant}
+              className="text-4xl sm:text-5xl md:text-7xl font-black text-white tracking-tight leading-[1.1] mb-4 md:mb-6"
+            >
+              Find Your Favourite <br />
               <span className="text-saffron">Bhajan & Videos</span>
             </motion.h1>
 
-            <motion.p variants={fadeUpVariant} className="text-base sm:text-lg md:text-xl text-gray-200 mb-8 max-w-lg leading-relaxed">
+            <motion.p
+              variants={fadeUpVariant}
+              className="text-base sm:text-lg md:text-xl text-gray-200 mb-8 max-w-lg leading-relaxed"
+            >
               Explore a sacred collection of authentic lyrics, meanings, and spiritual verses.
             </motion.p>
 
@@ -85,9 +85,9 @@ export const Home: React.FC = () => {
             <motion.div variants={fadeUpVariant} className="w-full max-w-2xl relative">
               <div className="relative flex items-center bg-white rounded-full p-2 shadow-2xl">
                 <Search className="w-6 h-6 text-saffron absolute left-6" />
-                <input 
-                  type="text" 
-                  placeholder="Search Bhajans, Chalisa..." 
+                <input
+                  type="text"
+                  placeholder="Search Bhajans, Chalisa..."
                   className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium"
                 />
                 <Button className="h-10 md:h-12 px-6 md:px-8 rounded-full bg-saffron hover:brightness-90 text-white font-bold text-base md:text-lg shadow-md shrink-0">
@@ -108,7 +108,7 @@ export const Home: React.FC = () => {
               { icon: Music, title: 'Listen & Watch', desc: 'Synced with YouTube videos' },
               { icon: Download, title: 'PDF Downloads', desc: 'Printable Bhajan books' }
             ].map((feature, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -142,7 +142,7 @@ export const Home: React.FC = () => {
               </Button>
             </Link>
           </div>
-          
+
           {/* Custom Auto-sliding Carousel */}
           <DeitiesCarousel />
         </div>
@@ -175,20 +175,18 @@ export const Home: React.FC = () => {
                 transition={{ delay: i * 0.1 }}
               >
                 <Link to={`/videos/${bhajan.youtube_video_id}`} className="block h-full">
-                  <BhajanCard 
+                  <BhajanCard
                     title={bhajan.title}
-                    godName={bhajan.channel_name || "Devotional"}
+                    godName={bhajan.channel_name || 'Devotional'}
                     views={bhajan.view_count || 0}
-                    duration={bhajan.duration || "00:00"}
+                    duration={bhajan.duration || '00:00'}
                     thumbnailUrl={bhajan.thumbnail}
                   />
                 </Link>
               </motion.div>
             ))
           ) : (
-            <div className="col-span-4 text-center py-10 text-gray-500">
-              Fetching divine melodies from YouTube...
-            </div>
+            <div className="col-span-4 text-center py-10 text-gray-500">Fetching divine melodies from YouTube...</div>
           )}
         </div>
       </section>

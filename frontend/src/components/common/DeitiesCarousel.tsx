@@ -7,7 +7,7 @@ const deities = [
   { id: 3, name: 'Mata Durga', image: '/Deities/MataDurga.png' },
   { id: 4, name: 'Radha Raman Ji', image: '/Deities/Radharamanji.png' },
   { id: 5, name: 'Shiv Ji', image: '/Deities/ShivJi.png' },
-  { id: 6, name: 'Shri Ram', image: '/Deities/Shriram.png' },
+  { id: 6, name: 'Shri Ram', image: '/Deities/Shriram.png' }
 ];
 
 export const DeitiesCarousel: React.FC = () => {
@@ -25,7 +25,7 @@ export const DeitiesCarousel: React.FC = () => {
       else if (window.innerWidth < 1024) setItemsToShow(3);
       else setItemsToShow(4);
     };
-    
+
     handleResize(); // Init
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -48,30 +48,26 @@ export const DeitiesCarousel: React.FC = () => {
 
   return (
     <div className="relative w-full overflow-hidden">
-      <div 
+      <div
         ref={containerRef}
         className="flex transition-transform duration-700 ease-in-out"
-        style={{ 
-          transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)`,
+        style={{
+          transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)`
         }}
       >
         {deities.map((deity) => (
-          <div 
-            key={deity.id} 
-            className="px-3 shrink-0"
-            style={{ width: `${100 / itemsToShow}%` }}
-          >
+          <div key={deity.id} className="px-3 shrink-0" style={{ width: `${100 / itemsToShow}%` }}>
             <div className="relative w-full aspect-[3/2] rounded-3xl overflow-hidden shadow-md group cursor-pointer">
               {/* Background Image */}
-              <img 
-                src={deity.image} 
-                alt={deity.name} 
+              <img
+                src={deity.image}
+                alt={deity.name}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              
+
               {/* Dark Overlay for contrast */}
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-              
+
               {/* White Pill at bottom center */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white px-6 py-2 rounded-full shadow-lg">
                 <span className="text-darkBrown font-bold text-sm tracking-wide uppercase whitespace-nowrap">
@@ -82,7 +78,7 @@ export const DeitiesCarousel: React.FC = () => {
           </div>
         ))}
       </div>
-      
+
       {/* Optional Dots for Navigation */}
       <div className="flex justify-center gap-2 mt-6">
         {Array.from({ length: Math.max(1, deities.length - itemsToShow + 1) }).map((_, idx) => (

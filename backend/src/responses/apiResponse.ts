@@ -24,7 +24,7 @@ export const sendResponse = <T>(
     data,
     errors,
     meta,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   };
 
   return res.status(statusCode).json(response);

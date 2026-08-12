@@ -12,7 +12,7 @@ export class TagController {
         order: order as 'asc' | 'desc',
         page: page ? parseInt(page as string, 10) : undefined,
         limit: limit ? parseInt(limit as string, 10) : undefined,
-        status: status as string,
+        status: status as string
       });
       return sendSuccess(res, 'Tags retrieved successfully', result.data, { total: result.total });
     } catch (error) {
@@ -62,7 +62,7 @@ export class TagController {
       if (!ids || !Array.isArray(ids) || ids.length === 0) {
         throw new Error('Invalid IDs array');
       }
-      
+
       if (action === 'DELETE') {
         await tagService.bulkDeleteTags(ids);
       } else if (action === 'ACTIVATE') {
@@ -70,7 +70,7 @@ export class TagController {
       } else if (action === 'DEACTIVATE') {
         await tagService.bulkEditTags(ids, { status: 'INACTIVE' });
       } else {
-         throw new Error('Invalid bulk action');
+        throw new Error('Invalid bulk action');
       }
 
       return sendSuccess(res, `Successfully triggered ${action} on ${ids.length} items`, {});

@@ -64,23 +64,21 @@ export class MediaService {
 
     const filename = `${fileId}.${finalExt}`;
     const filePath = `uploads/${filename}`;
-    
+
     // Upload main file to Supabase
-    const { error: uploadError } = await supabase.storage
-      .from(this.bucketName)
-      .upload(filePath, processedBuffer, {
-        contentType: finalMimeType,
-        upsert: false
-      });
+    const { error: uploadError } = await supabase.storage.from(this.bucketName).upload(filePath, processedBuffer, {
+      contentType: finalMimeType,
+      upsert: false
+    });
 
     if (uploadError) {
       console.error('Supabase upload error:', uploadError);
       throw new Error('Failed to upload file to storage bucket');
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from(this.bucketName)
-      .getPublicUrl(filePath);
+    const {
+      data: { publicUrl }
+    } = supabase.storage.from(this.bucketName).getPublicUrl(filePath);
 
     if (isImage) {
       // Generate thumbnail
@@ -90,7 +88,7 @@ export class MediaService {
         .toBuffer();
 
       const thumbFilename = `uploads/${fileId}_thumb.webp`;
-      
+
       const { error: thumbUploadError } = await supabase.storage
         .from(this.bucketName)
         .upload(thumbFilename, thumbBuffer, {
@@ -99,9 +97,9 @@ export class MediaService {
         });
 
       if (!thumbUploadError) {
-        const { data: { publicUrl: thumbPublicUrl } } = supabase.storage
-          .from(this.bucketName)
-          .getPublicUrl(thumbFilename);
+        const {
+          data: { publicUrl: thumbPublicUrl }
+        } = supabase.storage.from(this.bucketName).getPublicUrl(thumbFilename);
         thumbnailUrl = thumbPublicUrl;
       }
     }
@@ -115,7 +113,7 @@ export class MediaService {
       url: publicUrl,
       thumbnailUrl,
       dimensions,
-      storagePath: filePath, // Storing Supabase path in storagePath
+      storagePath: filePath // Storing Supabase path in storagePath
     });
   }
 
@@ -141,7 +139,7 @@ export class MediaService {
         const thumbFilename = file.storagePath.replace(/\.[^/.]+$/, '') + '_thumb.webp';
         pathsToRemove.push(thumbFilename);
       }
-      
+
       if (pathsToRemove.length > 0) {
         await supabase.storage.from(this.bucketName).remove(pathsToRemove);
       }

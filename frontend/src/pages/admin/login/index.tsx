@@ -56,9 +56,7 @@ export const AdminLogin: React.FC = () => {
           <h2 className="text-3xl font-extrabold text-center text-darkBrown tracking-wide mb-2 uppercase">
             Admin <span className="text-saffron">Access</span>
           </h2>
-          <p className="text-center text-gray-500 mb-8">
-            Please login to access the dashboard
-          </p>
+          <p className="text-center text-gray-500 mb-8">Please login to access the dashboard</p>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>

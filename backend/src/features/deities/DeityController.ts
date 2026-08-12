@@ -9,7 +9,7 @@ export class DeityController {
       const result = await deityService.getDeities({
         search: search as string,
         page: page ? parseInt(page as string, 10) : undefined,
-        limit: limit ? parseInt(limit as string, 10) : undefined,
+        limit: limit ? parseInt(limit as string, 10) : undefined
       });
       return sendSuccess(res, 'Deities fetched', result.data, result.meta);
     } catch (error) {
@@ -60,7 +60,7 @@ export class DeityController {
       if (!ids || !Array.isArray(ids) || ids.length === 0) {
         throw new Error('Invalid IDs array');
       }
-      
+
       if (action === 'DELETE') {
         await deityService.bulkDeleteDeities(ids);
       } else if (action === 'ACTIVATE') {
@@ -68,7 +68,7 @@ export class DeityController {
       } else if (action === 'DEACTIVATE') {
         await deityService.bulkEditDeities(ids, { status: 'INACTIVE' }, userId);
       } else {
-         throw new Error('Invalid bulk action');
+        throw new Error('Invalid bulk action');
       }
 
       return sendSuccess(res, `Successfully triggered ${action} on ${ids.length} items`, {});

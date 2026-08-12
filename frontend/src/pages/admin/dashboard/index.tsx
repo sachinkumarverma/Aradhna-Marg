@@ -44,8 +44,11 @@ export const AdminDashboard: React.FC = () => {
         </div>
         <div className="space-y-6 animate-pulse flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-md border border-gray-100 shadow-sm h-32"></div>
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-md border border-gray-100 shadow-sm h-32"
+              ></div>
             ))}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
@@ -105,7 +108,6 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
         {/* Recent Activity Table Mock */}
         <div className="lg:col-span-2 bg-gradient-to-br from-slate-50 to-white rounded-md border border-slate-200 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -128,13 +130,20 @@ export const AdminDashboard: React.FC = () => {
                       <td className="px-5 py-3">Bhajan Created</td>
                       <td className="px-5 py-3 font-medium text-gray-900">{activity.title}</td>
                       <td className="px-5 py-3">
-                        <span className={`px-2 py-1 rounded-md text-xs font-medium ${activity.status === 'PUBLISHED' ? 'text-green-600 bg-green-50' : 'text-yellow-600 bg-yellow-50'
-                          }`}>
+                        <span
+                          className={`px-2 py-1 rounded-md text-xs font-medium ${
+                            activity.status === 'PUBLISHED'
+                              ? 'text-green-600 bg-green-50'
+                              : 'text-yellow-600 bg-yellow-50'
+                          }`}
+                        >
                           {activity.status === 'PUBLISHED' ? 'Published' : 'Draft'}
                         </span>
                       </td>
                       <td className="px-5 py-3 text-slate-800 font-medium">
-                        {new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(activity.created_at))}
+                        {new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(
+                          new Date(activity.created_at)
+                        )}
                       </td>
                     </tr>
                   ))
@@ -165,24 +174,32 @@ export const AdminDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <span className="text-gray-500 text-sm">Last Sync</span>
               <span className="text-sm font-medium text-gray-900">
-                {settings?.youtubeLastSync ? new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(settings.youtubeLastSync)) : 'Never'}
+                {settings?.youtubeLastSync
+                  ? new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(
+                      new Date(settings.youtubeLastSync)
+                    )
+                  : 'Never'}
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <span className="text-gray-500 text-sm">Auto Sync</span>
-              <span className="text-sm font-medium text-gray-900">{settings?.youtubeSyncInterval || '12h'} Interval</span>
+              <span className="text-sm font-medium text-gray-900">
+                {settings?.youtubeSyncInterval || '12h'} Interval
+              </span>
             </div>
 
             <hr className="border-gray-100" />
 
-            <button onClick={() => navigate('/admin/youtube')} className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-md text-sm font-medium transition-colors border border-gray-200">
+            <button
+              onClick={() => navigate('/admin/youtube')}
+              className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-md text-sm font-medium transition-colors border border-gray-200"
+            >
               <PlaySquare className="w-4 h-4 text-red-500" />
               Manage Synchronization
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );

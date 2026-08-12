@@ -6,7 +6,11 @@ class AdminFestivalController {
   public list = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { data, count } = await festivalService.getList(req.query);
-      return sendSuccess(res, 'Festivals fetched', data, { total: count, page: parseInt(req.query.page as string) || 1, limit: parseInt(req.query.limit as string) || 10 });
+      return sendSuccess(res, 'Festivals fetched', data, {
+        total: count,
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 10
+      });
     } catch (error) {
       next(error);
     }

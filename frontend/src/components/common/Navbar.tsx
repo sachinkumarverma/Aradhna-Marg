@@ -11,7 +11,7 @@ export const Navbar: React.FC = () => {
   const location = useLocation();
   const isHome = location.pathname === '/';
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
+  useMotionValueEvent(scrollY, 'change', (latest) => {
     setIsScrolled(latest > 50);
   });
 
@@ -25,7 +25,7 @@ export const Navbar: React.FC = () => {
     { name: 'Bhajans', path: '/bhajans' },
     { name: 'Categories', path: '/categories' },
     { name: 'Gods', path: '/gods' },
-    { name: 'Festivals', path: '/festivals' },
+    { name: 'Festivals', path: '/festivals' }
   ];
 
   return (
@@ -88,11 +88,7 @@ export const Navbar: React.FC = () => {
 
             {/* Mobile Menu Toggle */}
             <div className="md:hidden flex items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
+              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </Button>
             </div>

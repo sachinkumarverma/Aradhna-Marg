@@ -10,9 +10,27 @@ interface RichTextEditorProps {
 }
 
 const ALLOWED_TAGS = [
-  'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
-  'p', 'strong', 'b', 'em', 'i', 'u', 's', 'blockquote', 
-  'ul', 'ol', 'li', 'a', 'br', 'hr', 'span'
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'p',
+  'strong',
+  'b',
+  'em',
+  'i',
+  'u',
+  's',
+  'blockquote',
+  'ul',
+  'ol',
+  'li',
+  'a',
+  'br',
+  'hr',
+  'span'
 ];
 
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, className }) => {
@@ -29,11 +47,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange,
     // If plain text contains HTML tags (e.g., user copied HTML source code)
     // we want to parse it as HTML instead of letting Quill escape it into literal text.
     // We check if it looks like HTML by finding a valid supported opening/closing tag.
-    const hasHtmlTags = /<\/?(h[1-6]|p|strong|b|em|i|u|s|blockquote|ul|ol|li|a|br|hr|span|div)(>|\s[^>]*>)/i.test(plainText);
+    const hasHtmlTags = /<\/?(h[1-6]|p|strong|b|em|i|u|s|blockquote|ul|ol|li|a|br|hr|span|div)(>|\s[^>]*>)/i.test(
+      plainText
+    );
 
     if (hasHtmlTags) {
       e.preventDefault();
-      
+
       // Preserve visual gaps (double newlines) from the pasted text by converting them to empty paragraphs
       const htmlWithGaps = plainText.replace(/(?:\r?\n){2,}/g, '\n<p><br></p>\n');
 
@@ -81,9 +101,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange,
       className={className}
       modules={{
         toolbar: [
-          [{ 'header': [1, 2, 3, false] }],
+          [{ header: [1, 2, 3, false] }],
           ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-          [{'list': 'ordered'}, {'list': 'bullet'}],
+          [{ list: 'ordered' }, { list: 'bullet' }],
           ['link', 'image'],
           ['clean']
         ],

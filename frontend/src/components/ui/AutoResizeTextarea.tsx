@@ -36,7 +36,8 @@ export const AutoResizeTextarea = React.forwardRef<HTMLTextAreaElement, AutoResi
       let observer: ResizeObserver | null = null;
       if (textarea && typeof ResizeObserver !== 'undefined') {
         observer = new ResizeObserver(() => {
-          if (textarea.offsetParent !== null) { // only adjust if visible
+          if (textarea.offsetParent !== null) {
+            // only adjust if visible
             adjustHeight();
           }
         });

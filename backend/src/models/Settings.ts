@@ -10,20 +10,20 @@ export interface Settings {
   copyrightText?: string;
   timezone?: string;
   dateFormat?: string;
-  
+
   // Contact
   contactEmail?: string;
   contactPhone?: string;
   contactAddress?: string;
   whatsappNumber?: string;
-  
+
   // Social
   facebookUrl?: string;
   instagramUrl?: string;
   youtubeUrl?: string;
   twitterUrl?: string;
   linkedinUrl?: string;
-  
+
   // YouTube Automation
   youtubeChannelId?: string;
   youtubeChannelUrl?: string;
@@ -32,7 +32,6 @@ export interface Settings {
   youtubeIncrementalSync?: boolean;
   youtubeLastSync?: string;
   youtubeNextSync?: string;
-  
 
   // SEO
   seoSiteTitle?: string;
@@ -41,13 +40,12 @@ export interface Settings {
   seoRobots?: string;
   seoCanonicalDomain?: string;
   seoOgImage?: string;
-  
+
   // Analytics
   googleAnalyticsId?: string;
   googleSearchConsole?: string;
   microsoftClarity?: string;
   enableAnalytics?: boolean;
-  
 
   // Advertisement
   enableAds?: boolean;
@@ -55,7 +53,7 @@ export interface Settings {
   adInline?: string;
   adSidebar?: string;
   adFooter?: string;
-  
+
   // System
   maintenanceMode?: boolean;
   enableRegistration?: boolean;

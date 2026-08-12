@@ -1,7 +1,14 @@
 import { apiClient } from '@api/client';
 
 export class TagApi {
-  static async getTags(params?: { page?: number; limit?: number; search?: string; status?: string; sort?: string; order?: 'asc' | 'desc' }) {
+  static async getTags(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    sort?: string;
+    order?: 'asc' | 'desc';
+  }) {
     const response = await apiClient.get('/admin/tags', { params });
     return response.data;
   }

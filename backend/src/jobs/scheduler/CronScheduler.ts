@@ -21,13 +21,13 @@ export class CronScheduler {
 
     // Weekly (Sunday Midnight): Cache Cleanup & Full Validation
     this.schedule('0 0 * * 0', JobType.CACHE_CLEANUP, {}, JobPriority.LOW);
-    
+
     // Monthly (1st of Month): DB Backup
     this.schedule('0 0 1 * *', JobType.BACKUP, {}, JobPriority.LOW);
   }
 
   public stop(): void {
-    this.tasks.forEach(task => task.stop());
+    this.tasks.forEach((task) => task.stop());
     this.tasks = [];
     logger.info('[Scheduler] Stopped all cron jobs');
   }

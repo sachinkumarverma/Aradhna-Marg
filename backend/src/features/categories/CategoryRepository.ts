@@ -21,7 +21,7 @@ export class CategoryRepository {
       isFeatured: row.is_featured,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
-      bhajanCount: row.bhajan_count || 0,
+      bhajanCount: row.bhajan_count || 0
     };
   }
 
@@ -34,7 +34,7 @@ export class CategoryRepository {
     let orderByColumn = 'created_at';
     if (sort === 'name') orderByColumn = 'name';
     if (sort === 'displayOrder') orderByColumn = 'display_order';
-    
+
     const orderDirection = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
     const dataQuery = `
@@ -43,7 +43,7 @@ export class CategoryRepository {
       ORDER BY ${orderByColumn} ${orderDirection}
       LIMIT $2 OFFSET $3;
     `;
-    
+
     const countQuery = `
       SELECT COUNT(*) as total FROM categories
       WHERE name ILIKE $1 OR slug ILIKE $1;
@@ -51,7 +51,7 @@ export class CategoryRepository {
 
     const [dataResult, countResult] = await Promise.all([
       db.query(dataQuery, [searchParam, limit, offset]),
-      db.query(countQuery, [searchParam]),
+      db.query(countQuery, [searchParam])
     ]);
 
     const total = parseInt(countResult.rows[0].total, 10);
@@ -74,9 +74,17 @@ export class CategoryRepository {
       RETURNING *;
     `;
     const params = [
-      dto.name, dto.slug, dto.description || null, dto.imageUrl || null, dto.iconUrl || null,
-      dto.seoTitle || null, dto.seoDescription || null, dto.displayOrder || 0,
-      dto.status || 'PUBLISHED', dto.showInNavigation ?? true, dto.isFeatured ?? false
+      dto.name,
+      dto.slug,
+      dto.description || null,
+      dto.imageUrl || null,
+      dto.iconUrl || null,
+      dto.seoTitle || null,
+      dto.seoDescription || null,
+      dto.displayOrder || 0,
+      dto.status || 'PUBLISHED',
+      dto.showInNavigation ?? true,
+      dto.isFeatured ?? false
     ];
 
     try {
@@ -108,9 +116,18 @@ export class CategoryRepository {
       RETURNING *;
     `;
     const params = [
-      id, dto.name, dto.slug, dto.description, dto.imageUrl, dto.iconUrl,
-      dto.seoTitle, dto.seoDescription, dto.displayOrder, dto.status,
-      dto.showInNavigation, dto.isFeatured
+      id,
+      dto.name,
+      dto.slug,
+      dto.description,
+      dto.imageUrl,
+      dto.iconUrl,
+      dto.seoTitle,
+      dto.seoDescription,
+      dto.displayOrder,
+      dto.status,
+      dto.showInNavigation,
+      dto.isFeatured
     ];
 
     try {

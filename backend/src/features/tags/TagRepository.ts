@@ -28,7 +28,7 @@ export class TagRepository {
 
     let orderByColumn = 'created_at';
     if (sort === 'name') orderByColumn = 'name';
-    
+
     const orderDirection = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
     let statusCondition = '';
@@ -45,7 +45,7 @@ export class TagRepository {
       ORDER BY ${orderByColumn} ${orderDirection}
       LIMIT $2 OFFSET $3;
     `;
-    
+
     const countQuery = `
       SELECT COUNT(*) as total FROM tags
       WHERE (name ILIKE $1 OR description ILIKE $1)
@@ -56,7 +56,7 @@ export class TagRepository {
 
     const [dataResult, countResult] = await Promise.all([
       db.query(dataQuery, params),
-      db.query(countQuery, countParams),
+      db.query(countQuery, countParams)
     ]);
 
     const total = parseInt(countResult.rows[0].total, 10);
@@ -77,9 +77,7 @@ export class TagRepository {
       ) VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
       RETURNING *;
     `;
-    const params = [
-      dto.name, dto.slug, dto.description || null, dto.color || null, dto.status || 'ACTIVE'
-    ];
+    const params = [dto.name, dto.slug, dto.description || null, dto.color || null, dto.status || 'ACTIVE'];
 
     try {
       const result = await db.query(query, params);
@@ -103,9 +101,7 @@ export class TagRepository {
       WHERE id = $1
       RETURNING *;
     `;
-    const params = [
-      id, dto.name, dto.slug, dto.description, dto.color, dto.status
-    ];
+    const params = [id, dto.name, dto.slug, dto.description, dto.color, dto.status];
 
     try {
       const result = await db.query(query, params);

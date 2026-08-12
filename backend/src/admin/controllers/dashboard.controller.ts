@@ -7,16 +7,32 @@ class DashboardController {
     try {
       // In production, these would be cached or calculated via materialized views
       const [
-        { rows: [{ total: totalBhajans }] },
-        { rows: [{ total: publishedBhajans }] },
-        { rows: [{ total: pendingAi }] },
-        { rows: [{ total: failedAi }] },
-        { rows: [{ total: totalCategories }] },
-        { rows: [{ total: totalFestivals }] },
-        { rows: [{ total: totalGods }] }
+        {
+          rows: [{ total: totalBhajans }]
+        },
+        {
+          rows: [{ total: publishedBhajans }]
+        },
+        {
+          rows: [{ total: pendingAi }]
+        },
+        {
+          rows: [{ total: failedAi }]
+        },
+        {
+          rows: [{ total: totalCategories }]
+        },
+        {
+          rows: [{ total: totalFestivals }]
+        },
+        {
+          rows: [{ total: totalGods }]
+        }
       ] = await Promise.all([
         db.query(`SELECT COUNT(*) as total FROM bhajans WHERE youtube_video_id IS NULL AND deleted_at IS NULL`),
-        db.query(`SELECT COUNT(*) as total FROM bhajans WHERE status = 'PUBLISHED' AND youtube_video_id IS NULL AND deleted_at IS NULL`),
+        db.query(
+          `SELECT COUNT(*) as total FROM bhajans WHERE status = 'PUBLISHED' AND youtube_video_id IS NULL AND deleted_at IS NULL`
+        ),
         db.query(`SELECT COUNT(*) as total FROM ai_jobs WHERE status = 'PENDING'`),
         db.query(`SELECT COUNT(*) as total FROM ai_jobs WHERE status = 'FAILED'`),
         db.query(`SELECT COUNT(*) as total FROM categories`),

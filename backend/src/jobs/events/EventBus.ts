@@ -19,7 +19,7 @@ class EventBus {
 
   public subscribe(event: PlatformEvent, handler: EventHandler): void {
     logger.debug(`[EventBus] Subscribed to ${event}`);
-    
+
     // Wrap handler in try/catch so a failing subscriber doesn't crash the Node process
     this.emitter.on(event, async (payload) => {
       try {

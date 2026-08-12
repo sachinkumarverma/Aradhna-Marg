@@ -4,7 +4,6 @@ import { sendSuccess } from '@/responses/apiResponse';
 import { AppError } from '@/errors/appError';
 
 export class MediaController {
-  
   // Folders
   async createFolder(req: Request, res: Response, next: NextFunction) {
     try {
@@ -55,7 +54,7 @@ export class MediaController {
       const file = req.file;
       const { folderId } = req.body;
       if (!file) throw new AppError('No file uploaded', 400);
-      
+
       const uploadedFile = await mediaService.uploadFile(file, folderId as string | undefined);
       return sendSuccess(res, 'File uploaded successfully', uploadedFile);
     } catch (error) {

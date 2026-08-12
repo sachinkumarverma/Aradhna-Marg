@@ -2,9 +2,23 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@api/client';
 import toast from 'react-hot-toast';
-import { 
-  Bot, CheckCircle2, XCircle, Clock, Zap, Play, RotateCcw, Trash2, 
-  AlertCircle, FileText, Calendar, FolderTree, BookOpen, Music, RefreshCw, BrainCircuit
+import {
+  Bot,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Zap,
+  Play,
+  RotateCcw,
+  Trash2,
+  AlertCircle,
+  FileText,
+  Calendar,
+  FolderTree,
+  BookOpen,
+  Music,
+  RefreshCw,
+  BrainCircuit
 } from 'lucide-react';
 import { Button } from '@components/ui/Button';
 
@@ -30,7 +44,7 @@ export function AdminAI() {
       if (activeTab === 'queue') status = 'PENDING,PROCESSING';
       if (activeTab === 'history') status = 'COMPLETED';
       if (activeTab === 'failed') status = 'FAILED';
-      
+
       const res = await apiClient.get('/admin/ai/jobs', {
         params: { status, limit: 50 }
       });
@@ -44,7 +58,12 @@ export function AdminAI() {
 
   // Mutations
   const queueMutation = useMutation({
-    mutationFn: async (payload: { job_name: string; content_type: string; action_type: string; total_items?: number }) => {
+    mutationFn: async (payload: {
+      job_name: string;
+      content_type: string;
+      action_type: string;
+      total_items?: number;
+    }) => {
       await apiClient.post('/admin/ai/queue', payload);
     },
     onSuccess: () => {
@@ -97,17 +116,40 @@ export function AdminAI() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'COMPLETED': return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"><CheckCircle2 className="w-3 h-3 mr-1" /> Completed</span>;
-      case 'FAILED': return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><XCircle className="w-3 h-3 mr-1" strokeWidth={2.5} /> Failed</span>;
-      case 'PROCESSING': return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 animate-pulse"><Zap className="w-3 h-3 mr-1" /> Processing</span>;
-      default: return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"><Clock className="w-3 h-3 mr-1" /> Pending</span>;
+      case 'COMPLETED':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <CheckCircle2 className="w-3 h-3 mr-1" /> Completed
+          </span>
+        );
+      case 'FAILED':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            <XCircle className="w-3 h-3 mr-1" strokeWidth={2.5} /> Failed
+          </span>
+        );
+      case 'PROCESSING':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 animate-pulse">
+            <Zap className="w-3 h-3 mr-1" /> Processing
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            <Clock className="w-3 h-3 mr-1" /> Pending
+          </span>
+        );
     }
   };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleString('en-IN', {
-      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -140,16 +182,12 @@ export function AdminAI() {
     {
       title: 'Puranas',
       icon: <BookOpen className="w-6 h-6 text-purple-500" />,
-      actions: [
-        { name: 'Generate Short Description', type: 'GENERATE_SHORT_DESC' }
-      ]
+      actions: [{ name: 'Generate Short Description', type: 'GENERATE_SHORT_DESC' }]
     },
     {
       title: 'Categories',
       icon: <FolderTree className="w-6 h-6 text-orange-500" />,
-      actions: [
-        { name: 'Generate SEO', type: 'GENERATE_SEO' }
-      ]
+      actions: [{ name: 'Generate SEO', type: 'GENERATE_SEO' }]
     }
   ];
 
@@ -162,9 +200,12 @@ export function AdminAI() {
             <BrainCircuit className="w-6 h-6 text-saffron" />
             AI PROCESSING PIPELINE
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Automate repetitive content tasks with AI. Your API keys and configurations are securely managed by the server.</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Automate repetitive content tasks with AI. Your API keys and configurations are securely managed by the
+            server.
+          </p>
         </div>
-        
+
         {/* Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-gradient-to-br from-blue-50 to-white p-5 rounded-md shadow-sm border border-blue-100">
@@ -222,13 +263,13 @@ export function AdminAI() {
           { id: 'queue', label: 'Processing Queue' },
           { id: 'history', label: 'History' },
           { id: 'failed', label: 'Failed Jobs' }
-        ].map(tab => (
+        ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={`px-4 py-2.5 text-sm font-bold uppercase border-b-2 transition-colors ${
-              activeTab === tab.id 
-                ? 'border-saffron text-saffron' 
+              activeTab === tab.id
+                ? 'border-saffron text-saffron'
                 : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'
             }`}
           >
@@ -239,30 +280,33 @@ export function AdminAI() {
 
       {/* Tab Content */}
       <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm flex flex-col ">
-        
         {/* Content Assistant Tab */}
         {activeTab === 'assistant' && (
           <div className="p-6">
             <h2 className="text-lg font-semibold text-gray-900">Content Assistant</h2>
-            <p className="text-sm text-gray-500 mt-1 mb-6">Select an AI action for individual content types. The system will queue a job to process the requested enhancements.</p>
-            
+            <p className="text-sm text-gray-500 mt-1 mb-6">
+              Select an AI action for individual content types. The system will queue a job to process the requested
+              enhancements.
+            </p>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {assistantCards.map(card => (
-                <div key={card.title} className="border border-gray-100 rounded-md p-5 hover:border-saffron/30 hover:shadow-md transition-all">
+              {assistantCards.map((card) => (
+                <div
+                  key={card.title}
+                  className="border border-gray-100 rounded-md p-5 hover:border-saffron/30 hover:shadow-md transition-all"
+                >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gray-50 rounded-md">
-                      {card.icon}
-                    </div>
+                    <div className="p-2 bg-gray-50 rounded-md">{card.icon}</div>
                     <h3 className="font-semibold text-gray-900">{card.title}</h3>
                   </div>
                   <div className="space-y-2">
-                    {card.actions.map(action => (
+                    {card.actions.map((action) => (
                       <button
                         key={action.name}
                         disabled={action.disabled || queueMutation.isPending}
                         onClick={() => handleQueueJob(`${action.name} for ${card.title}`, card.title, action.type, 1)}
                         className={`w-full flex items-center justify-between px-4 py-2 text-sm rounded-md border transition-colors ${
-                          action.disabled 
+                          action.disabled
                             ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
                             : 'bg-white text-gray-700 border-gray-200 hover:border-saffron hover:text-saffron hover:bg-orange-50'
                         }`}
@@ -282,14 +326,35 @@ export function AdminAI() {
         {activeTab === 'bulk' && (
           <div className="p-6">
             <h2 className="text-lg font-semibold text-gray-900">Bulk Processing Tools</h2>
-            <p className="text-sm text-gray-500 mt-1 mb-6">Run AI operations across multiple records. The system will only process records where the target fields are currently empty (it will never overwrite manual content).</p>
-            
+            <p className="text-sm text-gray-500 mt-1 mb-6">
+              Run AI operations across multiple records. The system will only process records where the target fields
+              are currently empty (it will never overwrite manual content).
+            </p>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
-                { name: 'Generate SEO Meta Descriptions', desc: 'Generates missing SEO descriptions for all Bhajans and Articles', type: 'BULK_SEO', content: 'Global', items: 150 },
-                { name: 'Generate Article Excerpts', desc: 'Creates short summaries for articles missing an excerpt', type: 'BULK_EXCERPT', content: 'Articles', items: 45 },
-                { name: 'Generate Festival Summaries', desc: 'Fills missing descriptions for upcoming festivals', type: 'BULK_FESTIVAL', content: 'Festivals', items: 12 },
-              ].map(tool => (
+                {
+                  name: 'Generate SEO Meta Descriptions',
+                  desc: 'Generates missing SEO descriptions for all Bhajans and Articles',
+                  type: 'BULK_SEO',
+                  content: 'Global',
+                  items: 150
+                },
+                {
+                  name: 'Generate Article Excerpts',
+                  desc: 'Creates short summaries for articles missing an excerpt',
+                  type: 'BULK_EXCERPT',
+                  content: 'Articles',
+                  items: 45
+                },
+                {
+                  name: 'Generate Festival Summaries',
+                  desc: 'Fills missing descriptions for upcoming festivals',
+                  type: 'BULK_FESTIVAL',
+                  content: 'Festivals',
+                  items: 12
+                }
+              ].map((tool) => (
                 <div key={tool.name} className="flex flex-col border border-gray-200 rounded-md p-5 bg-gray-50/50">
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{tool.name}</h3>
@@ -299,7 +364,7 @@ export function AdminAI() {
                     </div>
                   </div>
                   <div className="mt-5 pt-4 border-t border-gray-200">
-                    <Button 
+                    <Button
                       onClick={() => handleQueueJob(tool.name, tool.content, tool.type, tool.items)}
                       disabled={queueMutation.isPending}
                       className="w-full justify-center"
@@ -335,7 +400,11 @@ export function AdminAI() {
                     {activeTab === 'queue' && <th className="px-6 py-4 font-bold">Progress</th>}
                     {activeTab === 'history' && <th className="px-6 py-4 font-bold">Items Processed</th>}
                     <th className="px-6 py-4 font-bold">Status</th>
-                    {activeTab === 'history' ? <th className="px-6 py-4 font-bold">Completed Time</th> : <th className="px-6 py-4 font-bold">Started</th>}
+                    {activeTab === 'history' ? (
+                      <th className="px-6 py-4 font-bold">Completed Time</th>
+                    ) : (
+                      <th className="px-6 py-4 font-bold">Started</th>
+                    )}
                     {activeTab === 'failed' && <th className="px-6 py-4 font-bold">Error</th>}
                     <th className="px-6 py-4 font-bold text-right">Actions</th>
                   </tr>
@@ -345,12 +414,12 @@ export function AdminAI() {
                     <tr key={job.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4 font-medium text-gray-900">{job.job_name}</td>
                       <td className="px-6 py-4 text-gray-500">{job.content_type}</td>
-                      
+
                       {activeTab === 'queue' && (
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2 max-w-[150px]">
                             <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                              <div 
+                              <div
                                 className={`h-full rounded-full transition-all duration-500 ${job.status === 'PROCESSING' ? 'bg-blue-500' : 'bg-gray-300'}`}
                                 style={{ width: `${job.progress}%` }}
                               />
@@ -359,23 +428,21 @@ export function AdminAI() {
                           </div>
                         </td>
                       )}
-                      
+
                       {activeTab === 'history' && (
                         <td className="px-6 py-4 text-gray-500">
                           {job.processed_items} / {job.total_items}
                         </td>
                       )}
-                      
-                      <td className="px-6 py-4">
-                        {getStatusBadge(job.status)}
-                      </td>
-                      
+
+                      <td className="px-6 py-4">{getStatusBadge(job.status)}</td>
+
                       {activeTab === 'history' ? (
                         <td className="px-6 py-4 text-gray-500">{formatDate(job.completed_at)}</td>
                       ) : (
                         <td className="px-6 py-4 text-gray-500">{formatDate(job.started_at)}</td>
                       )}
-                      
+
                       {activeTab === 'failed' && (
                         <td className="px-6 py-4 text-red-500 max-w-[200px] truncate" title={job.error_message}>
                           {job.error_message || 'Unknown error'}
@@ -384,7 +451,7 @@ export function AdminAI() {
 
                       <td className="px-6 py-4 text-right space-x-2">
                         {['PENDING', 'PROCESSING'].includes(job.status) && (
-                          <button 
+                          <button
                             onClick={() => cancelMutation.mutate(job.id)}
                             disabled={cancelMutation.isPending}
                             className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors"
@@ -394,7 +461,7 @@ export function AdminAI() {
                           </button>
                         )}
                         {job.status === 'FAILED' && (
-                          <button 
+                          <button
                             onClick={() => retryMutation.mutate(job.id)}
                             disabled={retryMutation.isPending}
                             className="p-1.5 text-blue-500 hover:text-blue-600 transition-colors"
@@ -404,7 +471,7 @@ export function AdminAI() {
                           </button>
                         )}
                         {['COMPLETED', 'FAILED'].includes(job.status) && (
-                          <button 
+                          <button
                             onClick={() => {
                               if (window.confirm('Are you sure you want to delete this job record?')) {
                                 deleteMutation.mutate(job.id);

@@ -21,12 +21,12 @@ export function isFormActuallyDirty(currentValues: any, defaultValues: any): boo
     if (a !== null && b !== null && typeof a === 'object' && typeof b === 'object') {
       const keysA = Object.keys(a);
       const keysB = Object.keys(b);
-      
+
       // We check all keys in A to see if they match B
       for (const key of keysA) {
         if (!checkEquality(a[key], b[key])) return false;
       }
-      
+
       // We also check keys in B that might not be in A, but ensure they are equivalent to "empty"
       for (const key of keysB) {
         if (!keysA.includes(key) && !checkEquality(undefined, b[key])) {

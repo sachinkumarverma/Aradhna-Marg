@@ -8,10 +8,14 @@ export class AiJobService {
     this.repository = new AiJobRepository();
   }
 
-  async getJobs(options: { page?: number; limit?: number; status?: string }): Promise<{ data: AiJob[]; count: number }> {
+  async getJobs(options: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }): Promise<{ data: AiJob[]; count: number }> {
     return await this.repository.findAll(options.page || 1, options.limit || 10, options.status);
   }
-  
+
   async getStats(): Promise<any> {
     return await this.repository.getStats();
   }

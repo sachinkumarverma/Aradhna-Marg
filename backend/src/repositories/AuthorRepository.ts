@@ -30,11 +30,20 @@ export class AuthorRepository {
     return dbData;
   }
 
-  async findAll(options: { search?: string, sort?: string, order?: 'asc' | 'desc', page?: number, limit?: number, status?: string } = {}): Promise<{ data: Author[], total: number }> {
+  async findAll(
+    options: {
+      search?: string;
+      sort?: string;
+      order?: 'asc' | 'desc';
+      page?: number;
+      limit?: number;
+      status?: string;
+    } = {}
+  ): Promise<{ data: Author[]; total: number }> {
     const { search, sort = 'created_at', order = 'desc', page = 1, limit = 10, status } = options;
     const offset = (page - 1) * limit;
 
-    let whereClauses = ['deleted_at IS NULL'];
+    const whereClauses = ['deleted_at IS NULL'];
     const queryParams: any[] = [];
 
     if (search) {
@@ -48,9 +57,10 @@ export class AuthorRepository {
     }
 
     const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-    const orderStr = sort === 'name' 
-      ? `ORDER BY name ${order === 'asc' ? 'ASC' : 'DESC'}`
-      : `ORDER BY created_at ${order === 'asc' ? 'ASC' : 'DESC'}`;
+    const orderStr =
+      sort === 'name'
+        ? `ORDER BY name ${order === 'asc' ? 'ASC' : 'DESC'}`
+        : `ORDER BY created_at ${order === 'asc' ? 'ASC' : 'DESC'}`;
 
     const dataQuery = `SELECT * FROM ${this.tableName} ${whereStr} ${orderStr} LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
     const countQuery = `SELECT COUNT(*) as total FROM ${this.tableName} ${whereStr}`;
@@ -59,12 +69,14 @@ export class AuthorRepository {
       db.query(dataQuery, [...queryParams, limit, offset]),
       db.query(countQuery, queryParams)
     ]);
-    
+
     return { data: dataResult.rows.map(this.mapToModel), total: parseInt(countResult.rows[0].total, 10) || 0 };
   }
 
   async findById(id: string): Promise<Author | null> {
-    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL LIMIT 1`, [id]);
+    const { rows } = await db.query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL LIMIT 1`, [
+      id
+    ]);
     if (rows.length === 0) return null;
     return this.mapToModel(rows[0]);
   }
@@ -77,7 +89,7 @@ export class AuthorRepository {
 
     const query = `INSERT INTO ${this.tableName} (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
     const { rows } = await db.query(query, values);
-    
+
     return this.mapToModel(rows[0]);
   }
 
@@ -92,7 +104,7 @@ export class AuthorRepository {
 
     const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length} RETURNING *`;
     const { rows } = await db.query(query, values);
-    
+
     return this.mapToModel(rows[0]);
   }
 

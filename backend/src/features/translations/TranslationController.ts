@@ -23,16 +23,12 @@ export class TranslationController {
   async generateLiveTranslation(req: Request, res: Response, next: NextFunction) {
     try {
       const { content, sourceLang, targetLang } = req.body;
-      
+
       console.log('--- START INCOMING LIVE TRANSLATION CONTENT ---');
       console.log(JSON.stringify(content, null, 2));
       console.log('--- END INCOMING LIVE TRANSLATION CONTENT ---');
 
-      const result = await translationService.generateLiveTranslation(
-        content,
-        sourceLang,
-        targetLang
-      );
+      const result = await translationService.generateLiveTranslation(content, sourceLang, targetLang);
       return sendSuccess(res, 'Translation generated successfully', result);
     } catch (error) {
       next(error);
@@ -57,7 +53,7 @@ export class TranslationController {
         contentId as string,
         targetLanguage as string
       );
-      
+
       if (!translation) {
         return res.status(404).json({ success: false, message: 'Translation not found' });
       }
@@ -72,7 +68,7 @@ export class TranslationController {
     try {
       const { id } = req.params;
       const updates = req.body;
-      
+
       const translation = await translationRepository.updateTranslationStatus(id as string, updates);
       return sendSuccess(res, 'Translation updated successfully', translation);
     } catch (error) {

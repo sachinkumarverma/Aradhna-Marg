@@ -16,7 +16,7 @@ export class BhajanRepository {
     const offset = (page - 1) * limit;
 
     const queryParams: any[] = [];
-    let whereClauses = ['b.deleted_at IS NULL', 'b.youtube_video_id IS NULL'];
+    const whereClauses = ['b.deleted_at IS NULL', 'b.youtube_video_id IS NULL'];
 
     if (status) {
       queryParams.push(status);
@@ -32,7 +32,9 @@ export class BhajanRepository {
     }
     if (search) {
       queryParams.push(`%${search}%`);
-      whereClauses.push(`(b.title ILIKE $${queryParams.length} OR b.slug ILIKE $${queryParams.length} OR b.lyrics ILIKE $${queryParams.length})`);
+      whereClauses.push(
+        `(b.title ILIKE $${queryParams.length} OR b.slug ILIKE $${queryParams.length} OR b.lyrics ILIKE $${queryParams.length})`
+      );
     }
 
     const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
@@ -65,7 +67,7 @@ export class BhajanRepository {
     ]);
 
     const count = parseInt(countResult.rows[0].total, 10);
-    const data = dataResult.rows.map(row => ({
+    const data = dataResult.rows.map((row) => ({
       ...row,
       categories: row.categoryName ? { name: row.categoryName } : null,
       gods: row.deityName ? { name: row.deityName } : null
@@ -87,7 +89,7 @@ export class BhajanRepository {
     const dataResult = await db.query(dataQuery, [id]);
 
     if (dataResult.rowCount === 0) return null;
-    
+
     const bhajan = dataResult.rows[0];
 
     const additionalGodsQuery = `SELECT god_id FROM bhajan_gods WHERE bhajan_id = $1`;
@@ -104,7 +106,7 @@ export class BhajanRepository {
   public async updateAdditionalDeities(bhajanId: string, deityIds: string[]) {
     // Delete existing
     await db.query(`DELETE FROM bhajan_gods WHERE bhajan_id = $1`, [bhajanId]);
-    
+
     // Insert new
     if (deityIds && deityIds.length > 0) {
       const values = deityIds.map((id, i) => `($1, $${i + 2})`).join(', ');
@@ -118,22 +120,19 @@ export class BhajanRepository {
 
   public async bulkAction(ids: string[], action: 'PUBLISH' | 'DRAFT' | 'ARCHIVE' | 'DELETE') {
     if (!ids.length) return;
-    
+
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
     if (action === 'DELETE') {
-      await db.query(
-        `UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id IN (${placeholders})`,
-        ids
-      );
+      await db.query(`UPDATE ${this.tableName} SET deleted_at = NOW() WHERE id IN (${placeholders})`, ids);
     } else {
       let status = 'DRAFT';
       if (action === 'PUBLISH') status = 'PUBLISHED';
       if (action === 'ARCHIVE') status = 'ARCHIVED';
 
-      await db.query(
-        `UPDATE ${this.tableName} SET status = $${ids.length + 1} WHERE id IN (${placeholders})`,
-        [...ids, status]
-      );
+      await db.query(`UPDATE ${this.tableName} SET status = $${ids.length + 1} WHERE id IN (${placeholders})`, [
+        ...ids,
+        status
+      ]);
     }
   }
 

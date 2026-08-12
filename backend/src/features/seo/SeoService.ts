@@ -47,7 +47,7 @@ export class SeoService {
 
     for (const table of tables) {
       const isBhajans = table === 'bhajans';
-      
+
       const missingTitles = await seoRepository.getMissingSeoIssues(table, 'title', isBhajans);
       issues.push(...missingTitles);
 

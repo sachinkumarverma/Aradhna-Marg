@@ -15,7 +15,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(10),
   ADMIN_USERNAME: z.string().min(3),
   ADMIN_PASSWORD: z.string().min(6),
-  CRON_SECRET: z.string().min(10),
+  CRON_SECRET: z.string().min(10)
 });
 
 const _env = envSchema.safeParse(process.env);

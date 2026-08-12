@@ -1,6 +1,6 @@
 /**
  * Frontend media upload utility.
- * Sends multipart/form-data to the backend media API 
+ * Sends multipart/form-data to the backend media API
  */
 import { apiClient } from './client';
 
@@ -22,7 +22,7 @@ export const uploadFile = async (file: File, folderId?: string): Promise<string>
   if (folderId) formData.append('folderId', folderId);
 
   const response = await apiClient.post('/admin/media/files', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 'Content-Type': 'multipart/form-data' }
   });
 
   const data: UploadedFile = response.data.data;

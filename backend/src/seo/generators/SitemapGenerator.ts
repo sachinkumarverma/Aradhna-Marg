@@ -3,7 +3,7 @@ import { logger } from '@utils/logger';
 
 export class SitemapGenerator {
   private readonly baseUrl = 'https://aradhnamarg.com';
-  
+
   /**
    * Generates the Master Sitemap Index referencing split sitemaps.
    */
@@ -32,9 +32,7 @@ export class SitemapGenerator {
    */
   public async generateBhajansSitemap(): Promise<string> {
     try {
-      const { rows: bhajans } = await db.query(
-        `SELECT slug, updated_at FROM bhajans WHERE status = 'PUBLISHED'`
-      );
+      const { rows: bhajans } = await db.query(`SELECT slug, updated_at FROM bhajans WHERE status = 'PUBLISHED'`);
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 

@@ -32,7 +32,7 @@ export const AdminFestivals: React.FC = () => {
   });
 
   const bulkMutation = useMutation({
-    mutationFn: async ({ ids, action }: { ids: string[], action: string }) => {
+    mutationFn: async ({ ids, action }: { ids: string[]; action: string }) => {
       await apiClient.post('/admin/festivals/bulk', { ids, action });
     },
     onSuccess: (_, variables) => {
@@ -59,14 +59,18 @@ export const AdminFestivals: React.FC = () => {
       accessor: (row: any) => (
         <div className="flex items-center gap-3">
           {row.bannerImage ? (
-            <img src={row.bannerImage} alt="" className="w-12 h-12 object-cover rounded-md border border-gray-200 shrink-0" />
+            <img
+              src={row.bannerImage}
+              alt=""
+              className="w-12 h-12 object-cover rounded-md border border-gray-200 shrink-0"
+            />
           ) : (
-            <div className="w-12 h-12 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs shrink-0">No img</div>
+            <div className="w-12 h-12 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs shrink-0">
+              No img
+            </div>
           )}
           <div>
-            <p className="font-bold text-gray-900 flex items-center gap-2">
-              {row.name}
-            </p>
+            <p className="font-bold text-gray-900 flex items-center gap-2">{row.name}</p>
             <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.description}</p>
           </div>
         </div>
@@ -74,7 +78,11 @@ export const AdminFestivals: React.FC = () => {
     },
     {
       header: 'Date',
-      accessor: (row: any) => <span className="text-sm text-slate-800 font-medium">{row.festivalDate ? format(new Date(row.festivalDate), 'MMM dd, yyyy') : '-'}</span>
+      accessor: (row: any) => (
+        <span className="text-sm text-slate-800 font-medium">
+          {row.festivalDate ? format(new Date(row.festivalDate), 'MMM dd, yyyy') : '-'}
+        </span>
+      )
     },
     {
       header: 'Category',
@@ -86,12 +94,32 @@ export const AdminFestivals: React.FC = () => {
       accessor: (row: any) => (
         <div className="flex justify-center">
           {row.featured ? (
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FBBF24" className="w-5 h-5 text-amber-400">
-              <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="#FBBF24"
+              className="w-5 h-5 text-amber-400"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                clipRule="evenodd"
+              />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-300">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5 text-gray-300"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+              />
             </svg>
           )}
         </div>
@@ -101,12 +129,20 @@ export const AdminFestivals: React.FC = () => {
       header: 'Status',
       className: 'text-center',
       accessor: (row: any) => (
-        <span className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-            row.status === 'Published' ? 'bg-green-600 text-white' :
-            row.status === 'Draft' ? 'bg-amber-600 text-white' :
-              'bg-gray-500 text-white'
-          }`}>
-          {row.status === 'Published' ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" strokeWidth={2.5} />}
+        <span
+          className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+            row.status === 'Published'
+              ? 'bg-green-600 text-white'
+              : row.status === 'Draft'
+                ? 'bg-amber-600 text-white'
+                : 'bg-gray-500 text-white'
+          }`}
+        >
+          {row.status === 'Published' ? (
+            <CheckCircle2 className="w-3 h-3" />
+          ) : (
+            <XCircle className="w-3 h-3" strokeWidth={2.5} />
+          )}
           {row.status}
         </span>
       )
@@ -121,19 +157,23 @@ export const AdminFestivals: React.FC = () => {
             <Calendar className="w-6 h-6 text-saffron" />
             FESTIVALS
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Manage spiritual festivals, events, and their associated content.</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage spiritual festivals, events, and their associated content.
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => navigate('/admin/festivals/new')} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>Add Festival</Button>
+          <Button
+            onClick={() => navigate('/admin/festivals/new')}
+            variant="primary"
+            leftIcon={<Plus className="w-4 h-4" />}
+          >
+            Add Festival
+          </Button>
         </div>
       </div>
 
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
-        <SearchInput
-          placeholder="Search by name or slug..."
-          value={search}
-          onChange={setSearch}
-        />
+        <SearchInput placeholder="Search by name or slug..." value={search} onChange={setSearch} />
         <div className="flex items-center gap-3">
           <Select
             value={statusFilter}
@@ -174,18 +214,19 @@ export const AdminFestivals: React.FC = () => {
         />
       </div>
 
-      
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 overflow-hidden relative z-10">
-        <Pagination 
-          page={page} 
-          totalPages={totalPages} 
-          totalRecords={data?.meta?.total || 0} 
-          limit={limit} 
-          onPageChange={setPage} 
-          onLimitChange={(l) => { setLimit(l); setPage(1); }} 
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          totalRecords={data?.meta?.total || 0}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(l) => {
+            setLimit(l);
+            setPage(1);
+          }}
         />
       </div>
-    
 
       <Outlet />
     </div>

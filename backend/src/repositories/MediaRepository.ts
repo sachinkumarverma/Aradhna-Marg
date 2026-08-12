@@ -11,7 +11,7 @@ export class MediaRepository {
       name: row.name,
       parentId: row.parent_id,
       createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      updatedAt: row.updated_at
     };
   }
 
@@ -28,7 +28,7 @@ export class MediaRepository {
       dimensions: row.dimensions,
       storagePath: row.storage_path,
       createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      updatedAt: row.updated_at
     };
   }
 
@@ -42,7 +42,7 @@ export class MediaRepository {
   async getFolders(parentId?: string | null): Promise<MediaFolder[]> {
     let query = `SELECT * FROM ${this.foldersTable}`;
     const params: any[] = [];
-    
+
     if (parentId) {
       query += ` WHERE parent_id = $1`;
       params.push(parentId);
@@ -52,7 +52,7 @@ export class MediaRepository {
 
     query += ` ORDER BY name ASC`;
     const { rows } = await db.query(query, params);
-    return rows.map(r => this.mapFolderToModel(r));
+    return rows.map((r) => this.mapFolderToModel(r));
   }
 
   async updateFolder(id: string, name: string): Promise<MediaFolder> {
@@ -84,7 +84,7 @@ export class MediaRepository {
       dto.dimensions,
       dto.storagePath
     ];
-    
+
     const { rows } = await db.query(query, params);
     return this.mapFileToModel(rows[0]);
   }
@@ -92,7 +92,7 @@ export class MediaRepository {
   async getFiles(folderId?: string | null, search?: string): Promise<MediaFile[]> {
     let query = `SELECT * FROM ${this.filesTable}`;
     const params: any[] = [];
-    
+
     if (search) {
       query += ` WHERE file_name ILIKE $1`;
       params.push(`%${search}%`);
@@ -107,7 +107,7 @@ export class MediaRepository {
 
     query += ` ORDER BY created_at DESC`;
     const { rows } = await db.query(query, params);
-    return rows.map(r => this.mapFileToModel(r));
+    return rows.map((r) => this.mapFileToModel(r));
   }
 
   async getFile(id: string): Promise<MediaFile | null> {
@@ -120,7 +120,7 @@ export class MediaRepository {
     const updates: string[] = ['updated_at = NOW()'];
     const params: any[] = [];
     let paramIdx = 1;
-    
+
     if (dto.fileName !== undefined) {
       updates.push(`file_name = $${paramIdx++}`);
       params.push(dto.fileName);
@@ -132,7 +132,7 @@ export class MediaRepository {
 
     params.push(id);
     const query = `UPDATE ${this.filesTable} SET ${updates.join(', ')} WHERE id = $${paramIdx} RETURNING *`;
-    
+
     const { rows } = await db.query(query, params);
     return this.mapFileToModel(rows[0]);
   }

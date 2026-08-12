@@ -10,7 +10,7 @@ export class YouTubeWorker extends BaseWorker {
 
   protected async process(job: IJobPayload): Promise<void> {
     logger.info(`[YouTubeWorker] Starting incremental sync...`);
-    
+
     // 1. Fetch channel metadata (mocked)
     const newVideos = [
       { videoId: 'abc123_', title: 'New Shiv Bhajan' },
@@ -24,7 +24,6 @@ export class YouTubeWorker extends BaseWorker {
 
     // 2. Insert minimal records into Database (mocked)
     for (const video of newVideos) {
-      
       logger.info(`[YouTubeWorker] Imported video ${video.videoId}`);
 
       // 3. ✨ ARCHITECTURE KEY: Publish Event rather than calling AI queue directly ✨

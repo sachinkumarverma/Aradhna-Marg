@@ -6,7 +6,7 @@ class DatabaseClient {
 
   constructor() {
     this.pool = new Pool({
-      connectionString: config.DATABASE_URL,
+      connectionString: config.DATABASE_URL
     });
   }
 

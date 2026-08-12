@@ -10,15 +10,11 @@ export function AdminAdvertisements() {
             <Megaphone className="w-6 h-6 text-saffron" />
             ADVERTISEMENTS
           </h1>
-          
-          <p className="text-gray-500 mt-1 text-sm">
-            Manage ad placements and banners.
-          </p>
+
+          <p className="text-gray-500 mt-1 text-sm">Manage ad placements and banners.</p>
         </div>
-        
-        <button
-          className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-md hover:bg-golden transition-colors"
-        >
+
+        <button className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-md hover:bg-golden transition-colors">
           <Plus className="w-4 h-4" />
           Create Ad
         </button>
@@ -29,9 +25,7 @@ export function AdminAdvertisements() {
           <span className="text-2xl">📢</span>
         </div>
         <h3 className="text-xl font-bold text-darkBrown mb-2">No Advertisements Found</h3>
-        <p className="text-gray-500 mb-6 max-w-sm text-center">
-          Get started by creating your first ad campaign.
-        </p>
+        <p className="text-gray-500 mb-6 max-w-sm text-center">Get started by creating your first ad campaign.</p>
         <button className="px-5 py-2.5 bg-saffron text-white rounded-md font-medium hover:bg-golden transition-colors flex items-center gap-2">
           <Plus className="w-4 h-4" />
           Create Ad

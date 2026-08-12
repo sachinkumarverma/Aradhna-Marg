@@ -13,7 +13,7 @@ export class TranslationApi {
     return response.data;
   }
 
-  static async generateLive(payload: { content: Record<string, any>, sourceLang: string, targetLang: string }) {
+  static async generateLive(payload: { content: Record<string, any>; sourceLang: string; targetLang: string }) {
     const response = await apiClient.post('/admin/translations/generate-live', payload);
     return response.data.data;
   }
@@ -32,7 +32,7 @@ export class TranslationApi {
     const response = await apiClient.put(`/admin/translations/${id}`, updates);
     return response.data;
   }
-  
+
   static async getDashboardStats() {
     // We will implement this route on the backend shortly
     const response = await apiClient.get('/admin/translations/stats');

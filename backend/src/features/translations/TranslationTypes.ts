@@ -1,10 +1,4 @@
-export type TranslationStatus = 
-  | 'NOT_TRANSLATED' 
-  | 'GENERATING' 
-  | 'NEEDS_REVIEW' 
-  | 'APPROVED' 
-  | 'PUBLISHED' 
-  | 'FAILED';
+export type TranslationStatus = 'NOT_TRANSLATED' | 'GENERATING' | 'NEEDS_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'FAILED';
 
 export type ContentType = 'ARTICLE' | 'PURAN' | 'FESTIVAL';
 
@@ -14,7 +8,7 @@ export interface ContentTranslation {
   contentId: string;
   sourceLanguage: string;
   targetLanguage: string;
-  
+
   // Fields
   title?: string;
   excerpt?: string;

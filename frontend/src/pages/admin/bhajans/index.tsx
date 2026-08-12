@@ -36,7 +36,7 @@ export const AdminBhajans: React.FC = () => {
   });
 
   const bulkMutation = useMutation({
-    mutationFn: async ({ ids, action }: { ids: string[], action: 'PUBLISH' | 'DRAFT' | 'ARCHIVE' | 'DELETE' }) => {
+    mutationFn: async ({ ids, action }: { ids: string[]; action: 'PUBLISH' | 'DRAFT' | 'ARCHIVE' | 'DELETE' }) => {
       await BhajanApi.bulkAction(ids, action);
     },
     onSuccess: (_, variables) => {
@@ -78,11 +78,15 @@ export const AdminBhajans: React.FC = () => {
     {
       header: 'Status',
       accessor: (row: any) => (
-        <span className={`px-2 py-1 rounded-md text-xs font-medium border ${
-          row.status === 'PUBLISHED' ? 'bg-green-50 text-green-700 border-green-200' : 
-          row.status === 'DRAFT' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-          'bg-gray-100 text-gray-700 border-gray-200'
-        }`}>
+        <span
+          className={`px-2 py-1 rounded-md text-xs font-medium border ${
+            row.status === 'PUBLISHED'
+              ? 'bg-green-50 text-green-700 border-green-200'
+              : row.status === 'DRAFT'
+                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                : 'bg-gray-100 text-gray-700 border-gray-200'
+          }`}
+        >
           {row.status}
         </span>
       )
@@ -93,7 +97,9 @@ export const AdminBhajans: React.FC = () => {
     },
     {
       header: 'Created',
-      accessor: (row: any) => <span className="text-sm text-slate-800 font-medium">{format(new Date(row.created_at), 'MMM dd, yyyy')}</span>
+      accessor: (row: any) => (
+        <span className="text-sm text-slate-800 font-medium">{format(new Date(row.created_at), 'MMM dd, yyyy')}</span>
+      )
     }
   ];
 
@@ -108,19 +114,21 @@ export const AdminBhajans: React.FC = () => {
           <p className="text-sm text-gray-500 mt-1">Manage and supervise all imported and generated content.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => navigate('/admin/bhajans/new')} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>Create Bhajan</Button>
+          <Button
+            onClick={() => navigate('/admin/bhajans/new')}
+            variant="primary"
+            leftIcon={<Plus className="w-4 h-4" />}
+          >
+            Create Bhajan
+          </Button>
         </div>
       </div>
 
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
-        <SearchInput 
-          placeholder="Search by title, slug, lyrics..."
-          value={search}
-          onChange={setSearch}
-        />
+        <SearchInput placeholder="Search by title, slug, lyrics..." value={search} onChange={setSearch} />
         <div className="flex items-center gap-3">
-          <Select 
-            value={statusFilter} 
+          <Select
+            value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
             options={[
               { label: 'All Statuses', value: '' },
@@ -131,8 +139,8 @@ export const AdminBhajans: React.FC = () => {
             className="w-40"
             searchable={false}
           />
-          <Select 
-            value={sort} 
+          <Select
+            value={sort}
             onChange={(val) => setSort(val)}
             options={[
               { label: 'Newest First', value: 'newest' },
@@ -147,9 +155,9 @@ export const AdminBhajans: React.FC = () => {
       </div>
 
       <div className="flex-1 min-h-0 relative">
-        <DataTable 
-          data={data?.data || []} 
-          columns={columns} 
+        <DataTable
+          data={data?.data || []}
+          columns={columns}
           isLoading={isLoading}
           onEdit={(row) => navigate(`/admin/bhajans/${row.id}/edit`)}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
@@ -158,19 +166,19 @@ export const AdminBhajans: React.FC = () => {
         />
       </div>
 
-
-      
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 overflow-hidden relative z-10">
-        <Pagination 
-          page={page} 
-          totalPages={totalPages} 
-          totalRecords={data?.meta?.total || 0} 
-          limit={limit} 
-          onPageChange={setPage} 
-          onLimitChange={(l) => { setLimit(l); setPage(1); }} 
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          totalRecords={data?.meta?.total || 0}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(l) => {
+            setLimit(l);
+            setPage(1);
+          }}
         />
       </div>
-    
 
       <Outlet />
     </div>

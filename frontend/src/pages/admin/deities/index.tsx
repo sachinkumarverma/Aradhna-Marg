@@ -10,8 +10,19 @@ import { useForm, Controller } from 'react-hook-form';
 import { Select } from '@components/ui/Select';
 import { Button } from '@components/ui/Button';
 import {
-  Plus, Edit2, Trash2, RefreshCw, Save, ArrowLeft, CheckCircle2, XCircle, Image as ImageIcon,
-  Flame, Star, X, Sparkles
+  Plus,
+  Edit2,
+  Trash2,
+  RefreshCw,
+  Save,
+  ArrowLeft,
+  CheckCircle2,
+  XCircle,
+  Image as ImageIcon,
+  Flame,
+  Star,
+  X,
+  Sparkles
 } from 'lucide-react';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 
@@ -24,7 +35,15 @@ export const AdminDeities = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form setup
-  const { register, handleSubmit, reset, setValue, watch, control, formState: { errors, isSubmitting, isValid, isDirty, defaultValues } } = useForm({ mode: 'onChange' });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    control,
+    formState: { errors, isSubmitting, isValid, isDirty, defaultValues }
+  } = useForm({ mode: 'onChange' });
 
   // Fetch Deities
   const { data, isLoading } = useQuery({
@@ -104,7 +123,9 @@ export const AdminDeities = () => {
           <p className="text-sm text-gray-500 mt-1">Manage deities, their profiles, and details.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => openDrawer()} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>Create Deity</Button>
+          <Button onClick={() => openDrawer()} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
+            Create Deity
+          </Button>
         </div>
       </div>
 
@@ -112,7 +133,10 @@ export const AdminDeities = () => {
         <SearchInput
           placeholder="Search deities..."
           value={search}
-          onChange={val => { setSearch(val); setPage(1); }}
+          onChange={(val) => {
+            setSearch(val);
+            setPage(1);
+          }}
         />
       </div>
 
@@ -122,13 +146,21 @@ export const AdminDeities = () => {
             <table className="w-full text-sm text-left">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  {[1, 2, 3, 4, 5].map(i => <th key={i} className="px-6 py-2.5"><div className="h-4 bg-gray-200 rounded w-20"></div></th>)}
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <th key={i} className="px-6 py-2.5">
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {[1,2,3,4,5,6,7,8,9,10].map(row => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row) => (
                   <tr key={row} className="border-b border-gray-50">
-                    {[1, 2, 3, 4, 5].map(col => <td key={col} className="px-6 py-2.5"><div className="h-4 bg-gray-100 rounded w-full"></div></td>)}
+                    {[1, 2, 3, 4, 5].map((col) => (
+                      <td key={col} className="px-6 py-2.5">
+                        <div className="h-4 bg-gray-100 rounded w-full"></div>
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
@@ -161,7 +193,11 @@ export const AdminDeities = () => {
                       <td className="px-6 py-2.5">
                         <div className="flex items-center gap-3">
                           {deity.image ? (
-                            <img src={deity.image} alt={deity.name} className="w-12 h-12 rounded-md object-cover border border-gray-200" />
+                            <img
+                              src={deity.image}
+                              alt={deity.name}
+                              className="w-12 h-12 rounded-md object-cover border border-gray-200"
+                            />
                           ) : (
                             <div className="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center border border-gray-200">
                               <Flame className="w-6 h-6 text-gray-400" />
@@ -169,7 +205,9 @@ export const AdminDeities = () => {
                           )}
                           <div>
                             <p className="font-semibold text-gray-900">{deity.name}</p>
-                            {deity.description && <p className="text-xs text-gray-500 truncate max-w-[250px]">{deity.description}</p>}
+                            {deity.description && (
+                              <p className="text-xs text-gray-500 truncate max-w-[250px]">{deity.description}</p>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -186,16 +224,25 @@ export const AdminDeities = () => {
                         {deity.displayOrder || '-'}
                       </td>
                       <td className="px-6 py-2.5 text-center">
-                        <span className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
+                        <span
+                          className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
                         ${deity.status === 'ACTIVE' ? 'bg-green-600 text-white' : 'bg-gray-500 text-white'}
-                      `}>
-                          {deity.status === 'ACTIVE' ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" strokeWidth={2.5} />}
+                      `}
+                        >
+                          {deity.status === 'ACTIVE' ? (
+                            <CheckCircle2 className="w-3 h-3" />
+                          ) : (
+                            <XCircle className="w-3 h-3" strokeWidth={2.5} />
+                          )}
                           {deity.status}
                         </span>
                       </td>
                       <td className="px-6 py-2.5 text-right">
                         <div className="flex items-center justify-end">
-                          <button onClick={() => openDrawer(deity)} className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">
+                          <button
+                            onClick={() => openDrawer(deity)}
+                            className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                          >
                             <Edit2 className="w-4 h-4" strokeWidth={3.5} />
                           </button>
                           <button
@@ -213,177 +260,180 @@ export const AdminDeities = () => {
                     </tr>
                   ))}
                 </tbody>
-              
-          </table>
+              </table>
+            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalRecords={data?.meta?.total || 0}
+              limit={limit}
+              onPageChange={setPage}
+              onLimitChange={(l) => {
+                setLimit(l);
+                setPage(1);
+              }}
+            />
           </div>
-          <Pagination 
-            page={page} 
-            totalPages={totalPages} 
-            totalRecords={data?.meta?.total || 0} 
-            limit={limit} 
-            onPageChange={setPage} 
-            onLimitChange={(l) => { setLimit(l); setPage(1); }} 
-          />
-        </div>
-      )}
+        )}
       </div>
 
-      
-
       {/* Drawer */}
-      {isDrawerOpen && createPortal(
-        <div className="fixed inset-0 z-[100] flex justify-end">
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeDrawer} />
+      {isDrawerOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[100] flex justify-end">
+            <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeDrawer} />
 
-          <div className="relative w-full max-w-4xl bg-gray-50 h-full flex flex-col shadow-2xl animate-in slide-in-from-right">
-            {/* Drawer Header */}
-            <div className="flex items-center justify-between px-6 py-2.5 bg-orange-100 border-b border-orange-200">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={closeDrawer}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5 text-gray-600" />
-                </button>
-                <h2 className="text-xl font-bold tracking-wide text-slate-900 uppercase">
-                  {editingId ? 'Edit Deity' : 'Create Deity'}
-                </h2>
-              </div>
-              <button
-                type="submit"
-                form="deity-form"
-                disabled={saveMutation.isPending || !isValid || (editingId ? !actuallyDirty : false)}
-                className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {saveMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                {saveMutation.isPending ? 'Saving...' : 'Save'}
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6">
-              <form id="deity-form" onSubmit={handleSubmit(onSubmit)} className="h-full">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-
-                  {/* LEFT COLUMN: Main Content */}
-                  <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-800">Deity Name *</label>
-                        <input
-                          {...register('name', { required: true })}
-                          className="w-full px-4 py-2.5 bg-gray-50 border border-blue-100 rounded-md outline-none text-gray-900 focus:bg-white focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all"
-                          placeholder="e.g. Lord Shiva"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-800">Short Description</label>
-                        <textarea
-                          {...register('shortDescription')}
-                          rows={4}
-                          className="w-full px-4 py-3 bg-gray-50 border border-blue-100 rounded-md outline-none text-gray-900 focus:bg-white focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all resize-y"
-                          placeholder="Write a short description..."
-                        />
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                      <h3 className="font-bold text-gray-900 border-b pb-3">Advanced SEO</h3>
-                      <div className="space-y-4">
-                        <div className="space-y-1.5">
-                          <label className="text-sm font-semibold text-gray-700">SEO Title</label>
-                          <input
-                            {...register('seoTitle')}
-                            className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
-                          />
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <label className="text-sm font-semibold text-gray-700">SEO Description</label>
-                          <textarea
-                            {...register('seoDescription')}
-                            rows={3}
-                            className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron resize-y"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* RIGHT COLUMN: Metadata & Media */}
-                  <div className="space-y-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-700">Status</label>
-                        <Controller
-                          name="status"
-                          control={control}
-                          defaultValue="ACTIVE"
-                          render={({ field }) => (
-                            <Select
-                              value={field.value}
-                              onChange={field.onChange}
-                              options={[
-                                { label: 'Active', value: 'ACTIVE' },
-                                { label: 'Inactive', value: 'INACTIVE' }
-                              ]}
-                              searchable={false}
-                            />
-                          )}
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-700">Display Order</label>
-                        <input
-                          type="number"
-                          {...register('displayOrder')}
-                          className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
-                          placeholder="0"
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-md">
-                        <input
-                          type="checkbox"
-                          id="featured"
-                          {...register('featured')}
-                          className="w-4 h-4 text-saffron rounded border-gray-300 focus:ring-saffron"
-                        />
-                        <label htmlFor="featured" className="text-sm font-medium text-gray-700 select-none cursor-pointer">
-                          Featured Deity
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                      <h3 className="font-bold text-gray-900 border-b pb-3">Media</h3>
-                      <div className="flex flex-col items-center gap-4 w-full">
-                        <div className="w-full flex flex-col items-center">
-                          <ImageUploadWithCrop
-                            value={watch('image')}
-                            onChange={(val) => setValue('image', val, { shouldValidate: true, shouldDirty: true })}
-                            onRemove={() => setValue('image', '', { shouldValidate: true, shouldDirty: true })}
-                            aspectRatio={1}
-                            shape="rect"
-                            className="w-full max-w-[200px] mx-auto aspect-square rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
-                            placeholder="Upload 1:1 Image"
-                          />
-                        </div>
-                        <p className="text-xs text-gray-500 text-center">Click to upload deity image.</p>
-                        <input type="hidden" {...register('image')} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="h-2 col-span-1 lg:col-span-3"></div>
+            <div className="relative w-full max-w-4xl bg-gray-50 h-full flex flex-col shadow-2xl animate-in slide-in-from-right">
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between px-6 py-2.5 bg-orange-100 border-b border-orange-200">
+                <div className="flex items-center gap-4">
+                  <button onClick={closeDrawer} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                    <ArrowLeft className="w-5 h-5 text-gray-600" />
+                  </button>
+                  <h2 className="text-xl font-bold tracking-wide text-slate-900 uppercase">
+                    {editingId ? 'Edit Deity' : 'Create Deity'}
+                  </h2>
                 </div>
-              </form>
-            </div>
+                <button
+                  type="submit"
+                  form="deity-form"
+                  disabled={saveMutation.isPending || !isValid || (editingId ? !actuallyDirty : false)}
+                  className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {saveMutation.isPending ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  {saveMutation.isPending ? 'Saving...' : 'Save'}
+                </button>
+              </div>
 
-          </div>
-        </div>,
-        document.body
-      )}
+              <div className="flex-1 overflow-y-auto p-6">
+                <form id="deity-form" onSubmit={handleSubmit(onSubmit)} className="h-full">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+                    {/* LEFT COLUMN: Main Content */}
+                    <div className="lg:col-span-2 space-y-6">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-800">Deity Name *</label>
+                          <input
+                            {...register('name', { required: true })}
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-blue-100 rounded-md outline-none text-gray-900 focus:bg-white focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all"
+                            placeholder="e.g. Lord Shiva"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-800">Short Description</label>
+                          <textarea
+                            {...register('shortDescription')}
+                            rows={4}
+                            className="w-full px-4 py-3 bg-gray-50 border border-blue-100 rounded-md outline-none text-gray-900 focus:bg-white focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all resize-y"
+                            placeholder="Write a short description..."
+                          />
+                        </div>
+                      </div>
+
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                        <h3 className="font-bold text-gray-900 border-b pb-3">Advanced SEO</h3>
+                        <div className="space-y-4">
+                          <div className="space-y-1.5">
+                            <label className="text-sm font-semibold text-gray-700">SEO Title</label>
+                            <input
+                              {...register('seoTitle')}
+                              className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                            />
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-sm font-semibold text-gray-700">SEO Description</label>
+                            <textarea
+                              {...register('seoDescription')}
+                              rows={3}
+                              className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron resize-y"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* RIGHT COLUMN: Metadata & Media */}
+                    <div className="space-y-6">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">Status</label>
+                          <Controller
+                            name="status"
+                            control={control}
+                            defaultValue="ACTIVE"
+                            render={({ field }) => (
+                              <Select
+                                value={field.value}
+                                onChange={field.onChange}
+                                options={[
+                                  { label: 'Active', value: 'ACTIVE' },
+                                  { label: 'Inactive', value: 'INACTIVE' }
+                                ]}
+                                searchable={false}
+                              />
+                            )}
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">Display Order</label>
+                          <input
+                            type="number"
+                            {...register('displayOrder')}
+                            className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                            placeholder="0"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                          <input
+                            type="checkbox"
+                            id="featured"
+                            {...register('featured')}
+                            className="w-4 h-4 text-saffron rounded border-gray-300 focus:ring-saffron"
+                          />
+                          <label
+                            htmlFor="featured"
+                            className="text-sm font-medium text-gray-700 select-none cursor-pointer"
+                          >
+                            Featured Deity
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                        <h3 className="font-bold text-gray-900 border-b pb-3">Media</h3>
+                        <div className="flex flex-col items-center gap-4 w-full">
+                          <div className="w-full flex flex-col items-center">
+                            <ImageUploadWithCrop
+                              value={watch('image')}
+                              onChange={(val) => setValue('image', val, { shouldValidate: true, shouldDirty: true })}
+                              onRemove={() => setValue('image', '', { shouldValidate: true, shouldDirty: true })}
+                              aspectRatio={1}
+                              shape="rect"
+                              className="w-full max-w-[200px] mx-auto aspect-square rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
+                              placeholder="Upload 1:1 Image"
+                            />
+                          </div>
+                          <p className="text-xs text-gray-500 text-center">Click to upload deity image.</p>
+                          <input type="hidden" {...register('image')} />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="h-2 col-span-1 lg:col-span-3"></div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
-}
+};

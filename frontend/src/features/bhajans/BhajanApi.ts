@@ -1,7 +1,15 @@
 import { apiClient } from '@api/client';
 
 export class BhajanApi {
-  static async getList(params?: { page?: number; limit?: number; search?: string; status?: string; category?: string; primaryDeity?: string; sort?: string }) {
+  static async getList(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    category?: string;
+    primaryDeity?: string;
+    sort?: string;
+  }) {
     const response = await apiClient.get('/admin/bhajans', { params });
     return response.data;
   }

@@ -22,23 +22,27 @@ class CronManager {
 
     this.jobs.set(job.name, job);
 
-    const task = cron.schedule(job.schedule, async () => {
-      const currentJob = this.jobs.get(job.name);
-      if (!currentJob || currentJob.status === 'RUNNING') return;
+    const task = cron.schedule(
+      job.schedule,
+      async () => {
+        const currentJob = this.jobs.get(job.name);
+        if (!currentJob || currentJob.status === 'RUNNING') return;
 
-      currentJob.status = 'RUNNING';
-      currentJob.lastRun = new Date();
-      logger.info(`Starting cron job: ${job.name}`);
+        currentJob.status = 'RUNNING';
+        currentJob.lastRun = new Date();
+        logger.info(`Starting cron job: ${job.name}`);
 
-      try {
-        await currentJob.run();
-        currentJob.status = 'IDLE';
-        logger.info(`Successfully completed cron job: ${job.name}`);
-      } catch (error) {
-        currentJob.status = 'FAILED';
-        logger.error({ error }, `Cron job ${job.name} failed`);
-      }
-    }, { name: job.name }); // node-cron v3 uses 'name' not 'scheduled'
+        try {
+          await currentJob.run();
+          currentJob.status = 'IDLE';
+          logger.info(`Successfully completed cron job: ${job.name}`);
+        } catch (error) {
+          currentJob.status = 'FAILED';
+          logger.error({ error }, `Cron job ${job.name} failed`);
+        }
+      },
+      { name: job.name }
+    ); // node-cron v3 uses 'name' not 'scheduled'
 
     this.tasks.set(job.name, task);
     logger.info(`Registered cron job: ${job.name} with schedule: ${job.schedule}`);
@@ -53,7 +57,7 @@ class CronManager {
       logger.warn(`Cron job ${name} is already running.`);
       return;
     }
-    
+
     job.status = 'RUNNING';
     job.lastRun = new Date();
     logger.info(`Manually triggering cron job: ${job.name}`);
@@ -70,12 +74,12 @@ class CronManager {
   }
 
   public startAll() {
-    this.tasks.forEach(task => task.start());
+    this.tasks.forEach((task) => task.start());
     logger.info('All cron jobs started.');
   }
 
   public stopAll() {
-    this.tasks.forEach(task => task.stop());
+    this.tasks.forEach((task) => task.stop());
     logger.info('All cron jobs stopped.');
   }
 }

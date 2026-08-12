@@ -16,7 +16,7 @@ interface TranslationPanelProps {
   originalContent: Record<string, any>;
 }
 
-export const TranslationPanel: React.FC<TranslationPanelProps> = ({ 
+export const TranslationPanel: React.FC<TranslationPanelProps> = ({
   hasTranslation,
   isOutdated,
   onGenerateLive,
@@ -68,10 +68,12 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           </div>
           <div>
             <div className="font-bold text-[#1a1a2e] text-sm">Translation not generated</div>
-            <div className="text-[13px] text-gray-500 mt-0.5 leading-tight">Generate English translation from the Hindi content.</div>
+            <div className="text-[13px] text-gray-500 mt-0.5 leading-tight">
+              Generate English translation from the Hindi content.
+            </div>
           </div>
         </div>
-        
+
         <button
           type="button"
           onClick={handleGenerate}
@@ -80,7 +82,9 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
         >
           {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
           <span className="text-left leading-tight text-[13px]">
-            Generate<br/>Translation
+            Generate
+            <br />
+            Translation
           </span>
         </button>
       </div>
@@ -95,7 +99,9 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
         </div>
         <div>
           <div className="font-bold text-[#1a1a2e] text-sm">English translation available</div>
-          <div className="text-[13px] text-gray-500 mt-0.5 leading-tight">Translation is ready for review and publishing.</div>
+          <div className="text-[13px] text-gray-500 mt-0.5 leading-tight">
+            Translation is ready for review and publishing.
+          </div>
         </div>
       </div>
 
@@ -106,15 +112,21 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           disabled={isGenerating}
           className="flex items-center justify-center gap-2 bg-[#5542F6] text-white hover:bg-[#4a39d4] px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5 text-white" />}
+          {isGenerating ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <RefreshCw className="w-3.5 h-3.5 text-white" />
+          )}
           Regenerate
         </button>
-        
+
         <button
           type="button"
           onClick={() => {
             // Just simulate edit action by focusing the main title input if it exists
-            const firstInput = document.querySelector('input[name="title_en"], input[name="name_en"]') as HTMLInputElement;
+            const firstInput = document.querySelector(
+              'input[name="title_en"], input[name="name_en"]'
+            ) as HTMLInputElement;
             if (firstInput) {
               firstInput.focus();
               window.scrollTo({ top: firstInput.offsetTop - 100, behavior: 'smooth' });

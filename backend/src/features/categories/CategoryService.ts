@@ -23,7 +23,7 @@ export class CategoryService {
 
   async updateCategory(id: string, data: UpdateCategoryDTO) {
     await this.getCategory(id);
-    
+
     if (data.name && !data.slug) {
       data.slug = randomUUID();
     }

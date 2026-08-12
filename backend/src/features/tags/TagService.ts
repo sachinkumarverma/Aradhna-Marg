@@ -23,7 +23,7 @@ export class TagService {
 
   async updateTag(id: string, data: UpdateTagDTO) {
     await this.getTag(id);
-    
+
     if (data.name && !data.slug) {
       data.slug = randomUUID();
     }

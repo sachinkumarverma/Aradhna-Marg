@@ -11,7 +11,12 @@ You must return a JSON object with the following structure exactly:
 Respond ONLY with JSON. No markdown, no explanations.
 `;
 
-export const buildGenerateSeoUserPrompt = (title: string, description: string, categoryName?: string, godName?: string) => {
+export const buildGenerateSeoUserPrompt = (
+  title: string,
+  description: string,
+  categoryName?: string,
+  godName?: string
+) => {
   return `
 Bhajan Details:
 Title: ${title}
