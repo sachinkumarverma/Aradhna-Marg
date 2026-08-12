@@ -73,7 +73,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange,
       ref={reactQuillRef}
       theme="snow"
       value={value}
-      onChange={onChange}
+      onChange={(content, delta, source, editor) => {
+        if (source === 'user') {
+          onChange(content);
+        }
+      }}
       className={className}
       modules={{
         toolbar: [

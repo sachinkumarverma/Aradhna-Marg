@@ -32,6 +32,7 @@ class AdminFestivalController {
 
   public update = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log('Update Festival Payload:', req.body);
       const data = await festivalService.update(req.params.id as string, req.body);
       return sendSuccess(res, 'Festival updated', data);
     } catch (error) {

@@ -104,9 +104,9 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           type="button"
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="flex items-center justify-center gap-2 bg-white border border-indigo-200 text-[#5542F6] hover:bg-indigo-50 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-2 bg-[#5542F6] text-white hover:bg-[#4a39d4] px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5 text-[#5542F6]" />}
+          {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5 text-white" />}
           Regenerate
         </button>
         
@@ -120,7 +120,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
               window.scrollTo({ top: firstInput.offsetTop - 100, behavior: 'smooth' });
             }
           }}
-          className="flex items-center justify-center gap-2 bg-[#E7F3EB] text-[#2E9E5B] hover:bg-[#d5ecd9] px-4 py-2 rounded-lg text-[13px] font-medium transition-colors"
+          className="flex items-center justify-center gap-2 bg-[#2E9E5B] text-white hover:bg-[#25824b] px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm"
         >
           <Edit3 className="w-3.5 h-3.5" />
           Edit

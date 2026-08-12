@@ -41,7 +41,9 @@ export class GoogleTranslateProvider implements TranslationProvider {
       
       throw new Error('Invalid response format');
     } catch (error: any) {
-      throw new AppError(`Google Translate failed: ${error.message}`, 502);
+      console.error("RAW GOOGLE TRANSLATE ERROR:", error);
+      const msg = error?.response?.data?.message || error?.response?.statusText || error?.message || String(error);
+      throw new AppError(`Google Translate failed: ${msg}`, 502);
     }
   }
 

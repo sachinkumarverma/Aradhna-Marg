@@ -29,14 +29,14 @@ export class FestivalService {
 
   async create(data: CreateFestivalDTO): Promise<Festival> {
     if (!data.slug) {
-      data.slug = this.generateSlug(data);
+      data.slug = this.generateSlug();
     }
     return festivalRepository.create(data);
   }
 
   async update(id: string, data: UpdateFestivalDTO): Promise<Festival> {
     if (data.name && !data.slug) {
-      data.slug = this.generateSlug(data);
+      data.slug = this.generateSlug();
     }
     return festivalRepository.update(id, data);
   }

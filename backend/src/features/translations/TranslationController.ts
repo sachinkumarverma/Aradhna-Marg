@@ -23,6 +23,11 @@ export class TranslationController {
   async generateLiveTranslation(req: Request, res: Response, next: NextFunction) {
     try {
       const { content, sourceLang, targetLang } = req.body;
+      
+      console.log('--- START INCOMING LIVE TRANSLATION CONTENT ---');
+      console.log(JSON.stringify(content, null, 2));
+      console.log('--- END INCOMING LIVE TRANSLATION CONTENT ---');
+
       const result = await translationService.generateLiveTranslation(
         content,
         sourceLang,
