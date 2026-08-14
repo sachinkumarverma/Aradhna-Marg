@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom';
 import { RichTextEditor } from '@components/ui/RichTextEditor';
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
+import { FormLoader } from '@components/admin/FormLoader';
 
 import { generateSlug } from '@utils/slugify';
 
@@ -258,12 +259,10 @@ export const AdminFestivalForm = () => {
             </div>
 
             {/* Content */}
+            {isEditing && festivalQuery.isLoading ? (
+              <FormLoader />
+            ) : (
             <div className="flex-1 overflow-y-auto p-6">
-              {festivalQuery.isLoading && isEditing ? (
-                <div className="flex items-center justify-center h-full">
-                  <Loader2 className="w-8 h-8 animate-spin text-saffron" />
-                </div>
-              ) : (
                 <form
                   id="festival-form"
                   onSubmit={handleSubmit(onSubmit)}
@@ -615,8 +614,8 @@ export const AdminFestivalForm = () => {
                     </div>
                   </div>
                 </form>
-              )}
             </div>
+            )}
           </div>
         </div>,
         document.body

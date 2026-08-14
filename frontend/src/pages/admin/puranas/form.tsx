@@ -1,5 +1,6 @@
 import { AutoResizeTextarea } from '@components/ui/AutoResizeTextarea';
 import React, { useState, useEffect } from 'react';
+import { FormLoader } from '@components/admin/FormLoader';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -197,6 +198,9 @@ export const AdminPuranForm = () => {
         </div>
 
         {/* Content */}
+        {isEditing && puranQuery?.isLoading ? (
+          <FormLoader />
+        ) : (
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* LEFT COLUMN: Main Content */}
@@ -525,6 +529,7 @@ export const AdminPuranForm = () => {
           </div>
           <div className="h-2 col-span-1 lg:col-span-3"></div>
         </div>
+        )}
       </div>
     </div>,
     document.body

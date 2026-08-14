@@ -21,10 +21,15 @@ export class ArticleService {
   }
 
   public async create(data: any) {
-    const { deities, festivals, tags, bhajans, related_articles, ...articleData } = data;
+    const { deities, festivals, tags, bhajans, related_articles, image_url, ...articleData } = data;
 
     if (!articleData.slug && articleData.title) {
       articleData.slug = randomUUID();
+    }
+    if (articleData.status === 'PUBLISHED') {
+      articleData.publish_date = new Date().toISOString();
+    } else {
+      articleData.publish_date = null;
     }
 
     const created = await articleRepository.create(articleData);
@@ -34,8 +39,16 @@ export class ArticleService {
   }
 
   public async update(id: string, data: any) {
-    const { deities, festivals, tags, bhajans, related_articles, ...articleData } = data;
+    const { deities, festivals, tags, bhajans, related_articles, image_url, ...articleData } = data;
 
+    const existing = await articleRepository.findById(id);
+    if (articleData.status === 'PUBLISHED' && !existing?.publish_date) {
+      articleData.publish_date = new Date().toISOString();
+    } else if (articleData.status !== 'PUBLISHED') {
+      articleData.publish_date = null;
+    } else {
+      delete articleData.publish_date; // Keep existing publish_date
+    }
     const updated = await articleRepository.update(id, articleData);
 
     await this.updateRelations(id, deities, festivals, tags, bhajans, related_articles);

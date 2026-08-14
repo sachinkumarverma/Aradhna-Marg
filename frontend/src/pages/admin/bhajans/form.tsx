@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FormLoader } from '@components/admin/FormLoader';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -62,7 +63,7 @@ export const AdminBhajanForm = () => {
   }, [titleValue, isEditing, slugValue, setValue]);
 
   // Fetch data if editing
-  useQuery({
+  const mainQuery = useQuery({
     queryKey: ['admin-bhajan', id],
     queryFn: async () => {
       if (!id) return null;
@@ -177,6 +178,9 @@ export const AdminBhajanForm = () => {
         </div>
 
         {/* Content */}
+        {isEditing && mainQuery?.isLoading ? (
+          <FormLoader />
+        ) : (
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* LEFT COLUMN: Main Content */}
@@ -364,6 +368,7 @@ export const AdminBhajanForm = () => {
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>,
     document.body

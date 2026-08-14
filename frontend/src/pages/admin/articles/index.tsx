@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, FileText, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, FileText, CheckCircle2, XCircle, Star } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '@components/admin/DataTable';
 import { Button } from '@components/ui/Button';
@@ -57,29 +57,24 @@ export const AdminArticles: React.FC = () => {
     {
       header: 'Title',
       accessor: (row: any) => (
-        <div className="flex items-center gap-3">
-          {row.media_files?.url ? (
-            <img
-              src={row.media_files.url}
-              alt=""
-              className="w-12 h-12 object-cover rounded-md border border-gray-200 shrink-0"
-            />
+        <div className="flex flex-col gap-1">
+          <p className="font-bold text-gray-900 line-clamp-2 leading-snug">
+            {row.title}
+          </p>
+          {row.excerpt && <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.excerpt}</p>}
+        </div>
+      )
+    },
+    {
+      header: 'Featured',
+      className: 'text-center w-24',
+      accessor: (row: any) => (
+        <div className="flex justify-center">
+          {row.featured ? (
+            <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
           ) : (
-            <div className="w-12 h-12 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs shrink-0">
-              No img
-            </div>
+            <span className="text-gray-300">-</span>
           )}
-          <div>
-            <p className="font-bold text-gray-900 flex items-center gap-2">
-              {row.title}
-              {row.featured && (
-                <span className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
-                  Featured
-                </span>
-              )}
-            </p>
-            {row.excerpt && <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.excerpt}</p>}
-          </div>
         </div>
       )
     },
@@ -93,7 +88,7 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Status',
-      className: 'text-center',
+      className: 'text-center w-32',
       accessor: (row: any) => (
         <span
           className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
@@ -115,15 +110,19 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Views',
-      accessor: (row: any) => <span className="text-sm text-gray-600">{row.view_count?.toLocaleString() || 0}</span>
+      className: 'text-center w-24',
+      accessor: (row: any) => <div className="text-sm text-gray-600 justify-center flex">{row.view_count?.toLocaleString() || 0}</div>
     },
     {
       header: 'Published',
-      accessor: (row: any) => (
-        <span className="text-sm text-slate-800 font-medium">
-          {row.publish_date ? format(new Date(row.publish_date), 'MMM dd, yyyy') : '-'}
-        </span>
-      )
+      accessor: (row: any) => {
+        const displayDate = row.publish_date ? new Date(row.publish_date) : new Date(row.created_at);
+        return (
+          <span className="text-sm text-slate-800 font-medium">
+            {format(displayDate, 'MMM dd, yyyy')}
+          </span>
+        );
+      }
     }
   ];
 

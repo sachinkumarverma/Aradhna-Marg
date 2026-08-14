@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Languages, ArrowLeft, Save, Loader2, Eye, Send, Upload, X } from 'lucide-react';
 import { TranslationPanel } from '../../../features/translations/TranslationPanel';
 import { apiClient } from '@api/client';
-import { uploadFile } from '@api/upload';
+import { uploadFile, uploadMediaFile } from '@api/upload';
 import toast from 'react-hot-toast';
 import { Select } from '@components/ui/Select';
 import { MultiSelect } from '@components/ui/MultiSelect';
@@ -18,6 +18,7 @@ import { createPortal } from 'react-dom';
 import { RichTextEditor } from '@components/ui/RichTextEditor';
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
+import { FormLoader } from '@components/admin/FormLoader';
 
 export const AdminArticleForm = () => {
   const { id } = useParams();
@@ -58,7 +59,6 @@ export const AdminArticleForm = () => {
       related_articles: [] as string[],
       status: 'DRAFT',
       featured: false,
-      publish_date: '',
       seo_title: '',
       seo_description: ''
     }
@@ -90,15 +90,14 @@ export const AdminArticleForm = () => {
       const data = articleQuery.data;
       reset({
         ...data,
-        publish_date: data.publish_date ? new Date(data.publish_date).toISOString().slice(0, 16) : '',
         deities: data.article_gods?.map((g: any) => g.god_id) || [],
         festivals: data.article_festivals?.map((f: any) => f.festival_id) || [],
         tags: data.article_tags?.map((t: any) => t.tag_id) || [],
         bhajans: data.article_bhajans?.map((b: any) => b.bhajan_id) || [],
         related_articles: data.related_articles?.map((r: any) => r.related_id) || []
       });
-      if (data.image_url) {
-        setCoverPreview(data.image_url);
+      if (data.media_files?.url) {
+        setCoverPreview(data.media_files.url);
       }
     }
   }, [articleQuery.data, reset]);
@@ -138,7 +137,7 @@ export const AdminArticleForm = () => {
 
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
-      const payload = { ...data, publish_date: data.publish_date ? new Date(data.publish_date).toISOString() : null };
+      const payload = { ...data };
       if (isEditing) return apiClient.put(`/admin/articles/${id}`, payload);
       return apiClient.post('/admin/articles', payload);
     },
@@ -157,7 +156,11 @@ export const AdminArticleForm = () => {
     if (coverFile) {
       setIsUploading(true);
       try {
-        data.image_url = await uploadFile(coverFile);
+        const media = await uploadMediaFile(coverFile);
+        data.featured_image_id = media.id;
+        // Optionally keep image_url for UI preview purposes if needed by the component,
+        // but backend already strips image_url out.
+        data.image_url = media.url;
       } catch (err: any) {
         toast.error('Failed to upload image: ' + (err.response?.data?.message || err.message));
         setIsUploading(false);
@@ -246,6 +249,9 @@ export const AdminArticleForm = () => {
             </div>
 
             {/* Content */}
+            {isEditing && articleQuery.isLoading ? (
+              <FormLoader />
+            ) : (
             <div className="flex-1 overflow-y-auto p-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* LEFT COLUMN: Main Content */}
@@ -640,6 +646,7 @@ export const AdminArticleForm = () => {
               </div>
               <div className="h-2 col-span-1 lg:col-span-3"></div>
             </div>
+            )}
           </div>
         </div>,
         document.body
