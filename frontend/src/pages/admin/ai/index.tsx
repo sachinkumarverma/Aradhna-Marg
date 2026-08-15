@@ -26,6 +26,7 @@ import { Button } from '@components/ui/Button';
 export function AdminAI() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'assistant' | 'bulk' | 'queue' | 'history' | 'failed'>('assistant');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Fetch Stats
   const { data: stats } = useQuery({
@@ -492,6 +493,20 @@ export function AdminAI() {
           </div>
         )}
       </div>
+      <ConfirmDialog
+        isOpen={!!deleteConfirmId}
+        title="Delete Job Log"
+        message="Are you sure you want to delete this AI job log? This action cannot be undone."
+        confirmText="Delete"
+        isDestructive={true}
+        onCancel={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            deleteMutation.mutate(deleteConfirmId);
+            setDeleteConfirmId(null);
+          }
+        }}
+      />
     </div>
   );
 }
