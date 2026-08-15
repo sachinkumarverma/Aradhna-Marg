@@ -52,6 +52,24 @@ class AdminPuranController {
     }
   };
 
+  public uploadPdf = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const file = req.file;
+
+      if (!file) {
+        throw new Error('No PDF file provided');
+      }
+      if (file.mimetype !== 'application/pdf') {
+        throw new Error('Only PDF files are allowed');
+      }
+
+      const storageKey = await puranService.uploadPdf(file.buffer, file.mimetype, file.originalname);
+      return sendSuccess(res, 'PDF uploaded successfully', { storageKey });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public bulkAction = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { ids, action } = req.body;

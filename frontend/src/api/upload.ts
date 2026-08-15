@@ -43,3 +43,17 @@ export const uploadMediaFile = async (file: File, folderId?: string): Promise<Up
 
   return response.data.data;
 };
+
+/**
+ * Upload a Puran PDF to the backend and return the storage key.
+ */
+export const uploadPuranPdf = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await apiClient.post('/admin/puranas/upload-pdf', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+
+  return response.data.data.storageKey;
+};

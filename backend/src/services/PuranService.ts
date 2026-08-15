@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { puranRepository } from '@repositories/PuranRepository';
+import { backblazeStorageService } from '@services/storage/BackblazeStorageService';
 import { slugify } from '@utils/slugify';
-
 export class PuranService {
   public async getList(query: any) {
     return puranRepository.getList({
@@ -29,11 +29,40 @@ export class PuranService {
     if (data.title && !data.slug) {
       data.slug = randomUUID();
     }
-    return puranRepository.update(id, data);
+
+    let oldPdf = null;
+    if (data.pdf_file) {
+      const existing = await puranRepository.getById(id);
+      if (
+        existing &&
+        existing.pdf_file &&
+        existing.pdf_file !== data.pdf_file &&
+        existing.pdf_file.startsWith('puranas/')
+      ) {
+        oldPdf = existing.pdf_file;
+      }
+    }
+
+    const updated = await puranRepository.update(id, data);
+
+    if (oldPdf) {
+      try {
+        await backblazeStorageService.deletePdf(oldPdf);
+      } catch (err) {
+        console.error('Failed to delete old Puran PDF from B2:', err);
+      }
+    }
+    return updated;
   }
 
   public async delete(id: string) {
-    return puranRepository.update(id, { deleted_at: new Date().toISOString() });
+    const existing = await puranRepository.getById(id);
+    const deleted = await puranRepository.update(id, { deleted_at: new Date().toISOString() });
+
+    // Soft delete preserves the file natively, but if the architecture requires it, we'd delete it here.
+    // Following existing soft delete behavior by not wiping B2 files immediately.
+
+    return deleted;
   }
 
   public async bulkAction(ids: string[], action: string) {
@@ -53,6 +82,25 @@ export class PuranService {
 
   public async incrementDownload(id: string) {
     return puranRepository.incrementStats(id, 'download_count');
+  }
+
+  public async uploadPdf(fileBuffer: Buffer, mimeType: string, originalName: string) {
+    const cleanName = slugify(originalName.replace(/\.[^/.]+$/, '')) + '.pdf';
+    const storageKey = `puranas/uploads/${Date.now()}-${cleanName}`;
+
+    await backblazeStorageService.uploadPdf(fileBuffer, storageKey, mimeType);
+    return storageKey;
+  }
+
+  public async getPdfUrl(id: string) {
+    const puran = await puranRepository.getById(id);
+    if (!puran || !puran.pdf_file) throw new Error('PDF not found');
+
+    if (puran.pdf_file.startsWith('http')) {
+      return puran.pdf_file;
+    }
+
+    return backblazeStorageService.getSignedUrl(puran.pdf_file);
   }
 }
 

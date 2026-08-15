@@ -17,6 +17,7 @@ export class FestivalRepository {
       category: row.category,
       featured: row.featured,
       status: row.status,
+      deityId: row.deity_id,
       seoTitle: row.seo_title,
       seoDescription: row.seo_description,
       createdAt: row.created_at,
@@ -43,6 +44,7 @@ export class FestivalRepository {
     if (dto.category !== undefined) dbData.category = dto.category;
     if (dto.featured !== undefined) dbData.featured = dto.featured;
     if (dto.status !== undefined) dbData.status = dto.status;
+    if (dto.deityId !== undefined) dbData.deity_id = dto.deityId || null;
     if (dto.seoTitle !== undefined) dbData.seo_title = dto.seoTitle;
     if (dto.seoDescription !== undefined) dbData.seo_description = dto.seoDescription;
 

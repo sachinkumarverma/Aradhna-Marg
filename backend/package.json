@@ -16,6 +16,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1111.0",
+    "@aws-sdk/s3-request-presigner": "^3.1111.0",
     "@supabase/supabase-js": "^2.112.0",
     "@types/jsonwebtoken": "^9.0.10",
     "axios": "^1.18.1",

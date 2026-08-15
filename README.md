@@ -18,7 +18,8 @@ A production-ready, highly optimized, and elegant platform for Bhajans. Built wi
 ### Backend
 - Node.js + Express
 - TypeScript
-- Supabase (PostgreSQL + Storage)
+- Supabase (PostgreSQL)
+- Backblaze B2 (S3-compatible Object Storage for PDFs)
 
 ## 📂 Folder Structure
 
@@ -49,7 +50,7 @@ The repository is organized into distinct environments:
    ```
 
 3. **Environment Setup:**
-   Copy the `.env.example` to `.env` in the root directory or configure specific `.env` files within `/frontend` and `/backend`. Provide valid keys for Supabase, OpenAI/Gemini, and YouTube.
+   Copy the `.env.example` to `.env` in the root directory or configure specific `.env` files within `/frontend` and `/backend`. Provide valid keys for Supabase, Backblaze B2, OpenAI/Gemini, and YouTube.
 
 ## 💻 Development
 

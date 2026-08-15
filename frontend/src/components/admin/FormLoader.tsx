@@ -1,5 +1,4 @@
 import React from 'react';
-import { Loader2 } from 'lucide-react';
 
 export const FormLoader: React.FC = () => {
   return (
@@ -14,7 +13,6 @@ export const FormLoader: React.FC = () => {
         </div>
       </div>
       <h3 className="mt-8 text-lg font-bold text-slate-800 tracking-wide uppercase flex items-center gap-2">
-        <Loader2 className="w-5 h-5 animate-spin text-[#ff3b00]" />
         Loading Details...
       </h3>
       <p className="text-sm text-slate-500 mt-1">Please wait a moment while we fetch the data.</p>

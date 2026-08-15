@@ -144,6 +144,7 @@ export const AdminArticleForm = () => {
     onSuccess: (res) => {
       setLastSaved(new Date());
       queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
+      if (isEditing) queryClient.invalidateQueries({ queryKey: ['admin-article', id] });
       toast.success(isEditing ? 'Article updated' : 'Article created');
       navigate('/admin/articles');
     },
@@ -247,12 +248,11 @@ export const AdminArticleForm = () => {
                 </button>
               </div>
             </div>
-
             {/* Content */}
             {isEditing && articleQuery.isLoading ? (
               <FormLoader />
             ) : (
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* LEFT COLUMN: Main Content */}
                   <div className="lg:col-span-2 space-y-6">
@@ -675,7 +675,7 @@ export const AdminArticleForm = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-cream">
+              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 p-6 md:p-10 bg-cream">
                 <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-md shadow-sm border border-gray-100">
                   {(() => {
                     const previewTitle =

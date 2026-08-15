@@ -12,6 +12,15 @@ class PuranPublicController {
     }
   };
 
+  public getPdfUrl = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const url = await puranService.getPdfUrl(req.params.id as string);
+      return sendSuccess(res, 'PDF URL generated', { url });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public trackView = async (req: Request, res: Response, next: NextFunction) => {
     try {
       await puranService.incrementView(req.params.id as string);

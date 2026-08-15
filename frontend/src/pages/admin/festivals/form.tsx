@@ -61,7 +61,8 @@ export const AdminFestivalForm = () => {
       shortDescription_en: '',
       content_en: '',
       seoTitle_en: '',
-      seoDescription_en: ''
+      seoDescription_en: '',
+      deityId: ''
     }
   });
 
@@ -102,6 +103,15 @@ export const AdminFestivalForm = () => {
     }
   });
 
+  // Fetch deities for select
+  const { data: deitiesOptions = [], isLoading: isLoadingDeities } = useQuery({
+    queryKey: ['admin-deities-options'],
+    queryFn: async () => {
+      const res = await apiClient.get('/admin/deities', { params: { limit: 1000 } });
+      return [{ label: 'None', value: '' }, ...res.data.data.map((d: any) => ({ label: d.name, value: d.id }))];
+    }
+  });
+
   // Fetch data if editing
   const festivalQuery = useQuery({
     queryKey: ['admin-festival', id],
@@ -134,7 +144,8 @@ export const AdminFestivalForm = () => {
         shortDescription_en: data.shortDescription_en || '',
         content_en: data.content_en || '',
         seoTitle_en: data.seoTitle_en || '',
-        seoDescription_en: data.seoDescription_en || ''
+        seoDescription_en: data.seoDescription_en || '',
+        deityId: data.deityId || ''
       });
       if (data.bannerImage) setBannerPreview(data.bannerImage);
     }
@@ -148,6 +159,7 @@ export const AdminFestivalForm = () => {
     onSuccess: (res) => {
       setLastSaved(new Date());
       queryClient.invalidateQueries({ queryKey: ['admin-festivals'] });
+      if (isEditing) queryClient.invalidateQueries({ queryKey: ['admin-festival', id] });
       toast.success(isEditing ? 'Festival updated' : 'Festival created');
       navigate('/admin/festivals');
     },
@@ -262,7 +274,7 @@ export const AdminFestivalForm = () => {
             {isEditing && festivalQuery.isLoading ? (
               <FormLoader />
             ) : (
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 p-6">
                 <form
                   id="festival-form"
                   onSubmit={handleSubmit(onSubmit)}
@@ -520,6 +532,23 @@ export const AdminFestivalForm = () => {
                         />
                       </div>
 
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-700">Linked Deity</label>
+                        <Controller
+                          name="deityId"
+                          control={control}
+                          render={({ field }) => (
+                            <Select
+                              options={deitiesOptions}
+                              value={field.value || ''}
+                              onChange={field.onChange}
+                              placeholder="Select deity (optional)..."
+                              searchable={true}
+                            />
+                          )}
+                        />
+                      </div>
+
                       <div className="flex items-center gap-3 pt-2">
                         <input
                           type="checkbox"
@@ -638,7 +667,7 @@ export const AdminFestivalForm = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-cream">
+              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 p-6 md:p-10 bg-cream">
                 <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-md shadow-sm border border-gray-100">
                   {(() => {
                     const previewName =

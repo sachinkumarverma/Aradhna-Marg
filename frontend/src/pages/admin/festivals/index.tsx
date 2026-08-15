@@ -61,22 +61,9 @@ export const AdminFestivals: React.FC = () => {
     {
       header: 'Festival',
       accessor: (row: any) => (
-        <div className="flex items-center gap-3">
-          {row.bannerImage ? (
-            <img
-              src={row.bannerImage}
-              alt=""
-              className="w-12 h-12 object-cover rounded-md border border-gray-200 shrink-0"
-            />
-          ) : (
-            <div className="w-12 h-12 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs shrink-0">
-              No img
-            </div>
-          )}
-          <div>
-            <p className="font-bold text-gray-900 flex items-center gap-2">{row.name}</p>
-            <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.description}</p>
-          </div>
+        <div>
+          <p className="font-bold text-gray-900 flex items-center gap-2">{row.name}</p>
+          <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.description}</p>
         </div>
       )
     },

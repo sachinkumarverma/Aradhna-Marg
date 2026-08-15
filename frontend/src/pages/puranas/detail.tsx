@@ -32,15 +32,42 @@ export const PuranDetail: React.FC = () => {
     }
   }, [data?.id]);
 
-  const handleDownload = () => {
-    if (data?.id) {
-      trackDownloadMutation.mutate(data.id);
+  const handlePdfAction = async (action: 'view' | 'download') => {
+    if (!data?.id || !data?.pdf_file) return;
+
+    try {
+      if (action === 'view') {
+        // View tracking is also done on load, but we can track explicit views if needed.
+        handleView();
+      } else {
+        trackDownloadMutation.mutate(data.id);
+      }
+
+      let finalUrl = data.pdf_file;
+      if (!finalUrl.startsWith('http')) {
+        const res = await apiClient.get(`/v1/puranas/${data.id}/pdf`);
+        finalUrl = res.data.data.url;
+      }
+
+      if (finalUrl) {
+        if (action === 'download') {
+          const a = document.createElement('a');
+          a.href = finalUrl;
+          a.download = '';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          window.open(finalUrl, '_blank');
+        }
+      }
+    } catch (err) {
+      toast.error('Failed to load PDF securely.');
     }
-    // Browser handles the download if it's an anchor with target=_blank
   };
 
   const handleView = () => {
-    // We already track view on page load, but we can track PDF views too if needed.
+    // Optional additional view logic
   };
 
   if (isLoading) {
@@ -112,27 +139,20 @@ export const PuranDetail: React.FC = () => {
 
         {/* Actions Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-12 flex flex-col sm:flex-row items-center gap-4 justify-center">
-          <a
-            href={data.pdf_file}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleView}
+          <button
+            onClick={() => handlePdfAction('view')}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium shadow-sm"
           >
             <FileText className="w-5 h-5" />
             View PDF
-          </a>
-          <a
-            href={data.pdf_file}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleDownload}
+          </button>
+          <button
+            onClick={() => handlePdfAction('download')}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium shadow-sm"
           >
             <Download className="w-5 h-5" />
             Download PDF
-          </a>
+          </button>
         </div>
 
         {/* Related Puranas */}

@@ -111,9 +111,10 @@ export const AdminBhajanForm = () => {
       if (isEditing) return BhajanApi.update(id!, data);
       return BhajanApi.create(data);
     },
-    onSuccess: (res) => {
+    onSuccess: () => {
       setLastSaved(new Date());
       queryClient.invalidateQueries({ queryKey: ['admin-bhajans'] });
+      if (isEditing) queryClient.invalidateQueries({ queryKey: ['admin-bhajan', id] });
       toast.success(isEditing ? 'Bhajan updated' : 'Bhajan created');
       navigate('/admin/bhajans');
     },

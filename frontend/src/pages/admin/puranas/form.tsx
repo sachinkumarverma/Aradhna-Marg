@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Languages, ArrowLeft, Save, Loader2, Upload, Eye, Send, X, FileText } from 'lucide-react';
 import { TranslationPanel } from '../../../features/translations/TranslationPanel';
 import { apiClient } from '@api/client';
-import { uploadFile } from '@api/upload';
+import { uploadFile, uploadPuranPdf } from '@api/upload';
 import toast from 'react-hot-toast';
 import { Select } from '@components/ui/Select';
 
@@ -107,6 +107,7 @@ export const AdminPuranForm = () => {
     onSuccess: (res) => {
       setLastSaved(new Date());
       queryClient.invalidateQueries({ queryKey: ['admin-puranas'] });
+      if (isEditing) queryClient.invalidateQueries({ queryKey: ['admin-purana', id] });
       toast.success(isEditing ? 'Purana updated' : 'Purana created');
       navigate('/admin/puranas');
     },
@@ -123,7 +124,7 @@ export const AdminPuranForm = () => {
           data.cover_image = await uploadFile(coverFile);
         }
         if (pdfFile) {
-          data.pdf_file = await uploadFile(pdfFile);
+          data.pdf_file = await uploadPuranPdf(pdfFile);
         }
       } catch (err: any) {
         toast.error('Upload failed: ' + (err.response?.data?.message || err.message));
@@ -137,6 +138,26 @@ export const AdminPuranForm = () => {
 
   const handleClose = () => {
     navigate('/admin/puranas');
+  };
+
+  const handlePreviewPdf = async () => {
+    if (pdfFile) {
+      window.open(URL.createObjectURL(pdfFile), '_blank');
+      return;
+    }
+    const currentPdf = watch('pdf_file');
+    if (currentPdf) {
+      if (currentPdf.startsWith('http')) {
+        window.open(currentPdf, '_blank');
+      } else if (id) {
+        try {
+          const res = await apiClient.get(`/v1/puranas/${id}/pdf`);
+          window.open(res.data.data.url, '_blank');
+        } catch (err) {
+          toast.error('Failed to generate PDF preview link');
+        }
+      }
+    }
   };
 
   const currentValues = watch();
@@ -477,9 +498,7 @@ export const AdminPuranForm = () => {
                         <div className="absolute top-2 right-2 flex gap-1">
                           <button
                             type="button"
-                            onClick={() =>
-                              window.open(pdfFile ? URL.createObjectURL(pdfFile) : watch('pdf_file'), '_blank')
-                            }
+                            onClick={handlePreviewPdf}
                             className="p-1.5 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100"
                             title="Preview"
                           >

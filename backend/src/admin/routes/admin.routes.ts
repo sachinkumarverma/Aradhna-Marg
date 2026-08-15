@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import multer from 'multer';
 import { dashboardController } from '@admin/controllers/dashboard.controller';
 import { adminArticleController } from '@admin/controllers/article.controller';
 import { adminPuranController } from '@admin/controllers/puran.controller';
@@ -43,8 +44,10 @@ router.put('/articles/:id', adminArticleController.update);
 router.delete('/articles/:id', adminArticleController.delete);
 
 // Puranas Management
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } }); // 50MB limit
 router.get('/puranas', adminPuranController.list);
 router.post('/puranas/bulk', adminPuranController.bulkAction);
+router.post('/puranas/upload-pdf', upload.single('file'), adminPuranController.uploadPdf);
 router.post('/puranas', adminPuranController.create);
 router.get('/puranas/:id', adminPuranController.getById);
 router.put('/puranas/:id', adminPuranController.update);

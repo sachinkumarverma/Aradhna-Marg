@@ -9,6 +9,7 @@ export interface Festival {
   category?: string;
   featured: boolean;
   status: string;
+  deityId?: string;
   seoTitle?: string;
   seoDescription?: string;
   createdAt: string;
@@ -36,6 +37,7 @@ export interface CreateFestivalDTO {
   category?: string;
   featured?: boolean;
   status?: string;
+  deityId?: string;
   seoTitle?: string;
   seoDescription?: string;
   bhajanIds?: string[];
