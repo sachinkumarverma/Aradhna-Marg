@@ -5,7 +5,6 @@ config();
 
 class BackblazeStorageService {
   private client: S3Client;
-  private bucket: string;
 
   constructor() {
     this.client = new S3Client({
