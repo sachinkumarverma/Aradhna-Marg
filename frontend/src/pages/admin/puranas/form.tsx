@@ -201,147 +201,58 @@ export const AdminPuranForm = () => {
         {isEditing && puranQuery?.isLoading ? (
           <FormLoader />
         ) : (
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* LEFT COLUMN: Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Language Switcher Tabs */}
-              <div className="flex space-x-1 bg-gray-100/50 p-1 rounded-lg border border-gray-200">
-                <button
-                  type="button"
-                  onClick={() => setActiveLanguage('original')}
-                  className={`flex-1 py-2 px-4 text-sm font-bold rounded-md transition-all ${
-                    activeLanguage === 'original'
-                      ? 'bg-white text-saffron shadow-sm border border-gray-200'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  Hindi (Original)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveLanguage('translation')}
-                  className={`flex-1 py-2 px-4 text-sm font-bold rounded-md transition-all flex justify-center items-center gap-2 ${
-                    activeLanguage === 'translation'
-                      ? 'bg-white text-indigo-600 shadow-sm border border-gray-200'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  English (Translation)
-                </button>
-              </div>
-
-              {activeLanguage === 'original' && (
-                <div className="space-y-6">
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-semibold text-gray-800">Title *</label>
-                      <input
-                        {...register('title', { required: 'Title is required' })}
-                        className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
-                        placeholder="e.g. Shiva Purana"
-                      />
-                      {errors.title && <p className="text-xs text-red-500">{errors.title.message as string}</p>}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-semibold text-gray-800">Description</label>
-                      <Controller
-                        name="short_description"
-                        control={control}
-                        render={({ field }) => (
-                          <div>
-                            <RichTextEditor
-                              value={field.value}
-                              onChange={field.onChange}
-                              className="bg-white rounded-b-md"
-                            />
-                          </div>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
-                    <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b">Advanced SEO</div>
-
-                    <div className="p-6 space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-700">SEO Title</label>
-                        <input
-                          {...register('seo_title')}
-                          className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-700">SEO Description</label>
-                        <AutoResizeTextarea
-                          {...register('seo_description')}
-                          rows={3}
-                          className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
-                        />
-                      </div>
-                    </div>
-                  </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* LEFT COLUMN: Main Content */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Language Switcher Tabs */}
+                <div className="flex space-x-1 bg-gray-100/50 p-1 rounded-lg border border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setActiveLanguage('original')}
+                    className={`flex-1 py-2 px-4 text-sm font-bold rounded-md transition-all ${
+                      activeLanguage === 'original'
+                        ? 'bg-white text-saffron shadow-sm border border-gray-200'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    Hindi (Original)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveLanguage('translation')}
+                    className={`flex-1 py-2 px-4 text-sm font-bold rounded-md transition-all flex justify-center items-center gap-2 ${
+                      activeLanguage === 'translation'
+                        ? 'bg-white text-indigo-600 shadow-sm border border-gray-200'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    English (Translation)
+                  </button>
                 </div>
-              )}
 
-              {activeLanguage === 'translation' && (
-                <div className="space-y-6">
-                  <TranslationPanel
-                    contentType="PURAN"
-                    contentId={id || 'new'}
-                    sourceLang="hi"
-                    targetLang="en"
-                    hasTranslation={!!watch('title_en' as any) || !!watch('description_en' as any)}
-                    isOutdated={!!(dirtyFields.title || dirtyFields.short_description)}
-                    originalContent={{
-                      title: watch('title'),
-                      description: watch('short_description'),
-                      seo_title: watch('seo_title'),
-                      seo_description: watch('seo_description')
-                    }}
-                    onGenerateLive={(t: any) => {
-                      setValue('title_en' as any, t.title || '');
-                      setValue('description_en' as any, t.description || '');
-                      setValue('seo_title_en' as any, t.seo_title || '');
-                      setValue('seo_description_en' as any, t.seo_description || '');
-                    }}
-                  />
-
-                  {!(!!watch('title_en' as any) || !!watch('description_en' as any)) ? (
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 py-16 px-6 text-center shadow-sm">
-                      <div className="w-16 h-16 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-5">
-                        <Languages className="w-8 h-8" />
-                      </div>
-                      <h3 className="text-lg font-bold text-[#1a1a2e] mb-2">English Translation</h3>
-                      <p className="text-gray-500 text-[14px] max-w-sm mx-auto leading-relaxed">
-                        No English translation has been generated yet.
-                        <br />
-                        Click "Generate English Translation" above to start.
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                        <div className="space-y-1.5">
-                          <label className="text-sm font-semibold text-gray-800">Puran Title *</label>
-                          <input
-                            {...register('title_en' as any, { required: 'Title is required' })}
-                            className={`w-full px-4 py-2.5 bg-white border rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm font-medium ${(errors as any).title_en ? 'border-red-500' : 'border-blue-100'}`}
-                          />
-                        </div>
+                {activeLanguage === 'original' && (
+                  <div className="space-y-6">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-800">Title *</label>
+                        <input
+                          {...register('title', { required: 'Title is required' })}
+                          className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
+                          placeholder="e.g. Shiva Purana"
+                        />
+                        {errors.title && <p className="text-xs text-red-500">{errors.title.message as string}</p>}
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                        <h3 className="font-bold text-gray-900 border-b pb-3">Puran Description</h3>
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-800">Description</label>
                         <Controller
-                          name={'description_en' as any}
+                          name="short_description"
                           control={control}
                           render={({ field }) => (
                             <div>
                               <RichTextEditor
-                                value={field.value || ''}
+                                value={field.value}
                                 onChange={field.onChange}
                                 className="bg-white rounded-b-md"
                               />
@@ -349,186 +260,275 @@ export const AdminPuranForm = () => {
                           )}
                         />
                       </div>
+                    </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
-                        <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b border-blue-100">
-                          Advanced SEO
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
+                      <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b">Advanced SEO</div>
+
+                      <div className="p-6 space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">SEO Title</label>
+                          <input
+                            {...register('seo_title')}
+                            className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                          />
                         </div>
-
-                        <div className="p-6 space-y-4">
-                          <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-gray-700">SEO Title</label>
-                            <input
-                              {...register('seo_title_en' as any)}
-                              className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
-                            />
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-gray-700">SEO Meta Description</label>
-                            <AutoResizeTextarea
-                              {...register('seo_description_en' as any)}
-                              rows={3}
-                              className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
-                            />
-                          </div>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">SEO Description</label>
+                          <AutoResizeTextarea
+                            {...register('seo_description')}
+                            rows={3}
+                            className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                          />
                         </div>
                       </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-            {/* RIGHT COLUMN: Settings & Metadata */}
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                <h3 className="font-bold text-gray-900 border-b pb-3">Publishing Details</h3>
+                    </div>
+                  </div>
+                )}
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Language *</label>
-                  <Controller
-                    name="language"
-                    control={control}
-                    rules={{ required: 'Language is required' }}
-                    render={({ field }) => (
-                      <Select
-                        options={languages}
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Select language..."
-                        error={!!errors.language}
-                      />
-                    )}
-                  />
-                  {errors.language && <p className="text-xs text-red-500">{errors.language.message as string}</p>}
-                </div>
+                {activeLanguage === 'translation' && (
+                  <div className="space-y-6">
+                    <TranslationPanel
+                      contentType="PURAN"
+                      contentId={id || 'new'}
+                      sourceLang="hi"
+                      targetLang="en"
+                      hasTranslation={!!watch('title_en' as any) || !!watch('description_en' as any)}
+                      isOutdated={!!(dirtyFields.title || dirtyFields.short_description)}
+                      originalContent={{
+                        title: watch('title'),
+                        description: watch('short_description'),
+                        seo_title: watch('seo_title'),
+                        seo_description: watch('seo_description')
+                      }}
+                      onGenerateLive={(t: any) => {
+                        setValue('title_en' as any, t.title || '');
+                        setValue('description_en' as any, t.description || '');
+                        setValue('seo_title_en' as any, t.seo_title || '');
+                        setValue('seo_description_en' as any, t.seo_description || '');
+                      }}
+                    />
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Author</label>
-                  <Controller
-                    name="author"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        options={authorOptions}
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Select author..."
-                        isLoading={isLoadingAuthors}
-                      />
-                    )}
-                  />
-                </div>
+                    {!(!!watch('title_en' as any) || !!watch('description_en' as any)) ? (
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 py-16 px-6 text-center shadow-sm">
+                        <div className="w-16 h-16 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-5">
+                          <Languages className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-lg font-bold text-[#1a1a2e] mb-2">English Translation</h3>
+                        <p className="text-gray-500 text-[14px] max-w-sm mx-auto leading-relaxed">
+                          No English translation has been generated yet.
+                          <br />
+                          Click "Generate English Translation" above to start.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                          <div className="space-y-1.5">
+                            <label className="text-sm font-semibold text-gray-800">Puran Title *</label>
+                            <input
+                              {...register('title_en' as any, { required: 'Title is required' })}
+                              className={`w-full px-4 py-2.5 bg-white border rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm font-medium ${(errors as any).title_en ? 'border-red-500' : 'border-blue-100'}`}
+                            />
+                          </div>
+                        </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Status</label>
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        options={[
-                          { label: 'Draft (Hidden)', value: 'DRAFT' },
-                          { label: 'Published', value: 'PUBLISHED' },
-                          { label: 'Archived', value: 'ARCHIVED' }
-                        ]}
-                        value={field.value}
-                        onChange={field.onChange}
-                        searchable={false}
-                      />
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                          <h3 className="font-bold text-gray-900 border-b pb-3">Puran Description</h3>
+                          <Controller
+                            name={'description_en' as any}
+                            control={control}
+                            render={({ field }) => (
+                              <div>
+                                <RichTextEditor
+                                  value={field.value || ''}
+                                  onChange={field.onChange}
+                                  className="bg-white rounded-b-md"
+                                />
+                              </div>
+                            )}
+                          />
+                        </div>
+
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
+                          <div className="px-6 py-3 font-bold text-gray-900 bg-gray-50/50 border-b border-blue-100">
+                            Advanced SEO
+                          </div>
+
+                          <div className="p-6 space-y-4">
+                            <div className="space-y-1.5">
+                              <label className="text-sm font-semibold text-gray-700">SEO Title</label>
+                              <input
+                                {...register('seo_title_en' as any)}
+                                className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                              />
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="text-sm font-semibold text-gray-700">SEO Meta Description</label>
+                              <AutoResizeTextarea
+                                {...register('seo_description_en' as any)}
+                                rows={3}
+                                className="w-full px-3 py-2 bg-white border border-blue-100 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </>
                     )}
-                  />
-                </div>
+                  </div>
+                )}
               </div>
+              {/* RIGHT COLUMN: Settings & Metadata */}
+              <div className="space-y-6">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                  <h3 className="font-bold text-gray-900 border-b pb-3">Publishing Details</h3>
 
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                <h3 className="font-bold text-gray-900 border-b pb-3">Media Files</h3>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-700">Language *</label>
+                    <Controller
+                      name="language"
+                      control={control}
+                      rules={{ required: 'Language is required' }}
+                      render={({ field }) => (
+                        <Select
+                          options={languages}
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select language..."
+                          error={!!errors.language}
+                        />
+                      )}
+                    />
+                    {errors.language && <p className="text-xs text-red-500">{errors.language.message as string}</p>}
+                  </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-800">Cover Image</label>
-                  <div className="flex flex-col items-center">
-                    <ImageUploadWithCrop
-                      value={coverPreview || undefined}
-                      onChange={(dataUrl, file) => {
-                        setCoverFile(file);
-                        setCoverPreview(dataUrl);
-                        setValue('cover_image', 'pending');
-                      }}
-                      onRemove={() => {
-                        setCoverFile(null);
-                        setCoverPreview(null);
-                        setValue('cover_image', '');
-                      }}
-                      aspectRatio={3 / 4}
-                      className="w-full max-w-[200px] aspect-[3/4] rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
-                      placeholder="Upload 3:4 Cover"
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-700">Author</label>
+                    <Controller
+                      name="author"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          options={authorOptions}
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select author..."
+                          isLoading={isLoadingAuthors}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-700">Status</label>
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          options={[
+                            { label: 'Draft (Hidden)', value: 'DRAFT' },
+                            { label: 'Published', value: 'PUBLISHED' },
+                            { label: 'Archived', value: 'ARCHIVED' }
+                          ]}
+                          value={field.value}
+                          onChange={field.onChange}
+                          searchable={false}
+                        />
+                      )}
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-800">PDF File *</label>
-                  {pdfFile || watch('pdf_file') ? (
-                    <div className="relative rounded-md overflow-hidden border border-gray-200 bg-red-50 flex flex-col items-center justify-center h-[160px] group">
-                      <FileText className="w-10 h-10 text-red-500 mb-2" />
-                      <span className="text-sm font-medium text-red-700 px-4 text-center truncate w-full">
-                        {pdfFile ? pdfFile.name : 'PDF Uploaded'}
-                      </span>
-                      <div className="absolute top-2 right-2 flex gap-1">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            window.open(pdfFile ? URL.createObjectURL(pdfFile) : watch('pdf_file'), '_blank')
-                          }
-                          className="p-1.5 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100"
-                          title="Preview"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPdfFile(null);
-                            setValue('pdf_file', '');
-                          }}
-                          className="p-1.5 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100"
-                          title="Discard"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="border-2 border-dashed border-gray-300 rounded-md bg-gray-50 p-4 flex flex-col items-center justify-center text-center hover:border-saffron transition-colors cursor-pointer group h-[160px]">
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        className="hidden"
-                        id="purana-pdf-upload"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setPdfFile(file);
-                            setValue('pdf_file', 'pending'); // satisfy validation
-                          }
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                  <h3 className="font-bold text-gray-900 border-b pb-3">Media Files</h3>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-800">Cover Image</label>
+                    <div className="flex flex-col items-center">
+                      <ImageUploadWithCrop
+                        value={coverPreview || undefined}
+                        onChange={(dataUrl, file) => {
+                          setCoverFile(file);
+                          setCoverPreview(dataUrl);
+                          setValue('cover_image', 'pending');
                         }}
+                        onRemove={() => {
+                          setCoverFile(null);
+                          setCoverPreview(null);
+                          setValue('cover_image', '');
+                        }}
+                        aspectRatio={3 / 4}
+                        className="w-full max-w-[200px] aspect-[3/4] rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors"
+                        placeholder="Upload 3:4 Cover"
                       />
-                      <label
-                        htmlFor="purana-pdf-upload"
-                        className="flex flex-col items-center cursor-pointer w-full h-full justify-center"
-                      >
-                        <FileText className="w-8 h-8 text-gray-400 group-hover:text-saffron mb-2 transition-colors" />
-                        <p className="text-sm text-gray-600 font-medium">Click to upload PDF</p>
-                      </label>
                     </div>
-                  )}
-                  {errors.pdf_file && <p className="text-xs text-red-500">{errors.pdf_file.message as string}</p>}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-semibold text-gray-800">PDF File *</label>
+                    {pdfFile || watch('pdf_file') ? (
+                      <div className="relative rounded-md overflow-hidden border border-gray-200 bg-red-50 flex flex-col items-center justify-center h-[160px] group">
+                        <FileText className="w-10 h-10 text-red-500 mb-2" />
+                        <span className="text-sm font-medium text-red-700 px-4 text-center truncate w-full">
+                          {pdfFile ? pdfFile.name : 'PDF Uploaded'}
+                        </span>
+                        <div className="absolute top-2 right-2 flex gap-1">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              window.open(pdfFile ? URL.createObjectURL(pdfFile) : watch('pdf_file'), '_blank')
+                            }
+                            className="p-1.5 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100"
+                            title="Preview"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPdfFile(null);
+                              setValue('pdf_file', '');
+                            }}
+                            className="p-1.5 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100"
+                            title="Discard"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-gray-300 rounded-md bg-gray-50 p-4 flex flex-col items-center justify-center text-center hover:border-saffron transition-colors cursor-pointer group h-[160px]">
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          className="hidden"
+                          id="purana-pdf-upload"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setPdfFile(file);
+                              setValue('pdf_file', 'pending'); // satisfy validation
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor="purana-pdf-upload"
+                          className="flex flex-col items-center cursor-pointer w-full h-full justify-center"
+                        >
+                          <FileText className="w-8 h-8 text-gray-400 group-hover:text-saffron mb-2 transition-colors" />
+                          <p className="text-sm text-gray-600 font-medium">Click to upload PDF</p>
+                        </label>
+                      </div>
+                    )}
+                    {errors.pdf_file && <p className="text-xs text-red-500">{errors.pdf_file.message as string}</p>}
+                  </div>
                 </div>
               </div>
             </div>
+            <div className="h-2 col-span-1 lg:col-span-3"></div>
           </div>
-          <div className="h-2 col-span-1 lg:col-span-3"></div>
-        </div>
         )}
       </div>
     </div>,

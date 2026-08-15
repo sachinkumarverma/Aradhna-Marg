@@ -22,8 +22,28 @@ export class BhajanService {
     return bhajanRepository.getByIdWithRelations(id);
   }
 
+  private sanitizeData(data: any) {
+    const {
+      additionalDeities,
+      video_source_mode,
+      id,
+      created_at,
+      updated_at,
+      deleted_at,
+      categoryId,
+      categoryName,
+      deityId,
+      deityName,
+      categories,
+      gods,
+      bhajan_gods,
+      ...bhajanData
+    } = data;
+    return { additionalDeities, bhajanData };
+  }
+
   public async create(data: any) {
-    const { additionalDeities, ...bhajanData } = data;
+    const { additionalDeities, bhajanData } = this.sanitizeData(data);
 
     if (!bhajanData.slug && bhajanData.title) {
       bhajanData.slug = randomUUID();
@@ -39,7 +59,7 @@ export class BhajanService {
   }
 
   public async update(id: string, data: any) {
-    const { additionalDeities, ...bhajanData } = data;
+    const { additionalDeities, bhajanData } = this.sanitizeData(data);
 
     const updated = await bhajanRepository.update(id, bhajanData);
 

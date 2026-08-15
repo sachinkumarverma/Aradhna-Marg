@@ -16,7 +16,7 @@ export class BhajanRepository {
     const offset = (page - 1) * limit;
 
     const queryParams: any[] = [];
-    const whereClauses = ['b.deleted_at IS NULL', 'b.youtube_video_id IS NULL'];
+    const whereClauses = ['b.deleted_at IS NULL'];
 
     if (status) {
       queryParams.push(status);
@@ -55,7 +55,7 @@ export class BhajanRepository {
              c.name as "categoryName", g.name as "deityName"
       FROM ${this.tableName} b
       LEFT JOIN categories c ON b.category_id = c.id
-      LEFT JOIN gods g ON b.god_id = g.id
+      LEFT JOIN deities g ON b.god_id = g.id
       ${whereStr}
       ${orderByStr}
       LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
@@ -83,7 +83,7 @@ export class BhajanRepository {
              g.id as "deityId", g.name as "deityName"
       FROM ${this.tableName} b
       LEFT JOIN categories c ON b.category_id = c.id
-      LEFT JOIN gods g ON b.god_id = g.id
+      LEFT JOIN deities g ON b.god_id = g.id
       WHERE b.id = $1 AND b.deleted_at IS NULL
     `;
     const dataResult = await db.query(dataQuery, [id]);

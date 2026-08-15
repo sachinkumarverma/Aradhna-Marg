@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@api/client';
 import toast from 'react-hot-toast';
@@ -473,9 +474,7 @@ export function AdminAI() {
                         {['COMPLETED', 'FAILED'].includes(job.status) && (
                           <button
                             onClick={() => {
-                              if (window.confirm('Are you sure you want to delete this job record?')) {
-                                deleteMutation.mutate(job.id);
-                              }
+                              setDeleteConfirmId(job.id);
                             }}
                             disabled={deleteMutation.isPending}
                             className="p-1.5 text-red-500 hover:text-red-600 transition-colors"

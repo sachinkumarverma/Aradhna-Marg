@@ -33,19 +33,19 @@ export const TagsInput: React.FC<TagsInputProps> = ({ value, onChange, placehold
   };
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-md focus-within:ring-2 focus-within:ring-saffron/20 focus-within:border-saffron transition-all p-1 flex flex-wrap gap-1 min-h-[42px]">
+    <div className="w-full bg-white border border-gray-200 rounded-md focus-within:ring-2 focus-within:ring-saffron/20 focus-within:border-saffron transition-all p-1 flex flex-wrap items-center gap-1 min-h-[42px]">
       {tags.map((tag, i) => (
         <span
           key={i}
-          className="flex items-center gap-0.5 px-1.5 py-px bg-orange-50 text-orange-700 border border-orange-200 text-xs rounded font-medium"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm leading-none rounded-full font-medium shadow-sm transition-all"
         >
           {tag}
           <button
             type="button"
             onClick={() => removeTag(tag)}
-            className="text-gray-400 hover:text-red-500 transition-colors"
+            className="text-blue-200 hover:text-white transition-colors focus:outline-none flex items-center justify-center"
           >
-            <X className="w-3 h-3" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </span>
       ))}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SearchInput } from '@components/ui/SearchInput';
@@ -30,6 +31,7 @@ export const AdminDeities = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [limit, setLimit] = useState(10);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -247,9 +249,7 @@ export const AdminDeities = () => {
                           </button>
                           <button
                             onClick={() => {
-                              if (window.confirm('Are you sure you want to delete this deity?')) {
-                                deleteMutation.mutate(deity.id);
-                              }
+                              setDeleteConfirmId(deity.id);
                             }}
                             className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
                           >
@@ -434,6 +434,19 @@ export const AdminDeities = () => {
           </div>,
           document.body
         )}
+      <ConfirmDialog
+        isOpen={!!deleteConfirmId}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this item? This action cannot be undone."
+        confirmText="Delete"
+        isDestructive={true}
+        onCancel={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            deleteMutation.mutate(deleteConfirmId);
+          }
+        }}
+      />
     </div>
   );
 };

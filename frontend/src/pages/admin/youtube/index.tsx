@@ -23,6 +23,7 @@ import { apiClient } from '@api/client';
 import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
 
+import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { Select } from '@components/ui/Select';
 import { Pagination } from '@components/ui/Pagination';
 import { YoutubeApi } from '@features/youtube/YoutubeApi';
@@ -38,6 +39,7 @@ export const AdminYoutube = () => {
   const [linkDialogOpen, setLinkDialogOpen] = useState<string | null>(null);
   const [selectedBhajanId, setSelectedBhajanId] = useState<string>('');
   const [syncInterval, setSyncInterval] = useState('12h');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Fetch Settings
   const { data: settings, refetch: refetchSettings } = useQuery({
@@ -667,13 +669,7 @@ export const AdminYoutube = () => {
                             </button>
                             <button
                               onClick={() => {
-                                if (
-                                  window.confirm(
-                                    'Are you sure you want to delete this video from the database? It will be re-imported on the next sync unless you ignore it instead.'
-                                  )
-                                ) {
-                                  deleteMutation.mutate(video.id);
-                                }
+                                setDeleteConfirmId(video.id);
                               }}
                               disabled={deleteMutation.isPending}
                               className="p-1.5 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -803,6 +799,20 @@ export const AdminYoutube = () => {
           </div>,
           document.body
         )}
+
+      <ConfirmDialog
+        isOpen={!!deleteConfirmId}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this video from the database? It will be re-imported on the next sync unless you ignore it instead."
+        confirmText="Delete"
+        isDestructive={true}
+        onCancel={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            deleteMutation.mutate(deleteConfirmId);
+          }
+        }}
+      />
     </div>
   );
 };

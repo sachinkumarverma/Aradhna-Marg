@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, BookOpen, CheckCircle2, XCircle } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
@@ -15,6 +16,11 @@ export const AdminPuranas: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean; action: string; ids: string[] }>({
+    isOpen: false,
+    action: '',
+    ids: []
+  });
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -47,9 +53,7 @@ export const AdminPuranas: React.FC = () => {
 
   const handleBulkAction = (action: string, selectedIds: string[]) => {
     if (selectedIds.length === 0) return toast.error('No items selected');
-    if (window.confirm(`Are you sure you want to ${action} ${selectedIds.length} items?`)) {
-      bulkMutation.mutate({ ids: selectedIds, action });
-    }
+    setConfirmConfig({ isOpen: true, action, ids: selectedIds });
   };
 
   const totalPages = Math.ceil((data?.meta?.total || 0) / (limit || 10));
@@ -213,6 +217,18 @@ export const AdminPuranas: React.FC = () => {
       </div>
 
       <Outlet />
+      <ConfirmDialog
+        isOpen={confirmConfig.isOpen}
+        title="Confirm Action"
+        message={`Are you sure you want to ${confirmConfig.action} ${confirmConfig.ids.length} items?`}
+        confirmText={confirmConfig.action === 'DELETE' ? 'Delete' : 'Confirm'}
+        isDestructive={confirmConfig.action === 'DELETE'}
+        onCancel={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+        onConfirm={() => {
+          bulkMutation.mutate({ ids: confirmConfig.ids, action: confirmConfig.action });
+          setConfirmConfig({ ...confirmConfig, isOpen: false });
+        }}
+      />
     </div>
   );
 };

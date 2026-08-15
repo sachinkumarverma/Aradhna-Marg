@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Music2 } from 'lucide-react';
+import { Plus, Music2, CheckCircle2, XCircle } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '@components/admin/DataTable';
 import { Button } from '@components/ui/Button';
@@ -15,6 +16,11 @@ export const AdminBhajans: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean; action: string; ids: string[] }>({
+    isOpen: false,
+    action: '',
+    ids: []
+  });
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -31,7 +37,7 @@ export const AdminBhajans: React.FC = () => {
         status: statusFilter || undefined,
         sort: sort || undefined
       });
-      return res.data;
+      return res;
     }
   });
 
@@ -50,9 +56,7 @@ export const AdminBhajans: React.FC = () => {
 
   const handleBulkAction = (action: string, selectedIds: string[]) => {
     if (selectedIds.length === 0) return toast.error('No items selected');
-    if (window.confirm(`Are you sure you want to ${action} ${selectedIds.length} items?`)) {
-      bulkMutation.mutate({ ids: selectedIds, action: action as any });
-    }
+    setConfirmConfig({ isOpen: true, action, ids: selectedIds });
   };
 
   const totalPages = Math.ceil((data?.meta?.total || 0) / (limit || 10));
@@ -61,9 +65,8 @@ export const AdminBhajans: React.FC = () => {
     {
       header: 'Title',
       accessor: (row: any) => (
-        <div>
-          <p className="font-bold text-gray-900">{row.title}</p>
-          <p className="text-xs text-gray-500 truncate max-w-[200px]">/{row.slug}</p>
+        <div className="flex flex-col gap-1">
+          <p className="font-bold text-gray-900 line-clamp-2 leading-snug">{row.title}</p>
         </div>
       )
     },
@@ -77,23 +80,32 @@ export const AdminBhajans: React.FC = () => {
     },
     {
       header: 'Status',
+      className: 'text-center w-32',
       accessor: (row: any) => (
         <span
-          className={`px-2 py-1 rounded-md text-xs font-medium border ${
+          className={`inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
             row.status === 'PUBLISHED'
-              ? 'bg-green-50 text-green-700 border-green-200'
+              ? 'bg-green-600 text-white'
               : row.status === 'DRAFT'
-                ? 'bg-amber-50 text-amber-700 border-amber-200'
-                : 'bg-gray-100 text-gray-700 border-gray-200'
+                ? 'bg-amber-600 text-white'
+                : 'bg-gray-500 text-white'
           }`}
         >
+          {row.status === 'PUBLISHED' ? (
+            <CheckCircle2 className="w-3 h-3" />
+          ) : (
+            <XCircle className="w-3 h-3" strokeWidth={2.5} />
+          )}
           {row.status}
         </span>
       )
     },
     {
       header: 'Views',
-      accessor: (row: any) => <span className="text-sm text-gray-600">{row.views?.toLocaleString() || 0}</span>
+      className: 'text-center w-24',
+      accessor: (row: any) => (
+        <div className="text-sm text-gray-600 justify-center flex">{row.views?.toLocaleString() || 0}</div>
+      )
     },
     {
       header: 'Created',
@@ -181,6 +193,18 @@ export const AdminBhajans: React.FC = () => {
       </div>
 
       <Outlet />
+      <ConfirmDialog
+        isOpen={confirmConfig.isOpen}
+        title="Confirm Action"
+        message={`Are you sure you want to ${confirmConfig.action} ${confirmConfig.ids.length} items?`}
+        confirmText={confirmConfig.action === 'DELETE' ? 'Delete' : 'Confirm'}
+        isDestructive={confirmConfig.action === 'DELETE'}
+        onCancel={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+        onConfirm={() => {
+          bulkMutation.mutate({ ids: confirmConfig.ids, action: confirmConfig.action as any });
+          setConfirmConfig({ ...confirmConfig, isOpen: false });
+        }}
+      />
     </div>
   );
 };

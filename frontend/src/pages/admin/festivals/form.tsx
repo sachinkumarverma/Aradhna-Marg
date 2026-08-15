@@ -262,7 +262,7 @@ export const AdminFestivalForm = () => {
             {isEditing && festivalQuery.isLoading ? (
               <FormLoader />
             ) : (
-            <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-6">
                 <form
                   id="festival-form"
                   onSubmit={handleSubmit(onSubmit)}
@@ -614,7 +614,7 @@ export const AdminFestivalForm = () => {
                     </div>
                   </div>
                 </form>
-            </div>
+              </div>
             )}
           </div>
         </div>,

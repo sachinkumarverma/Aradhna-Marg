@@ -8,7 +8,11 @@
     "frontend:install": "npm install --prefix frontend",
     "backend:install": "npm install --prefix backend",
     "install:all": "npm run frontend:install && npm run backend:install",
-    "dev": "npx concurrently \"npm run backend\" \"npm run frontend\""
+    "dev": "npx concurrently \"npm run backend\" \"npm run frontend\"",
+    "prepare": "husky"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
 }

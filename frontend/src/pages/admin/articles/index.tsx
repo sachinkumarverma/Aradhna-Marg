@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, FileText, CheckCircle2, XCircle, Star } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
@@ -15,6 +16,11 @@ export const AdminArticles: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean; action: string; ids: string[] }>({
+    isOpen: false,
+    action: '',
+    ids: []
+  });
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -46,9 +52,7 @@ export const AdminArticles: React.FC = () => {
 
   const handleBulkAction = (action: string, selectedIds: string[]) => {
     if (selectedIds.length === 0) return toast.error('No items selected');
-    if (window.confirm(`Are you sure you want to ${action} ${selectedIds.length} items?`)) {
-      bulkMutation.mutate({ ids: selectedIds, action });
-    }
+    setConfirmConfig({ isOpen: true, action, ids: selectedIds });
   };
 
   const totalPages = Math.ceil((data?.meta?.total || 0) / (limit || 10));
@@ -58,9 +62,7 @@ export const AdminArticles: React.FC = () => {
       header: 'Title',
       accessor: (row: any) => (
         <div className="flex flex-col gap-1">
-          <p className="font-bold text-gray-900 line-clamp-2 leading-snug">
-            {row.title}
-          </p>
+          <p className="font-bold text-gray-900 line-clamp-2 leading-snug">{row.title}</p>
           {row.excerpt && <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.excerpt}</p>}
         </div>
       )
@@ -111,17 +113,15 @@ export const AdminArticles: React.FC = () => {
     {
       header: 'Views',
       className: 'text-center w-24',
-      accessor: (row: any) => <div className="text-sm text-gray-600 justify-center flex">{row.view_count?.toLocaleString() || 0}</div>
+      accessor: (row: any) => (
+        <div className="text-sm text-gray-600 justify-center flex">{row.view_count?.toLocaleString() || 0}</div>
+      )
     },
     {
       header: 'Published',
       accessor: (row: any) => {
         const displayDate = row.publish_date ? new Date(row.publish_date) : new Date(row.created_at);
-        return (
-          <span className="text-sm text-slate-800 font-medium">
-            {format(displayDate, 'MMM dd, yyyy')}
-          </span>
-        );
+        return <span className="text-sm text-slate-800 font-medium">{format(displayDate, 'MMM dd, yyyy')}</span>;
       }
     }
   ];
@@ -203,6 +203,18 @@ export const AdminArticles: React.FC = () => {
       </div>
 
       <Outlet />
+      <ConfirmDialog
+        isOpen={confirmConfig.isOpen}
+        title="Confirm Action"
+        message={`Are you sure you want to ${confirmConfig.action} ${confirmConfig.ids.length} items?`}
+        confirmText={confirmConfig.action === 'DELETE' ? 'Delete' : 'Confirm'}
+        isDestructive={confirmConfig.action === 'DELETE'}
+        onCancel={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+        onConfirm={() => {
+          bulkMutation.mutate({ ids: confirmConfig.ids, action: confirmConfig.action });
+          setConfirmConfig({ ...confirmConfig, isOpen: false });
+        }}
+      />
     </div>
   );
 };
