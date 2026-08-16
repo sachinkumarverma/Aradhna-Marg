@@ -1,7 +1,16 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Music2, PlaySquare, BrainCircuit, Activity, FileText } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Music2,
+  PlaySquare,
+  BrainCircuit,
+  Activity,
+  FileText,
+  CheckCircle2,
+  XCircle
+} from 'lucide-react';
 import { StatCard } from '@components/admin/StatCard';
 import { apiClient } from '@api/client';
 
@@ -119,7 +128,7 @@ export const AdminDashboard: React.FC = () => {
                 <tr>
                   <th className="px-5 py-4 font-bold">Event</th>
                   <th className="px-5 py-4 font-bold">Target</th>
-                  <th className="px-5 py-4 font-bold">Status</th>
+                  <th className="px-5 py-4 font-bold text-center">Status</th>
                   <th className="px-5 py-4 font-bold">Time</th>
                 </tr>
               </thead>
@@ -129,14 +138,21 @@ export const AdminDashboard: React.FC = () => {
                     <tr key={activity.id}>
                       <td className="px-5 py-3">Bhajan Created</td>
                       <td className="px-5 py-3 font-medium text-gray-900">{activity.title}</td>
-                      <td className="px-5 py-3">
+                      <td className="px-5 py-3 text-center">
                         <span
-                          className={`px-2 py-1 rounded-md text-xs font-medium ${
+                          className={`inline-flex items-center justify-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wide ${
                             activity.status === 'PUBLISHED'
-                              ? 'text-green-600 bg-green-50'
-                              : 'text-yellow-600 bg-yellow-50'
+                              ? 'bg-green-600 text-white'
+                              : activity.status === 'DRAFT'
+                                ? 'bg-amber-600 text-white'
+                                : 'bg-gray-500 text-white'
                           }`}
                         >
+                          {activity.status === 'PUBLISHED' ? (
+                            <CheckCircle2 className="w-2.5 h-2.5" />
+                          ) : (
+                            <XCircle className="w-2.5 h-2.5" strokeWidth={2.5} />
+                          )}
                           {activity.status === 'PUBLISHED' ? 'Published' : 'Draft'}
                         </span>
                       </td>
