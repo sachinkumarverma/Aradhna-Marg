@@ -52,7 +52,7 @@ export const AdminFestivalForm = () => {
       festivalDate: '',
       category: '',
       featured: false,
-      status: 'Draft',
+      status: 'Published',
       seoTitle: '',
       seoDescription: '',
       bhajanIds: [] as string[],
@@ -417,7 +417,7 @@ export const AdminFestivalForm = () => {
                           !!watch('shortDescription_en' as any) ||
                           !!watch('content_en' as any)
                         ) ? (
-                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 py-16 px-6 text-center shadow-sm">
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 py-16 px-6 text-center shadow-sm">
                             <div className="w-16 h-16 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-5">
                               <Languages className="w-8 h-8" />
                             </div>

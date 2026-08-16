@@ -16,7 +16,9 @@ import { generateSlug } from '@utils/slugify';
 
 const languages = [
   { label: 'Hindi', value: 'Hindi' },
-  { label: 'English', value: 'English' }
+  { label: 'English', value: 'English' },
+  { label: 'Sanskrit', value: 'Sanskrit' },
+  { label: 'Gujarati', value: 'Gujarati' }
 ];
 
 import { createPortal } from 'react-dom';
@@ -53,9 +55,9 @@ export const AdminPuranForm = () => {
       short_description: '',
       cover_image: '',
       pdf_file: '',
-      language: '',
-      author: '',
-      status: 'DRAFT',
+      language: 'Hindi',
+      author: 'Aradhna Marg Editorial Team',
+      status: 'PUBLISHED',
       seo_title: '',
       seo_description: ''
     }
@@ -331,7 +333,7 @@ export const AdminPuranForm = () => {
                     />
 
                     {!(!!watch('title_en' as any) || !!watch('description_en' as any)) ? (
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 py-16 px-6 text-center shadow-sm">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 py-16 px-6 text-center shadow-sm">
                         <div className="w-16 h-16 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-5">
                           <Languages className="w-8 h-8" />
                         </div>

@@ -44,7 +44,7 @@ router.put('/articles/:id', adminArticleController.update);
 router.delete('/articles/:id', adminArticleController.delete);
 
 // Puranas Management
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } }); // 50MB limit
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 300 * 1024 * 1024 } }); // 100MB limit
 router.get('/puranas', adminPuranController.list);
 router.post('/puranas/bulk', adminPuranController.bulkAction);
 router.post('/puranas/upload-pdf', upload.single('file'), adminPuranController.uploadPdf);

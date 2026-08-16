@@ -135,7 +135,7 @@ export const AdminPuranas: React.FC = () => {
 
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
         <SearchInput placeholder="Search by title or description..." value={search} onChange={setSearch} />
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full sm:w-auto">
           <Select
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
@@ -145,7 +145,7 @@ export const AdminPuranas: React.FC = () => {
               { label: 'Draft', value: 'DRAFT' },
               { label: 'Archived', value: 'ARCHIVED' }
             ]}
-            className="w-40"
+            className="w-full sm:w-40"
             searchable={false}
           />
           <Select
@@ -158,7 +158,7 @@ export const AdminPuranas: React.FC = () => {
               { label: 'Sanskrit', value: 'Sanskrit' },
               { label: 'Gujarati', value: 'Gujarati' }
             ]}
-            className="w-40"
+            className="w-full sm:w-40"
             searchable={false}
           />
           <Select
@@ -171,7 +171,7 @@ export const AdminPuranas: React.FC = () => {
               { label: 'Most Viewed', value: 'views' },
               { label: 'Alphabetical', value: 'alphabetical' }
             ]}
-            className="w-40"
+            className="w-full sm:w-40"
             searchable={false}
           />
         </div>
@@ -189,7 +189,7 @@ export const AdminPuranas: React.FC = () => {
         />
       </div>
 
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 overflow-hidden relative z-10">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 relative z-20">
         <Pagination
           page={page}
           totalPages={totalPages}

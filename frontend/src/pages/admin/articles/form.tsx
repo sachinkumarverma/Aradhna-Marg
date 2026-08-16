@@ -57,7 +57,7 @@ export const AdminArticleForm = () => {
       tags: [] as string[],
       bhajans: [] as string[],
       related_articles: [] as string[],
-      status: 'DRAFT',
+      status: 'PUBLISHED',
       featured: false,
       seo_title: '',
       seo_description: ''
@@ -115,6 +115,12 @@ export const AdminArticleForm = () => {
     queryKey: ['authors'],
     queryFn: async () => (await apiClient.get('/admin/authors?limit=100')).data.data
   });
+
+  useEffect(() => {
+    if (!isEditing && authorsData && authorsData.length > 0 && !watch('author_id')) {
+      setValue('author_id', authorsData[0].id, { shouldValidate: true, shouldDirty: false });
+    }
+  }, [authorsData, isEditing, setValue, watch]);
   const { data: festivalsData, isLoading: isFestivalsLoading } = useQuery({
     queryKey: ['festivals'],
     queryFn: async () => (await apiClient.get('/admin/festivals?limit=100')).data.data
@@ -405,7 +411,7 @@ export const AdminArticleForm = () => {
                           !!watch('excerpt_en' as any) ||
                           !!watch('content_en' as any)
                         ) ? (
-                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 py-16 px-6 text-center shadow-sm">
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 py-16 px-6 text-center shadow-sm">
                             <div className="w-16 h-16 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-5">
                               <Languages className="w-8 h-8" />
                             </div>

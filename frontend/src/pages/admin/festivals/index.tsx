@@ -165,7 +165,7 @@ export const AdminFestivals: React.FC = () => {
 
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
         <SearchInput placeholder="Search by name or slug..." value={search} onChange={setSearch} />
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full sm:w-auto">
           <Select
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
@@ -175,7 +175,7 @@ export const AdminFestivals: React.FC = () => {
               { label: 'Draft', value: 'Draft' },
               { label: 'Archived', value: 'Archived' }
             ]}
-            className="w-40"
+            className="w-full sm:w-40"
             searchable={false}
           />
           <Select
@@ -187,7 +187,7 @@ export const AdminFestivals: React.FC = () => {
               { label: 'Alphabetical', value: 'name' },
               { label: 'By Festival Date', value: 'festivalDate' }
             ]}
-            className="w-40"
+            className="w-full sm:w-40"
             searchable={false}
           />
         </div>
@@ -205,7 +205,7 @@ export const AdminFestivals: React.FC = () => {
         />
       </div>
 
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 overflow-hidden relative z-10">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 relative z-20">
         <Pagination
           page={page}
           totalPages={totalPages}

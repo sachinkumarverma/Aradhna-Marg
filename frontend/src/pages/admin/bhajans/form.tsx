@@ -46,7 +46,7 @@ export const AdminBhajanForm = () => {
       god_id: '',
       original_youtube_url: '',
       video_source_mode: 'automatic',
-      status: 'DRAFT',
+      status: 'PUBLISHED',
       seo_title: '',
       seo_description: '',
       seo_keywords: ''

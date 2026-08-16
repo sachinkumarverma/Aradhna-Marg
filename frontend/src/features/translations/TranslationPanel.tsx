@@ -61,7 +61,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
 
   if (!hasTranslation) {
     return (
-      <div className="flex flex-col sm:flex-row items-center gap-8 bg-[#FAFAFE] border border-[#F0F0F8] rounded-xl p-4 sm:px-5 sm:py-3.5 mb-6 w-fit shadow-sm">
+      <div className="flex flex-col sm:flex-row items-center gap-8 bg-[#FAFAFE] border border-[#F0F0F8] rounded-md p-4 sm:px-5 sm:py-3.5 mb-6 w-fit shadow-sm">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-full border border-indigo-200 border-dashed flex items-center justify-center bg-white shrink-0">
             <Sparkles className="w-4 h-4 text-indigo-600" />
@@ -78,7 +78,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           type="button"
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="flex items-center justify-center gap-2.5 bg-[#5542F6] hover:bg-[#4a39d4] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
+          className="flex items-center justify-center gap-2.5 bg-[#5542F6] hover:bg-[#4a39d4] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
         >
           {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
           <span className="text-left leading-tight text-[13px]">
@@ -92,7 +92,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-8 bg-[#F3FAF5] border border-[#E7F3EB] rounded-xl p-4 sm:px-5 sm:py-3.5 mb-6 w-fit shadow-sm">
+    <div className="flex flex-col sm:flex-row items-center gap-8 bg-[#F3FAF5] border border-[#E7F3EB] rounded-md p-4 sm:px-5 sm:py-3.5 mb-6 w-fit shadow-sm">
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 rounded-full bg-[#DDF2E4] flex items-center justify-center shrink-0">
           <Check className="w-5 h-5 text-[#2E9E5B]" strokeWidth={2.5} />
@@ -110,7 +110,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           type="button"
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="flex items-center justify-center gap-2 bg-[#5542F6] text-white hover:bg-[#4a39d4] px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-2 bg-[#5542F6] text-white hover:bg-[#4a39d4] px-4 py-2 rounded-md text-[13px] font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isGenerating ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -132,7 +132,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
               window.scrollTo({ top: firstInput.offsetTop - 100, behavior: 'smooth' });
             }
           }}
-          className="flex items-center justify-center gap-2 bg-[#2E9E5B] text-white hover:bg-[#25824b] px-4 py-2 rounded-lg text-[13px] font-medium transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-[#2E9E5B] text-white hover:bg-[#25824b] px-4 py-2 rounded-md text-[13px] font-medium transition-colors shadow-sm"
         >
           <Edit3 className="w-3.5 h-3.5" />
           Edit

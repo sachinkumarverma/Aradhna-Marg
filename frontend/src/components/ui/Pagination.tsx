@@ -40,7 +40,7 @@ export function Pagination({
   if (totalPages === 0) return null;
 
   return (
-    <div className="flex items-center justify-between py-3 px-4 sm:px-6 bg-orange-50 border-t border-orange-100 mt-auto">
+    <div className="flex items-center justify-between py-3 px-4 sm:px-6 bg-orange-50 border-t border-orange-100 mt-auto rounded-b-md">
       <div className="text-sm text-gray-700 font-medium whitespace-nowrap hidden sm:block">
         <span className="font-bold text-gray-900">{totalRecords}</span> records
       </div>
