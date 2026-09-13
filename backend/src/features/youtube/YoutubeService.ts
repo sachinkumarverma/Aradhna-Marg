@@ -45,8 +45,8 @@ export class YoutubeService {
     return { ...dbStats, channelTotal, channelTitle, channelThumbnail };
   }
 
-  async getSyncHistory() {
-    return await youtubeVideoRepository.getSyncHistory();
+  async getSyncHistory(page = 1, limit = 10) {
+    return await youtubeVideoRepository.getSyncHistory(page, limit);
   }
 
   async syncNow() {

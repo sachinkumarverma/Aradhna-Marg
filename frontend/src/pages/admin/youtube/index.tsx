@@ -88,14 +88,18 @@ export const AdminYoutube = () => {
     }
   });
 
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyLimit, setHistoryLimit] = useState(10);
+
   // Fetch History
-  const { data: historyData, isLoading: isLoadingHistory } = useQuery({
-    queryKey: ['youtube-history'],
+  const { data: historyResponse, isLoading: isLoadingHistory } = useQuery({
+    queryKey: ['youtube-history', historyPage, historyLimit],
     queryFn: async () => {
-      const res = await YoutubeApi.getHistory();
-      return res.data;
+      return await YoutubeApi.getHistory({ page: historyPage, limit: historyLimit });
     }
   });
+
+  const historyData = historyResponse?.data || [];
 
   // Sync Mutation
   const syncMutation = useMutation({
@@ -705,7 +709,7 @@ export const AdminYoutube = () => {
 
       {/* History Tab */}
       {activeTab === 'history' && (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 overflow-hidden flex flex-col">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
@@ -754,6 +758,20 @@ export const AdminYoutube = () => {
               )}
             </tbody>
           </table>
+          {historyResponse?.meta && historyResponse.meta.total > 0 && (
+            <Pagination
+              page={historyPage}
+              totalPages={Math.ceil(historyResponse.meta.total / historyLimit)}
+              totalRecords={historyResponse.meta.total}
+              limit={historyLimit}
+              onPageChange={setHistoryPage}
+              onLimitChange={(l) => {
+                setHistoryLimit(l);
+                setHistoryPage(1);
+              }}
+              limitOptions={[10, 20, 50]}
+            />
+          )}
         </div>
       )}
 

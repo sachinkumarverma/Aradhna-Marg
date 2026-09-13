@@ -40,6 +40,7 @@ export const AdminArticleForm = () => {
     control,
     setValue,
     reset,
+    getValues,
     formState: { errors, isDirty, isValid, defaultValues, dirtyFields }
   } = useForm({
     mode: 'onChange',
@@ -229,9 +230,9 @@ export const AdminArticleForm = () => {
                   type="button"
                   onClick={() => {
                     setValue('status', 'DRAFT');
-                    handleSubmit(onSubmit)();
+                    onSubmit({ ...getValues(), status: 'DRAFT' });
                   }}
-                  disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !actuallyDirty : false)}
+                  disabled={saveMutation.isPending || isUploading || (isEditing ? !actuallyDirty : false)}
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />

@@ -56,6 +56,28 @@ export const AdminPuranas: React.FC = () => {
     setConfirmConfig({ isOpen: true, action, ids: selectedIds });
   };
 
+  const handleOpenPdf = async (row: any) => {
+    if (!row.pdf_file) {
+      toast.error('No PDF file attached to this Purana');
+      return;
+    }
+
+    try {
+      let finalUrl = row.pdf_file;
+      if (!finalUrl.startsWith('http')) {
+        const res = await apiClient.get(`/v1/puranas/${row.id}/pdf`);
+        finalUrl = res.data?.data?.url;
+      }
+      if (finalUrl) {
+        window.open(finalUrl, '_blank');
+      } else {
+        toast.error('Unable to fetch PDF URL');
+      }
+    } catch (error) {
+      toast.error('Failed to open PDF');
+    }
+  };
+
   const totalPages = Math.ceil((data?.meta?.total || 0) / (limit || 10));
 
   const columns = [
@@ -182,6 +204,7 @@ export const AdminPuranas: React.FC = () => {
           data={data?.data || []}
           columns={columns}
           isLoading={isLoading}
+          onPreview={handleOpenPdf}
           onEdit={(row) => navigate(`/admin/puranas/${row.id}/edit`)}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
           emptyIcon={BookOpen}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2, Eye, Trash2, Sparkles, Inbox } from 'lucide-react';
+import { Edit2, ExternalLink, Trash2, Sparkles, Inbox } from 'lucide-react';
 import { cn } from '@utils/cn';
 
 interface Column<T> {
@@ -101,10 +101,10 @@ export function DataTable<T extends { id: string | number }>({
                   {onPreview && (
                     <button
                       onClick={() => onPreview(row)}
-                      className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
-                      title="Preview"
+                      className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                      title="Open PDF"
                     >
-                      <Eye className="w-4 h-4" strokeWidth={2.5} />
+                      <ExternalLink className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                   )}
                   {onEdit && (

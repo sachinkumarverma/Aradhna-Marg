@@ -30,8 +30,10 @@ export class YoutubeController {
 
   async getSyncHistory(req: Request, res: Response, next: NextFunction) {
     try {
-      const history = await youtubeService.getSyncHistory();
-      return sendSuccess(res, 'History retrieved', history);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const { data, total } = await youtubeService.getSyncHistory(page, limit);
+      return sendSuccess(res, 'History retrieved', data, { total, page, limit });
     } catch (error) {
       next(error);
     }

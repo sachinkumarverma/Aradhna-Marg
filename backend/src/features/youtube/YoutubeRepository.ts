@@ -237,12 +237,18 @@ export class YoutubeVideoRepository {
     };
   }
 
-  async getSyncHistory() {
+  async getSyncHistory(page = 1, limit = 10) {
     try {
-      const result = await db.query(`SELECT * FROM youtube_sync_logs ORDER BY started_at DESC LIMIT 50`);
-      return result.rows;
+      const offset = (page - 1) * limit;
+      const dataQuery = `SELECT * FROM youtube_sync_logs ORDER BY started_at DESC LIMIT $1 OFFSET $2`;
+      const countQuery = `SELECT COUNT(*) as total FROM youtube_sync_logs`;
+
+      const [dataResult, countResult] = await Promise.all([db.query(dataQuery, [limit, offset]), db.query(countQuery)]);
+
+      const total = parseInt(countResult.rows[0]?.total || '0', 10);
+      return { data: dataResult.rows, total };
     } catch (error: any) {
-      if (error.code === '42P01' || error.message?.includes('does not exist')) return [];
+      if (error.code === '42P01' || error.message?.includes('does not exist')) return { data: [], total: 0 };
       throw error;
     }
   }

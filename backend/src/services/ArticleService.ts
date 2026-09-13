@@ -21,7 +21,22 @@ export class ArticleService {
   }
 
   public async create(data: any) {
-    const { deities, festivals, tags, bhajans, related_articles, image_url, ...articleData } = data;
+    const {
+      deities,
+      festivals,
+      tags,
+      bhajans,
+      related_articles,
+      image_url,
+      categories,
+      authors,
+      media_files,
+      article_gods,
+      article_festivals,
+      article_tags,
+      article_bhajans,
+      ...articleData
+    } = data;
 
     if (!articleData.slug && articleData.title) {
       articleData.slug = randomUUID();
@@ -39,7 +54,22 @@ export class ArticleService {
   }
 
   public async update(id: string, data: any) {
-    const { deities, festivals, tags, bhajans, related_articles, image_url, ...articleData } = data;
+    const {
+      deities,
+      festivals,
+      tags,
+      bhajans,
+      related_articles,
+      image_url,
+      categories,
+      authors,
+      media_files,
+      article_gods,
+      article_festivals,
+      article_tags,
+      article_bhajans,
+      ...articleData
+    } = data;
 
     const existing = await articleRepository.findById(id);
     if (articleData.status === 'PUBLISHED' && !existing?.publish_date) {
