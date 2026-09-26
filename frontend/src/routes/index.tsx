@@ -13,27 +13,13 @@ import { AdminBhajanForm } from '@pages/admin/bhajans/form';
 import { VideosList } from '@pages/videos';
 import { AdminLogin } from '@pages/admin/login';
 
-// Reusable beautifully styled Coming Soon component
-const ComingSoon = ({ title }: { title: string }) => (
-  <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 pt-24">
-    <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mb-6">
-      <span className="text-4xl">🚧</span>
-    </div>
-    <h1 className="text-3xl md:text-4xl font-extrabold text-darkBrown tracking-tight mb-4">
-      {title.split(' ')[0]} <span className="text-saffron">{title.split(' ').slice(1).join(' ')}</span>
-    </h1>
-    <p className="text-darkBrown/60 text-lg max-w-md mx-auto">
-      We are actively working on building this spiritual directory. Please check back soon!
-    </p>
-  </div>
-);
-
-// Lazy loaded placeholders for future pages (Public)
-const BhajansList = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Bhajans Directory" /> }));
-const Categories = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Categories Directory" /> }));
-const Gods = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Deities Directory" /> }));
-const Festivals = lazy(() => Promise.resolve({ default: () => <ComingSoon title="Festivals Directory" /> }));
-const PuranDetail = lazy(() => import('../pages/puranas/detail').then((m) => ({ default: m.PuranDetail })));
+import { BhajansList } from '@pages/bhajans';
+import { ArticlesList } from '@pages/articles';
+import { ArticleDetail } from '@pages/articles/detail';
+import { FestivalsList } from '@pages/festivals';
+import { FestivalDetail } from '@pages/festivals/detail';
+import { PuranasList } from '@pages/puranas';
+import { PuranDetail } from '@pages/puranas/detail';
 
 // Lazy loaded placeholders for future pages (Admin)
 const AdminYoutube = lazy(() => import('../pages/admin/youtube').then((m) => ({ default: m.AdminYoutube })));
@@ -107,6 +93,34 @@ const router = createBrowserRouter([
         element: <BhajanDetail />
       },
       {
+        path: 'articles',
+        element: <ArticlesList />
+      },
+      {
+        path: 'articles/:slug',
+        element: <ArticleDetail />
+      },
+      {
+        path: 'festivals',
+        element: <FestivalsList />
+      },
+      {
+        path: 'festivals/:id',
+        element: <FestivalDetail />
+      },
+      {
+        path: 'festivals/:slug',
+        element: <FestivalDetail />
+      },
+      {
+        path: 'puranas',
+        element: <PuranasList />
+      },
+      {
+        path: 'puranas/:slug',
+        element: <PuranDetail />
+      },
+      {
         path: 'videos',
         element: <VideosList />
       },
@@ -124,7 +138,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'categories',
-        element: <Categories />
+        element: <ExplorePage />
       },
       {
         path: 'categories/:id',
@@ -132,23 +146,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'gods',
-        element: <Gods />
+        element: <ExplorePage />
+      },
+      {
+        path: 'deities',
+        element: <ExplorePage />
       },
       {
         path: 'gods/:id',
         element: <CollectionDetails />
       },
       {
-        path: 'festivals',
-        element: <Festivals />
-      },
-      {
-        path: 'festivals/:id',
+        path: 'deities/:id',
         element: <CollectionDetails />
-      },
-      {
-        path: 'puranas/:slug',
-        element: <PuranDetail />
       },
       {
         path: '*',

@@ -98,7 +98,7 @@ export const SearchBar: React.FC = () => {
                       <Loader2 className="w-5 h-5 animate-spin" />
                     </div>
                   ) : suggestions.length > 0 ? (
-                    suggestions.map((s, i) => (
+                    suggestions.map((s: string, i: number) => (
                       <button
                         key={i}
                         onClick={() => handleSearch(s)}

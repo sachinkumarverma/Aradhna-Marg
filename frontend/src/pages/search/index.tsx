@@ -1,113 +1,103 @@
 import React, { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Loader2, SlidersHorizontal } from 'lucide-react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { Loader2, Search as SearchIcon } from 'lucide-react';
 import { SearchBar } from '@components/search/SearchBar';
-import { SearchFilters } from './components/SearchFilters';
-import { BhajanCard } from '@components/cards/BhajanCard';
 import { useSearch } from '@hooks/useSearch';
-import type { SearchFilters as IFilters } from '@hooks/useSearch';
-import { Button } from '@components/ui/Button';
 
 export const SearchPage: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
-
-  const [filters, setFilters] = useState<IFilters>({});
   const [sort, setSort] = useState('RELEVANCE');
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  // Execute the search query hook (TanStack)
-  const { data, isLoading, isError } = useSearch(query, filters, sort, 1);
+  // Execute search hook
+  const { data, isLoading, isError } = useSearch(query, {}, sort, 1);
 
-  // Update URL if user types in the master search bar at the top of this page
-  // (Assuming they hit enter and the SearchBar navigates, this component re-renders)
+  const getTargetUrl = (item: any) => {
+    switch (item.type) {
+      case 'BHAJAN':
+        return `/bhajans/${item.slug || item.id}`;
+      case 'ARTICLE':
+        return `/articles/${item.slug || item.id}`;
+      case 'FESTIVAL':
+        return `/festivals/${item.slug || item.id}`;
+      case 'PURANA':
+        return `/puranas/${item.slug || item.id}`;
+      case 'DEITY':
+        return `/gods/${item.slug || item.id}`;
+      default:
+        return `/bhajans/${item.slug || item.id}`;
+    }
+  };
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-24 pb-20">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Search Area */}
-        <div className="mb-10 mt-6 flex flex-col items-start">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-darkBrown tracking-tight mb-6">
-            Search <span className="text-saffron">Bhajans</span>
+        {/* Header Search Input */}
+        <div className="mb-10 max-w-3xl">
+          <h1 className="text-3xl md:text-4xl font-black text-darkBrown tracking-tight mb-6">
+            खोज <span className="text-saffron">परिणाम</span>
           </h1>
-          <div className="w-full max-w-3xl">
-            <SearchBar />
-          </div>
+          <SearchBar />
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Desktop Filters Sidebar */}
-          <div className="hidden lg:block w-72 shrink-0">
-            <div className="sticky top-24">
-              <SearchFilters filters={filters} onChange={setFilters} />
-            </div>
-          </div>
-
-          {/* Mobile Filter Toggle */}
-          <div className="lg:hidden flex items-center justify-between mb-4">
-            <span className="text-sm font-medium text-gray-500">
-              {data ? `${data.length} results` : 'Search results'}
+        {/* Results Area */}
+        <div className="w-full">
+          <div className="flex items-center justify-between mb-6">
+            <span className="text-base font-bold text-slate-600">
+              {isLoading
+                ? 'खोज जारी है...'
+                : query
+                  ? `"${query}" के लिए ${data?.length || 0} परिणाम मिले`
+                  : 'खोज परिणाम'}
             </span>
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<SlidersHorizontal className="w-4 h-4" />}
-              onClick={() => setShowMobileFilters(!showMobileFilters)}
-            >
-              Filters
-            </Button>
           </div>
 
-          {/* Main Results Area */}
-          <div className="flex-1 w-full">
-            {/* Sorting Header */}
-            <div className="hidden lg:flex items-center justify-between mb-6">
-              <span className="text-sm font-medium text-gray-500">
-                {isLoading ? 'Searching...' : `Found ${data?.length || 0} results for "${query}"`}
-              </span>
-              <select
-                className="bg-white border border-gray-200 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-saffron"
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}
-              >
-                <option value="RELEVANCE">Relevance</option>
-                <option value="NEWEST">Newest First</option>
-                <option value="VIEWS">Most Viewed</option>
-              </select>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-10 h-10 animate-spin text-saffron" />
             </div>
+          ) : isError ? (
+            <div className="text-center py-20 text-red-500 font-bold">खोज में त्रुटि हुई। कृपया पुनः प्रयास करें।</div>
+          ) : data && data.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {data.map((item: any, i: number) => (
+                <Link
+                  key={item.id || i}
+                  to={getTargetUrl(item)}
+                  className="bg-white rounded-3xl p-6 border border-gray-100 hover:border-saffron/40 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="px-3 py-1 bg-amber-50 text-saffron font-bold text-xs rounded-full border border-amber-200">
+                        {item.type_label || item.type}
+                      </span>
+                      {item.views > 0 && <span className="text-xs text-slate-400 font-medium">{item.views} views</span>}
+                    </div>
 
-            {/* Results Grid */}
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-10 h-10 animate-spin text-saffron" />
-              </div>
-            ) : isError ? (
-              <div className="text-center py-20 text-red-500">Failed to fetch search results. Please try again.</div>
-            ) : data && data.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {data.map((bhajan: any, i: number) => (
-                  <BhajanCard
-                    key={bhajan.id || i}
-                    title={bhajan.title}
-                    godName={bhajan.god_name || 'Unknown'}
-                    views={bhajan.views}
-                    duration={`${bhajan.reading_time || 5} Min`}
-                    thumbnailUrl={bhajan.thumbnail_url}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-20">
-                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-4xl">🔍</span>
-                </div>
-                <h3 className="text-xl font-bold text-darkBrown mb-2">No results found</h3>
-                <p className="text-gray-500 max-w-md mx-auto">
-                  We couldn't find anything matching "{query}". Try checking your spelling or using more general terms.
-                </p>
-              </div>
-            )}
-          </div>
+                    <h3 className="text-xl font-extrabold text-darkBrown mb-2 group-hover:text-saffron transition-colors line-clamp-2">
+                      {item.title}
+                    </h3>
+
+                    {item.excerpt && (
+                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-4">{item.excerpt}</p>
+                    )}
+                  </div>
+
+                  <span className="inline-flex items-center text-xs font-bold text-saffron pt-3 border-t border-gray-100 group-hover:underline">
+                    देखें &rarr;
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 p-8 max-w-xl mx-auto">
+              <SearchIcon className="w-12 h-12 text-saffron mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-darkBrown mb-2">कोई परिणाम नहीं मिला</h3>
+              <p className="text-slate-500 text-sm">
+                "{query}" के लिए कोई सामग्री प्राप्त नहीं हुई। कृपया अन्य शब्द का प्रयास करें।
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

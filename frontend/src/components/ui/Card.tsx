@@ -18,7 +18,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         whileHover={hoverable ? 'hover' : undefined}
         whileTap={hoverable ? 'tap' : undefined}
         className={cn(
-          'bg-white rounded-2xl p-5 shadow-sm border border-black/5 overflow-hidden',
+          'bg-white rounded-xl p-5 shadow-sm border border-black/5 overflow-hidden',
           hoverable && 'cursor-pointer shadow-md transition-shadow duration-300',
           className
         )}

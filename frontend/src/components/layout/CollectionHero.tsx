@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Breadcrumb } from '@components/common/Breadcrumb';
 
 interface CollectionHeroProps {
   title: string;
@@ -19,7 +18,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
   thumbnailUrl
 }) => {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-darkBrown to-[#3d2b1f] text-cream pt-24 pb-16 shadow-xl">
+    <div className="relative overflow-hidden bg-gradient-to-br from-darkBrown to-[#3d2b1f] text-cream pt-28 pb-14 shadow-xl">
       {/* Decorative SVG Pattern */}
       <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -37,23 +36,9 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-10">
         <div className="flex-1 w-full">
           {/* Breadcrumbs */}
-          <nav className="flex items-center gap-2 text-sm text-cream/60 mb-6 flex-wrap">
-            <Link to="/" className="hover:text-saffron transition-colors">
-              Home
-            </Link>
-            {breadcrumbs.map((crumb, idx) => (
-              <React.Fragment key={idx}>
-                <ChevronRight className="w-4 h-4" />
-                {idx === breadcrumbs.length - 1 ? (
-                  <span className="text-white font-medium">{crumb.label}</span>
-                ) : (
-                  <Link to={crumb.path} className="hover:text-saffron transition-colors">
-                    {crumb.label}
-                  </Link>
-                )}
-              </React.Fragment>
-            ))}
-          </nav>
+          <div className="mb-6">
+            <Breadcrumb items={breadcrumbs.map((c) => ({ label: c.label, to: c.path }))} />
+          </div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -99,7 +84,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
             transition={{ delay: 0.3 }}
             className="w-full max-w-sm lg:w-80 shrink-0"
           >
-            <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 relative">
+            <div className="aspect-[4/5] rounded-xl overflow-hidden shadow-2xl border-4 border-white/10 relative">
               <div className="absolute inset-0 bg-gradient-to-t from-darkBrown/80 to-transparent z-10" />
               <img src={thumbnailUrl} alt={title} className="w-full h-full object-cover" />
             </div>

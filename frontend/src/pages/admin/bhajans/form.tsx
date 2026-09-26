@@ -39,6 +39,9 @@ export const AdminBhajanForm = () => {
     mode: 'onChange',
     defaultValues: {
       title: '',
+      english_title: '',
+      hindi_title: '',
+      title_en: '',
       slug: '',
       lyrics: '',
       lyrics_english: '',
@@ -55,16 +58,20 @@ export const AdminBhajanForm = () => {
   });
 
   const titleValue = watch('title');
+  const englishTitleValue = watch('english_title');
   const slugValue = watch('slug');
   const lyricsValue = watch('lyrics');
   const videoSourceMode = watch('video_source_mode');
 
   // Auto slug generation
   useEffect(() => {
-    if (!isEditing && titleValue && !slugValue) {
-      setValue('slug', generateSlug(titleValue), { shouldValidate: true, shouldDirty: true });
+    if (!isEditing && !slugValue) {
+      const sourceForSlug = englishTitleValue || titleValue;
+      if (sourceForSlug) {
+        setValue('slug', generateSlug(sourceForSlug), { shouldValidate: true, shouldDirty: true });
+      }
     }
-  }, [titleValue, isEditing, slugValue, setValue]);
+  }, [titleValue, englishTitleValue, isEditing, slugValue, setValue]);
 
   // Fetch data if editing
   const mainQuery = useQuery({
@@ -81,6 +88,7 @@ export const AdminBhajanForm = () => {
     if (mainQuery.data) {
       reset({
         ...mainQuery.data,
+        english_title: mainQuery.data.english_title || mainQuery.data.title_en || '',
         video_source_mode: mainQuery.data.original_youtube_url ? 'manual' : 'automatic'
       });
     }
@@ -193,14 +201,31 @@ export const AdminBhajanForm = () => {
               {/* LEFT COLUMN: Main Content */}
               <div className="lg:col-span-2 space-y-6">
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-semibold text-gray-800">Bhajan Title *</label>
-                    <input
-                      {...register('title', { required: 'Title is required' })}
-                      className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
-                      placeholder="e.g. Shri Hanuman Chalisa"
-                    />
-                    {errors.title && <p className="text-xs text-red-500">{errors.title.message as string}</p>}
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-semibold text-gray-800 flex items-center justify-between">
+                        <span>Bhajan Title (Hindi / Main) *</span>
+                        <span className="text-[11px] font-normal text-slate-500">हिंदी / मुख्य</span>
+                      </label>
+                      <input
+                        {...register('title', { required: 'Title is required' })}
+                        className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm font-medium"
+                        placeholder="e.g. राधारमणं हरे हरे"
+                      />
+                      {errors.title && <p className="text-xs text-red-500">{errors.title.message as string}</p>}
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-semibold text-gray-800 flex items-center justify-between">
+                        <span>English Title (Optional)</span>
+                        <span className="text-[11px] font-normal text-slate-500">English / Roman</span>
+                      </label>
+                      <input
+                        {...register('english_title')}
+                        className="w-full px-4 py-2.5 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm font-medium"
+                        placeholder="e.g. Radha Ramanam Hare Hare"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">

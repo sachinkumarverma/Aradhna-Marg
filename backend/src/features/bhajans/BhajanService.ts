@@ -39,6 +39,11 @@ export class BhajanService {
       bhajan_gods,
       ...bhajanData
     } = data;
+    if (bhajanData.english_title && !bhajanData.title_en) {
+      bhajanData.title_en = bhajanData.english_title;
+    } else if (bhajanData.title_en && !bhajanData.english_title) {
+      bhajanData.english_title = bhajanData.title_en;
+    }
     return { additionalDeities, bhajanData };
   }
 

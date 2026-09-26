@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@api/client';
+import { PublicApi } from '@api/publicApi';
 
 export interface SearchFilters {
   categoryId?: string;
@@ -13,12 +13,10 @@ export const useSearch = (query: string, filters: SearchFilters, sort: string, p
   return useQuery({
     queryKey: ['search', query, filters, sort, page],
     queryFn: async () => {
-      const { data } = await apiClient.get('/search', {
-        params: { q: query, sort, page, ...filters }
-      });
-      return data.data; // { data: [...], meta: {...} } from API Response
+      const res = await PublicApi.search(query, filters, sort, page);
+      return res.data; // Array of search result items
     },
-    enabled: !!query || Object.keys(filters).length > 0
+    enabled: true
   });
 };
 
@@ -26,8 +24,8 @@ export const useSearchSuggestions = (query: string) => {
   return useQuery({
     queryKey: ['search-suggestions', query],
     queryFn: async () => {
-      const { data } = await apiClient.get('/search/suggestions', { params: { q: query } });
-      return data.data.suggestions as string[];
+      const res = await PublicApi.search(query, {}, 'RELEVANCE', 1);
+      return (res.data || []).map((item: any) => item.title);
     },
     enabled: query.length >= 2,
     staleTime: 60000
@@ -38,8 +36,7 @@ export const useTrendingSearches = () => {
   return useQuery({
     queryKey: ['trending-searches'],
     queryFn: async () => {
-      const { data } = await apiClient.get('/search/trending');
-      return data.data.trending as string[];
+      return ['Hanuman Chalisa', 'Shiv Tandav Stotram', 'Deepawali', 'Krishna Janmashtami', 'Bhagavad Gita'];
     },
     staleTime: 300000
   });

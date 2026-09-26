@@ -65,8 +65,11 @@ export const AdminBhajans: React.FC = () => {
     {
       header: 'Title',
       accessor: (row: any) => (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5">
           <p className="font-bold text-gray-900 line-clamp-2 leading-snug">{row.title}</p>
+          {(row.english_title || row.title_en) && (
+            <p className="text-xs text-gray-500 font-normal line-clamp-1">{row.english_title || row.title_en}</p>
+          )}
         </div>
       )
     },

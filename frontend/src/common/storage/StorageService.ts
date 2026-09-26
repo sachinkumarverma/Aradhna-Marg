@@ -5,7 +5,8 @@ export const STORAGE_KEYS = {
   FONT_SIZE: 'bhajan_font_size',
   READING_MODE: 'bhajan_reading_mode',
   RECENT_SEARCHES: 'recent_searches',
-  LANGUAGE: 'language'
+  LANGUAGE: 'language',
+  FAVORITES: 'favorite_items'
 } as const;
 
 class StorageServiceImpl {
@@ -91,6 +92,38 @@ class StorageServiceImpl {
 
   getLanguage(): string | null {
     return localStorage.getItem(STORAGE_KEYS.LANGUAGE);
+  }
+
+  // --- Favorites (localStorage) ---
+  setFavorites(favorites: string[]) {
+    localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
+  }
+
+  getFavorites(): string[] {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.FAVORITES);
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  isFavorite(id: string): boolean {
+    const favorites = this.getFavorites();
+    return favorites.includes(id);
+  }
+
+  toggleFavorite(id: string): string[] {
+    const favorites = this.getFavorites();
+    const index = favorites.indexOf(id);
+    let updated: string[];
+    if (index > -1) {
+      updated = favorites.filter((favId) => favId !== id);
+    } else {
+      updated = [...favorites, id];
+    }
+    this.setFavorites(updated);
+    return updated;
   }
 
   clearAll() {

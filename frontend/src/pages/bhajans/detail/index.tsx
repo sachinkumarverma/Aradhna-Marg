@@ -1,41 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, Home, FileText } from 'lucide-react';
+import { Copy, Check, Eye, Clock, Calendar, FileText } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { BhajanHero } from './components/BhajanHero';
-import { LyricsViewer } from './components/LyricsViewer';
 import { YouTubePlayer } from './components/YouTubePlayer';
+import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
+import { RelatedContentSection } from '@components/common/RelatedContentSection';
+import { Breadcrumb } from '@components/common/Breadcrumb';
+import { PublicApi } from '@api/publicApi';
 import { useClipboard } from '@hooks/useClipboard';
-import { apiClient } from '@api/client';
+import { SocialShareButtons } from '@components/common/SocialShareButtons';
 
 export const BhajanDetail: React.FC = () => {
-  const { slug } = useParams(); // URL slug parameter
-  const [bhajan, setBhajan] = React.useState<any>(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const fetchBhajan = async () => {
-      setLoading(true);
-      try {
-        const res = await apiClient.get(`/v1/public/videos/${slug}`);
-        if (res.data.data) {
-          setBhajan(res.data.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch bhajan/video detail:', error);
-      }
-      setLoading(false);
-    };
-    if (slug) fetchBhajan();
-  }, [slug]);
+  const { slug } = useParams();
+  const [bhajan, setBhajan] = useState<any>(null);
+  const [relatedData, setRelatedData] = useState<any>({});
+  const [loading, setLoading] = useState(true);
 
   const { copied, copyToClipboard } = useClipboard();
 
-  const handleCopy = () => copyToClipboard(bhajan?.lyrics || bhajan?.description || '');
+  useEffect(() => {
+    const fetchBhajanData = async () => {
+      if (!slug) return;
+      setLoading(true);
+      try {
+        const [bhajanRes, relatedRes] = await Promise.all([
+          PublicApi.getBhajanBySlug(slug),
+          PublicApi.getBhajanRelated(slug).catch(() => ({}))
+        ]);
+
+        setBhajan(bhajanRes);
+        setRelatedData(relatedRes || {});
+
+        // Dynamic Document Title for SEO
+        if (bhajanRes?.title) {
+          document.title = bhajanRes.seo_title || `${bhajanRes.title} - आराधना मार्ग`;
+        }
+      } catch (error) {
+        console.error('Failed to fetch bhajan detail:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBhajanData();
+  }, [slug]);
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[#F9F7F3]">
+      <div className="w-full min-h-screen flex items-center justify-center bg-[#F9F7F3] pt-28">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
       </div>
     );
@@ -43,101 +54,190 @@ export const BhajanDetail: React.FC = () => {
 
   if (!bhajan) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[#F9F7F3]">
-        <h2 className="text-2xl font-bold text-darkBrown">Bhajan not found.</h2>
+      <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4">
+        <h2 className="text-3xl font-black text-darkBrown mb-4">यह भजन उपलब्ध नहीं है।</h2>
+        <p className="text-slate-600 mb-6">खोजें हमारे विशाल भजन संग्रह में।</p>
+        <Link
+          to="/bhajans"
+          className="px-6 py-3 bg-saffron text-white rounded-md font-bold shadow-md hover:brightness-90"
+        >
+          सभी भजन देखें
+        </Link>
       </div>
     );
   }
 
+  const handleCopy = () => {
+    const textToCopy = bhajan.lyrics || bhajan.clean_lyrics || bhajan.description || '';
+    copyToClipboard(textToCopy);
+  };
+
+  const formattedDate = bhajan.created_at
+    ? new Date(bhajan.created_at).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: 'numeric' })
+    : '';
+
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pb-24">
-      {/* Main Container */}
-      <div className="mx-auto w-full max-w-7xl pt-24 px-4 sm:px-6 lg:px-8">
-        {/* Modern Icon-led Breadcrumbs */}
-        <nav className="flex flex-wrap items-center gap-3 md:gap-2 text-[14px] md:text-[15px] font-semibold text-slate-500 mb-10 mt-4 md:mt-6 px-1 md:px-2">
-          {/* Circular Home Icon */}
-          <Link
-            to="/"
-            className="w-8 h-8 md:w-9 md:h-9 shrink-0 flex items-center justify-center rounded-full bg-saffron text-white hover:bg-orange-600 transition-colors shadow-sm"
-          >
-            <Home className="w-4 h-4 md:w-[18px] md:h-[18px]" strokeWidth={2.5} />
-          </Link>
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumbs */}
+        <div className="mb-8">
+          <Breadcrumb
+            items={[{ label: 'होम', to: '/' }, { label: 'भजन संग्रह', to: '/bhajans' }, { label: bhajan.title }]}
+          />
+        </div>
 
-          <ChevronRight className="w-4 h-4 text-slate-300" strokeWidth={2.5} />
+        {/* Main Grid: Left Primary Content (Video & Description), Right Sidebar (Deity & Dark Title Card) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column (8 Columns) */}
+          <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
+            {/* YouTube Player Section (Placed at the very top of left column) */}
+            {bhajan.youtube_video_id && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full bg-black rounded-3xl overflow-hidden shadow-lg border border-black/10"
+              >
+                <YouTubePlayer videoId={bhajan.youtube_video_id} title={bhajan.title} />
+              </motion.div>
+            )}
 
-          <Link to="/" className="hover:text-saffron transition-colors">
-            Home
-          </Link>
+            {/* Description Card (Styled with soft blue tint matching Image 1) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-[#EBF3FF] rounded-3xl p-6 sm:p-8 border border-blue-100 shadow-sm"
+            >
+              <div className="flex items-center justify-between pb-4 border-b border-blue-200/50 mb-6">
+                <h2 className="text-xl sm:text-2xl font-black text-darkBrown flex items-center gap-2.5">
+                  <FileText className="w-6 h-6 text-blue-600" /> Description
+                </h2>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="px-3.5 py-1.5 bg-white hover:bg-blue-100 text-darkBrown border border-blue-200 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 shadow-xs"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-green-600" /> कॉपी हो गया!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-saffron" /> भजन कॉपी करें
+                    </>
+                  )}
+                </button>
+              </div>
 
-          <ChevronRight className="w-4 h-4 text-slate-300" strokeWidth={2.5} />
+              {bhajan.short_description && (
+                <p className="text-slate-700 text-base md:text-lg font-medium leading-relaxed mb-6">
+                  {bhajan.short_description}
+                </p>
+              )}
 
-          <Link to="/videos" className="hover:text-saffron transition-colors">
-            Videos
-          </Link>
-
-          <ChevronRight className="w-4 h-4 text-slate-300" strokeWidth={2.5} />
-
-          <span className="text-saffron font-bold">{bhajan.title}</span>
-        </nav>
-
-        <div className="flex flex-col lg:flex-row gap-10">
-          {/* LEFT COLUMN: Video Player (Bigger Area) */}
-          <div className="flex-1 w-full max-w-4xl mx-auto space-y-8">
-            <YouTubePlayer videoId={bhajan.youtube_video_id} title={bhajan.title} />
-
-            {/* Ad Placeholder */}
-            <div className="mt-8 w-full h-[150px] bg-gray-200 border border-gray-300 border-dashed rounded-2xl flex items-center justify-center text-gray-400">
-              Advertisement Area
-            </div>
+              {/* Render Lyrics using SafeHtmlContent if HTML, or formatted text preserves whitespace */}
+              {bhajan.lyrics ? (
+                bhajan.lyrics.includes('<') ? (
+                  <SafeHtmlContent content={bhajan.lyrics} className="text-darkBrown" />
+                ) : (
+                  <div className="whitespace-pre-line text-base sm:text-lg font-medium text-darkBrown leading-relaxed tracking-wide font-sans">
+                    {bhajan.lyrics}
+                  </div>
+                )
+              ) : bhajan.description ? (
+                <div className="whitespace-pre-line text-base sm:text-lg font-medium text-darkBrown leading-relaxed">
+                  {bhajan.description}
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">बोल उपलब्ध नहीं हैं।</p>
+              )}
+            </motion.div>
           </div>
 
-          {/* RIGHT COLUMN: Details / Description (Smaller Area) */}
-          <div className="w-full lg:w-[420px] shrink-0 flex flex-col gap-7">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.0, ease: 'easeOut' }}
-            >
-              <BhajanHero
-                title={bhajan.title}
-                godName={bhajan.god_id || 'Devotional'}
-                views={bhajan.views}
-                duration={
-                  bhajan.is_string_duration
-                    ? bhajan.string_duration
-                    : bhajan.duration
-                      ? `${Math.floor(bhajan.duration / 60)
-                          .toString()
-                          .padStart(2, '0')}:${(bhajan.duration % 60).toString().padStart(2, '0')}`
-                      : '00:00'
-                }
-                publishDate={bhajan.published_date}
+          {/* Right Column (4 Columns): Sidebar */}
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <div className="sticky top-28 flex flex-col gap-6">
+              {/* 1. Dark Brown Title Info Card (Placed at TOP of sidebar) */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[#3D261C] rounded-3xl p-6 text-white shadow-xl border border-amber-900/40 relative overflow-hidden flex flex-col gap-4"
+              >
+                {/* Category / God Badge */}
+                {(bhajan.god_name || bhajan.category_name) && (
+                  <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-white/10 text-saffron font-bold text-xs uppercase tracking-wider self-start border border-white/10">
+                    {bhajan.god_name || bhajan.category_name}
+                  </div>
+                )}
+
+                {/* Title */}
+                <h3 className="text-lg sm:text-xl font-bold text-white leading-snug tracking-tight">{bhajan.title}</h3>
+
+                {/* Metadata Row: Views, Duration, Date */}
+                <div className="flex flex-wrap items-center gap-4 text-xs text-amber-100/80 font-medium">
+                  {bhajan.views > 0 && (
+                    <span className="flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5 text-saffron" /> {bhajan.views} views
+                    </span>
+                  )}
+                  {bhajan.duration && (
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-saffron" /> {bhajan.duration}
+                    </span>
+                  )}
+                  {formattedDate && (
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-saffron" /> {formattedDate}
+                    </span>
+                  )}
+                </div>
+
+                {/* Action Row: Social Share */}
+                <div className="pt-3 border-t border-white/15 mt-1">
+                  <SocialShareButtons
+                    title={bhajan.title}
+                    excerpt={bhajan.short_description || bhajan.god_name}
+                    url={`/bhajans/${bhajan.slug || bhajan.id}`}
+                  />
+                </div>
+              </motion.div>
+
+              {/* 2. Explore Deity Card (Rendered below Dark Brown Card if deity info exists) */}
+              {bhajan.god_name && (
+                <Link
+                  to={`/gods/${bhajan.god_slug || bhajan.god_id || ''}`}
+                  className="group block bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
+                >
+                  <div className="flex items-center gap-1.5 text-saffron font-bold text-xs uppercase tracking-wider mb-3">
+                    <span className="text-sm">✨</span> EXPLORE DEITY
+                  </div>
+                  <div className="flex items-center gap-3.5 mb-3.5">
+                    <img
+                      src={bhajan.god_image || '/Deities/Krishna.png'}
+                      alt={bhajan.god_name}
+                      className="w-14 h-14 rounded-lg object-cover shadow-sm border-2 border-amber-100 shrink-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-lg font-bold text-darkBrown group-hover:text-saffron transition-colors truncate">
+                        {bhajan.god_name}
+                      </h4>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center justify-center w-full py-2.5 px-4 bg-saffron text-white rounded-xl font-bold text-xs group-hover:brightness-90 transition-colors shadow-sm">
+                    View Deity Page &rarr;
+                  </span>
+                </Link>
+              )}
+
+              {/* 3. Recommendation Sidebar */}
+              <RelatedContentSection
+                relatedBhajans={relatedData.relatedBhajans}
+                relatedArticles={relatedData.relatedArticles}
               />
-            </motion.div>
-
-            {/* The Description Container */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.0, delay: 0.3, ease: 'easeOut' }}
-              className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-lg shadow-blue-900/5 border border-blue-100 p-6 md:p-8 mb-12 h-auto flex flex-col"
-            >
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
-
-              <h3 className="text-xl font-extrabold text-slate-800 mb-4 flex items-center gap-2 relative z-10">
-                <FileText className="w-5 h-5 text-blue-500" /> Description
-              </h3>
-
-              <div className="w-full h-[2px] bg-gradient-to-r from-blue-200 to-transparent mb-6 relative z-10"></div>
-
-              <div className="text-slate-700 leading-relaxed font-medium relative z-10">
-                <LyricsViewer lyrics={bhajan.description || 'No description provided.'} fontSize={15} isDark={false} />
-              </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
-      {/* We are removing StickyBottomBar here because this is for Videos, not reading mode */}
     </div>
   );
 };
