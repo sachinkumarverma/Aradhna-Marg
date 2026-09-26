@@ -21,13 +21,39 @@ router.get('/articles/:slug', publicController.getArticleBySlug);
 
 // Festivals
 router.get('/festivals', publicController.getFestivals);
-router.get('/festivals/:slug/related', publicController.getArticleRelated);
+router.get('/festivals/:slug/related', publicController.getFestivalRelated);
 router.get('/festivals/:slug', publicController.getFestivalBySlug);
 
 // Puranas / Sacred Scriptures
 router.get('/puranas', publicController.getPuranas);
 router.get('/puranas/:id/pdf', publicController.getPuranPdfUrl);
 router.get('/puranas/:slug', publicController.getPuranBySlug);
+
+// PDF CORS Proxy for client PDF.js rendering
+router.get('/proxy-pdf', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const pdfUrl = req.query.url as string;
+    if (!pdfUrl) {
+      return res.status(400).json({ error: 'url parameter is required' });
+    }
+
+    const { default: axios } = await import('axios');
+    const response = await axios.get(pdfUrl, {
+      responseType: 'arraybuffer',
+      timeout: 30000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return res.send(Buffer.from(response.data));
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Deities / Gods
 router.get('/deities', publicController.getDeities);

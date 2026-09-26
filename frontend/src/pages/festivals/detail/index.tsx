@@ -9,42 +9,57 @@ import { Breadcrumb } from '@components/common/Breadcrumb';
 import { PublicApi } from '@api/publicApi';
 
 export const FestivalDetail: React.FC = () => {
-  const { slug } = useParams();
+  const params = useParams();
+  const festivalIdOrSlug = params.slug || params.id;
   const [festival, setFestival] = useState<any>(null);
   const [relatedData, setRelatedData] = useState<any>({});
   const [lang, setLang] = useState('hi');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchFestivalData = async () => {
-      if (!slug) return;
+      if (!festivalIdOrSlug) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
         const [festRes, relatedRes] = await Promise.all([
-          PublicApi.getFestivalBySlug(slug, lang).catch((err) => {
+          PublicApi.getFestivalBySlug(festivalIdOrSlug, lang).catch((err) => {
             console.error('Failed to fetch festival by slug:', err);
             return null;
           }),
-          PublicApi.getFestivalRelated(slug).catch((err) => {
+          PublicApi.getFestivalRelated(festivalIdOrSlug).catch((err) => {
             console.error('Failed to fetch festival related:', err);
             return {};
           })
         ]);
 
-        setFestival(festRes);
-        setRelatedData(relatedRes || {});
+        if (isMounted) {
+          setFestival(festRes);
+          setRelatedData(relatedRes || {});
 
-        if (festRes?.displayName || festRes?.name) {
-          document.title = festRes.seo_title || festRes.displayName || festRes.name;
+          if (festRes?.displayName || festRes?.name) {
+            document.title = festRes.seo_title || festRes.displayName || festRes.name;
+          }
         }
       } catch (error) {
         console.error('Failed to fetch festival detail:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
+
     fetchFestivalData();
-  }, [slug, lang]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [festivalIdOrSlug, lang]);
 
   if (loading) {
     return (
@@ -94,14 +109,7 @@ export const FestivalDetail: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-xl p-6 sm:p-10 border border-gray-100 shadow-sm"
             >
-              {/* Banner Image */}
-              {festival.banner_image && (
-                <div className="w-full rounded-lg overflow-hidden mb-8 max-h-[420px] bg-gray-100 border border-gray-100 shadow-sm">
-                  <img src={festival.banner_image} alt={name} className="w-full h-full object-cover" />
-                </div>
-              )}
-
-              {/* Title & Date Badge */}
+              {/* Title & Date Badges */}
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 {festival.festival_date && (
                   <span className="px-3.5 py-1 bg-amber-50 text-saffron font-bold text-xs rounded-full border border-amber-200 flex items-center gap-1.5">
@@ -120,14 +128,23 @@ export const FestivalDetail: React.FC = () => {
                 )}
               </div>
 
+              {/* Main Title */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight leading-tight mb-4">
                 {name}
               </h1>
 
+              {/* Short Description */}
               {description && (
                 <p className="text-slate-600 text-base md:text-lg font-medium leading-relaxed mb-8 border-b border-gray-100 pb-6">
                   {description}
                 </p>
+              )}
+
+              {/* Banner Image (Placed below Title & Description) */}
+              {festival.banner_image && (
+                <div className="w-full rounded-lg overflow-hidden mb-8 max-h-[420px] bg-gray-100 border border-gray-100 shadow-sm">
+                  <img src={festival.banner_image} alt={name} className="w-full h-full object-cover" />
+                </div>
               )}
 
               {/* Rich Content Rendered Safely */}
@@ -142,12 +159,20 @@ export const FestivalDetail: React.FC = () => {
             <div className="sticky top-28">
               <RelatedContentSection
                 relatedBhajans={
-                  festival.related_bhajans?.length > 0 ? festival.related_bhajans : relatedData.relatedBhajans
+                  Array.isArray(festival.related_bhajans) && festival.related_bhajans.length > 0
+                    ? festival.related_bhajans
+                    : Array.isArray(relatedData?.relatedBhajans)
+                      ? relatedData.relatedBhajans
+                      : []
                 }
                 relatedArticles={
-                  festival.related_articles?.length > 0 ? festival.related_articles : relatedData.relatedArticles
+                  Array.isArray(festival.related_articles) && festival.related_articles.length > 0
+                    ? festival.related_articles
+                    : Array.isArray(relatedData?.relatedArticles)
+                      ? relatedData.relatedArticles
+                      : []
                 }
-                relatedFestivals={relatedData.relatedFestivals}
+                relatedFestivals={Array.isArray(relatedData?.relatedFestivals) ? relatedData.relatedFestivals : []}
               />
             </div>
           </div>

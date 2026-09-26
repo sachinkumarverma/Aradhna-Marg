@@ -10,11 +10,18 @@ export interface BreadcrumbItem {
 interface BreadcrumbProps {
   items: BreadcrumbItem[];
   className?: string;
+  variant?: 'light' | 'dark';
 }
 
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '' }) => {
+export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', variant = 'light' }) => {
+  const isDark = variant === 'dark';
+
   return (
-    <nav className={`flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 ${className}`}>
+    <nav
+      className={`flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold ${
+        isDark ? 'text-slate-200' : 'text-slate-600'
+      } ${className}`}
+    >
       {/* Red Circular Home Icon */}
       <Link
         to="/"
@@ -28,16 +35,25 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '' })
         const isLast = idx === items.length - 1;
         return (
           <React.Fragment key={idx}>
-            <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-300 shrink-0" />
+            <ChevronRight
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isDark ? 'text-white/40' : 'text-slate-300'}`}
+            />
             {isLast || !item.to ? (
               <span
-                className="text-saffron font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md"
+                className={`font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md ${
+                  isDark ? 'text-amber-400' : 'text-saffron'
+                }`}
                 title={item.label}
               >
                 {item.label}
               </span>
             ) : (
-              <Link to={item.to} className="hover:text-saffron transition-colors text-slate-600 font-medium">
+              <Link
+                to={item.to}
+                className={`transition-colors font-medium ${
+                  isDark ? 'text-slate-200 hover:text-white' : 'text-slate-600 hover:text-saffron'
+                }`}
+              >
                 {item.label}
               </Link>
             )}

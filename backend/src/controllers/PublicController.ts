@@ -569,7 +569,7 @@ export class PublicController {
                COALESCE((SELECT json_agg(json_build_object('id', a.id, 'title', a.title, 'slug', a.slug))
                          FROM festival_articles fa JOIN articles a ON fa.article_id = a.id WHERE fa.festival_id = f.id AND a.status = 'PUBLISHED'), '[]'::json) as related_articles
         FROM festivals f
-        WHERE (f.slug = $1 OR f.id::text = $1) AND f.status ILIKE 'published'
+        WHERE (f.slug = $1 OR f.id::text = $1) AND (f.status IS NULL OR f.status ILIKE 'published')
         LIMIT 1
       `;
 
@@ -590,6 +590,77 @@ export class PublicController {
       };
 
       return sendSuccess(res, 'Festival retrieved successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // 9b. Festival Related Content
+  public getFestivalRelated = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { slug } = req.params;
+
+      const festRes = await db.query(
+        `SELECT id, deity_id, category FROM festivals WHERE (slug = $1 OR id::text = $1) LIMIT 1`,
+        [slug]
+      );
+
+      if (festRes.rows.length === 0) {
+        return sendSuccess(res, 'Related content fetched', {
+          relatedArticles: [],
+          relatedBhajans: [],
+          relatedFestivals: []
+        });
+      }
+
+      const { id, deity_id } = festRes.rows[0];
+
+      // Related Bhajans
+      const relatedBhajansQuery = `
+        SELECT b.id, b.title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration,
+               d.name as god_name, c.name as category_name
+        FROM bhajans b
+        LEFT JOIN festival_bhajans fb ON b.id = fb.bhajan_id
+        LEFT JOIN deities d ON b.god_id = d.id
+        LEFT JOIN categories c ON b.category_id = c.id
+        WHERE b.status = 'PUBLISHED' AND b.deleted_at IS NULL
+          AND (fb.festival_id = $1 OR ($2::uuid IS NOT NULL AND b.god_id = $2::uuid))
+        ORDER BY b.popularity_score DESC, b.created_at DESC
+        LIMIT 4
+      `;
+
+      // Related Articles
+      const relatedArticlesQuery = `
+        SELECT a.id, a.title, a.title_en, a.slug, a.excerpt, a.excerpt_en, m.url as featured_image_url
+        FROM articles a
+        LEFT JOIN festival_articles fa ON a.id = fa.article_id
+        LEFT JOIN media_files m ON a.featured_image_id = m.id
+        WHERE a.status = 'PUBLISHED' AND a.deleted_at IS NULL
+          AND (fa.festival_id = $1 OR a.status = 'PUBLISHED')
+        ORDER BY a.created_at DESC
+        LIMIT 4
+      `;
+
+      // Related Festivals
+      const relatedFestivalsQuery = `
+        SELECT id, name, name_en, slug, short_description, banner_image, festival_date
+        FROM festivals
+        WHERE id != $1 AND (status IS NULL OR status ILIKE 'published')
+        ORDER BY created_at DESC
+        LIMIT 3
+      `;
+
+      const [bhajans, articles, festivals] = await Promise.all([
+        db.query(relatedBhajansQuery, [id, deity_id || null]),
+        db.query(relatedArticlesQuery, [id]),
+        db.query(relatedFestivalsQuery, [id])
+      ]);
+
+      return sendSuccess(res, 'Related festival content fetched', {
+        relatedBhajans: bhajans.rows,
+        relatedArticles: articles.rows,
+        relatedFestivals: festivals.rows
+      });
     } catch (error) {
       next(error);
     }

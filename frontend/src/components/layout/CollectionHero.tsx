@@ -37,7 +37,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
         <div className="flex-1 w-full">
           {/* Breadcrumbs */}
           <div className="mb-6">
-            <Breadcrumb items={breadcrumbs.map((c) => ({ label: c.label, to: c.path }))} />
+            <Breadcrumb items={breadcrumbs.map((c) => ({ label: c.label, to: c.path }))} variant="dark" />
           </div>
 
           <motion.h1

@@ -20,6 +20,7 @@
     "dompurify": "^3.4.13",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.26.0",
+    "pdfjs-dist": "^6.3.289",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-dropzone": "^19.1.1",
