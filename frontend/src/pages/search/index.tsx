@@ -3,11 +3,13 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Loader2, Search as SearchIcon } from 'lucide-react';
 import { SearchBar } from '@components/search/SearchBar';
 import { useSearch } from '@hooks/useSearch';
+import { useTranslation } from '../../i18n/LanguageContext';
 
 export const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const [sort, setSort] = useState('RELEVANCE');
+  const { t } = useTranslation();
 
   // Execute search hook
   const { data, isLoading, isError } = useSearch(query, {}, sort, 1);
@@ -35,7 +37,7 @@ export const SearchPage: React.FC = () => {
         {/* Header Search Input */}
         <div className="mb-10 max-w-3xl">
           <h1 className="text-3xl md:text-4xl font-black text-darkBrown tracking-tight mb-6">
-            खोज <span className="text-saffron">परिणाम</span>
+            {t('content.searchTitle')}
           </h1>
           <SearchBar />
         </div>
@@ -44,11 +46,7 @@ export const SearchPage: React.FC = () => {
         <div className="w-full">
           <div className="flex items-center justify-between mb-6">
             <span className="text-base font-bold text-slate-600">
-              {isLoading
-                ? 'खोज जारी है...'
-                : query
-                  ? `"${query}" के लिए ${data?.length || 0} परिणाम मिले`
-                  : 'खोज परिणाम'}
+              {isLoading ? t('common.loading') : query ? `"${query}" - ${data?.length || 0}` : t('content.searchTitle')}
             </span>
           </div>
 
@@ -57,7 +55,7 @@ export const SearchPage: React.FC = () => {
               <Loader2 className="w-10 h-10 animate-spin text-saffron" />
             </div>
           ) : isError ? (
-            <div className="text-center py-20 text-red-500 font-bold">खोज में त्रुटि हुई। कृपया पुनः प्रयास करें।</div>
+            <div className="text-center py-20 text-red-500 font-bold">{t('errors.failedToLoad')}</div>
           ) : data && data.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {data.map((item: any, i: number) => (
@@ -84,7 +82,7 @@ export const SearchPage: React.FC = () => {
                   </div>
 
                   <span className="inline-flex items-center text-xs font-bold text-saffron pt-3 border-t border-gray-100 group-hover:underline">
-                    देखें &rarr;
+                    {t('common.read')} &rarr;
                   </span>
                 </Link>
               ))}
@@ -92,10 +90,8 @@ export const SearchPage: React.FC = () => {
           ) : (
             <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 p-8 max-w-xl mx-auto">
               <SearchIcon className="w-12 h-12 text-saffron mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-darkBrown mb-2">कोई परिणाम नहीं मिला</h3>
-              <p className="text-slate-500 text-sm">
-                "{query}" के लिए कोई सामग्री प्राप्त नहीं हुई। कृपया अन्य शब्द का प्रयास करें।
-              </p>
+              <h3 className="text-xl font-bold text-darkBrown mb-2">{t('empty.noResults')}</h3>
+              <p className="text-slate-500 text-sm">{t('empty.noResultsDesc')}</p>
             </div>
           )}
         </div>

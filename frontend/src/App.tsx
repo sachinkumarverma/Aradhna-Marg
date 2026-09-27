@@ -2,6 +2,7 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppRouter } from './routes';
 import { Toaster } from 'react-hot-toast';
+import { LanguageProvider } from './i18n/LanguageContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,8 +17,10 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppRouter />
-      <Toaster position="top-right" />
+      <LanguageProvider>
+        <AppRouter />
+        <Toaster position="top-right" />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

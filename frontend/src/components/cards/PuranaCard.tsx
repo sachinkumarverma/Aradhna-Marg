@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Eye, FileText } from 'lucide-react';
+import { useTranslation } from '@i18n/LanguageContext';
 
 interface PuranaCardProps {
   id?: string | number;
@@ -36,6 +37,7 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
   language,
   className = ''
 }) => {
+  const { t } = useTranslation();
   const puranUrl = `/puranas/${slug || id}`;
   const cleanDescription = stripHtml(shortDescription);
 
@@ -57,7 +59,7 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-saffron/60 p-3 text-center">
               <BookOpen className="w-10 h-10 mb-1" />
-              <span className="text-xs font-bold">PDF Book</span>
+              <span className="text-xs font-bold">PDF</span>
             </div>
           )}
 
@@ -84,7 +86,7 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
           <Eye className="w-3 h-3 text-saffron" /> {viewCount || 0}
         </span>
         <span className="text-xs font-bold text-saffron flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-          <BookOpen className="w-3.5 h-3.5" /> Read PDF
+          <BookOpen className="w-3.5 h-3.5" /> {t('common.readPdf')}
         </span>
       </div>
     </Link>

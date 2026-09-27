@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+import { useTranslation } from '@i18n/LanguageContext';
 
 export const Footer: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="bg-[#0a0a0a] text-gray-400 pt-16 pb-8 border-t-4 border-saffron relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -15,102 +18,91 @@ export const Footer: React.FC = () => {
               </div>
               <span className="font-bold text-xl text-white tracking-tight">Aradhna Marg</span>
             </Link>
-            <p className="text-sm leading-relaxed mb-6">
-              Your digital sanctuary for spiritual awakening. Discover, read, and listen to the most divine collection
-              of Bhajans.
-            </p>
+            <p className="text-sm leading-relaxed mb-6 font-hindi-body">{t('footer.aboutText')}</p>
           </div>
 
-          {/* Links Col 1 */}
+          {/* Links Col 1: Explore / पावन सामग्री */}
           <div>
-            <h3 className="font-bold text-saffron mb-6 text-lg flex items-center gap-2">
-              <span className="text-xl">❖</span> Explore
+            <h3 className="font-bold text-saffron mb-6 text-lg flex items-center gap-2 font-hindi-heading">
+              <span className="text-xl">❖</span> {t('footer.sacredContent')}
             </h3>
-            <ul className="space-y-3 font-medium">
+            <ul className="space-y-3 font-medium text-sm font-hindi-body">
               <li>
                 <Link to="/videos" className="hover:text-white transition-colors">
-                  All Videos
+                  {t('navigation.videos')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/bhajans" className="hover:text-white transition-colors">
+                  {t('navigation.bhajans')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/puranas" className="hover:text-white transition-colors">
+                  {t('navigation.puranas')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/articles" className="hover:text-white transition-colors">
+                  {t('navigation.articles')}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Links Col 2: Navigation / खोजें */}
+          <div>
+            <h3 className="font-bold text-saffron mb-6 text-lg flex items-center gap-2 font-hindi-heading">
+              <span className="text-xl">❖</span> {t('navigation.explore')}
+            </h3>
+            <ul className="space-y-3 font-medium text-sm font-hindi-body">
+              <li>
+                <Link to="/gods" className="hover:text-white transition-colors">
+                  {t('navigation.gods')}
                 </Link>
               </li>
               <li>
                 <Link to="/categories" className="hover:text-white transition-colors">
-                  Categories
-                </Link>
-              </li>
-              <li>
-                <Link to="/gods" className="hover:text-white transition-colors">
-                  Deities
+                  {t('navigation.categories')}
                 </Link>
               </li>
               <li>
                 <Link to="/festivals" className="hover:text-white transition-colors">
-                  Festivals
+                  {t('navigation.festivals')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/search" className="hover:text-white transition-colors">
+                  {t('common.search')}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Links Col 2 */}
+          {/* Legal / Quick Links */}
           <div>
-            <h3 className="font-bold text-saffron mb-6 text-lg flex items-center gap-2">
-              <span className="text-xl">❖</span> Popular
+            <h3 className="font-bold text-saffron mb-6 text-lg flex items-center gap-2 font-hindi-heading">
+              <span className="text-xl">❖</span> {t('footer.quickLinks')}
             </h3>
-            <ul className="space-y-3 font-medium">
+            <ul className="space-y-3 font-medium text-sm font-hindi-body">
               <li>
-                <Link to="#" className="hover:text-white transition-colors">
-                  Morning Bhajans
+                <Link to="/" className="hover:text-white transition-colors">
+                  {t('navigation.home')}
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-white transition-colors">
-                  Aarti Sangrah
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="hover:text-white transition-colors">
-                  Shiv Bhajans
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="hover:text-white transition-colors">
-                  Krishna Bhajans
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Legal Col */}
-          <div>
-            <h3 className="font-bold text-saffron mb-6 text-lg flex items-center gap-2">
-              <span className="text-xl">❖</span> Legal
-            </h3>
-            <ul className="space-y-3 font-medium">
-              <li>
-                <Link to="/about" className="hover:text-white transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="hover:text-white transition-colors">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="hover:text-white transition-colors">
-                  Terms of Service
+                <Link to="/explore" className="hover:text-white transition-colors">
+                  {t('navigation.explore')}
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-          <p>© {new Date().getFullYear()} Aradhna Marg. All rights reserved.</p>
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-hindi-body">
+          <p>
+            © {new Date().getFullYear()} Aradhna Marg. {t('footer.copyright')}
+          </p>
           <p className="flex items-center gap-1">
             Made with <Heart className="w-4 h-4 text-red-600 fill-red-600" /> in India
           </p>

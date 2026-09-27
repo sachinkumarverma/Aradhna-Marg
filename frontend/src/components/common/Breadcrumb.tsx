@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, ChevronRight } from 'lucide-react';
+import { useTranslation } from '@i18n/LanguageContext';
 
 export interface BreadcrumbItem {
   label: string;
@@ -13,8 +14,38 @@ interface BreadcrumbProps {
   variant?: 'light' | 'dark';
 }
 
+const breadcrumbsKeyMap: Record<string, string> = {
+  होम: 'breadcrumbs.home',
+  Home: 'breadcrumbs.home',
+  'भजन संग्रह': 'breadcrumbs.bhajans',
+  Bhajans: 'breadcrumbs.bhajans',
+  'धार्मिक लेख': 'breadcrumbs.articles',
+  Articles: 'breadcrumbs.articles',
+  'पावन त्योहार': 'breadcrumbs.festivals',
+  Festivals: 'breadcrumbs.festivals',
+  'पुराण संग्रह': 'breadcrumbs.puranas',
+  Puranas: 'breadcrumbs.puranas',
+  'Sacred Texts': 'breadcrumbs.puranas',
+  'देवी-देवता': 'breadcrumbs.gods',
+  Deities: 'breadcrumbs.gods',
+  श्रेणियाँ: 'breadcrumbs.categories',
+  Categories: 'breadcrumbs.categories',
+  'दिव्य वीडियो': 'breadcrumbs.videos',
+  Videos: 'breadcrumbs.videos',
+  'खोज परिणाम': 'breadcrumbs.search',
+  'Search Results': 'breadcrumbs.search',
+  'खोजें (Explore)': 'breadcrumbs.explore',
+  Explore: 'breadcrumbs.explore'
+};
+
 export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', variant = 'light' }) => {
+  const { t } = useTranslation();
   const isDark = variant === 'dark';
+
+  const getTranslatedLabel = (label: string) => {
+    const key = breadcrumbsKeyMap[label];
+    return key ? t(key) : label;
+  };
 
   return (
     <nav
@@ -26,13 +57,15 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
       <Link
         to="/"
         className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-saffron text-white hover:bg-orange-600 transition-colors shadow-sm shrink-0"
-        title="होम (Home)"
+        title={t('breadcrumbs.home')}
       >
         <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
       </Link>
 
       {items.map((item, idx) => {
         const isLast = idx === items.length - 1;
+        const displayLabel = getTranslatedLabel(item.label);
+
         return (
           <React.Fragment key={idx}>
             <ChevronRight
@@ -43,9 +76,9 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
                 className={`font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md ${
                   isDark ? 'text-amber-400' : 'text-saffron'
                 }`}
-                title={item.label}
+                title={displayLabel}
               >
-                {item.label}
+                {displayLabel}
               </span>
             ) : (
               <Link
@@ -54,7 +87,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
                   isDark ? 'text-slate-200 hover:text-white' : 'text-slate-600 hover:text-saffron'
                 }`}
               >
-                {item.label}
+                {displayLabel}
               </Link>
             )}
           </React.Fragment>

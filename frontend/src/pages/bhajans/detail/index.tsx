@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Eye, Clock, Calendar, FileText } from 'lucide-react';
+import { Copy, Check, Eye, Clock, Calendar, Music, Sparkles } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { YouTubePlayer } from './components/YouTubePlayer';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
@@ -11,8 +11,10 @@ import { useClipboard } from '@hooks/useClipboard';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { AdUnit } from '@components/common/AdUnit';
 import { BottomRelatedContent } from '@components/common/BottomRelatedContent';
+import { useTranslation } from '@i18n/LanguageContext';
 
 export const BhajanDetail: React.FC = () => {
+  const { t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
   const [bhajan, setBhajan] = useState<any>(null);
   const [relatedData, setRelatedData] = useState<any>({});
@@ -93,40 +95,40 @@ export const BhajanDetail: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column (8 Columns) */}
           <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
-            {/* YouTube Player Section (Placed at the very top of left column) */}
+            {/* YouTube Player Section */}
             {bhajan.youtube_video_id && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full bg-black rounded-3xl overflow-hidden shadow-lg border border-black/10"
+                className="w-full bg-black rounded-3xl overflow-hidden shadow-lg border border-amber-900/30"
               >
                 <YouTubePlayer videoId={bhajan.youtube_video_id} title={bhajan.title} />
               </motion.div>
             )}
 
-            {/* Description Card (Styled with soft blue tint matching Image 1) */}
+            {/* Description & Lyrics Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-[#EBF3FF] rounded-3xl p-6 sm:p-8 border border-blue-100 shadow-sm"
+              className="bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] rounded-3xl p-6 sm:p-8 border border-amber-200/80 shadow-md"
             >
-              <div className="flex items-center justify-between pb-4 border-b border-blue-200/50 mb-6">
-                <h2 className="text-xl sm:text-2xl font-black text-darkBrown flex items-center gap-2.5">
-                  <FileText className="w-6 h-6 text-blue-600" /> Description
+              <div className="flex items-center justify-between pb-4 border-b border-amber-200/60 mb-6">
+                <h2 className="text-xl sm:text-2xl font-black text-darkBrown flex items-center gap-2.5 font-hindi-heading">
+                  <Music className="w-6 h-6 text-saffron" /> {t('content.lyricsAndDescription')}
                 </h2>
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="px-3.5 py-1.5 bg-white hover:bg-blue-100 text-darkBrown border border-blue-200 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 shadow-xs"
+                  className="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-darkBrown border border-amber-200 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 shadow-xs"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-green-600" /> कॉपी हो गया!
+                      <Check className="w-3.5 h-3.5 text-green-600" /> {t('content.lyricsCopied')}
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3.5 h-3.5 text-saffron" /> भजन कॉपी करें
+                      <Copy className="w-3.5 h-3.5 text-saffron" /> {t('content.copyLyrics')}
                     </>
                   )}
                 </button>
@@ -156,9 +158,8 @@ export const BhajanDetail: React.FC = () => {
               )}
             </motion.div>
 
-            {/* Bottom Related Content: Scriptures & PDFs, Articles, Bhajans */}
+            {/* Bottom Related Content: Scriptures & PDFs, Bhajans */}
             <BottomRelatedContent
-              relatedArticles={relatedData.relatedArticles}
               relatedPuranas={relatedData.relatedPuranas}
               relatedBhajans={relatedData.relatedBhajans}
             />

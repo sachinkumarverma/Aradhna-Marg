@@ -48,18 +48,21 @@ const AdminSystemHealth = lazy(() =>
   import('../pages/admin/system-health').then((m) => ({ default: m.AdminSystemHealth }))
 );
 
-const NotFoundPage = () => (
-  <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-    <h1 className="text-6xl font-black text-saffron mb-4">404</h1>
-    <h2 className="text-3xl font-bold text-darkBrown mb-6">Page Not Found</h2>
-    <p className="text-gray-600 mb-8 max-w-md mx-auto">
-      The spiritual path you are looking for does not exist or has been moved.
-    </p>
-    <Link to="/" className="px-6 py-3 bg-saffron text-white rounded-full font-bold hover:bg-golden transition-colors">
-      Return Home
-    </Link>
-  </div>
-);
+import { useTranslation } from '../i18n/LanguageContext';
+
+const NotFoundPage = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+      <h1 className="text-6xl font-black text-saffron mb-4">404</h1>
+      <h2 className="text-3xl font-bold text-darkBrown mb-6">{t('errors.pageNotFound')}</h2>
+      <p className="text-gray-600 mb-8 max-w-md mx-auto">{t('errors.pageNotFoundDesc')}</p>
+      <Link to="/" className="px-6 py-3 bg-saffron text-white rounded-full font-bold hover:bg-golden transition-colors">
+        {t('errors.returnHome')}
+      </Link>
+    </div>
+  );
+};
 
 const AdminNotFoundPage = () => (
   <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100">

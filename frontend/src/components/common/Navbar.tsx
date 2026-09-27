@@ -3,13 +3,15 @@ import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { Search, Menu, X, Heart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@components/ui/Button';
+import { useTranslation } from '@i18n/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const Navbar: React.FC = () => {
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   const location = useLocation();
-  const isHome = location.pathname === '/';
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setIsScrolled(latest > 50);
@@ -21,11 +23,11 @@ export const Navbar: React.FC = () => {
   }, [location.pathname]);
 
   const navLinks = [
-    { name: 'Videos', path: '/videos' },
-    { name: 'Bhajans', path: '/bhajans' },
-    { name: 'Categories', path: '/categories' },
-    { name: 'Gods', path: '/gods' },
-    { name: 'Festivals', path: '/festivals' }
+    { name: t('navigation.videos'), path: '/videos' },
+    { name: t('navigation.bhajans'), path: '/bhajans' },
+    { name: t('navigation.categories'), path: '/categories' },
+    { name: t('navigation.gods'), path: '/gods' },
+    { name: t('navigation.festivals'), path: '/festivals' }
   ];
 
   return (
@@ -63,10 +65,10 @@ export const Navbar: React.FC = () => {
             <div className="hidden md:flex items-center gap-8">
               <ul className="flex items-center gap-6">
                 {navLinks.map((link) => (
-                  <li key={link.name}>
+                  <li key={link.path}>
                     <Link
                       to={link.path}
-                      className={`text-[13.5px] font-bold tracking-[1.5px] uppercase transition-colors ${
+                      className={`text-[15px] font-bold font-hindi-heading tracking-[0.5px] uppercase transition-colors ${
                         location.pathname === link.path ? 'text-[#d83515]' : 'text-[#14284b] hover:text-[#d83515]'
                       }`}
                     >
@@ -76,18 +78,25 @@ export const Navbar: React.FC = () => {
                 ))}
               </ul>
 
-              <div className="flex items-center gap-4 border-l border-slate-200 pl-6 ml-2">
-                <Button className="bg-saffron hover:brightness-90 text-white font-bold rounded-full px-6 py-2.5 shadow-md hover:shadow-lg transition-all flex items-center gap-2">
-                  <Heart className="w-4 h-4 fill-white" /> Support Us
+              <div className="flex items-center gap-3 border-l border-slate-200 pl-6 ml-2">
+                <LanguageSwitcher />
+
+                <Button className="bg-saffron hover:brightness-90 text-white font-bold rounded-full px-5 py-2 shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-xs uppercase tracking-wider font-hindi-heading">
+                  <Heart className="w-3.5 h-3.5 fill-white" /> {t('navigation.supportUs')}
                 </Button>
-                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center cursor-pointer hover:bg-orange-50 hover:text-saffron transition-colors text-slate-600">
-                  <Search className="w-5 h-5" />
-                </div>
+                <Link
+                  to="/search"
+                  className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center cursor-pointer hover:bg-orange-50 hover:text-saffron transition-colors text-slate-600"
+                  title={t('common.search')}
+                >
+                  <Search className="w-4 h-4" />
+                </Link>
               </div>
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <div className="md:hidden flex items-center">
+            {/* Mobile Menu Toggle & Language Switcher */}
+            <div className="md:hidden flex items-center gap-2">
+              <LanguageSwitcher />
               <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </Button>
@@ -105,22 +114,23 @@ export const Navbar: React.FC = () => {
           className="fixed inset-0 z-40 bg-cream pt-24 px-4 pb-6 md:hidden overflow-y-auto"
         >
           <div className="flex flex-col gap-4">
-            <div className="relative mb-4">
+            <Link to="/search" className="relative mb-4 block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search bhajans, gods..."
-                className="w-full bg-white h-12 rounded-md pl-12 pr-4 outline-none focus:ring-2 focus:ring-saffron shadow-sm"
+                readOnly
+                placeholder={t('common.searchPlaceholder')}
+                className="w-full bg-white h-12 rounded-md pl-12 pr-4 outline-none focus:ring-2 focus:ring-saffron shadow-sm cursor-pointer font-hindi-heading"
               />
-            </div>
+            </Link>
 
             {navLinks.map((link) => (
               <Link
-                key={link.name}
+                key={link.path}
                 to={link.path}
-                className="text-2xl font-bold text-darkBrown py-3 border-b border-black/5"
+                className="text-xl font-bold font-hindi-heading text-darkBrown py-3 border-b border-black/5 flex items-center justify-between"
               >
-                {link.name}
+                <span>{link.name}</span>
               </Link>
             ))}
           </div>

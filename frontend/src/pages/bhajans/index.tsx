@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Loader2, Music, Filter } from 'lucide-react';
+import { Search, Loader2, Music, Filter, Disc, Sparkles } from 'lucide-react';
 import { BhajanCard } from '@components/cards/BhajanCard';
 import { Select } from '@components/ui/Select';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@i18n/LanguageContext';
 
 export const BhajansList: React.FC = () => {
+  const { t, getLocalizedField } = useTranslation();
   const [bhajans, setBhajans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -55,41 +57,84 @@ export const BhajansList: React.FC = () => {
   }, [page, search, selectedCategory, selectedDeity, sort]);
 
   const deityOptions = [
-    { label: 'सभी देवी-देवता', value: '' },
-    ...deities.map((d) => ({ label: d.name, value: d.id }))
+    { label: t('common.allDeities'), value: '' },
+    ...deities.map((d) => ({ label: getLocalizedField(d, 'name') || d.name, value: d.id }))
   ];
 
   const categoryOptions = [
-    { label: 'सभी श्रेणियाँ', value: '' },
-    ...categories.map((c) => ({ label: c.name, value: c.id }))
+    { label: t('common.allCategories'), value: '' },
+    ...categories.map((c) => ({ label: getLocalizedField(c, 'name') || c.name, value: c.id }))
   ];
 
   const sortOptions = [
-    { label: 'नवीनतम', value: 'newest' },
-    { label: 'सर्वाधिक लोकप्रिय', value: 'popular' },
-    { label: 'सर्वाधिक देखे गए', value: 'views' }
+    { label: t('common.newest'), value: 'newest' },
+    { label: t('common.popular'), value: 'popular' },
+    { label: t('common.views'), value: 'views' }
   ];
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Title */}
-        <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10 pb-6 border-b border-gray-200/60">
-          <div className="text-left max-w-3xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight mb-3">
-              भजन <span className="text-saffron">निर्देशिका</span>
+        {/* Devotional Music Banner */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#3D261C] via-[#5C3421] to-[#3D261C] p-6 sm:p-10 text-white shadow-xl mb-10 border border-amber-900/40">
+          <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-15 pointer-events-none flex items-center justify-center">
+            <Disc className="w-96 h-96 animate-spin-slow text-amber-200" />
+          </div>
+
+          <div className="relative z-10 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-saffron font-bold text-xs uppercase tracking-wider mb-4 border border-white/10">
+              <Sparkles className="w-4 h-4 text-saffron" />
+              <span>{t('content.bhajanDirectoryBadge')}</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-3 font-hindi-heading">
+              {t('content.devotionalMusicDirectory')}
             </h1>
-            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed mb-3">
-              सनातन धर्म के सभी देवी-देवताओं के पवित्र भजन, चालिसा एवं आरती का विशाल संग्रह।
+
+            <p className="text-amber-100/90 text-sm sm:text-base md:text-lg font-medium leading-relaxed mb-6 font-hindi-heading">
+              {t('content.devotionalMusicSubtitle')}
             </p>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-md bg-saffron/10 text-saffron font-bold text-xs uppercase tracking-wider">
-              <Music className="w-4 h-4" /> पावन भजन एवं आरती संग्रह
+
+            {/* Quick Filter Chips */}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDeity('');
+                  setSelectedCategory('');
+                  setPage(1);
+                }}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${
+                  !selectedDeity && !selectedCategory
+                    ? 'bg-saffron text-white border-saffron shadow-sm'
+                    : 'bg-white/10 text-amber-100 border-white/15 hover:bg-white/20'
+                }`}
+              >
+                {t('common.all')}
+              </button>
+              {deities.slice(0, 5).map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedDeity(d.id);
+                    setPage(1);
+                  }}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${
+                    selectedDeity === d.id
+                      ? 'bg-saffron text-white border-saffron shadow-sm'
+                      : 'bg-white/10 text-amber-100 border-white/15 hover:bg-white/20'
+                  }`}
+                >
+                  {getLocalizedField(d, 'name') || d.name}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Filter Controls Bar */}
-        <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-amber-100 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
           {/* Search Input */}
           <div className="relative w-full md:w-96">
             <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -100,15 +145,15 @@ export const BhajansList: React.FC = () => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder="भजन या देवी-देवता का नाम खोजें..."
-              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-lg outline-none border border-transparent focus:border-saffron text-sm font-medium text-darkBrown"
+              placeholder={t('common.searchPlaceholder')}
+              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-xl outline-none border border-amber-100 focus:border-saffron text-sm font-medium text-darkBrown transition-colors font-hindi-body"
             />
           </div>
 
           {/* Custom Select Dropdowns */}
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
             <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider mr-1 shrink-0">
-              <Filter className="w-4 h-4 text-saffron" /> फिल्टर्स:
+              <Filter className="w-4 h-4 text-saffron" /> {t('common.filters')}
             </div>
 
             <div className="w-48">
@@ -119,7 +164,7 @@ export const BhajansList: React.FC = () => {
                   setSelectedDeity(val);
                   setPage(1);
                 }}
-                placeholder="सभी देवी-देवता"
+                placeholder={t('common.allDeities')}
                 searchable={false}
               />
             </div>
@@ -132,7 +177,7 @@ export const BhajansList: React.FC = () => {
                   setSelectedCategory(val);
                   setPage(1);
                 }}
-                placeholder="सभी श्रेणियाँ"
+                placeholder={t('common.allCategories')}
                 searchable={false}
               />
             </div>
@@ -142,7 +187,7 @@ export const BhajansList: React.FC = () => {
                 options={sortOptions}
                 value={sort}
                 onChange={(val) => setSort(val)}
-                placeholder="क्रमबद्ध करें"
+                placeholder={t('common.sortBy')}
                 searchable={false}
               />
             </div>
@@ -166,11 +211,18 @@ export const BhajansList: React.FC = () => {
                 >
                   <Link to={`/bhajans/${bhajan.slug || bhajan.id}`} className="block h-full">
                     <BhajanCard
+                      id={bhajan.id}
+                      slug={bhajan.slug}
                       title={bhajan.title}
-                      godName={bhajan.god_name || bhajan.category_name || 'भजन'}
+                      godName={getLocalizedField(bhajan, 'god_name') || bhajan.god_name || bhajan.category_name}
                       views={bhajan.views || 0}
-                      duration={bhajan.duration ? `${Math.floor(bhajan.duration / 60)} मि` : 'भजन'}
+                      duration={
+                        bhajan.duration
+                          ? `${Math.floor(bhajan.duration / 60)}: ${(bhajan.duration % 60).toString().padStart(2, '0')}`
+                          : undefined
+                      }
                       thumbnailUrl={bhajan.thumbnail_url}
+                      publishDate={bhajan.publish_date || bhajan.published_at}
                     />
                   </Link>
                 </motion.div>
@@ -183,32 +235,30 @@ export const BhajansList: React.FC = () => {
                 <button
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
-                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white hover:border-saffron transition-colors"
+                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white hover:border-saffron transition-colors shadow-xs"
                 >
-                  पिछला
+                  {t('common.previous')}
                 </button>
                 <span className="text-sm font-bold text-slate-600 px-3">
-                  पृष्ठ {page} / {totalPages}
+                  {t('common.page')} {page} / {totalPages}
                 </span>
                 <button
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
-                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white hover:border-saffron transition-colors"
+                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white hover:border-saffron transition-colors shadow-xs"
                 >
-                  अगला
+                  {t('common.next')}
                 </button>
               </div>
             )}
           </>
         ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 p-8">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-saffron">
+          <div className="text-center py-20 bg-white rounded-3xl border border-amber-100 p-8 shadow-xs">
+            <div className="w-16 h-16 bg-amber-100/70 rounded-full flex items-center justify-center mx-auto mb-4 text-saffron">
               <Music className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-bold text-darkBrown mb-2">कोई भजन नहीं मिला</h3>
-            <p className="text-slate-500 text-sm max-w-md mx-auto">
-              आपकी खोज के अनुसार कोई परिणाम प्राप्त नहीं हुआ। कृपया अन्य शब्द या फ़िल्टर का प्रयास करें।
-            </p>
+            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noBhajans')}</h3>
+            <p className="text-slate-500 text-sm max-w-md mx-auto font-hindi-body">{t('empty.noBhajansDesc')}</p>
           </div>
         )}
       </div>

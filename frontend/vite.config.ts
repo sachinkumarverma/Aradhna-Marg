@@ -18,6 +18,7 @@ export default defineConfig({
       '@common': path.resolve(__dirname, './src/common'),
       '@pages': path.resolve(__dirname, './src/pages'),
       '@assets': path.resolve(__dirname, './src/assets'),
+      '@i18n': path.resolve(__dirname, './src/i18n'),
     },
   },
   server: {

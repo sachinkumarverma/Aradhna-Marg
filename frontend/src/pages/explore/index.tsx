@@ -5,8 +5,10 @@ import { PublicApi } from '@api/publicApi';
 import { BhajanCard } from '@components/cards/BhajanCard';
 import { Link } from 'react-router-dom';
 import { Loader2, Flame } from 'lucide-react';
+import { useTranslation } from '../../i18n/LanguageContext';
 
 export const ExplorePage: React.FC = () => {
+  const { t, getLocalizedField } = useTranslation();
   const [deities, setDeities] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [bhajans, setBhajans] = useState<any[]>([]);
@@ -25,7 +27,7 @@ export const ExplorePage: React.FC = () => {
         setDeities(
           (deits || []).map((d: any) => ({
             id: d.slug || d.id,
-            name: d.name,
+            name: getLocalizedField(d, 'name'),
             count: 0,
             thumbnail: d.image || '/Deities/Krishna.png'
           }))
@@ -34,7 +36,7 @@ export const ExplorePage: React.FC = () => {
         setCategories(
           (cats || []).map((c: any) => ({
             id: c.slug || c.id,
-            name: c.name,
+            name: getLocalizedField(c, 'name'),
             count: 0,
             thumbnail: c.image_url || c.icon_url
           }))
@@ -48,14 +50,14 @@ export const ExplorePage: React.FC = () => {
       }
     };
     fetchExploreData();
-  }, []);
+  }, [getLocalizedField]);
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pb-24">
       <CollectionHero
-        title="पावन भजन एवं ग्रंथ खोजें"
-        description="सनातन धर्म के विभिन्न सम्प्रदायों, देवी-देवताओं तथा उत्सवों के अनुसार विभाजित भजन एवं साहित्य।"
-        breadcrumbs={[{ label: 'खोजें (Explore)', path: '/explore' }]}
+        title={t('navigation.explore')}
+        description={t('content.exploreSubtitle')}
+        breadcrumbs={[{ label: t('breadcrumbs.explore'), path: '/explore' }]}
       />
 
       <div className="mt-6 space-y-4">
@@ -66,19 +68,25 @@ export const ExplorePage: React.FC = () => {
         ) : (
           <>
             {/* Popular Deities Collection */}
-            {deities.length > 0 && <CollectionCarousel title="पावन देवी-देवता" items={deities} type="god" />}
+            {deities.length > 0 && (
+              <CollectionCarousel title={t('content.popularDeities')} items={deities} type="god" />
+            )}
 
             {/* Popular Categories Collection */}
-            {categories.length > 0 && <CollectionCarousel title="भजन श्रेणियाँ" items={categories} type="category" />}
+            {categories.length > 0 && (
+              <CollectionCarousel title={t('content.bhajanCategories')} items={categories} type="category" />
+            )}
 
             {/* Trending Bhajans Section */}
             {bhajans.length > 0 && (
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
                 <div className="flex items-center justify-between pb-3 border-b border-gray-200/60 mb-4">
                   <div className="flex items-center gap-2.5">
-                    <Flame className="w-5 h-5 text-saffron fill-saffron shrink-0" />
-                    <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-none">
-                      लोकप्रिय भजन
+                    <div className="shrink-0 flex items-center justify-center">
+                      <Flame className="w-5 h-5 text-saffron fill-saffron" />
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-snug">
+                      {t('content.trendingBhajans')}
                     </h2>
                   </div>
                 </div>
@@ -89,9 +97,9 @@ export const ExplorePage: React.FC = () => {
                         id={bhajan.id}
                         slug={bhajan.slug}
                         title={bhajan.title}
-                        godName={bhajan.god_name || bhajan.category_name || 'भजन'}
+                        godName={bhajan.god_name || bhajan.category_name || t('navigation.bhajans')}
                         views={bhajan.views || 0}
-                        duration={bhajan.duration ? `${Math.floor(bhajan.duration / 60)} मि` : 'भजन'}
+                        duration={bhajan.duration ? `${Math.floor(bhajan.duration / 60)} m` : t('navigation.bhajans')}
                         thumbnailUrl={bhajan.thumbnail_url}
                       />
                     </Link>

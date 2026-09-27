@@ -29,8 +29,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { isShortVideo } from '@utils/videoUtils';
 import { useFavorites } from '@hooks/useFavorites';
+import { useTranslation } from '../../i18n/LanguageContext';
 
 export const Home: React.FC = () => {
+  const { t, getLocalizedField } = useTranslation();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -99,17 +101,17 @@ export const Home: React.FC = () => {
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-3xl">
             <motion.h1
               variants={fadeUpVariant}
-              className="text-4xl sm:text-5xl md:text-6xl font-semibold text-white tracking-tight leading-[1.1] mb-4 md:mb-5"
+              className="text-4xl sm:text-5xl md:text-6xl font-semibold text-white tracking-tight leading-[1.1] mb-4 md:mb-5 font-hindi-heading"
             >
-              Find Your Favourite <br />
-              <span className="text-saffron font-semibold">Bhajan & Videos</span>
+              {t('content.devotionalMusicDirectory')} <br />
+              <span className="text-saffron font-semibold">{t('content.divineVideos')}</span>
             </motion.h1>
 
             <motion.p
               variants={fadeUpVariant}
               className="text-base sm:text-lg md:text-xl text-gray-200 mb-6 max-w-lg leading-relaxed font-normal"
             >
-              Explore a sacred collection of authentic lyrics, meanings, and spiritual verses.
+              {t('content.devotionalMusicSubtitle')}
             </motion.p>
 
             {/* Master Search Bar */}
@@ -120,14 +122,14 @@ export const Home: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search Bhajans, Chalisa..."
+                  placeholder={t('common.searchPlaceholder')}
                   className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium"
                 />
                 <Button
                   type="submit"
                   className="h-10 md:h-12 px-6 md:px-8 rounded-full bg-saffron hover:brightness-90 text-white font-semibold text-base md:text-lg shadow-md shrink-0"
                 >
-                  Search
+                  {t('common.search')}
                 </Button>
               </div>
             </motion.form>
@@ -140,9 +142,9 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-8">
             {[
-              { icon: BookOpen, title: 'Pure Lyrics', desc: 'Accurate Hindi & English text' },
-              { icon: Music, title: 'Listen & Watch', desc: 'Synced with YouTube videos' },
-              { icon: Download, title: 'PDF Downloads', desc: 'Printable Bhajan books' }
+              { icon: BookOpen, title: t('content.lyricsAndDescription'), desc: 'Accurate text' },
+              { icon: Music, title: t('common.listenAndRead'), desc: 'Synced with videos' },
+              { icon: Download, title: t('common.readPdf'), desc: 'Printable Bhajan books' }
             ].map((feature, i) => (
               <motion.div
                 key={i}
@@ -172,17 +174,21 @@ export const Home: React.FC = () => {
           <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
             <div className="flex items-end justify-between mb-2">
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight flex items-center gap-2">
-                  <Play className="w-6 h-6 text-saffron fill-saffron" /> Latest{' '}
-                  <span className="text-saffron">Videos</span>
-                </h2>
-                <p className="text-darkBrown/60 text-xs md:text-sm mt-1 font-medium">
-                  Watch devotional videos, aartis, and spiritual discourses
+                <div className="flex items-center gap-3">
+                  <div className="shrink-0 flex items-center justify-center">
+                    <Play className="w-7 h-7 text-saffron fill-saffron" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
+                    <span className="text-saffron">{t('content.divineVideos')}</span>
+                  </h2>
+                </div>
+                <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
+                  {t('content.videoCollectionSubtitle')}
                 </p>
               </div>
               <Link to="/videos">
-                <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs">
-                  VIEW ALL <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs font-hindi-heading">
+                  {t('common.viewAll')} <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </Button>
               </Link>
             </div>
@@ -236,7 +242,7 @@ export const Home: React.FC = () => {
                           <div>
                             {/* Top Row: Title & Heart Favorite */}
                             <div className="flex items-start justify-between gap-3">
-                              <h3 className="text-lg md:text-xl font-black text-darkBrown leading-snug line-clamp-1 group-hover:text-saffron transition-colors">
+                              <h3 className="text-lg md:text-xl font-black text-darkBrown leading-snug line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading">
                                 {title}
                               </h3>
                               <button
@@ -271,8 +277,8 @@ export const Home: React.FC = () => {
                           {/* Bottom Row: Badges on left, Social & Watch Link on right */}
                           <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="px-2.5 py-0.5 bg-amber-50 text-saffron text-[11px] font-bold rounded-md uppercase tracking-wider border border-amber-200/60">
-                                {video.god_name || video.category_name || 'LATEST VIDEO'}
+                              <span className="px-2.5 py-0.5 bg-amber-50 text-saffron text-[11px] font-bold rounded-md uppercase tracking-wider border border-amber-200/60 font-hindi-heading">
+                                {video.god_name || video.category_name || t('navigation.videos')}
                               </span>
                               {video.duration && (
                                 <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 text-[11px] font-bold rounded-md uppercase tracking-wider">
@@ -283,8 +289,8 @@ export const Home: React.FC = () => {
 
                             <div className="flex items-center gap-3">
                               <SocialShareButtons title={title} excerpt={snippet} url={videoUrl} />
-                              <div className="inline-flex items-center gap-1 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link">
-                                <span>Watch Video &rarr;</span>
+                              <div className="inline-flex items-center gap-1 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link font-hindi-heading">
+                                <span>{t('common.watch')} &rarr;</span>
                               </div>
                             </div>
                           </div>
@@ -295,8 +301,8 @@ export const Home: React.FC = () => {
                 })}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500 font-medium bg-white rounded-xl p-6 border border-gray-100">
-                No videos found.
+              <div className="text-center py-8 text-gray-500 font-medium bg-white rounded-xl p-6 border border-gray-100 font-hindi-heading">
+                {t('empty.noVideos')}
               </div>
             )}
           </div>
@@ -305,11 +311,14 @@ export const Home: React.FC = () => {
           <div className="lg:col-span-4 min-w-0">
             <div className="sticky top-28 bg-white rounded-xl p-5 border border-gray-100 shadow-sm relative overflow-hidden">
               <div className="pb-3 border-b border-gray-100 mb-4">
-                <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight flex items-center gap-2">
-                  <Flame className="w-5 h-5 text-saffron fill-saffron shrink-0" /> Trending{' '}
-                  <span className="text-saffron">Bhajans</span>
-                </h3>
-                <p className="text-darkBrown/60 text-xs md:text-sm mt-1 font-medium">Most loved this week</p>
+                <div className="flex items-center gap-2.5">
+                  <div className="shrink-0 flex items-center justify-center">
+                    <Flame className="w-6 h-6 text-saffron fill-saffron" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
+                    <span className="text-saffron">{t('content.trendingBhajans')}</span>
+                  </h3>
+                </div>
               </div>
 
               {data?.featuredBhajans && data.featuredBhajans.length > 0 ? (
@@ -341,7 +350,7 @@ export const Home: React.FC = () => {
 
                         {/* Text Details */}
                         <div className="min-w-0 flex-1">
-                          <h4 className="text-xs md:text-sm font-extrabold text-darkBrown group-hover:text-saffron transition-colors truncate">
+                          <h4 className="text-xs md:text-sm font-extrabold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-heading">
                             {hindiTitle}
                           </h4>
                           <p className="text-[11px] font-semibold text-slate-500 truncate mt-0.5">{englishTitle}</p>
@@ -351,7 +360,9 @@ export const Home: React.FC = () => {
                   })}
                 </div>
               ) : (
-                <div className="text-sm text-gray-500 italic py-4 text-center">No trending data available.</div>
+                <div className="text-sm text-gray-500 italic py-4 text-center font-hindi-heading">
+                  {t('empty.noBhajans')}
+                </div>
               )}
             </div>
           </div>
@@ -364,15 +375,21 @@ export const Home: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-end justify-between mb-5">
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight flex items-center gap-2.5">
-                  <BookOpen className="w-6 h-6 text-saffron fill-saffron shrink-0" /> Spiritual{' '}
-                  <span className="text-saffron">Articles & Stories</span>
-                </h2>
-                <p className="text-darkBrown/60 text-xs md:text-sm mt-1 font-medium">Sacred knowledge and traditions</p>
+                <div className="flex items-center gap-3">
+                  <div className="shrink-0 flex items-center justify-center">
+                    <BookOpen className="w-7 h-7 text-saffron fill-saffron" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
+                    <span className="text-saffron">{t('content.articlesAndInsights')}</span>
+                  </h2>
+                </div>
+                <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
+                  {t('content.articlesSubtitle')}
+                </p>
               </div>
               <Link to="/articles">
-                <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs">
-                  VIEW ALL <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs font-hindi-heading">
+                  {t('common.viewAll')} <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </Button>
               </Link>
             </div>
@@ -390,9 +407,9 @@ export const Home: React.FC = () => {
                   <ArticleCard
                     id={article.id}
                     slug={article.slug}
-                    title={article.title}
+                    title={getLocalizedField(article, 'title')}
                     featuredImageUrl={article.featured_image_url}
-                    excerpt={article.excerpt}
+                    excerpt={getLocalizedField(article, 'excerpt')}
                     categoryName={article.category_name}
                   />
                 </motion.div>
@@ -407,17 +424,21 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight flex items-center gap-2.5">
-                <Sparkles className="w-6 h-6 text-saffron fill-saffron shrink-0" /> Divine{' '}
-                <span className="text-saffron">Deities</span>
-              </h2>
-              <p className="text-darkBrown/60 text-xs md:text-sm mt-1 font-medium">
-                Explore gods, goddesses, and holy forms
+              <div className="flex items-center gap-3">
+                <div className="shrink-0 flex items-center justify-center">
+                  <Sparkles className="w-7 h-7 text-saffron fill-saffron" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
+                  <span className="text-saffron">{t('content.popularDeities')}</span>
+                </h2>
+              </div>
+              <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
+                {t('content.exploreSubtitle')}
               </p>
             </div>
             <Link to="/gods">
-              <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs">
-                VIEW ALL <ArrowRight className="w-3.5 h-3.5 ml-1" />
+              <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs font-hindi-heading">
+                {t('common.viewAll')} <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </Link>
           </div>
@@ -430,15 +451,21 @@ export const Home: React.FC = () => {
         <section className="py-8 md:py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-5">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight flex items-center gap-2.5">
-                <Scroll className="w-6.5 h-6.5 text-saffron shrink-0 stroke-[2.2]" /> Sacred{' '}
-                <span className="text-saffron">Scriptures & Puranas</span>
-              </h2>
-              <p className="text-darkBrown/60 text-xs md:text-sm mt-1 font-medium">18 Puranas and holy texts PDF</p>
+              <div className="flex items-center gap-3">
+                <div className="shrink-0 flex items-center justify-center">
+                  <Scroll className="w-7 h-7 text-saffron stroke-[2.2]" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
+                  <span className="text-saffron">{t('content.scripturesAndPuranas')}</span>
+                </h2>
+              </div>
+              <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
+                {t('content.puranasSubtitle')}
+              </p>
             </div>
             <Link to="/puranas">
-              <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs">
-                VIEW ALL <ArrowRight className="w-3.5 h-3.5 ml-1" />
+              <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs font-hindi-heading">
+                {t('common.viewAll')} <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </Link>
           </div>
@@ -456,9 +483,9 @@ export const Home: React.FC = () => {
                 <PuranaCard
                   id={puran.id}
                   slug={puran.slug}
-                  title={puran.title}
+                  title={getLocalizedField(puran, 'title')}
                   coverImage={puran.cover_image}
-                  shortDescription={puran.short_description}
+                  shortDescription={getLocalizedField(puran, 'short_description')}
                   language={puran.language}
                   viewCount={puran.views}
                 />
@@ -473,61 +500,67 @@ export const Home: React.FC = () => {
         <section className="py-8 md:py-10 bg-gradient-to-br from-amber-50 to-orange-50 border-t border-orange-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight flex items-center gap-2.5">
-                <Calendar className="w-6 h-6 text-saffron fill-saffron/20 shrink-0" /> Major{' '}
-                <span className="text-saffron">Festivals & Vrats</span>
-              </h2>
+              <div className="flex items-center gap-3">
+                <div className="shrink-0 flex items-center justify-center">
+                  <Calendar className="w-7 h-7 text-saffron fill-saffron/20" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
+                  <span className="text-saffron">{t('navigation.festivals')}</span>
+                </h2>
+              </div>
               <Link to="/festivals">
-                <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs">
-                  VIEW ALL <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs font-hindi-heading">
+                  {t('common.viewAll')} <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </Button>
               </Link>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {data.festivals.map((fest: any, i: number) => (
-                <motion.div
-                  key={fest.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <Link
-                    to={`/festivals/${fest.slug || fest.id}`}
-                    className="group block bg-white rounded-xl p-4 border border-orange-100/80 shadow-sm hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex items-center gap-4 cursor-pointer"
+              {data.festivals.map((fest: any, i: number) => {
+                const festName = fest.displayName || getLocalizedField(fest, 'name');
+                const festDesc = fest.displayDescription || getLocalizedField(fest, 'short_description');
+                return (
+                  <motion.div
+                    key={fest.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.25 }}
                   >
-                    {fest.banner_image ? (
-                      <div className="aspect-video w-20 rounded-md overflow-hidden shrink-0 bg-gray-100">
-                        <img
-                          src={fest.banner_image}
-                          alt={fest.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-16 h-16 rounded-md bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
-                        <Calendar className="w-6 h-6" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors">
-                        {fest.name}
-                      </h3>
-                      {fest.short_description && (
-                        <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed">
-                          {fest.short_description}
-                        </p>
+                    <Link
+                      to={`/festivals/${fest.slug || fest.id}`}
+                      className="group block bg-white rounded-xl p-4 border border-orange-100/80 shadow-sm hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex items-center gap-4 cursor-pointer"
+                    >
+                      {fest.banner_image ? (
+                        <div className="aspect-video w-20 rounded-md overflow-hidden shrink-0 bg-gray-100">
+                          <img
+                            src={fest.banner_image}
+                            alt={festName}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-16 h-16 rounded-md bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
+                          <Calendar className="w-6 h-6" />
+                        </div>
                       )}
-                      <div className="inline-flex items-center text-xs font-bold text-saffron mt-1.5 group-hover:underline">
-                        Read Details{' '}
-                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors">
+                          {festName}
+                        </h3>
+                        {festDesc && (
+                          <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed">{festDesc}</p>
+                        )}
+                        <div className="inline-flex items-center text-xs font-bold text-saffron mt-1.5 group-hover:underline">
+                          {t('common.read')}{' '}
+                          <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </section>

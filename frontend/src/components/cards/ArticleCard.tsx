@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
+import { useTranslation } from '@i18n/LanguageContext';
 
 interface ArticleCardProps {
   id?: string | number;
@@ -37,6 +38,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   layout = 'grid',
   className = ''
 }) => {
+  const { t } = useTranslation();
   const articleUrl = `/articles/${slug || id}`;
   const cleanExcerpt = stripHtml(excerpt);
 
@@ -65,7 +67,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-hindi-body">{cleanExcerpt}</p>
             )}
           </div>
-          <span className="text-[11px] font-bold text-saffron flex items-center gap-1 mt-2">Read Article &rarr;</span>
+          <span className="text-[11px] font-bold text-saffron flex items-center gap-1 mt-2">
+            {t('common.readMore')} &rarr;
+          </span>
         </div>
       </Link>
     );
@@ -112,7 +116,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             to={articleUrl}
             className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link"
           >
-            <span>पूरा पढ़ें</span>
+            <span>{t('common.readMore')}</span>
             <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover/link:bg-saffron group-hover/link:text-white transition-colors shadow-xs">
               <ChevronRight className="w-3.5 h-3.5" />
             </span>

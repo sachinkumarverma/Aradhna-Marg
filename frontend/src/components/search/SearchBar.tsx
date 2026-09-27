@@ -6,8 +6,10 @@ import { useDebounce } from '@hooks/useDebounce';
 import { useSearchSuggestions, useTrendingSearches } from '@hooks/useSearch';
 import { useRecentSearches } from '@hooks/useRecentSearches';
 import { cn } from '@utils/cn';
+import { useTranslation } from '../../i18n/LanguageContext';
 
 export const SearchBar: React.FC = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
@@ -66,7 +68,7 @@ export const SearchBar: React.FC = () => {
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder="Search bhajans, gods, or festivals..."
+          placeholder={t('common.searchPlaceholder')}
           className="w-full h-14 bg-transparent pl-12 pr-12 outline-none text-darkBrown placeholder:text-darkBrown/40"
         />
         {query && (
@@ -109,9 +111,7 @@ export const SearchBar: React.FC = () => {
                       </button>
                     ))
                   ) : (
-                    <div className="p-4 text-center text-gray-500 text-sm">
-                      No matching suggestions found. Press Enter to search anyway.
-                    </div>
+                    <div className="p-4 text-center text-gray-500 text-sm">{t('empty.noResultsDesc')}</div>
                   )}
                 </div>
               ) : (
@@ -120,7 +120,7 @@ export const SearchBar: React.FC = () => {
                   {recentSearches.length > 0 && (
                     <div className="mb-4">
                       <div className="flex items-center justify-between px-3 mb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        <span>Recent</span>
+                        <span>{t('common.recentSearches')}</span>
                       </div>
                       {recentSearches.map((r, i) => (
                         <div
@@ -150,7 +150,7 @@ export const SearchBar: React.FC = () => {
                     <div>
                       <div className="flex items-center justify-between px-3 mb-2 text-xs font-bold text-saffron uppercase tracking-wider">
                         <span className="flex items-center gap-1">
-                          <TrendingUp className="w-3 h-3" /> Trending Now
+                          <TrendingUp className="w-3 h-3" /> {t('common.trendingNow')}
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-2 p-2">

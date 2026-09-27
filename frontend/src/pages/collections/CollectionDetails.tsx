@@ -5,10 +5,12 @@ import { BhajanCard } from '@components/cards/BhajanCard';
 import { PublicApi } from '@api/publicApi';
 import { Loader2, Music, BookOpen } from 'lucide-react';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
+import { useTranslation } from '../../i18n/LanguageContext';
 
 export const CollectionDetails: React.FC = () => {
   const { id } = useParams();
   const location = useLocation();
+  const { t, getLocalizedField } = useTranslation();
 
   // Determine type based on URL path ('categories' vs 'gods' vs 'festivals')
   const collectionType = location.pathname.split('/')[1];
@@ -23,29 +25,34 @@ export const CollectionDetails: React.FC = () => {
       try {
         if (collectionType === 'gods' || collectionType === 'deities') {
           const res = await PublicApi.getDeityBySlug(id);
+          const deity = res.deity;
           setData({
-            title: res.deity?.name || 'Deity',
-            description: res.deity?.short_description || 'पावन देवी-देवता के समस्त भजन एवं लेख संग्रह',
-            image: res.deity?.image,
+            title: getLocalizedField(deity, 'name') || 'Deity',
+            description: getLocalizedField(deity, 'short_description') || 'पावन देवी-देवता के समस्त भजन एवं लेख संग्रह',
+            image: deity?.image,
             bhajans: res.relatedBhajans || [],
             articles: res.relatedArticles || []
           });
         } else if (collectionType === 'categories') {
           const res = await PublicApi.getCategoryBySlug(id);
+          const cat = res.category;
           setData({
-            title: res.category?.name || 'Category',
-            description: res.category?.description || 'श्रेणी से संबंधित पावन सामग्री',
-            image: res.category?.image_url || res.category?.icon_url,
+            title: getLocalizedField(cat, 'name') || 'Category',
+            description: getLocalizedField(cat, 'description') || 'श्रेणी से संबंधित पावन सामग्री',
+            image: cat?.image_url || cat?.icon_url,
             bhajans: res.bhajans || [],
             articles: res.articles || []
           });
         } else {
           const res = await PublicApi.getFestivalBySlug(id);
           setData({
-            title: res.displayName || res.name || 'Festival',
-            description: res.displayDescription || res.short_description,
+            title: res.displayName || getLocalizedField(res, 'name') || 'Festival',
+            description:
+              res.displayDescription ||
+              getLocalizedField(res, 'short_description') ||
+              getLocalizedField(res, 'description'),
             image: res.banner_image,
-            content: res.displayContent || res.content,
+            content: res.displayContent || getLocalizedField(res, 'content'),
             bhajans: res.related_bhajans || [],
             articles: res.related_articles || []
           });
@@ -57,7 +64,7 @@ export const CollectionDetails: React.FC = () => {
       }
     };
     fetchDetails();
-  }, [id, collectionType]);
+  }, [id, collectionType, getLocalizedField]);
 
   if (loading) {
     return (
@@ -70,9 +77,9 @@ export const CollectionDetails: React.FC = () => {
   if (!data) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-24 text-center px-4">
-        <h2 className="text-3xl font-black text-darkBrown mb-4">सामग्री उपलब्ध नहीं है।</h2>
+        <h2 className="text-3xl font-black text-darkBrown mb-4">{t('errors.contentNotAvailable')}</h2>
         <Link to="/" className="px-6 py-3 bg-saffron text-white rounded-full font-bold shadow-md hover:brightness-90">
-          मुख्य पृष्ठ पर जाएँ
+          {t('errors.returnHome')}
         </Link>
       </div>
     );
@@ -84,12 +91,12 @@ export const CollectionDetails: React.FC = () => {
         title={data.title}
         description={data.description}
         breadcrumbs={[
-          { label: 'Explore', path: '/explore' },
+          { label: t('breadcrumbs.explore'), path: '/explore' },
           { label: data.title, path: '#' }
         ]}
         stats={[
-          { label: 'Bhajans', value: `${data.bhajans?.length || 0}` },
-          { label: 'Articles', value: `${data.articles?.length || 0}` }
+          { label: t('navigation.bhajans'), value: `${data.bhajans?.length || 0}` },
+          { label: t('navigation.articles'), value: `${data.articles?.length || 0}` }
         ]}
       />
 
@@ -104,8 +111,13 @@ export const CollectionDetails: React.FC = () => {
         {/* Associated Bhajans Section */}
         {data.bhajans && data.bhajans.length > 0 && (
           <div>
-            <h2 className="text-3xl font-extrabold text-darkBrown mb-8 flex items-center gap-3">
-              <Music className="w-7 h-7 text-saffron" /> {data.title} के भजन ({data.bhajans.length})
+            <h2 className="text-3xl font-extrabold text-darkBrown mb-8 flex items-center gap-3 font-hindi-heading leading-snug">
+              <div className="shrink-0 flex items-center justify-center">
+                <Music className="w-7 h-7 text-saffron" />
+              </div>
+              <span>
+                {t('content.relatedBhajans')} ({data.bhajans.length})
+              </span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -115,7 +127,7 @@ export const CollectionDetails: React.FC = () => {
                     title={bhajan.title}
                     godName={data.title}
                     views={bhajan.views || 0}
-                    duration={bhajan.duration ? `${Math.floor(bhajan.duration / 60)} मि` : 'भजन'}
+                    duration={bhajan.duration ? `${Math.floor(bhajan.duration / 60)} m` : t('navigation.bhajans')}
                     thumbnailUrl={bhajan.thumbnail_url}
                   />
                 </Link>
@@ -127,34 +139,39 @@ export const CollectionDetails: React.FC = () => {
         {/* Associated Articles Section */}
         {data.articles && data.articles.length > 0 && (
           <div>
-            <h2 className="text-3xl font-extrabold text-darkBrown mb-8 flex items-center gap-3">
-              <BookOpen className="w-7 h-7 text-saffron" /> सम्बन्धित लेख ({data.articles.length})
+            <h2 className="text-3xl font-extrabold text-darkBrown mb-8 flex items-center gap-3 font-hindi-heading leading-snug">
+              <div className="shrink-0 flex items-center justify-center">
+                <BookOpen className="w-7 h-7 text-saffron" />
+              </div>
+              <span>
+                {t('content.relatedArticles')} ({data.articles.length})
+              </span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {data.articles.map((art: any) => (
-                <Link
-                  key={art.id}
-                  to={`/articles/${art.slug || art.id}`}
-                  className="bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-saffron/30 shadow-sm hover:shadow-md transition-all flex flex-col p-5"
-                >
-                  {art.featured_image_url && (
-                    <img
-                      src={art.featured_image_url}
-                      alt={art.title}
-                      className="w-full h-44 object-cover rounded-2xl mb-4"
-                    />
-                  )}
-                  <h3 className="font-extrabold text-lg text-darkBrown line-clamp-2 hover:text-saffron transition-colors">
-                    {art.displayTitle || art.title}
-                  </h3>
-                  {(art.displayExcerpt || art.excerpt) && (
-                    <p className="text-slate-600 text-xs line-clamp-2 mt-2 leading-relaxed">
-                      {art.displayExcerpt || art.excerpt}
-                    </p>
-                  )}
-                </Link>
-              ))}
+              {data.articles.map((art: any) => {
+                const title = art.displayTitle || getLocalizedField(art, 'title');
+                const excerpt = art.displayExcerpt || getLocalizedField(art, 'excerpt');
+                return (
+                  <Link
+                    key={art.id}
+                    to={`/articles/${art.slug || art.id}`}
+                    className="bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-saffron/30 shadow-sm hover:shadow-md transition-all flex flex-col p-5"
+                  >
+                    {art.featured_image_url && (
+                      <img
+                        src={art.featured_image_url}
+                        alt={title}
+                        className="w-full h-44 object-cover rounded-2xl mb-4"
+                      />
+                    )}
+                    <h3 className="font-extrabold text-lg text-darkBrown line-clamp-2 hover:text-saffron transition-colors">
+                      {title}
+                    </h3>
+                    {excerpt && <p className="text-slate-600 text-xs line-clamp-2 mt-2 leading-relaxed">{excerpt}</p>}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

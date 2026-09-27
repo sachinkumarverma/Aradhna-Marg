@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Loader2, BookOpen, Filter } from 'lucide-react';
 import { PublicApi } from '@api/publicApi';
-import { LanguageSwitcher } from '@components/common/LanguageSwitcher';
 import { Select } from '@components/ui/Select';
 import { ArticleCard } from '@components/cards/ArticleCard';
+import { useTranslation } from '@i18n/LanguageContext';
 
 export const ArticlesList: React.FC = () => {
+  const { language, t, getLocalizedField } = useTranslation();
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [lang, setLang] = useState('hi');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -37,7 +37,7 @@ export const ArticlesList: React.FC = () => {
           limit: 9,
           search,
           category: selectedCategory,
-          lang
+          lang: language
         });
         setArticles(res.data || []);
         setTotalPages(res.meta?.totalPages || 1);
@@ -48,34 +48,28 @@ export const ArticlesList: React.FC = () => {
       }
     };
     fetchArticles();
-  }, [page, search, selectedCategory, lang]);
+  }, [page, search, selectedCategory, language]);
 
   const categoryOptions = [
-    { label: 'सभी श्रेणियाँ', value: '' },
-    ...categories.map((c) => ({ label: c.name, value: c.id }))
+    { label: t('common.allCategories'), value: '' },
+    ...categories.map((c) => ({ label: getLocalizedField(c, 'name') || c.name, value: c.id }))
   ];
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Title & Language Toggle */}
+        {/* Header Title */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10 pb-6 border-b border-gray-200/60">
           <div className="text-left max-w-3xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight mb-3">
-              {lang === 'en' ? 'Sacred Articles & Stories' : 'धार्मिक लेख एवं कथाएँ'}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight mb-3 font-hindi-heading">
+              {t('navigation.articles')}
             </h1>
-            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed mb-3">
-              {lang === 'en'
-                ? 'Explore spiritual knowledge, sacred scriptures, rituals, and philosophy.'
-                : 'सनातन परंपरा, व्रत-त्यौहार, वैदिक दर्शन एवं पौराणिक कथाओं का संग्रह।'}
+            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed mb-3 font-hindi-heading">
+              {t('content.articlesSubtitle')}
             </p>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-md bg-saffron/10 text-saffron font-bold text-xs uppercase tracking-wider">
-              <BookOpen className="w-4 h-4" /> सनातन धर्म एवं संस्कृति
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-md bg-saffron/10 text-saffron font-bold text-xs uppercase tracking-wider font-hindi-heading">
+              <BookOpen className="w-4 h-4" /> Sanatan Dharma & Wisdom
             </div>
-          </div>
-
-          <div className="shrink-0 self-start">
-            <LanguageSwitcher currentLang={lang} onChange={(l) => setLang(l)} />
           </div>
         </div>
 
@@ -90,14 +84,14 @@ export const ArticlesList: React.FC = () => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder={lang === 'en' ? 'Search articles...' : 'लेख का शीर्षक या विषय खोजें...'}
-              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-lg outline-none border border-transparent focus:border-saffron text-sm font-medium text-darkBrown"
+              placeholder={t('common.searchPlaceholder')}
+              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-lg outline-none border border-transparent focus:border-saffron text-sm font-medium text-darkBrown font-hindi-body"
             />
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 shrink-0">
-              <Filter className="w-4 h-4 text-saffron" /> श्रेणियाँ:
+              <Filter className="w-4 h-4 text-saffron" /> {t('common.filters')}
             </span>
             <div className="w-56">
               <Select
@@ -107,7 +101,7 @@ export const ArticlesList: React.FC = () => {
                   setSelectedCategory(val);
                   setPage(1);
                 }}
-                placeholder="सभी श्रेणियाँ"
+                placeholder={t('common.allCategories')}
                 searchable={false}
               />
             </div>
@@ -133,10 +127,10 @@ export const ArticlesList: React.FC = () => {
                   <ArticleCard
                     id={art.id}
                     slug={art.slug}
-                    title={art.displayTitle || art.title}
+                    title={getLocalizedField(art, 'title') || art.displayTitle || art.title}
                     featuredImageUrl={art.featured_image_url}
-                    excerpt={art.displayExcerpt || art.excerpt}
-                    categoryName={art.category_name}
+                    excerpt={getLocalizedField(art, 'excerpt') || art.displayExcerpt || art.excerpt}
+                    categoryName={getLocalizedField(art, 'category_name') || art.category_name}
                   />
                 </motion.div>
               ))}
@@ -150,17 +144,17 @@ export const ArticlesList: React.FC = () => {
                   onClick={() => setPage((p) => p - 1)}
                   className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
                 >
-                  पिछला
+                  {t('common.previous')}
                 </button>
-                <span className="text-sm font-bold text-slate-600 px-3">
-                  पृष्ठ {page} / {totalPages}
+                <span className="text-sm font-bold text-slate-600 px-3 font-hindi-body">
+                  {t('common.page')} {page} / {totalPages}
                 </span>
                 <button
                   disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p - 1)}
+                  onClick={() => setPage((p) => p + 1)}
                   className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
                 >
-                  अगला
+                  {t('common.next')}
                 </button>
               </div>
             )}
@@ -168,8 +162,8 @@ export const ArticlesList: React.FC = () => {
         ) : (
           <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8">
             <BookOpen className="w-12 h-12 text-saffron mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-darkBrown mb-2">कोई लेख नहीं मिला</h3>
-            <p className="text-slate-500 text-sm">कृपया अन्य श्रेणी या खोज शब्द का चयन करें।</p>
+            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noArticles')}</h3>
+            <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noArticlesDesc')}</p>
           </div>
         )}
       </div>

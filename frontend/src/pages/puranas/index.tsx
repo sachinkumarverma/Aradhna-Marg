@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Loader2, Search } from 'lucide-react';
 import { PublicApi } from '@api/publicApi';
-import { LanguageSwitcher } from '@components/common/LanguageSwitcher';
 import { PuranaCard } from '@components/cards/PuranaCard';
+import { useTranslation } from '@i18n/LanguageContext';
 
 export const PuranasList: React.FC = () => {
+  const { language, t, getLocalizedField } = useTranslation();
   const [puranas, setPuranas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [lang, setLang] = useState('hi');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -17,7 +17,7 @@ export const PuranasList: React.FC = () => {
     const fetchPuranas = async () => {
       setLoading(true);
       try {
-        const res = await PublicApi.getPuranas({ page, limit: 12, search, lang });
+        const res = await PublicApi.getPuranas({ page, limit: 12, search, lang: language });
         setPuranas(res.data || []);
         setTotalPages(res.meta?.totalPages || 1);
       } catch (err) {
@@ -27,29 +27,23 @@ export const PuranasList: React.FC = () => {
       }
     };
     fetchPuranas();
-  }, [page, search, lang]);
+  }, [page, search, language]);
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Title & Language Toggle */}
+        {/* Header Title */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10 pb-6 border-b border-gray-200/60">
           <div className="text-left max-w-3xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight mb-3">
-              {lang === 'en' ? 'Sacred Scriptures & Puranas' : 'अष्टादश पुराण एवं महाग्रंथ'}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight mb-3 font-hindi-heading">
+              {t('navigation.puranas')}
             </h1>
-            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed mb-3">
-              {lang === 'en'
-                ? 'Read and download authentic 18 Puranas, Bhagavad Gita, Ramayana, and sacred texts in PDF.'
-                : 'श्रीमद्भागवत, विष्णु, शिव, अग्नि पुराण तथा भगवद्गीता सहित समस्त पवित्र ग्रंथों की PDF डिजिटल लाइब्रेरी।'}
+            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed mb-3 font-hindi-heading">
+              {t('content.puranasSubtitle')}
             </p>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-md bg-saffron/10 text-saffron font-bold text-xs uppercase tracking-wider">
-              <BookOpen className="w-4 h-4" /> सनातन ग्रंथ एवं अष्टादश पुराण
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-md bg-saffron/10 text-saffron font-bold text-xs uppercase tracking-wider font-hindi-heading">
+              <BookOpen className="w-4 h-4" /> 18 Mahapuranas & Sacred Texts
             </div>
-          </div>
-
-          <div className="shrink-0 self-start">
-            <LanguageSwitcher currentLang={lang} onChange={(l) => setLang(l)} />
           </div>
         </div>
 
@@ -64,8 +58,8 @@ export const PuranasList: React.FC = () => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder={lang === 'en' ? 'Search scripture...' : 'पुराण का नाम खोजें...'}
-              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-lg outline-none border border-transparent focus:border-saffron text-sm font-medium text-darkBrown"
+              placeholder={t('common.searchPlaceholder')}
+              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-lg outline-none border border-transparent focus:border-saffron text-sm font-medium text-darkBrown font-hindi-body"
             />
           </div>
         </div>
@@ -89,9 +83,13 @@ export const PuranasList: React.FC = () => {
                   <PuranaCard
                     id={puran.id}
                     slug={puran.slug}
-                    title={puran.displayTitle || puran.title}
+                    title={getLocalizedField(puran, 'title') || puran.displayTitle || puran.title}
                     coverImage={puran.cover_image}
-                    shortDescription={puran.displayDescription || puran.short_description}
+                    shortDescription={
+                      getLocalizedField(puran, 'short_description') ||
+                      puran.displayDescription ||
+                      puran.short_description
+                    }
                     viewCount={puran.view_count || puran.views}
                     language={puran.language}
                   />
@@ -107,17 +105,17 @@ export const PuranasList: React.FC = () => {
                   onClick={() => setPage((p) => p - 1)}
                   className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
                 >
-                  पिछला
+                  {t('common.previous')}
                 </button>
-                <span className="text-sm font-bold text-slate-600 px-3">
-                  पृष्ठ {page} / {totalPages}
+                <span className="text-sm font-bold text-slate-600 px-3 font-hindi-body">
+                  {t('common.page')} {page} / {totalPages}
                 </span>
                 <button
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
                   className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
                 >
-                  अगला
+                  {t('common.next')}
                 </button>
               </div>
             )}
@@ -125,8 +123,8 @@ export const PuranasList: React.FC = () => {
         ) : (
           <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8">
             <BookOpen className="w-12 h-12 text-saffron mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-darkBrown mb-2">कोई ग्रंथ नहीं मिला</h3>
-            <p className="text-slate-500 text-sm">कृपया अन्य शब्द का प्रयोग करें।</p>
+            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noPuranas')}</h3>
+            <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noResultsDesc')}</p>
           </div>
         )}
       </div>

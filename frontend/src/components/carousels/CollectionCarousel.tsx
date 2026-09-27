@@ -29,12 +29,14 @@ export const CollectionCarousel: React.FC<CollectionCarouselProps> = ({ title, i
         {/* Section Header */}
         <div className="flex items-center justify-between pb-3 border-b border-gray-200/60 mb-2">
           <div className="flex items-center gap-2.5">
-            {type === 'god' ? (
-              <Sparkles className="w-5 h-5 text-saffron fill-saffron shrink-0" />
-            ) : (
-              <FolderHeart className="w-5 h-5 text-saffron shrink-0" />
-            )}
-            <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-none">{title}</h2>
+            <div className="shrink-0 flex items-center justify-center">
+              {type === 'god' ? (
+                <Sparkles className="w-5 h-5 text-saffron fill-saffron" />
+              ) : (
+                <FolderHeart className="w-5 h-5 text-saffron" />
+              )}
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-snug">{title}</h2>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button

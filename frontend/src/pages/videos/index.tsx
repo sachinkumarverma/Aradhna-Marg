@@ -3,9 +3,11 @@ import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiClient } from '@api/client';
-import { BhajanCard } from '@components/cards/BhajanCard';
+import { VideoCard } from '@components/cards/VideoCard';
+import { useTranslation } from '../../i18n/LanguageContext';
 
 export const VideosList = () => {
+  const { t } = useTranslation();
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,12 +39,10 @@ export const VideosList = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-10 mt-6">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-darkBrown tracking-tight mb-1">
-            Divine <span className="text-saffron">Videos</span>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-darkBrown tracking-tight mb-1 font-hindi-heading">
+            {t('content.divineVideos')}
           </h1>
-          <p className="text-darkBrown/60 text-lg">
-            Explore our vast collection of daily bhajans, katha, and satsang videos.
-          </p>
+          <p className="text-darkBrown/60 text-lg font-hindi-heading">{t('content.videoCollectionSubtitle')}</p>
         </div>
 
         {/* Controls: Search and Filter */}
@@ -51,7 +51,7 @@ export const VideosList = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search videos by title..."
+              placeholder={t('common.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 bg-white rounded-md pl-12 pr-4 outline-none border border-black/5 focus:border-saffron focus:ring-1 focus:ring-saffron shadow-sm"
@@ -73,7 +73,7 @@ export const VideosList = () => {
                 className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${includeShorts ? 'translate-x-4' : 'translate-x-0'}`}
               ></div>
             </div>
-            <span className="text-sm font-medium text-darkBrown">Include Shorts</span>
+            <span className="text-sm font-medium text-darkBrown">{t('content.includeShorts')}</span>
           </label>
         </div>
 
@@ -85,7 +85,7 @@ export const VideosList = () => {
         ) : (
           <>
             {videos.length === 0 ? (
-              <div className="text-center py-20 text-gray-500">No videos found matching your criteria.</div>
+              <div className="text-center py-20 text-gray-500">{t('empty.noVideos')}</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {videos.map((video, i) => (
@@ -96,7 +96,7 @@ export const VideosList = () => {
                     transition={{ delay: i * 0.05 }}
                   >
                     <Link to={`/videos/${video.youtube_video_id}`} className="block h-full">
-                      <BhajanCard
+                      <VideoCard
                         title={video.title}
                         godName={video.channel_name || 'Devotional'}
                         views={video.view_count || 0}

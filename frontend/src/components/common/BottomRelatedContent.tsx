@@ -5,6 +5,7 @@ import { PuranaCard } from '@components/cards/PuranaCard';
 import { ArticleCard } from '@components/cards/ArticleCard';
 import { BhajanCard } from '@components/cards/BhajanCard';
 import { SectionHeader } from '@components/common/SectionHeader';
+import { useTranslation } from '@i18n/LanguageContext';
 
 interface BottomRelatedContentProps {
   relatedArticles?: any[];
@@ -17,6 +18,7 @@ export const BottomRelatedContent: React.FC<BottomRelatedContentProps> = ({
   relatedPuranas = [],
   relatedBhajans = []
 }) => {
+  const { getLocalizedField } = useTranslation();
   const hasPuranas = relatedPuranas && relatedPuranas.length > 0;
   const hasArticles = relatedArticles && relatedArticles.length > 0;
   const hasBhajans = relatedBhajans && relatedBhajans.length > 0;
@@ -46,9 +48,9 @@ export const BottomRelatedContent: React.FC<BottomRelatedContentProps> = ({
                 key={puran.id}
                 id={puran.id}
                 slug={puran.slug}
-                title={puran.title_en || puran.title}
+                title={getLocalizedField(puran, 'title')}
                 coverImage={puran.cover_image}
-                shortDescription={puran.short_description}
+                shortDescription={getLocalizedField(puran, 'short_description')}
                 viewCount={puran.view_count || puran.views}
                 language={puran.language}
               />
@@ -78,10 +80,10 @@ export const BottomRelatedContent: React.FC<BottomRelatedContentProps> = ({
                 key={article.id}
                 id={article.id}
                 slug={article.slug}
-                title={article.displayTitle || article.title}
+                title={getLocalizedField(article, 'title') || article.displayTitle || article.title}
                 featuredImageUrl={article.featured_image_url}
-                excerpt={article.displayExcerpt || article.excerpt}
-                categoryName={article.category_name}
+                excerpt={getLocalizedField(article, 'excerpt') || article.displayExcerpt || article.excerpt}
+                categoryName={getLocalizedField(article, 'category_name') || article.category_name}
                 layout="horizontal"
               />
             ))}
@@ -111,7 +113,7 @@ export const BottomRelatedContent: React.FC<BottomRelatedContentProps> = ({
                 id={bhajan.id}
                 slug={bhajan.slug}
                 title={bhajan.title}
-                godName={bhajan.god_name || bhajan.category_name}
+                godName={getLocalizedField(bhajan, 'god_name') || bhajan.god_name || bhajan.category_name}
                 duration={bhajan.duration}
                 thumbnailUrl={bhajan.thumbnail_url}
                 views={bhajan.views}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Music, BookOpen, Calendar, Sparkles, ChevronRight, Eye } from 'lucide-react';
+import { useTranslation } from '@i18n/LanguageContext';
 
 interface RelatedContentProps {
   relatedBhajans?: any[];
@@ -28,6 +29,7 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
   relatedFestivals = [],
   deity
 }) => {
+  const { t, getLocalizedField } = useTranslation();
   const hasContent = relatedBhajans.length > 0 || relatedArticles.length > 0 || relatedFestivals.length > 0 || !!deity;
 
   if (!hasContent) return null;
@@ -41,27 +43,29 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
           className="group block bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-5 border border-orange-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
         >
           <div className="flex items-center gap-2 text-saffron font-bold text-xs uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5" /> Explore Deity
+            <Sparkles className="w-3.5 h-3.5" /> {t('content.exploreDeity')}
           </div>
           <div className="flex items-center gap-3.5 mb-3.5">
             <img
               src={deity.image || '/Deities/Krishna.png'}
-              alt={deity.name}
+              alt={getLocalizedField(deity, 'name') || deity.name}
               className="w-14 h-14 rounded-lg object-cover shadow-sm border-2 border-white shrink-0"
             />
             <div className="min-w-0 flex-1">
               <h4 className="text-lg font-bold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-body py-0.5 leading-relaxed">
-                {deity.name}
+                {getLocalizedField(deity, 'name') || deity.name}
               </h4>
-              {deity.short_description && (
+              {(deity.short_description || deity.description) && (
                 <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 font-hindi-body leading-relaxed">
-                  {stripHtml(deity.short_description)}
+                  {stripHtml(
+                    getLocalizedField(deity, 'short_description') || deity.short_description || deity.description
+                  )}
                 </p>
               )}
             </div>
           </div>
           <span className="inline-flex items-center justify-center w-full py-2 px-3 bg-saffron text-white rounded-md font-bold text-xs group-hover:brightness-90 transition-colors shadow-sm">
-            View Deity Page <ChevronRight className="w-3.5 h-3.5 ml-1" />
+            {t('content.viewDeityPage')} <ChevronRight className="w-3.5 h-3.5 ml-1" />
           </span>
         </Link>
       )}
@@ -69,8 +73,8 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
       {/* Recommended Bhajans */}
       {relatedBhajans.length > 0 && (
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm overflow-hidden">
-          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2">
-            <Music className="w-4 h-4 text-saffron" /> Recommended Bhajans
+          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2 font-hindi-heading">
+            <Music className="w-4 h-4 text-saffron shrink-0" /> {t('content.recommendedBhajans')}
           </h3>
           <div className="flex flex-col gap-2.5">
             {relatedBhajans.map((bhajan) => (
@@ -94,7 +98,9 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                     {bhajan.title}
                   </h4>
                   <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500 font-medium font-hindi-body">
-                    <span className="truncate">{bhajan.god_name || bhajan.category_name || 'Bhajan'}</span>
+                    <span className="truncate">
+                      {bhajan.god_name || bhajan.category_name || t('navigation.bhajans')}
+                    </span>
                     {bhajan.views > 0 && (
                       <span className="flex items-center gap-0.5 shrink-0">
                         <Eye className="w-3 h-3" /> {bhajan.views}
@@ -111,8 +117,8 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
       {/* Related Articles */}
       {relatedArticles.length > 0 && (
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm overflow-hidden">
-          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-saffron" /> Related Articles
+          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2 font-hindi-heading">
+            <BookOpen className="w-4 h-4 text-saffron shrink-0" /> {t('content.relatedArticles')}
           </h3>
           <div className="flex flex-col gap-3">
             {relatedArticles.map((article) => (
@@ -125,17 +131,17 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                   <div className="w-full aspect-video rounded-md overflow-hidden bg-gray-100">
                     <img
                       src={article.featured_image_url}
-                      alt={article.displayTitle || article.title}
+                      alt={getLocalizedField(article, 'title') || article.displayTitle || article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 )}
                 <h4 className="text-xs md:text-sm font-bold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 font-hindi-body pt-1.5 pb-0.5 leading-relaxed">
-                  {article.displayTitle || article.title}
+                  {getLocalizedField(article, 'title') || article.displayTitle || article.title}
                 </h4>
-                {(article.displayExcerpt || article.excerpt) && (
+                {(getLocalizedField(article, 'excerpt') || article.displayExcerpt || article.excerpt) && (
                   <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed font-hindi-body pt-0.5">
-                    {stripHtml(article.displayExcerpt || article.excerpt)}
+                    {stripHtml(getLocalizedField(article, 'excerpt') || article.displayExcerpt || article.excerpt)}
                   </p>
                 )}
               </Link>
@@ -147,8 +153,8 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
       {/* Related Festivals */}
       {relatedFestivals.length > 0 && (
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm overflow-hidden">
-          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-saffron" /> Related Festivals
+          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2 font-hindi-heading">
+            <Calendar className="w-4 h-4 text-saffron shrink-0" /> {t('content.relatedFestivals')}
           </h3>
           <div className="flex flex-col gap-2.5">
             {relatedFestivals.map((fest) => (
@@ -161,18 +167,18 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                   <div className="aspect-video w-14 rounded-md overflow-hidden shrink-0 bg-gray-100">
                     <img
                       src={fest.banner_image}
-                      alt={fest.displayName || fest.name}
+                      alt={getLocalizedField(fest, 'name') || fest.displayName || fest.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
                   <h4 className="text-xs font-bold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-body py-0.5 leading-relaxed">
-                    {fest.displayName || fest.name}
+                    {getLocalizedField(fest, 'name') || fest.displayName || fest.name}
                   </h4>
-                  {fest.short_description && (
+                  {(getLocalizedField(fest, 'short_description') || fest.short_description) && (
                     <p className="text-[11px] text-slate-600 line-clamp-1 mt-0.5 font-hindi-body leading-relaxed">
-                      {stripHtml(fest.short_description)}
+                      {stripHtml(getLocalizedField(fest, 'short_description') || fest.short_description)}
                     </p>
                   )}
                 </div>

@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Sparkles } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
 import { RelatedContentSection } from '@components/common/RelatedContentSection';
-import { LanguageSwitcher } from '@components/common/LanguageSwitcher';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { PublicApi } from '@api/publicApi';
+import { useTranslation } from '@i18n/LanguageContext';
 
 export const FestivalDetail: React.FC = () => {
+  const { language, t, getLocalizedField } = useTranslation();
   const params = useParams();
   const festivalIdOrSlug = params.slug || params.id;
   const [festival, setFestival] = useState<any>(null);
   const [relatedData, setRelatedData] = useState<any>({});
-  const [lang, setLang] = useState('hi');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export const FestivalDetail: React.FC = () => {
       setLoading(true);
       try {
         const [festRes, relatedRes] = await Promise.all([
-          PublicApi.getFestivalBySlug(festivalIdOrSlug, lang).catch((err) => {
+          PublicApi.getFestivalBySlug(festivalIdOrSlug, language).catch((err) => {
             console.error('Failed to fetch festival by slug:', err);
             return null;
           }),
@@ -41,8 +41,9 @@ export const FestivalDetail: React.FC = () => {
           setFestival(festRes);
           setRelatedData(relatedRes || {});
 
-          if (festRes?.displayName || festRes?.name) {
-            document.title = festRes.seo_title || festRes.displayName || festRes.name;
+          const name = getLocalizedField(festRes, 'name') || festRes?.displayName || festRes?.name;
+          if (name) {
+            document.title = festRes.seo_title || name;
           }
         }
       } catch (error) {
@@ -59,7 +60,7 @@ export const FestivalDetail: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [festivalIdOrSlug, lang]);
+  }, [festivalIdOrSlug, language]);
 
   if (loading) {
     return (
@@ -71,34 +72,32 @@ export const FestivalDetail: React.FC = () => {
 
   if (!festival) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4">
-        <h2 className="text-3xl font-black text-darkBrown mb-4">यह त्यौहार उपलब्ध नहीं है।</h2>
-        <p className="text-slate-600 mb-6">प्रमुख व्रत एवं त्यौहारों की सूची देखें।</p>
+      <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4 font-hindi-body">
+        <h2 className="text-3xl font-black text-darkBrown mb-4 font-hindi-heading">
+          {t('errors.contentNotAvailable')}
+        </h2>
+        <p className="text-slate-600 mb-6">{t('errors.failedToLoad')}</p>
         <Link
           to="/festivals"
           className="px-6 py-3 bg-saffron text-white rounded-md font-bold shadow-md hover:brightness-90"
         >
-          सभी त्यौहार देखें
+          {t('navigation.festivals')}
         </Link>
       </div>
     );
   }
 
-  const name = festival.displayName || festival.name || 'Festival';
-  const description = festival.displayDescription || festival.short_description || '';
-  const content =
-    festival.displayContent || festival.content || festival.short_description || festival.description || '';
+  const name = getLocalizedField(festival, 'name') || festival.displayName || festival.name || 'Festival';
+  const description =
+    getLocalizedField(festival, 'short_description') || festival.displayDescription || festival.short_description || '';
+  const content = getLocalizedField(festival, 'content') || festival.displayContent || festival.content || description;
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header Breadcrumb & Language Switcher */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <Breadcrumb
-            items={[{ label: 'होम', to: '/' }, { label: 'व्रत एवं त्यौहार', to: '/festivals' }, { label: name }]}
-          />
-
-          <LanguageSwitcher currentLang={lang} onChange={(l) => setLang(l)} />
+        {/* Header Breadcrumb */}
+        <div className="mb-8">
+          <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Festivals', to: '/festivals' }, { label: name }]} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -112,9 +111,9 @@ export const FestivalDetail: React.FC = () => {
               {/* Title & Date Badges */}
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 {festival.festival_date && (
-                  <span className="px-3.5 py-1 bg-amber-50 text-saffron font-bold text-xs rounded-full border border-amber-200 flex items-center gap-1.5">
+                  <span className="px-3.5 py-1 bg-amber-50 text-saffron font-bold text-xs rounded-full border border-amber-200 flex items-center gap-1.5 font-hindi-body">
                     <Calendar className="w-3.5 h-3.5" />
-                    {new Date(festival.festival_date).toLocaleDateString(lang === 'en' ? 'en-US' : 'hi-IN', {
+                    {new Date(festival.festival_date).toLocaleDateString(language === 'en' ? 'en-US' : 'hi-IN', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric'
@@ -129,26 +128,26 @@ export const FestivalDetail: React.FC = () => {
               </div>
 
               {/* Main Title */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight leading-tight mb-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight leading-tight mb-4 font-hindi-heading">
                 {name}
               </h1>
 
               {/* Short Description */}
               {description && (
-                <p className="text-slate-600 text-base md:text-lg font-medium leading-relaxed mb-8 border-b border-gray-100 pb-6">
+                <p className="text-slate-600 text-base md:text-lg font-medium leading-relaxed mb-8 border-b border-gray-100 pb-6 font-hindi-body">
                   {description}
                 </p>
               )}
 
-              {/* Banner Image (Placed below Title & Description) */}
+              {/* Banner Image */}
               {festival.banner_image && (
                 <div className="w-full rounded-lg overflow-hidden mb-8 max-h-[420px] bg-gray-100 border border-gray-100 shadow-sm">
                   <img src={festival.banner_image} alt={name} className="w-full h-full object-cover" />
                 </div>
               )}
 
-              {/* Rich Content Rendered Safely */}
-              <div className="mt-2">
+              {/* Rich Content */}
+              <div className="mt-2 font-hindi-body">
                 <SafeHtmlContent content={content} />
               </div>
             </motion.div>
