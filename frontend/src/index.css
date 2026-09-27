@@ -21,7 +21,7 @@
   }
 
   body {
-    font-family: 'Outfit', 'Anek Devanagari', 'Hind', sans-serif;
+    font-family: 'Anek Devanagari', 'Outfit', 'Hind', sans-serif;
     @apply bg-[#F9F7F3] text-darkBrown antialiased selection:bg-saffron/20 selection:text-saffron;
   }
 

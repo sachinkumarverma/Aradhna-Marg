@@ -64,14 +64,6 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
               <span className="text-xs font-bold">PDF</span>
             </div>
           )}
-
-          {/* Top-Right PDF Badge */}
-          <IconText
-            icon={<FileText className="w-3 h-3 text-saffron" />}
-            gap="gap-1"
-            className="absolute top-2 right-2 px-2 py-0.5 bg-black/65 backdrop-blur-md rounded text-[10px] font-bold text-white shadow-xs"
-            text="PDF"
-          />
         </div>
 
         {/* Title */}
@@ -87,11 +79,17 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
 
       {/* Footer */}
       <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between text-[11px] text-slate-500 font-medium mt-2">
-        <IconText icon={<Eye className="w-3 h-3 text-saffron" />} gap="gap-1" text={viewCount || 0} />
+        <IconText
+          icon={<Eye className="w-3.5 h-3.5 text-saffron" />}
+          gap="gap-1"
+          textClassName="-translate-y-[0.5px]"
+          text={viewCount || 0}
+        />
         <IconText
           icon={<BookOpen className="w-3.5 h-3.5" />}
           gap="gap-1"
           className="text-xs font-bold text-saffron group-hover:translate-x-0.5 transition-transform"
+          textClassName="-translate-y-[0.5px]"
           text={t('common.readPdf')}
         />
       </div>

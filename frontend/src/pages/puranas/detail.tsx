@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Download, Eye, BookOpen, FileText, Sparkles, ArrowLeft } from 'lucide-react';
+import { Download, Eye, BookOpen, FileText, Sparkles, ArrowLeft, Calendar, ArrowRight } from 'lucide-react';
 import { apiClient } from '@api/client';
+import { PublicApi } from '@api/publicApi';
 import toast from 'react-hot-toast';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
@@ -10,6 +11,8 @@ import { DedicatedPdfViewer } from '@components/pdf/DedicatedPdfViewer';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { SectionHeader } from '@components/common/SectionHeader';
+import { ArticleCard } from '@components/cards/ArticleCard';
 
 export const PuranDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -24,6 +27,11 @@ export const PuranDetail: React.FC = () => {
       return res.data.data;
     },
     enabled: !!slug
+  });
+
+  const { data: extraContent } = useQuery({
+    queryKey: ['purana-detail-extra-content', language],
+    queryFn: () => PublicApi.getHomeData()
   });
 
   const trackViewMutation = useMutation({
@@ -144,7 +152,7 @@ export const PuranDetail: React.FC = () => {
 
             {/* Right Meta Details */}
             <div className="lg:col-span-8 flex flex-col justify-center">
-              <div className="flex flex-wrap items-center gap-3 mb-4">
+              <div className="flex flex-wrap items-center gap-3.5 mb-6">
                 <span className="px-3 py-1 bg-saffron/20 text-saffron border border-saffron/30 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
                   {data.language || 'संस्कृत / हिंदी'}
@@ -156,7 +164,7 @@ export const PuranDetail: React.FC = () => {
                 )}
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4 font-hindi-heading">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4 mt-1 font-hindi-heading">
                 {title}
               </h1>
 
@@ -286,6 +294,84 @@ export const PuranDetail: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Related Articles Section */}
+        {extraContent?.featuredArticles && extraContent.featuredArticles.length > 0 && (
+          <div className="mt-12">
+            <SectionHeader
+              icon={<BookOpen className="w-6 h-6 text-saffron fill-saffron" />}
+              title="Related Articles & Insights"
+              hindiTitle="संबंधित धार्मिक लेख"
+              actionLink={{ to: '/articles', label: 'View All' }}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {extraContent.featuredArticles.slice(0, 3).map((article: any) => (
+                <ArticleCard
+                  key={article.id}
+                  id={article.id}
+                  slug={article.slug}
+                  title={getLocalizedField(article, 'title')}
+                  featuredImageUrl={article.featured_image_url}
+                  excerpt={getLocalizedField(article, 'excerpt')}
+                  categoryName={article.category_name}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Major Festivals & Vrats Section */}
+        {extraContent?.festivals && extraContent.festivals.length > 0 && (
+          <div className="mt-12">
+            <SectionHeader
+              icon={<Calendar className="w-6 h-6 text-saffron fill-saffron/20" />}
+              title="Major Festivals & Vrats"
+              hindiTitle="प्रमुख व्रत व त्योहार"
+              actionLink={{ to: '/festivals', label: 'View All' }}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {extraContent.festivals.slice(0, 3).map((fest: any) => {
+                const festName = fest.displayName || getLocalizedField(fest, 'name');
+                const festDesc = fest.displayDescription || getLocalizedField(fest, 'short_description');
+                return (
+                  <Link
+                    key={fest.id}
+                    to={`/festivals/${fest.slug || fest.id}`}
+                    className="group block bg-white rounded-2xl p-4 border border-orange-100/80 shadow-sm hover:shadow-md hover:border-saffron/40 transition-all flex items-center gap-4 cursor-pointer"
+                  >
+                    {fest.banner_image ? (
+                      <div className="aspect-video w-20 rounded-xl overflow-hidden shrink-0 bg-gray-100">
+                        <img
+                          src={fest.banner_image}
+                          alt={festName}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-xl bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
+                        <Calendar className="w-6 h-6" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading">
+                        {festName}
+                      </h3>
+                      {festDesc && (
+                        <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed font-hindi-body">
+                          {festDesc}
+                        </p>
+                      )}
+                      <div className="inline-flex items-center text-xs font-bold text-saffron mt-1.5 group-hover:underline">
+                        {t('common.read')}{' '}
+                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

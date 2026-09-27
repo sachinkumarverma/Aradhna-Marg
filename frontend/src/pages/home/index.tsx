@@ -110,7 +110,7 @@ export const Home: React.FC = () => {
 
             <motion.p
               variants={fadeUpVariant}
-              className="text-base sm:text-lg md:text-xl text-gray-200 mb-6 max-w-lg leading-relaxed font-normal"
+              className="text-base sm:text-lg md:text-xl text-gray-200 mb-6 max-w-lg leading-relaxed font-normal font-hindi-body"
             >
               {t('content.devotionalMusicSubtitle')}
             </motion.p>
@@ -124,7 +124,7 @@ export const Home: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('common.searchPlaceholder')}
-                  className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading"
+                  className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading pt-1"
                 />
                 <Button
                   type="submit"
@@ -181,7 +181,7 @@ export const Home: React.FC = () => {
                   icon={<Play className="w-7 h-7 text-saffron fill-saffron" />}
                   gap="gap-3"
                   text={
-                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
                       <span className="text-saffron">{t('content.divineVideos')}</span>
                     </h2>
                   }
@@ -245,8 +245,8 @@ export const Home: React.FC = () => {
                         <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                           <div>
                             {/* Top Row: Title & Heart Favorite */}
-                            <div className="flex items-start justify-between gap-3">
-                              <h3 className="text-lg md:text-xl font-black text-darkBrown leading-snug line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading">
+                            <div className="flex items-start justify-between gap-3 pt-1">
+                              <h3 className="text-lg md:text-xl font-black text-darkBrown leading-relaxed line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading py-0.5">
                                 {title}
                               </h3>
                               <button
@@ -281,9 +281,11 @@ export const Home: React.FC = () => {
                           {/* Bottom Row: Badges on left, Social & Watch Link on right */}
                           <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="px-2.5 py-0.5 bg-amber-50 text-saffron text-[11px] font-bold rounded-md uppercase tracking-wider border border-amber-200/60 font-hindi-heading">
-                                {video.god_name || video.category_name || t('navigation.videos')}
-                              </span>
+                              {(video.god_name || video.category_name) && (
+                                <span className="px-2.5 py-0.5 bg-amber-50 text-saffron text-[11px] font-bold rounded-md uppercase tracking-wider border border-amber-200/60 font-hindi-heading">
+                                  {video.god_name || video.category_name}
+                                </span>
+                              )}
                               {video.duration && (
                                 <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 text-[11px] font-bold rounded-md uppercase tracking-wider">
                                   {video.duration}
@@ -293,7 +295,7 @@ export const Home: React.FC = () => {
 
                             <div className="flex items-center gap-3">
                               <SocialShareButtons title={title} excerpt={snippet} url={videoUrl} />
-                              <div className="inline-flex items-center gap-1 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link font-hindi-heading">
+                              <div className="inline-flex items-center gap-1 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link font-hindi-heading translate-y-[1.5px]">
                                 <span>{t('common.watch')} &rarr;</span>
                               </div>
                             </div>
@@ -319,7 +321,7 @@ export const Home: React.FC = () => {
                   icon={<Flame className="w-6 h-6 text-saffron fill-saffron" />}
                   gap="gap-2.5"
                   text={
-                    <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                    <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
                       <span className="text-saffron">{t('content.trendingBhajans')}</span>
                     </h3>
                   }
@@ -386,7 +388,7 @@ export const Home: React.FC = () => {
                   icon={<BookOpen className="w-7 h-7 text-saffron fill-saffron" />}
                   gap="gap-3"
                   text={
-                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
                       <span className="text-saffron">{t('content.articlesAndInsights')}</span>
                     </h2>
                   }
@@ -436,7 +438,7 @@ export const Home: React.FC = () => {
                 icon={<Sparkles className="w-7 h-7 text-saffron fill-saffron" />}
                 gap="gap-3"
                 text={
-                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
                     <span className="text-saffron">{t('content.popularDeities')}</span>
                   </h2>
                 }
@@ -464,7 +466,7 @@ export const Home: React.FC = () => {
                 icon={<Scroll className="w-7 h-7 text-saffron stroke-[2.2]" />}
                 gap="gap-3"
                 text={
-                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
                     <span className="text-saffron">{t('content.scripturesAndPuranas')}</span>
                   </h2>
                 }
@@ -514,7 +516,7 @@ export const Home: React.FC = () => {
                 icon={<Calendar className="w-7 h-7 text-saffron fill-saffron/20" />}
                 gap="gap-3"
                 text={
-                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
                     <span className="text-saffron">{t('navigation.festivals')}</span>
                   </h2>
                 }
@@ -556,16 +558,20 @@ export const Home: React.FC = () => {
                           <Calendar className="w-6 h-6" />
                         </div>
                       )}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors">
-                          {festName}
-                        </h3>
-                        {festDesc && (
-                          <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed">{festDesc}</p>
-                        )}
-                        <div className="inline-flex items-center text-xs font-bold text-saffron mt-1.5 group-hover:underline">
-                          {t('common.read')}{' '}
-                          <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                      <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
+                        <div>
+                          <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors">
+                            {festName}
+                          </h3>
+                          {festDesc && (
+                            <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed">{festDesc}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-end mt-1.5">
+                          <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:underline">
+                            {t('common.read')}{' '}
+                            <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                          </span>
                         </div>
                       </div>
                     </Link>
