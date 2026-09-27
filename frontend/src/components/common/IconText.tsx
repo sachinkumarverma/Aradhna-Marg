@@ -37,7 +37,7 @@ export const IconText: React.FC<IconTextProps> = ({
         </span>
       )}
       {content !== undefined && content !== null && (
-        <span className={cn('min-w-0 translate-y-[1.5px]', textClassName)}>{content}</span>
+        <span className={cn('min-w-0 translate-y-[2.5px]', textClassName)}>{content}</span>
       )}
     </Component>
   );

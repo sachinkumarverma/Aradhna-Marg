@@ -80,6 +80,7 @@ export const FestivalsList: React.FC = () => {
                 const festName = getLocalizedField(fest, 'name') || fest.displayName || fest.name;
                 const festDesc =
                   getLocalizedField(fest, 'short_description') || fest.displayDescription || fest.short_description;
+                const targetUrl = `/festivals/${fest.slug || fest.id}`;
 
                 return (
                   <motion.div
@@ -88,56 +89,66 @@ export const FestivalsList: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     whileHover={{ y: -5, scale: 1.02 }}
                     transition={{ duration: 0.25 }}
-                    className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
                   >
-                    {fest.banner_image ? (
-                      <div className="w-full h-48 overflow-hidden bg-gray-100">
-                        <img
-                          src={fest.banner_image}
-                          alt={festName}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-full h-48 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-saffron">
-                        <Calendar className="w-16 h-16" />
-                      </div>
-                    )}
-
-                    <div className="p-6 flex-1 flex flex-col justify-between">
+                    <Link
+                      to={targetUrl}
+                      className="group block bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col justify-between cursor-pointer"
+                    >
                       <div>
-                        {fest.festival_date && (
-                          <span className="inline-block px-3 py-1 bg-amber-50 text-saffron text-xs font-bold rounded-full mb-3 border border-amber-200">
-                            📅 {new Date(fest.festival_date).toLocaleDateString(language === 'en' ? 'en-US' : 'hi-IN')}
-                          </span>
+                        {fest.banner_image ? (
+                          <div className="w-full h-48 overflow-hidden bg-gray-100">
+                            <img
+                              src={fest.banner_image}
+                              alt={festName}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full h-48 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-saffron">
+                            <Calendar className="w-16 h-16" />
+                          </div>
                         )}
-                        <h2 className="text-2xl font-bold text-darkBrown mb-3 hover:text-saffron transition-colors font-hindi-heading">
-                          <Link to={`/festivals/${fest.slug || fest.id}`}>{festName}</Link>
-                        </h2>
-                        {festDesc && (
-                          <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed font-hindi-body">
-                            {festDesc}
-                          </p>
-                        )}
+
+                        <div className="p-6 pb-0">
+                          {/* Title Row with Festival Name on Left & Date Badge on Right */}
+                          <div className="flex items-center justify-between gap-3 mb-3 pt-1">
+                            <h2 className="text-xl sm:text-2xl font-bold text-darkBrown group-hover:text-saffron transition-colors font-hindi-heading line-clamp-1 pt-1.5 pb-1 leading-snug">
+                              {festName}
+                            </h2>
+                            {fest.festival_date && (
+                              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-50 text-saffron text-xs font-bold rounded-full border border-amber-200 font-hindi-body shrink-0 -translate-y-1 shadow-xs">
+                                <Calendar className="w-3.5 h-3.5 text-orange-600 fill-orange-500/25 shrink-0" />
+                                <span className="pt-[1.5px] inline-block">
+                                  {new Date(fest.festival_date).toLocaleDateString(
+                                    language === 'en' ? 'en-US' : 'hi-IN'
+                                  )}
+                                </span>
+                              </span>
+                            )}
+                          </div>
+
+                          {festDesc && (
+                            <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed font-hindi-body">
+                              {festDesc}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-3">
-                        <SocialShareButtons
-                          title={festName}
-                          excerpt={festDesc}
-                          url={`/festivals/${fest.slug || fest.id}`}
-                        />
-                        <Link
-                          to={`/festivals/${fest.slug || fest.id}`}
-                          className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link font-hindi-heading"
-                        >
-                          <span>{t('common.readMore')}</span>
-                          <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover/link:bg-saffron group-hover/link:text-white transition-colors shadow-xs">
-                            <ChevronRight className="w-3.5 h-3.5" />
+                      <div className="p-6 pt-3">
+                        <div className="flex items-center justify-between border-t border-gray-100 pt-3">
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <SocialShareButtons title={festName} excerpt={festDesc} url={targetUrl} />
+                          </div>
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-orange-600 transition-colors shrink-0 font-hindi-heading">
+                            <span>{t('common.readMore')}</span>
+                            <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover:bg-saffron group-hover:text-white transition-colors shadow-xs">
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </span>
                           </span>
-                        </Link>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </motion.div>
                 );
               })}

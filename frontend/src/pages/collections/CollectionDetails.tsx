@@ -115,7 +115,7 @@ export const CollectionDetails: React.FC = () => {
               <div className="shrink-0 flex items-center justify-center">
                 <Music className="w-7 h-7 text-saffron" />
               </div>
-              <span>
+              <span className="translate-y-[2.5px]">
                 {t('content.relatedBhajans')} ({data.bhajans.length})
               </span>
             </h2>
@@ -143,7 +143,7 @@ export const CollectionDetails: React.FC = () => {
               <div className="shrink-0 flex items-center justify-center">
                 <BookOpen className="w-7 h-7 text-saffron" />
               </div>
-              <span>
+              <span className="translate-y-[2.5px]">
                 {t('content.relatedArticles')} ({data.articles.length})
               </span>
             </h2>

@@ -110,9 +110,6 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
           </div>
           <div className="min-w-0">
             <h3 className="text-sm font-bold text-slate-100 truncate max-w-xs sm:max-w-xs md:max-w-sm">{title}</h3>
-            <span className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3 text-emerald-400" /> Dedicated Reader
-            </span>
           </div>
         </div>
 
@@ -254,18 +251,17 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
       {/* Main Document Content Container */}
       <div className="flex-1 w-full bg-slate-950 overflow-auto p-4 sm:p-6 relative flex flex-col items-center">
         <div
-          className="w-full h-full relative transition-all duration-300 ease-out origin-top"
+          className="h-full min-h-[600px] w-full relative flex justify-center items-start origin-top"
           style={{
-            transform: zoomLevel !== 100 ? `scale(${zoomLevel / 100})` : 'none',
-            transformOrigin: 'top center',
-            width: zoomLevel > 100 ? `${zoomLevel}%` : '100%'
+            width: zoomLevel > 100 ? `${zoomLevel}%` : '100%',
+            minWidth: '100%'
           }}
         >
           <iframe
-            key={`${pdfUrl}-page-${pageNumber}`}
-            src={`${pdfUrl}#page=${pageNumber}&toolbar=0&navpanes=0&scrollbar=1`}
+            key={`${pdfUrl}-page-${pageNumber}-zoom-${zoomLevel}`}
+            src={`${pdfUrl}#page=${pageNumber}&zoom=${zoomLevel}&toolbar=0&navpanes=0&scrollbar=1`}
             title={title}
-            className={`w-full h-full border-0 ${getThemeFilterClass()}`}
+            className={`w-full h-full min-h-[600px] border-0 rounded-xl shadow-lg ${getThemeFilterClass()}`}
           />
         </div>
       </div>

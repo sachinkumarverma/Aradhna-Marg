@@ -25,6 +25,7 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { name: t('navigation.videos'), path: '/videos' },
     { name: t('navigation.bhajans'), path: '/bhajans' },
+    { name: t('navigation.puranas'), path: '/puranas' },
     { name: t('navigation.categories'), path: '/categories' },
     { name: t('navigation.gods'), path: '/gods' },
     { name: t('navigation.festivals'), path: '/festivals' }

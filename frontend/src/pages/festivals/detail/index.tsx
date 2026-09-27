@@ -108,29 +108,34 @@ export const FestivalDetail: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-xl p-6 sm:p-10 border border-gray-100 shadow-sm"
             >
-              {/* Title & Date Badges */}
-              <div className="flex flex-wrap items-center gap-3 mb-4">
-                {festival.festival_date && (
-                  <span className="px-3.5 py-1 bg-amber-50 text-saffron font-bold text-xs rounded-full border border-amber-200 flex items-center gap-1.5 font-hindi-body">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {new Date(festival.festival_date).toLocaleDateString(language === 'en' ? 'en-US' : 'hi-IN', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </span>
-                )}
-                {festival.category && (
-                  <span className="px-3.5 py-1 bg-orange-50 text-orange-700 font-bold text-xs rounded-full border border-orange-200">
-                    {festival.category}
-                  </span>
-                )}
-              </div>
+              {/* Title Header Row with Date Badge to the Right of Name & Special Badge at Right End */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                {/* Left: Festival Name + Date Badge on its right */}
+                <div className="flex flex-wrap items-center gap-3.5">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight leading-tight font-hindi-heading pt-1 pb-1">
+                    {name}
+                  </h1>
+                  {festival.festival_date && (
+                    <span className="px-3.5 py-1.5 bg-amber-50 text-saffron font-bold text-xs sm:text-sm rounded-full border border-amber-200 inline-flex items-center gap-2 font-hindi-body shrink-0 -translate-y-2 sm:-translate-y-2.5 shadow-xs">
+                      <Calendar className="w-4 h-4 text-orange-600 fill-orange-500/25 shrink-0" />
+                      <span className="pt-[1px] inline-block">
+                        {new Date(festival.festival_date).toLocaleDateString(language === 'en' ? 'en-US' : 'hi-IN', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </span>
+                  )}
+                </div>
 
-              {/* Main Title */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight leading-tight mb-4 font-hindi-heading">
-                {name}
-              </h1>
+                {/* Right End: Special / Category Badge */}
+                <span className="px-3.5 py-1.5 bg-orange-50 text-orange-700 font-bold text-xs sm:text-sm rounded-full border border-orange-200 shrink-0 font-hindi-heading inline-flex items-center self-start md:self-auto -translate-y-2 sm:-translate-y-2.5 shadow-xs">
+                  <span className="pt-[1px] inline-block">
+                    {festival.category || 'Festival Special (त्योहार विशेष)'}
+                  </span>
+                </span>
+              </div>
 
               {/* Short Description */}
               {description && (

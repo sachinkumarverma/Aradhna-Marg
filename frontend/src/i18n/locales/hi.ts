@@ -4,7 +4,7 @@ export const hi = {
     bhajans: 'भजन',
     articles: 'लेख',
     festivals: 'त्योहार',
-    puranas: 'पवित्र ग्रंथ',
+    puranas: 'पुराण',
     gods: 'देवी-देवता',
     categories: 'श्रेणियाँ',
     videos: 'वीडियो',
