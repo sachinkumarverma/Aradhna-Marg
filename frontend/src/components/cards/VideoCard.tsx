@@ -99,7 +99,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             </span>
           )}
 
-          <h3 className="font-bold text-darkBrown line-clamp-2 pt-1 pb-0.5 leading-snug mb-2 group-hover:text-saffron transition-colors font-hindi-heading">
+          <h3 className="font-semibold text-darkBrown line-clamp-2 pt-1 pb-0.5 leading-snug mb-2 group-hover:text-saffron transition-colors font-hindi-heading">
             {title}
           </h3>
         </div>

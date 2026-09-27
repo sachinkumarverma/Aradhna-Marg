@@ -59,55 +59,50 @@ export const ArticlesList: React.FC = () => {
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Title */}
-        <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10 pb-6 border-b border-gray-200/60">
-          <div className="text-left max-w-3xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-darkBrown tracking-tight mb-3 font-hindi-heading leading-tight">
-              {t('navigation.articles')}
-            </h1>
-            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed mb-3 font-hindi-heading">
-              {t('content.articlesSubtitle')}
-            </p>
-            <IconText
-              icon={<BookOpen className="w-4 h-4" />}
-              gap="gap-2"
-              className="px-3.5 py-1 rounded-md bg-saffron/10 text-saffron font-bold text-xs uppercase tracking-wider font-hindi-heading"
-              text="Sanatan Dharma & Wisdom"
-            />
-          </div>
-        </div>
+        {/* Header Hero Banner with Top-Right Search & Filter Bar */}
+        <div className="bg-gradient-to-r from-amber-50/70 via-white to-orange-50/50 rounded-2xl p-6 sm:p-8 border border-orange-100/80 shadow-sm relative overflow-hidden mb-10">
+          <div className="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 rounded-full bg-saffron/5 blur-2xl pointer-events-none" />
 
-        {/* Filter Bar */}
-        <div className="bg-white rounded-xl p-4 md:p-5 shadow-xs border border-gray-100 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="relative w-full md:w-96">
-            <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              placeholder={t('common.searchPlaceholder')}
-              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-lg outline-none border border-transparent focus:border-saffron text-sm font-medium text-darkBrown font-hindi-body"
-            />
-          </div>
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 relative z-10">
+            {/* Left Content */}
+            <div className="text-left max-w-2xl">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-darkBrown tracking-tight mb-2.5 font-hindi-heading leading-tight">
+                {t('navigation.articles')}
+              </h1>
+              <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed font-hindi-heading">
+                {t('content.articlesSubtitle')}
+              </p>
+            </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 shrink-0">
-              <Filter className="w-4 h-4 text-saffron" /> {t('common.filters')}
-            </span>
-            <div className="w-56">
-              <Select
-                options={categoryOptions}
-                value={selectedCategory}
-                onChange={(val) => {
-                  setSelectedCategory(val);
-                  setPage(1);
-                }}
-                placeholder={t('common.allCategories')}
-                searchable={false}
-              />
+            {/* Right Top/End Search & Filter Bar */}
+            <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-3 shrink-0">
+              <div className="relative w-full sm:w-64 shadow-xs rounded-xl bg-white border border-orange-200/80 focus-within:border-saffron focus-within:ring-2 focus-within:ring-saffron/20 transition-all">
+                <Search className="w-4 h-4 text-saffron absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder={t('common.searchPlaceholder')}
+                  className="w-full pl-10 pr-4 py-2.5 bg-transparent outline-none text-sm font-medium text-darkBrown placeholder:text-gray-400 font-hindi-body"
+                />
+              </div>
+
+              <div className="w-full sm:w-48">
+                <Select
+                  options={categoryOptions}
+                  value={selectedCategory}
+                  onChange={(val) => {
+                    setSelectedCategory(val);
+                    setPage(1);
+                  }}
+                  placeholder={t('common.allCategories')}
+                  searchable={false}
+                  className="w-full text-sm font-hindi-heading"
+                />
+              </div>
             </div>
           </div>
         </div>

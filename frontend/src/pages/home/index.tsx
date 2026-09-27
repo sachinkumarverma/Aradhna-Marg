@@ -102,10 +102,10 @@ export const Home: React.FC = () => {
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-3xl">
             <motion.h1
               variants={fadeUpVariant}
-              className="text-4xl sm:text-5xl md:text-6xl font-semibold text-white tracking-tight leading-[1.1] mb-4 md:mb-5 font-hindi-heading"
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.35] mb-4 md:mb-5 font-hindi-heading"
             >
-              {t('content.devotionalMusicDirectory')} <br />
-              <span className="text-saffron font-semibold">{t('content.divineVideos')}</span>
+              {t('content.devotionalMusicDirectory')}
+              <span className="block mt-1.5 sm:mt-2 text-saffron font-extrabold">{t('content.divineVideos')}</span>
             </motion.h1>
 
             <motion.p
@@ -246,7 +246,7 @@ export const Home: React.FC = () => {
                           <div>
                             {/* Top Row: Title & Heart Favorite */}
                             <div className="flex items-start justify-between gap-3 pt-1">
-                              <h3 className="text-lg md:text-xl font-black text-darkBrown leading-relaxed line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading py-0.5">
+                              <h3 className="text-lg md:text-xl font-semibold text-darkBrown leading-relaxed line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading py-0.5">
                                 {title}
                               </h3>
                               <button
@@ -546,7 +546,7 @@ export const Home: React.FC = () => {
                       className="group block bg-white rounded-xl p-4 border border-orange-100/80 shadow-sm hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex items-center gap-4 cursor-pointer"
                     >
                       {fest.banner_image ? (
-                        <div className="aspect-video w-20 rounded-md overflow-hidden shrink-0 bg-gray-100">
+                        <div className="aspect-video w-20 rounded overflow-hidden shrink-0 bg-gray-100">
                           <img
                             src={fest.banner_image}
                             alt={festName}
@@ -554,21 +554,23 @@ export const Home: React.FC = () => {
                           />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 rounded-md bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
+                        <div className="w-16 h-16 rounded bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
                           <Calendar className="w-6 h-6" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
                         <div>
-                          <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors">
+                          <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading">
                             {festName}
                           </h3>
                           {festDesc && (
-                            <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed">{festDesc}</p>
+                            <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed font-hindi-body">
+                              {festDesc}
+                            </p>
                           )}
                         </div>
                         <div className="flex items-center justify-end mt-1.5">
-                          <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:underline">
+                          <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:underline font-hindi-heading">
                             {t('common.read')}{' '}
                             <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                           </span>

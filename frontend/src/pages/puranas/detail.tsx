@@ -340,7 +340,7 @@ export const PuranDetail: React.FC = () => {
                     className="group block bg-white rounded-2xl p-4 border border-orange-100/80 shadow-sm hover:shadow-md hover:border-saffron/40 transition-all flex items-center gap-4 cursor-pointer"
                   >
                     {fest.banner_image ? (
-                      <div className="aspect-video w-20 rounded-xl overflow-hidden shrink-0 bg-gray-100">
+                      <div className="aspect-video w-20 rounded overflow-hidden shrink-0 bg-gray-100">
                         <img
                           src={fest.banner_image}
                           alt={festName}
@@ -348,22 +348,26 @@ export const PuranDetail: React.FC = () => {
                         />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 rounded-xl bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-16 h-16 rounded bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
                         <Calendar className="w-6 h-6" />
                       </div>
                     )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading">
-                        {festName}
-                      </h3>
-                      {festDesc && (
-                        <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed font-hindi-body">
-                          {festDesc}
-                        </p>
-                      )}
-                      <div className="inline-flex items-center text-xs font-bold text-saffron mt-1.5 group-hover:underline">
-                        {t('common.read')}{' '}
-                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
+                      <div>
+                        <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading">
+                          {festName}
+                        </h3>
+                        {festDesc && (
+                          <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed font-hindi-body">
+                            {festDesc}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-end mt-1.5">
+                        <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:underline font-hindi-heading">
+                          {t('common.read')}{' '}
+                          <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                        </span>
                       </div>
                     </div>
                   </Link>

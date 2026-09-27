@@ -20,6 +20,8 @@ import { FestivalsList } from '@pages/festivals';
 import { FestivalDetail } from '@pages/festivals/detail';
 import { PuranasList } from '@pages/puranas';
 import { PuranDetail } from '@pages/puranas/detail';
+import { CategoriesList } from '@pages/categories';
+import { DeitiesList } from '@pages/deities';
 
 // Lazy loaded placeholders for future pages (Admin)
 const AdminYoutube = lazy(() => import('../pages/admin/youtube').then((m) => ({ default: m.AdminYoutube })));
@@ -141,7 +143,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'categories',
-        element: <ExplorePage />
+        element: <CategoriesList />
       },
       {
         path: 'categories/:id',
@@ -149,11 +151,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'gods',
-        element: <ExplorePage />
+        element: <DeitiesList />
       },
       {
         path: 'deities',
-        element: <ExplorePage />
+        element: <DeitiesList />
       },
       {
         path: 'gods/:id',

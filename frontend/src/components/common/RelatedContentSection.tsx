@@ -184,7 +184,7 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                 className="group flex items-center gap-3 p-2 rounded-lg hover:bg-[#F9F7F3] transition-colors border border-transparent hover:border-gray-100"
               >
                 {fest.banner_image && (
-                  <div className="aspect-video w-14 rounded-md overflow-hidden shrink-0 bg-gray-100">
+                  <div className="aspect-video w-14 rounded overflow-hidden shrink-0 bg-gray-100">
                     <img
                       src={fest.banner_image}
                       alt={getLocalizedField(fest, 'name') || fest.displayName || fest.name}

@@ -47,13 +47,13 @@ export const Navbar: React.FC = () => {
               </div>
               <div className="flex flex-col ml-1">
                 <span
-                  className="font-semibold text-[28px] tracking-tight text-slate-900 leading-none uppercase"
+                  className="font-bold text-[28px] tracking-tight text-slate-900 leading-none uppercase"
                   style={{ fontFamily: '"Rekord Antiqua", "Rekord Antiqua Semi Bold", "RekordAntiqua", Lora, serif' }}
                 >
                   ARADHNA <span className="text-saffron">MARG</span>
                 </span>
                 <span
-                  className="text-[9.5px] font-bold text-slate-400 tracking-[0.45em] uppercase mt-1.2 ml-1"
+                  className="text-[9.5px] font-extrabold text-slate-500 tracking-[0.45em] uppercase mt-1.2 ml-1"
                   style={{ fontFamily: '"Rekord Antiqua", "Rekord Antiqua Semi Bold", "RekordAntiqua", Lora, serif' }}
                 >
                   SANATAN DHARMA
