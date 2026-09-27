@@ -53,7 +53,7 @@ export const AdminLogin: React.FC = () => {
             <Lock className="w-8 h-8 text-saffron" />
           </div>
 
-          <h2 className="text-3xl font-extrabold text-center text-darkBrown tracking-wide mb-2 uppercase">
+          <h2 className="text-3xl font-bold text-center text-darkBrown tracking-wide mb-2 uppercase">
             Admin <span className="text-saffron">Access</span>
           </h2>
           <p className="text-center text-gray-500 mb-8">Please login to access the dashboard</p>

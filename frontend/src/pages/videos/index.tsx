@@ -39,7 +39,7 @@ export const VideosList = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-10 mt-6">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-darkBrown tracking-tight mb-1 font-hindi-heading">
+          <h1 className="text-3xl md:text-4xl font-bold text-darkBrown tracking-tight mb-1 font-hindi-heading">
             {t('content.divineVideos')}
           </h1>
           <p className="text-darkBrown/60 text-lg font-hindi-heading">{t('content.videoCollectionSubtitle')}</p>

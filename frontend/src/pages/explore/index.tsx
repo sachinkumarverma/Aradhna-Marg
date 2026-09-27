@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import { Loader2, Flame } from 'lucide-react';
 import { useTranslation } from '../../i18n/LanguageContext';
 
+import { IconText } from '@components/common/IconText';
+
 export const ExplorePage: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
   const [deities, setDeities] = useState<any[]>([]);
@@ -63,7 +65,7 @@ export const ExplorePage: React.FC = () => {
       <div className="mt-6 space-y-4">
         {loading ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="w-10 h-10 animate-spin text-saffron" />
+            <Loader2 className="w-10 h-10 animate-spin text-saffron shrink-0" />
           </div>
         ) : (
           <>
@@ -81,14 +83,15 @@ export const ExplorePage: React.FC = () => {
             {bhajans.length > 0 && (
               <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
                 <div className="flex items-center justify-between pb-3 border-b border-gray-200/60 mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <div className="shrink-0 flex items-center justify-center">
-                      <Flame className="w-5 h-5 text-saffron fill-saffron" />
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-snug">
-                      {t('content.trendingBhajans')}
-                    </h2>
-                  </div>
+                  <IconText
+                    icon={<Flame className="w-5 h-5 text-saffron fill-saffron" />}
+                    gap="gap-2.5"
+                    text={
+                      <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-tight">
+                        {t('content.trendingBhajans')}
+                      </h2>
+                    }
+                  />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {bhajans.map((bhajan) => (

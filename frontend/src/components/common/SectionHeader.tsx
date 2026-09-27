@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { useTranslation } from '@i18n/LanguageContext';
+import { IconText } from './IconText';
 
 interface SectionHeaderProps {
   icon?: React.ReactNode;
@@ -27,8 +28,6 @@ const sectionHeaderKeyMap: Record<string, string> = {
   'View All': 'common.viewAll'
 };
 
-const isDevanagariText = (text: string) => /[\u0900-\u097F]/.test(text);
-
 export const SectionHeader: React.FC<SectionHeaderProps> = ({
   icon,
   title,
@@ -49,26 +48,29 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
     displaySubtitle = titleKey ? t(titleKey) : title;
   }
 
-  const isDev = isDevanagariText(displayTitle);
-  const titleFont = isDev ? 'font-hindi-heading leading-snug' : 'font-sans leading-none';
-
   const actionLabelKey = actionLink ? sectionHeaderKeyMap[actionLink.label] : undefined;
   const displayActionLabel = actionLink ? (actionLabelKey ? t(actionLabelKey) : actionLink.label) : '';
 
   return (
     <div className={`flex items-center justify-between pb-3 border-b border-gray-200/60 mb-5 ${className}`}>
       {/* Icon + Title + Subtitle */}
-      <div className="flex items-center gap-2.5 min-w-0">
-        {icon && <div className="flex items-center justify-center shrink-0">{icon}</div>}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <h2 className={`text-xl sm:text-2xl font-bold text-darkBrown ${titleFont} inline-block`}>{displayTitle}</h2>
-          {displaySubtitle && displaySubtitle !== displayTitle && (
-            <span className="text-sm sm:text-base font-semibold text-darkBrown/75 font-hindi-heading leading-none hidden sm:inline-block">
-              ({displaySubtitle})
-            </span>
-          )}
-        </div>
-      </div>
+      <IconText
+        icon={icon}
+        gap="gap-2.5"
+        className="min-w-0"
+        text={
+          <div className="flex items-center gap-2.5 min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-tight inline-block translate-y-[2.5px]">
+              {displayTitle}
+            </h2>
+            {displaySubtitle && displaySubtitle !== displayTitle && (
+              <span className="text-sm sm:text-base font-semibold text-darkBrown/75 font-hindi-heading leading-tight hidden sm:inline-block translate-y-[2.5px]">
+                ({displaySubtitle})
+              </span>
+            )}
+          </div>
+        }
+      />
 
       {/* Action Link (View All / Explore All) */}
       {actionLink && (
@@ -77,7 +79,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
           className={`inline-flex items-center gap-1 text-xs font-bold transition-colors shrink-0 ${linkColor}`}
         >
           <span>{displayActionLabel}</span>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4 shrink-0" />
         </Link>
       )}
     </div>

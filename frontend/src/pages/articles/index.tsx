@@ -5,6 +5,7 @@ import { PublicApi } from '@api/publicApi';
 import { Select } from '@components/ui/Select';
 import { ArticleCard } from '@components/cards/ArticleCard';
 import { useTranslation } from '@i18n/LanguageContext';
+import { IconText } from '@components/common/IconText';
 
 export const ArticlesList: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -61,15 +62,18 @@ export const ArticlesList: React.FC = () => {
         {/* Header Title */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-10 pb-6 border-b border-gray-200/60">
           <div className="text-left max-w-3xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight mb-3 font-hindi-heading">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-darkBrown tracking-tight mb-3 font-hindi-heading leading-tight">
               {t('navigation.articles')}
             </h1>
             <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed mb-3 font-hindi-heading">
               {t('content.articlesSubtitle')}
             </p>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-md bg-saffron/10 text-saffron font-bold text-xs uppercase tracking-wider font-hindi-heading">
-              <BookOpen className="w-4 h-4" /> Sanatan Dharma & Wisdom
-            </div>
+            <IconText
+              icon={<BookOpen className="w-4 h-4" />}
+              gap="gap-2"
+              className="px-3.5 py-1 rounded-md bg-saffron/10 text-saffron font-bold text-xs uppercase tracking-wider font-hindi-heading"
+              text="Sanatan Dharma & Wisdom"
+            />
           </div>
         </div>
 

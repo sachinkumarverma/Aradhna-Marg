@@ -111,7 +111,7 @@ export const CollectionDetails: React.FC = () => {
         {/* Associated Bhajans Section */}
         {data.bhajans && data.bhajans.length > 0 && (
           <div>
-            <h2 className="text-3xl font-extrabold text-darkBrown mb-8 flex items-center gap-3 font-hindi-heading leading-snug">
+            <h2 className="text-3xl font-bold text-darkBrown mb-8 flex items-center gap-3 font-hindi-heading leading-snug">
               <div className="shrink-0 flex items-center justify-center">
                 <Music className="w-7 h-7 text-saffron" />
               </div>
@@ -139,7 +139,7 @@ export const CollectionDetails: React.FC = () => {
         {/* Associated Articles Section */}
         {data.articles && data.articles.length > 0 && (
           <div>
-            <h2 className="text-3xl font-extrabold text-darkBrown mb-8 flex items-center gap-3 font-hindi-heading leading-snug">
+            <h2 className="text-3xl font-bold text-darkBrown mb-8 flex items-center gap-3 font-hindi-heading leading-snug">
               <div className="shrink-0 flex items-center justify-center">
                 <BookOpen className="w-7 h-7 text-saffron" />
               </div>
@@ -165,7 +165,7 @@ export const CollectionDetails: React.FC = () => {
                         className="w-full h-44 object-cover rounded-2xl mb-4"
                       />
                     )}
-                    <h3 className="font-extrabold text-lg text-darkBrown line-clamp-2 hover:text-saffron transition-colors">
+                    <h3 className="font-bold text-lg text-darkBrown line-clamp-2 hover:text-saffron transition-colors">
                       {title}
                     </h3>
                     {excerpt && <p className="text-slate-600 text-xs line-clamp-2 mt-2 leading-relaxed">{excerpt}</p>}

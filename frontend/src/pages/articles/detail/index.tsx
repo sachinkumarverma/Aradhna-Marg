@@ -58,9 +58,7 @@ export const ArticleDetail: React.FC = () => {
   if (!article) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4">
-        <h2 className="text-2xl font-extrabold text-darkBrown mb-4 font-hindi-heading">
-          {t('errors.contentNotAvailable')}
-        </h2>
+        <h2 className="text-2xl font-bold text-darkBrown mb-4 font-hindi-heading">{t('errors.contentNotAvailable')}</h2>
         <p className="text-slate-600 mb-6 font-hindi-body">{t('errors.failedToLoad')}</p>
         <Link
           to="/articles"
@@ -119,7 +117,7 @@ export const ArticleDetail: React.FC = () => {
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown tracking-tight leading-tight mb-4 font-hindi-heading">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-darkBrown tracking-tight leading-tight mb-4 font-hindi-heading">
                 {title}
               </h1>
 

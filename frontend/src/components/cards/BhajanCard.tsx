@@ -17,6 +17,8 @@ interface BhajanCardProps {
   publishDate?: string;
 }
 
+import { IconText } from '@components/common/IconText';
+
 export const BhajanCard: React.FC<BhajanCardProps> = ({
   id,
   title,
@@ -98,10 +100,12 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
               </span>
             )}
             {publishDate && (
-              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded text-[10px] text-amber-200 border border-white/10">
-                <Calendar className="w-2.5 h-2.5 text-saffron" />
-                {new Date(publishDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-              </span>
+              <IconText
+                icon={<Calendar className="w-2.5 h-2.5 text-saffron" />}
+                gap="gap-1"
+                className="hidden sm:inline-flex px-2 py-0.5 bg-black/60 backdrop-blur-md rounded text-[10px] text-amber-200 border border-white/10"
+                text={new Date(publishDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              />
             )}
           </div>
         </div>
@@ -111,10 +115,12 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
       <div className="p-4 flex flex-col flex-1 justify-between">
         <div>
           {/* Subtle Devotional Lyrics Indicator */}
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-saffron mb-1 tracking-wide">
-            <Sparkles className="w-3 h-3 text-saffron" />
-            <span>{t('common.listenAndRead')}</span>
-          </div>
+          <IconText
+            icon={<Sparkles className="w-3 h-3 text-saffron" />}
+            gap="gap-1.5"
+            className="text-[11px] font-bold text-saffron mb-1 tracking-wide"
+            text={t('common.listenAndRead')}
+          />
 
           <h3 className="font-bold text-darkBrown text-base line-clamp-2 pt-0.5 pb-0.5 leading-snug group-hover:text-saffron transition-colors font-hindi-heading">
             {title}
@@ -131,7 +137,7 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
 
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0">
             <span>{t('common.listenAndRead')}</span>
-            <span className="w-6 h-6 rounded-full bg-saffron/10 text-saffron flex items-center justify-center group-hover:bg-saffron group-hover:text-white transition-all shadow-xs">
+            <span className="w-6 h-6 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
               <ChevronRight className="w-3.5 h-3.5" />
             </span>
           </div>

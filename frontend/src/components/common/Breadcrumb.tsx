@@ -49,14 +49,14 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
 
   return (
     <nav
-      className={`flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold ${
+      className={`inline-flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold font-hindi-heading leading-tight ${
         isDark ? 'text-slate-200' : 'text-slate-600'
       } ${className}`}
     >
       {/* Red Circular Home Icon */}
       <Link
         to="/"
-        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-saffron text-white hover:bg-orange-600 transition-colors shadow-sm shrink-0"
+        className="w-7 h-7 sm:w-8 sm:h-8 inline-flex items-center justify-center rounded-full bg-saffron text-white hover:bg-orange-600 transition-colors shadow-sm shrink-0 icon-wrapper"
         title={t('breadcrumbs.home')}
       >
         <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -68,9 +68,11 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
 
         return (
           <React.Fragment key={idx}>
-            <ChevronRight
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isDark ? 'text-white/40' : 'text-slate-300'}`}
-            />
+            <span className="inline-flex items-center justify-center shrink-0 icon-wrapper">
+              <ChevronRight
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 -translate-y-[1px] ${isDark ? 'text-white/40' : 'text-slate-300'}`}
+              />
+            </span>
             {isLast || !item.to ? (
               <span
                 className={`font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md ${

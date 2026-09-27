@@ -53,7 +53,7 @@ export const Navbar: React.FC = () => {
                   ARADHNA <span className="text-saffron">MARG</span>
                 </span>
                 <span
-                  className="text-[9.5px] font-extrabold text-slate-400 tracking-[0.45em] uppercase mt-1.2 ml-1"
+                  className="text-[9.5px] font-bold text-slate-400 tracking-[0.45em] uppercase mt-1.2 ml-1"
                   style={{ fontFamily: '"Rekord Antiqua", "Rekord Antiqua Semi Bold", "RekordAntiqua", Lora, serif' }}
                 >
                   SANATAN DHARMA
@@ -81,8 +81,13 @@ export const Navbar: React.FC = () => {
               <div className="flex items-center gap-3 border-l border-slate-200 pl-6 ml-2">
                 <LanguageSwitcher />
 
-                <Button className="bg-saffron hover:brightness-90 text-white font-bold rounded-full px-5 py-2 shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-xs uppercase tracking-wider font-hindi-heading">
-                  <Heart className="w-3.5 h-3.5 fill-white" /> {t('navigation.supportUs')}
+                <Button
+                  size="sm"
+                  leftIcon={<Heart className="w-3.5 h-3.5 fill-white" />}
+                  className="bg-saffron hover:brightness-90 text-white font-bold rounded-full px-4 shadow-md hover:shadow-lg transition-all text-xs font-hindi-heading"
+                  style={{ fontFamily: '"Anek Devanagari", sans-serif' }}
+                >
+                  {t('navigation.supportUs')}
                 </Button>
                 <Link
                   to="/search"

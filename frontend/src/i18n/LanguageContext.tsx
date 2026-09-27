@@ -28,6 +28,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return 'hi';
   });
 
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.setAttribute('dir', 'ltr');
+  }, [language]);
+
   const setLanguage = (lang: LanguageMode) => {
     setLanguageState(lang);
     try {

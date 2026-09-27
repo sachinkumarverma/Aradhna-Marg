@@ -12,8 +12,8 @@ export const LanguageSwitcher: React.FC<{ className?: string }> = ({ className =
       className={`px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-darkBrown font-bold text-xs flex items-center gap-1.5 transition-colors border border-amber-200/80 shadow-2xs ${className}`}
       title={language === 'hi' ? 'Switch to English' : 'हिंदी भाषा चुनें'}
     >
-      <Globe className="w-3.5 h-3.5 text-saffron" />
-      <span>{language === 'hi' ? 'English' : 'हिंदी'}</span>
+      <Globe className="w-3.5 h-3.5 text-saffron shrink-0" />
+      <span className="inline-block">{language === 'hi' ? 'English' : 'हिंदी'}</span>
     </button>
   );
 };

@@ -36,7 +36,7 @@ export const SearchPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Search Input */}
         <div className="mb-10 max-w-3xl">
-          <h1 className="text-3xl md:text-4xl font-black text-darkBrown tracking-tight mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-darkBrown tracking-tight mb-6 font-hindi-heading leading-tight">
             {t('content.searchTitle')}
           </h1>
           <SearchBar />
@@ -72,7 +72,7 @@ export const SearchPage: React.FC = () => {
                       {item.views > 0 && <span className="text-xs text-slate-400 font-medium">{item.views} views</span>}
                     </div>
 
-                    <h3 className="text-xl font-extrabold text-darkBrown mb-2 group-hover:text-saffron transition-colors line-clamp-2">
+                    <h3 className="text-xl font-bold text-darkBrown mb-2 group-hover:text-saffron transition-colors line-clamp-2">
                       {item.title}
                     </h3>
 

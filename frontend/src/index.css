@@ -7,10 +7,32 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --font-family-latin: 'Outfit', sans-serif;
+    --font-family-devanagari: 'Anek Devanagari', 'Hind', sans-serif;
+  }
+
+  html[lang="hi"] {
+    font-family: var(--font-family-devanagari);
+  }
+
+  html[lang="en"] {
+    font-family: var(--font-family-latin);
+  }
 
   body {
-    font-family: 'Outfit', 'Hind', 'Mukta', 'Anek Devanagari', sans-serif;
+    font-family: 'Outfit', 'Anek Devanagari', 'Hind', sans-serif;
     @apply bg-[#F9F7F3] text-darkBrown antialiased selection:bg-saffron/20 selection:text-saffron;
+  }
+
+  /* SVG normalization inside icon wrappers */
+  svg {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .icon-wrapper svg {
+    display: block;
   }
 }
 
@@ -19,10 +41,10 @@
     font-family: 'Anek Devanagari', 'Hind', sans-serif;
   }
   .font-hindi-body {
-    font-family: 'Hind', 'Mukta', sans-serif;
+    font-family: 'Anek Devanagari', 'Hind', 'Mukta', sans-serif;
   }
   .font-hindi-sub {
-    font-family: 'Mukta', 'Hind', sans-serif;
+    font-family: 'Anek Devanagari', 'Mukta', 'Hind', sans-serif;
   }
   .font-hindi-display {
     font-family: 'Rozha One', 'Tiro Devanagari Hindi', serif;
@@ -31,7 +53,19 @@
     font-family: 'Anek Devanagari', 'Hind', sans-serif;
   }
   .font-hindi-sans {
-    font-family: 'Hind', 'Mukta', sans-serif;
+    font-family: 'Anek Devanagari', 'Hind', sans-serif;
+  }
+
+  /* Centered Icon + Text Flex Primitive Utilities */
+  .icon-text-center {
+    display: inline-flex;
+    align-items: center;
+  }
+  .icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 }
 

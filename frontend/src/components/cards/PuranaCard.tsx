@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { BookOpen, Eye, FileText } from 'lucide-react';
 import { useTranslation } from '@i18n/LanguageContext';
 
+import { IconText } from '@components/common/IconText';
+
 interface PuranaCardProps {
   id?: string | number;
   slug?: string;
@@ -64,9 +66,12 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
           )}
 
           {/* Top-Right PDF Badge */}
-          <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/65 backdrop-blur-md rounded text-[10px] font-bold text-white flex items-center gap-1 shadow-xs">
-            <FileText className="w-3 h-3 text-saffron" /> PDF
-          </div>
+          <IconText
+            icon={<FileText className="w-3 h-3 text-saffron" />}
+            gap="gap-1"
+            className="absolute top-2 right-2 px-2 py-0.5 bg-black/65 backdrop-blur-md rounded text-[10px] font-bold text-white shadow-xs"
+            text="PDF"
+          />
         </div>
 
         {/* Title */}
@@ -82,12 +87,13 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
 
       {/* Footer */}
       <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between text-[11px] text-slate-500 font-medium mt-2">
-        <span className="flex items-center gap-1">
-          <Eye className="w-3 h-3 text-saffron" /> {viewCount || 0}
-        </span>
-        <span className="text-xs font-bold text-saffron flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-          <BookOpen className="w-3.5 h-3.5" /> {t('common.readPdf')}
-        </span>
+        <IconText icon={<Eye className="w-3 h-3 text-saffron" />} gap="gap-1" text={viewCount || 0} />
+        <IconText
+          icon={<BookOpen className="w-3.5 h-3.5" />}
+          gap="gap-1"
+          className="text-xs font-bold text-saffron group-hover:translate-x-0.5 transition-transform"
+          text={t('common.readPdf')}
+        />
       </div>
     </Link>
   );

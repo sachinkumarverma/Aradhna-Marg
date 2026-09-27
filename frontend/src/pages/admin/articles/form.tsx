@@ -702,7 +702,7 @@ export const AdminArticleForm = () => {
 
                     return (
                       <>
-                        <h1 className="text-4xl md:text-5xl font-extrabold text-darkBrown mb-6 font-serif">
+                        <h1 className="text-4xl md:text-5xl font-bold text-darkBrown mb-6 font-serif">
                           {previewTitle || 'Untitled Article'}
                         </h1>
                         {previewExcerpt && (

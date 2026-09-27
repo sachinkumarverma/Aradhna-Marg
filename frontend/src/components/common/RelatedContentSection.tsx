@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Music, BookOpen, Calendar, Sparkles, ChevronRight, Eye } from 'lucide-react';
 import { useTranslation } from '@i18n/LanguageContext';
 
+import { IconText } from '@components/common/IconText';
+
 interface RelatedContentProps {
   relatedBhajans?: any[];
   relatedArticles?: any[];
@@ -42,9 +44,12 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
           to={`/gods/${deity.slug || deity.id}`}
           className="group block bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-5 border border-orange-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
         >
-          <div className="flex items-center gap-2 text-saffron font-bold text-xs uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5" /> {t('content.exploreDeity')}
-          </div>
+          <IconText
+            icon={<Sparkles className="w-3.5 h-3.5" />}
+            gap="gap-1.5"
+            className="text-saffron font-bold text-xs uppercase tracking-wider mb-3"
+            text={t('content.exploreDeity')}
+          />
           <div className="flex items-center gap-3.5 mb-3.5">
             <img
               src={deity.image || '/Deities/Krishna.png'}
@@ -65,7 +70,7 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
             </div>
           </div>
           <span className="inline-flex items-center justify-center w-full py-2 px-3 bg-saffron text-white rounded-md font-bold text-xs group-hover:brightness-90 transition-colors shadow-sm">
-            {t('content.viewDeityPage')} <ChevronRight className="w-3.5 h-3.5 ml-1" />
+            {t('content.viewDeityPage')} <ChevronRight className="w-3.5 h-3.5 ml-1 shrink-0" />
           </span>
         </Link>
       )}
@@ -73,9 +78,13 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
       {/* Recommended Bhajans */}
       {relatedBhajans.length > 0 && (
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm overflow-hidden">
-          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2 font-hindi-heading">
-            <Music className="w-4 h-4 text-saffron shrink-0" /> {t('content.recommendedBhajans')}
-          </h3>
+          <IconText
+            icon={<Music className="w-4 h-4 text-saffron" />}
+            gap="gap-2"
+            as="h3"
+            className="text-base font-bold text-darkBrown mb-3.5 font-hindi-heading leading-tight"
+            text={t('content.recommendedBhajans')}
+          />
           <div className="flex flex-col gap-2.5">
             {relatedBhajans.map((bhajan) => (
               <Link
@@ -102,9 +111,12 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                       {bhajan.god_name || bhajan.category_name || t('navigation.bhajans')}
                     </span>
                     {bhajan.views > 0 && (
-                      <span className="flex items-center gap-0.5 shrink-0">
-                        <Eye className="w-3 h-3" /> {bhajan.views}
-                      </span>
+                      <IconText
+                        icon={<Eye className="w-3 h-3" />}
+                        gap="gap-0.5"
+                        className="shrink-0"
+                        text={bhajan.views}
+                      />
                     )}
                   </div>
                 </div>
@@ -117,9 +129,13 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
       {/* Related Articles */}
       {relatedArticles.length > 0 && (
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm overflow-hidden">
-          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2 font-hindi-heading">
-            <BookOpen className="w-4 h-4 text-saffron shrink-0" /> {t('content.relatedArticles')}
-          </h3>
+          <IconText
+            icon={<BookOpen className="w-4 h-4 text-saffron" />}
+            gap="gap-2"
+            as="h3"
+            className="text-base font-bold text-darkBrown mb-3.5 font-hindi-heading leading-tight"
+            text={t('content.relatedArticles')}
+          />
           <div className="flex flex-col gap-3">
             {relatedArticles.map((article) => (
               <Link
@@ -153,9 +169,13 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
       {/* Related Festivals */}
       {relatedFestivals.length > 0 && (
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm overflow-hidden">
-          <h3 className="text-base font-bold text-darkBrown mb-3.5 flex items-center gap-2 font-hindi-heading">
-            <Calendar className="w-4 h-4 text-saffron shrink-0" /> {t('content.relatedFestivals')}
-          </h3>
+          <IconText
+            icon={<Calendar className="w-4 h-4 text-saffron" />}
+            gap="gap-2"
+            as="h3"
+            className="text-base font-bold text-darkBrown mb-3.5 font-hindi-heading leading-tight"
+            text={t('content.relatedFestivals')}
+          />
           <div className="flex flex-col gap-2.5">
             {relatedFestivals.map((fest) => (
               <Link

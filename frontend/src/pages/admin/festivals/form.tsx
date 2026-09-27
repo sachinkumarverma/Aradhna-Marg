@@ -688,7 +688,7 @@ export const AdminFestivalForm = () => {
 
                     return (
                       <>
-                        <h1 className="text-4xl md:text-5xl font-extrabold text-darkBrown mb-6 font-serif">
+                        <h1 className="text-4xl md:text-5xl font-bold text-darkBrown mb-6 font-serif">
                           {previewName || 'Untitled Festival'}
                         </h1>
                         {previewDesc && (

@@ -9,6 +9,7 @@ import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
 import { DedicatedPdfViewer } from '@components/pdf/DedicatedPdfViewer';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useTranslation } from '@i18n/LanguageContext';
+import { IconText } from '@components/common/IconText';
 
 export const PuranDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -161,18 +162,18 @@ export const PuranDetail: React.FC = () => {
 
               {/* View & Download Stats Badges */}
               <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm text-amber-100/80 mb-6 py-3 border-y border-amber-200/10 font-hindi-body">
-                <div className="flex items-center gap-2 font-semibold">
-                  <Eye className="w-4 h-4 text-saffron" />
-                  <span>
-                    {data.view_count?.toLocaleString() || 0} {t('common.views')}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 font-semibold">
-                  <Download className="w-4 h-4 text-saffron" />
-                  <span>
-                    {data.download_count?.toLocaleString() || 0} {t('common.download')}
-                  </span>
-                </div>
+                <IconText
+                  icon={<Eye className="w-4 h-4 text-saffron" />}
+                  gap="gap-2"
+                  textClassName="font-semibold"
+                  text={`${data.view_count?.toLocaleString() || 0} ${t('common.views')}`}
+                />
+                <IconText
+                  icon={<Download className="w-4 h-4 text-saffron" />}
+                  gap="gap-2"
+                  textClassName="font-semibold"
+                  text={`${data.download_count?.toLocaleString() || 0} ${t('common.download')}`}
+                />
               </div>
 
               {/* Action Buttons */}
@@ -184,17 +185,15 @@ export const PuranDetail: React.FC = () => {
                         setShowPdfViewer(true);
                         document.getElementById('pdf-viewer-section')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="flex items-center gap-2.5 px-6 py-3 bg-saffron text-white rounded-2xl font-bold text-sm hover:brightness-110 transition-all shadow-lg hover:shadow-saffron/20"
+                      className="inline-flex items-center justify-center px-6 py-3 bg-saffron text-white rounded-2xl font-bold text-sm hover:brightness-110 transition-all shadow-lg hover:shadow-saffron/20"
                     >
-                      <BookOpen className="w-4 h-4" />
-                      <span>{t('common.readPdf')}</span>
+                      <IconText icon={<BookOpen className="w-4 h-4" />} gap="gap-2.5" text={t('common.readPdf')} />
                     </button>
                     <button
                       onClick={handleDownload}
-                      className="flex items-center gap-2.5 px-6 py-3 bg-white/10 text-amber-100 border border-amber-200/20 rounded-2xl font-bold text-sm hover:bg-white/20 transition-all shadow-sm"
+                      className="inline-flex items-center justify-center px-6 py-3 bg-white/10 text-amber-100 border border-amber-200/20 rounded-2xl font-bold text-sm hover:bg-white/20 transition-all shadow-sm"
                     >
-                      <Download className="w-4 h-4" />
-                      <span>{t('common.download')}</span>
+                      <IconText icon={<Download className="w-4 h-4" />} gap="gap-2.5" text={t('common.download')} />
                     </button>
                   </>
                 )}
@@ -210,11 +209,16 @@ export const PuranDetail: React.FC = () => {
         {/* Description Card */}
         {descriptionContent && (
           <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100 mb-10">
-            <div className="flex items-center gap-2 pb-4 mb-6 border-b border-gray-100">
-              <BookOpen className="w-6 h-6 text-saffron" />
-              <h2 className="text-2xl font-black text-darkBrown tracking-tight font-hindi-heading">
-                {t('content.puranasSubtitle')}
-              </h2>
+            <div className="pb-4 mb-6 border-b border-gray-100">
+              <IconText
+                icon={<BookOpen className="w-6 h-6 text-saffron" />}
+                gap="gap-2.5"
+                text={
+                  <h2 className="text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[2.5px]">
+                    {t('content.puranasSubtitle')}
+                  </h2>
+                }
+              />
             </div>
             <SafeHtmlContent content={descriptionContent} />
           </div>
@@ -225,12 +229,15 @@ export const PuranDetail: React.FC = () => {
           {pdfUrl ? (
             <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-12">
               <div className="flex items-center justify-between gap-4 pb-4 mb-6 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-6 h-6 text-saffron" />
-                  <h2 className="text-2xl font-black text-darkBrown tracking-tight font-hindi-heading">
-                    {t('common.readPdf')}
-                  </h2>
-                </div>
+                <IconText
+                  icon={<FileText className="w-6 h-6 text-saffron" />}
+                  gap="gap-2.5"
+                  text={
+                    <h2 className="text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[2.5px]">
+                      {t('common.readPdf')}
+                    </h2>
+                  }
+                />
                 {showPdfViewer && (
                   <div className="flex items-center gap-3">
                     <button
@@ -263,10 +270,10 @@ export const PuranDetail: React.FC = () => {
                   <div className="flex items-center gap-3 shrink-0">
                     <button
                       onClick={() => setShowPdfViewer(true)}
-                      className="flex items-center gap-2 px-6 py-3 bg-saffron text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all shadow-md"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-saffron text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all shadow-md"
                     >
-                      <BookOpen className="w-4 h-4" />
-                      <span>{t('common.readPdf')}</span>
+                      <BookOpen className="w-4 h-4 shrink-0" />
+                      <span className="inline-block translate-y-[2px]">{t('common.readPdf')}</span>
                     </button>
                   </div>
                 </div>

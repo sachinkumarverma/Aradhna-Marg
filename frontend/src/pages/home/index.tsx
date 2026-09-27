@@ -30,6 +30,7 @@ import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { isShortVideo } from '@utils/videoUtils';
 import { useFavorites } from '@hooks/useFavorites';
 import { useTranslation } from '../../i18n/LanguageContext';
+import { IconText } from '@components/common/IconText';
 
 export const Home: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
@@ -123,11 +124,11 @@ export const Home: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('common.searchPlaceholder')}
-                  className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium"
+                  className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading"
                 />
                 <Button
                   type="submit"
-                  className="h-10 md:h-12 px-6 md:px-8 rounded-full bg-saffron hover:brightness-90 text-white font-semibold text-base md:text-lg shadow-md shrink-0"
+                  className="h-10 md:h-12 px-6 md:px-8 rounded-full bg-saffron hover:brightness-90 text-white font-semibold text-base md:text-lg shadow-md shrink-0 font-hindi-heading"
                 >
                   {t('common.search')}
                 </Button>
@@ -154,12 +155,14 @@ export const Home: React.FC = () => {
                 transition={{ delay: i * 0.1 }}
                 className="flex items-center gap-4 p-4 rounded-lg bg-[#F9F7F3] border border-black/5 hover:border-saffron/30 transition-colors group cursor-default"
               >
-                <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-saffron shadow-sm group-hover:scale-110 transition-transform">
+                <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-saffron shadow-sm group-hover:scale-110 transition-transform icon-wrapper shrink-0">
                   <feature.icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-base text-darkBrown">{feature.title}</h3>
-                  <p className="text-xs text-darkBrown/60">{feature.desc}</p>
+                  <h3 className="font-semibold text-base text-darkBrown font-hindi-heading leading-tight">
+                    {feature.title}
+                  </h3>
+                  <p className="text-xs text-darkBrown/60 font-hindi-body">{feature.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -174,14 +177,15 @@ export const Home: React.FC = () => {
           <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
             <div className="flex items-end justify-between mb-2">
               <div>
-                <div className="flex items-center gap-3">
-                  <div className="shrink-0 flex items-center justify-center">
-                    <Play className="w-7 h-7 text-saffron fill-saffron" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
-                    <span className="text-saffron">{t('content.divineVideos')}</span>
-                  </h2>
-                </div>
+                <IconText
+                  icon={<Play className="w-7 h-7 text-saffron fill-saffron" />}
+                  gap="gap-3"
+                  text={
+                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                      <span className="text-saffron">{t('content.divineVideos')}</span>
+                    </h2>
+                  }
+                />
                 <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
                   {t('content.videoCollectionSubtitle')}
                 </p>
@@ -311,14 +315,15 @@ export const Home: React.FC = () => {
           <div className="lg:col-span-4 min-w-0">
             <div className="sticky top-28 bg-white rounded-xl p-5 border border-gray-100 shadow-sm relative overflow-hidden">
               <div className="pb-3 border-b border-gray-100 mb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="shrink-0 flex items-center justify-center">
-                    <Flame className="w-6 h-6 text-saffron fill-saffron" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
-                    <span className="text-saffron">{t('content.trendingBhajans')}</span>
-                  </h3>
-                </div>
+                <IconText
+                  icon={<Flame className="w-6 h-6 text-saffron fill-saffron" />}
+                  gap="gap-2.5"
+                  text={
+                    <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                      <span className="text-saffron">{t('content.trendingBhajans')}</span>
+                    </h3>
+                  }
+                />
               </div>
 
               {data?.featuredBhajans && data.featuredBhajans.length > 0 ? (
@@ -350,10 +355,12 @@ export const Home: React.FC = () => {
 
                         {/* Text Details */}
                         <div className="min-w-0 flex-1">
-                          <h4 className="text-xs md:text-sm font-extrabold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-heading">
+                          <h4 className="text-xs md:text-sm font-bold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-heading">
                             {hindiTitle}
                           </h4>
-                          <p className="text-[11px] font-semibold text-slate-500 truncate mt-0.5">{englishTitle}</p>
+                          <p className="text-[11px] font-semibold text-slate-500 truncate mt-0.5 font-hindi-body">
+                            {englishTitle}
+                          </p>
                         </div>
                       </Link>
                     );
@@ -375,14 +382,15 @@ export const Home: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-end justify-between mb-5">
               <div>
-                <div className="flex items-center gap-3">
-                  <div className="shrink-0 flex items-center justify-center">
-                    <BookOpen className="w-7 h-7 text-saffron fill-saffron" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
-                    <span className="text-saffron">{t('content.articlesAndInsights')}</span>
-                  </h2>
-                </div>
+                <IconText
+                  icon={<BookOpen className="w-7 h-7 text-saffron fill-saffron" />}
+                  gap="gap-3"
+                  text={
+                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                      <span className="text-saffron">{t('content.articlesAndInsights')}</span>
+                    </h2>
+                  }
+                />
                 <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
                   {t('content.articlesSubtitle')}
                 </p>
@@ -424,14 +432,15 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <div className="flex items-center gap-3">
-                <div className="shrink-0 flex items-center justify-center">
-                  <Sparkles className="w-7 h-7 text-saffron fill-saffron" />
-                </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
-                  <span className="text-saffron">{t('content.popularDeities')}</span>
-                </h2>
-              </div>
+              <IconText
+                icon={<Sparkles className="w-7 h-7 text-saffron fill-saffron" />}
+                gap="gap-3"
+                text={
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                    <span className="text-saffron">{t('content.popularDeities')}</span>
+                  </h2>
+                }
+              />
               <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
                 {t('content.exploreSubtitle')}
               </p>
@@ -451,14 +460,15 @@ export const Home: React.FC = () => {
         <section className="py-8 md:py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-5">
             <div>
-              <div className="flex items-center gap-3">
-                <div className="shrink-0 flex items-center justify-center">
-                  <Scroll className="w-7 h-7 text-saffron stroke-[2.2]" />
-                </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
-                  <span className="text-saffron">{t('content.scripturesAndPuranas')}</span>
-                </h2>
-              </div>
+              <IconText
+                icon={<Scroll className="w-7 h-7 text-saffron stroke-[2.2]" />}
+                gap="gap-3"
+                text={
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                    <span className="text-saffron">{t('content.scripturesAndPuranas')}</span>
+                  </h2>
+                }
+              />
               <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
                 {t('content.puranasSubtitle')}
               </p>
@@ -500,14 +510,15 @@ export const Home: React.FC = () => {
         <section className="py-8 md:py-10 bg-gradient-to-br from-amber-50 to-orange-50 border-t border-orange-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="shrink-0 flex items-center justify-center">
-                  <Calendar className="w-7 h-7 text-saffron fill-saffron/20" />
-                </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-none">
-                  <span className="text-saffron">{t('navigation.festivals')}</span>
-                </h2>
-              </div>
+              <IconText
+                icon={<Calendar className="w-7 h-7 text-saffron fill-saffron/20" />}
+                gap="gap-3"
+                text={
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                    <span className="text-saffron">{t('navigation.festivals')}</span>
+                  </h2>
+                }
+              />
               <Link to="/festivals">
                 <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs font-hindi-heading">
                   {t('common.viewAll')} <ArrowRight className="w-3.5 h-3.5 ml-1" />

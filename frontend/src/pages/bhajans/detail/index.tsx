@@ -12,6 +12,7 @@ import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { AdUnit } from '@components/common/AdUnit';
 import { BottomRelatedContent } from '@components/common/BottomRelatedContent';
 import { useTranslation } from '@i18n/LanguageContext';
+import { IconText } from '@components/common/IconText';
 
 export const BhajanDetail: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
@@ -114,9 +115,13 @@ export const BhajanDetail: React.FC = () => {
               className="bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] rounded-3xl p-6 sm:p-8 border border-amber-200/80 shadow-md"
             >
               <div className="flex items-center justify-between pb-4 border-b border-amber-200/60 mb-6">
-                <h2 className="text-xl sm:text-2xl font-black text-darkBrown flex items-center gap-2.5 font-hindi-heading">
-                  <Music className="w-6 h-6 text-saffron" /> {t('content.lyricsAndDescription')}
-                </h2>
+                <IconText
+                  icon={<Music className="w-6 h-6 text-saffron" />}
+                  gap="gap-2.5"
+                  as="h2"
+                  className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-tight"
+                  text={t('content.lyricsAndDescription')}
+                />
                 <button
                   type="button"
                   onClick={handleCopy}
