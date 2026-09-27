@@ -83,14 +83,7 @@ export const BhajansList: React.FC = () => {
           </div>
 
           <div className="relative z-10 max-w-3xl">
-            <IconText
-              icon={<Sparkles className="w-4 h-4 text-saffron" />}
-              gap="gap-2"
-              className="px-3.5 py-1.5 rounded-full bg-white/10 text-saffron font-bold text-xs uppercase tracking-wider mb-4 border border-white/10 font-hindi-heading"
-              text={t('content.bhajanDirectoryBadge')}
-            />
-
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-3 font-hindi-heading leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-3 font-hindi-heading leading-tight">
               {t('content.devotionalMusicDirectory')}
             </h1>
 
@@ -149,7 +142,7 @@ export const BhajansList: React.FC = () => {
                 setPage(1);
               }}
               placeholder={t('common.searchPlaceholder')}
-              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-xl outline-none border border-amber-100 focus:border-saffron text-sm font-medium text-darkBrown transition-colors font-hindi-body"
+              className="w-full pl-11 pr-4 pt-3 pb-2 bg-[#F9F7F3] rounded-xl outline-none border border-amber-100 focus:border-saffron text-sm font-medium text-darkBrown transition-colors font-hindi-body"
             />
           </div>
 

@@ -54,7 +54,7 @@ export const VideosList = () => {
               placeholder={t('common.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 bg-white rounded-md pl-12 pr-4 outline-none border border-black/5 focus:border-saffron focus:ring-1 focus:ring-saffron shadow-sm"
+              className="w-full h-12 bg-white rounded-md pl-12 pr-4 outline-none border border-black/5 focus:border-saffron focus:ring-1 focus:ring-saffron shadow-sm pt-2 font-hindi-body"
             />
           </div>
 

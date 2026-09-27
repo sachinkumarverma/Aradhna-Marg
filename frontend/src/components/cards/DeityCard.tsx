@@ -43,7 +43,7 @@ export const DeityCard: React.FC<DeityCardProps> = ({ id, slug, name, image, cla
 
       {/* Tag Overlay at Bottom Center */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm px-4 h-8 rounded-lg shadow-md group-hover:bg-saffron transition-colors flex items-center justify-center">
-        <span className="text-darkBrown group-hover:text-white font-bold text-xs tracking-wide uppercase whitespace-nowrap transition-colors font-hindi-body leading-tight pt-1.5">
+        <span className="text-darkBrown group-hover:text-white font-bold text-xs tracking-wide uppercase whitespace-nowrap transition-colors font-hindi-body leading-tight pt-1">
           {name}
         </span>
       </div>

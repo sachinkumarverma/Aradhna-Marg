@@ -86,7 +86,7 @@ export const ArticlesList: React.FC = () => {
                     setPage(1);
                   }}
                   placeholder={t('common.searchPlaceholder')}
-                  className="w-full pl-10 pr-4 py-2.5 bg-transparent outline-none text-sm font-medium text-darkBrown placeholder:text-gray-400 font-hindi-body"
+                  className="w-full pl-10 pr-4 pt-3 pb-2 bg-transparent outline-none text-sm font-medium text-darkBrown placeholder:text-gray-400 font-hindi-body"
                 />
               </div>
 

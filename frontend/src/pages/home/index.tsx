@@ -124,7 +124,7 @@ export const Home: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('common.searchPlaceholder')}
-                  className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading pt-1"
+                  className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading pt-2.5"
                 />
                 <Button
                   type="submit"
