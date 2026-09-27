@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Clock, ChevronRight, Heart } from 'lucide-react';
+import { Play, Clock, ChevronRight, Heart, Calendar } from 'lucide-react';
 import { Card } from '@components/ui/Card';
 import { motion } from 'framer-motion';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
@@ -13,9 +13,18 @@ interface BhajanCardProps {
   duration?: string;
   thumbnailUrl?: string;
   slug?: string;
+  publishDate?: string;
 }
 
-export const BhajanCard: React.FC<BhajanCardProps> = ({ id, title, godName, duration, thumbnailUrl, slug }) => {
+export const BhajanCard: React.FC<BhajanCardProps> = ({
+  id,
+  title,
+  godName,
+  duration,
+  thumbnailUrl,
+  slug,
+  publishDate
+}) => {
   const shareUrl = slug ? `/bhajans/${slug}` : undefined;
   const cardId = String(id || slug || title);
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -67,13 +76,21 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({ id, title, godName, dura
           />
         </button>
 
-        {/* Duration Badge */}
-        {duration && (
-          <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded-md text-[10px] font-medium text-white flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            {duration}
-          </div>
-        )}
+        {/* Badges Overlay */}
+        <div className="absolute bottom-2 right-2 flex items-center gap-1.5 pointer-events-none">
+          {publishDate && (
+            <div className="px-2 py-1 bg-black/60 backdrop-blur-md rounded-md text-[10px] font-medium text-white flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-saffron" />
+              {new Date(publishDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            </div>
+          )}
+          {duration && (
+            <div className="px-2 py-1 bg-black/60 backdrop-blur-md rounded-md text-[10px] font-medium text-white flex items-center gap-1">
+              <Clock className="w-3 h-3 text-saffron" />
+              {duration}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Content Area */}
@@ -83,7 +100,7 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({ id, title, godName, dura
             <span className="text-xs font-semibold tracking-wider uppercase text-saffron mb-1.5 block">{godName}</span>
           )}
 
-          <h3 className="font-bold text-darkBrown leading-snug line-clamp-2 mb-2 group-hover:text-saffron transition-colors">
+          <h3 className="font-bold text-darkBrown line-clamp-2 pt-1.5 pb-0.5 leading-relaxed mb-2 group-hover:text-saffron transition-colors font-hindi-body">
             {title}
           </h3>
         </div>

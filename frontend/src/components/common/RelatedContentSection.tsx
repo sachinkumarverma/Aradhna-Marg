@@ -9,6 +9,19 @@ interface RelatedContentProps {
   deity?: any;
 }
 
+const stripHtml = (html: string) => {
+  if (!html) return '';
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .trim();
+};
+
 export const RelatedContentSection: React.FC<RelatedContentProps> = ({
   relatedBhajans = [],
   relatedArticles = [],
@@ -37,11 +50,13 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
               className="w-14 h-14 rounded-lg object-cover shadow-sm border-2 border-white shrink-0"
             />
             <div className="min-w-0 flex-1">
-              <h4 className="text-lg font-bold text-darkBrown group-hover:text-saffron transition-colors truncate">
+              <h4 className="text-lg font-bold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-body py-0.5 leading-relaxed">
                 {deity.name}
               </h4>
               {deity.short_description && (
-                <p className="text-xs text-slate-600 line-clamp-2 mt-0.5">{deity.short_description}</p>
+                <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 font-hindi-body leading-relaxed">
+                  {stripHtml(deity.short_description)}
+                </p>
               )}
             </div>
           </div>
@@ -75,10 +90,10 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2">
+                  <h4 className="text-xs font-bold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 font-hindi-body pt-1 pb-0.5 leading-relaxed">
                     {bhajan.title}
                   </h4>
-                  <div className="flex items-center gap-2 mt-1 text-[11px] text-gray-500 font-medium">
+                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500 font-medium font-hindi-body">
                     <span className="truncate">{bhajan.god_name || bhajan.category_name || 'Bhajan'}</span>
                     {bhajan.views > 0 && (
                       <span className="flex items-center gap-0.5 shrink-0">
@@ -104,7 +119,7 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
               <Link
                 key={article.id}
                 to={`/articles/${article.slug || article.id}`}
-                className="group flex flex-col gap-2 p-3 rounded-lg hover:bg-[#F9F7F3] transition-colors border border-gray-100/60 overflow-hidden"
+                className="group flex flex-col gap-2 p-3 rounded-lg hover:bg-[#F9F7F3] transition-colors border border-gray-100/60"
               >
                 {article.featured_image_url && (
                   <div className="w-full aspect-video rounded-md overflow-hidden bg-gray-100">
@@ -115,12 +130,12 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                     />
                   </div>
                 )}
-                <h4 className="text-xs md:text-sm font-bold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2">
+                <h4 className="text-xs md:text-sm font-bold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 font-hindi-body pt-1.5 pb-0.5 leading-relaxed">
                   {article.displayTitle || article.title}
                 </h4>
                 {(article.displayExcerpt || article.excerpt) && (
-                  <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed">
-                    {article.displayExcerpt || article.excerpt}
+                  <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed font-hindi-body pt-0.5">
+                    {stripHtml(article.displayExcerpt || article.excerpt)}
                   </p>
                 )}
               </Link>
@@ -152,11 +167,13 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h4 className="text-xs font-bold text-darkBrown group-hover:text-saffron transition-colors truncate">
+                  <h4 className="text-xs font-bold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-body py-0.5 leading-relaxed">
                     {fest.displayName || fest.name}
                   </h4>
                   {fest.short_description && (
-                    <p className="text-[11px] text-gray-500 line-clamp-1 mt-0.5">{fest.short_description}</p>
+                    <p className="text-[11px] text-slate-600 line-clamp-1 mt-0.5 font-hindi-body leading-relaxed">
+                      {stripHtml(fest.short_description)}
+                    </p>
                   )}
                 </div>
               </Link>

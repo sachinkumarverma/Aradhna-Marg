@@ -9,6 +9,8 @@ import { Breadcrumb } from '@components/common/Breadcrumb';
 import { PublicApi } from '@api/publicApi';
 import { useClipboard } from '@hooks/useClipboard';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
+import { AdUnit } from '@components/common/AdUnit';
+import { BottomRelatedContent } from '@components/common/BottomRelatedContent';
 
 export const BhajanDetail: React.FC = () => {
   const { slug } = useParams();
@@ -72,8 +74,9 @@ export const BhajanDetail: React.FC = () => {
     copyToClipboard(textToCopy);
   };
 
-  const formattedDate = bhajan.created_at
-    ? new Date(bhajan.created_at).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: 'numeric' })
+  const dateSource = bhajan.publish_date || bhajan.published_at || bhajan.published_date || bhajan.created_at;
+  const formattedDate = dateSource
+    ? new Date(dateSource).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
     : '';
 
   return (
@@ -152,6 +155,13 @@ export const BhajanDetail: React.FC = () => {
                 <p className="text-gray-500 italic">बोल उपलब्ध नहीं हैं।</p>
               )}
             </motion.div>
+
+            {/* Bottom Related Content: Scriptures & PDFs, Articles, Bhajans */}
+            <BottomRelatedContent
+              relatedArticles={relatedData.relatedArticles}
+              relatedPuranas={relatedData.relatedPuranas}
+              relatedBhajans={relatedData.relatedBhajans}
+            />
           </div>
 
           {/* Right Column (4 Columns): Sidebar */}
@@ -229,7 +239,10 @@ export const BhajanDetail: React.FC = () => {
                 </Link>
               )}
 
-              {/* 3. Recommendation Sidebar */}
+              {/* 3. Google AdSense Advertisement Area (Placed right below Explore Deity) */}
+              <AdUnit slot="sidebar" label="ADVERTISEMENT • विज्ञापन" />
+
+              {/* 4. Recommendation Sidebar */}
               <RelatedContentSection
                 relatedBhajans={relatedData.relatedBhajans}
                 relatedArticles={relatedData.relatedArticles}

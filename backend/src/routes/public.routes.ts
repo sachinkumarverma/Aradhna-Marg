@@ -136,11 +136,15 @@ router.get('/videos/:slug', async (req: Request, res: Response, next: NextFuncti
           description: ytData.description,
           youtube_video_id: ytData.youtube_video_id,
           god_id: ytData.channel_name,
+          god_name: ytData.channel_name || 'Devotional',
           views: ytData.view_count,
-          duration: null,
+          duration: ytData.duration,
           is_string_duration: true,
           string_duration: ytData.duration || '00:00',
+          published_at: ytData.published_at,
           published_date: ytData.published_at,
+          publish_date: ytData.published_at,
+          created_at: ytData.published_at || ytData.created_at,
           lyrics: ytData.description
         };
         return sendSuccess(res, 'Video retrieved', data);

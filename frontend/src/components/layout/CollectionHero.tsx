@@ -43,7 +43,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight mb-4"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight mb-4 font-hindi-heading pt-1 pb-0.5"
           >
             {title}
           </motion.h1>
@@ -53,7 +53,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-lg text-cream/80 max-w-2xl leading-relaxed mb-8"
+              className="text-base sm:text-lg text-cream/85 max-w-2xl leading-relaxed mb-8 font-hindi-body"
             >
               {description}
             </motion.p>

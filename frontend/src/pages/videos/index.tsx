@@ -102,6 +102,7 @@ export const VideosList = () => {
                         views={video.view_count || 0}
                         duration={video.duration || '00:00'}
                         thumbnailUrl={video.thumbnail}
+                        publishDate={video.published_at}
                       />
                     </Link>
                   </motion.div>

@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@components/ui/Button';
 import { BhajanCard } from '@components/cards/BhajanCard';
+import { ArticleCard } from '@components/cards/ArticleCard';
+import { PuranaCard } from '@components/cards/PuranaCard';
 import { DeitiesCarousel } from '@components/common/DeitiesCarousel';
 import { staggerContainer, fadeUpVariant } from '@/animations/variants';
 import { PublicApi } from '@api/publicApi';
@@ -213,10 +215,10 @@ export const Home: React.FC = () => {
                     >
                       <Link
                         to={videoUrl}
-                        className="group block bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-sm hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex flex-col md:flex-row gap-5 items-stretch relative"
+                        className="group block bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-xs hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex flex-col md:flex-row gap-5 items-stretch relative"
                       >
                         {/* Left Column: Video Thumbnail with Play Button & Zoom to crop black borders */}
-                        <div className="relative aspect-video w-full md:w-60 lg:w-64 rounded-2xl overflow-hidden bg-black shrink-0 border border-black/5">
+                        <div className="relative aspect-video w-full md:w-60 lg:w-64 rounded-lg overflow-hidden bg-black shrink-0 border border-black/5">
                           <img
                             src={thumb}
                             alt={title}
@@ -381,53 +383,18 @@ export const Home: React.FC = () => {
                   key={article.id}
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -5, scale: 1.02 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.25 }}
+                  className="h-full"
                 >
-                  <Link
-                    to={`/articles/${article.slug || article.id}`}
-                    className="group block h-full bg-[#F9F7F3] rounded-xl overflow-hidden border border-black/5 hover:border-saffron/40 transition-all duration-300 shadow-sm hover:shadow-xl flex flex-col cursor-pointer"
-                  >
-                    {/* 16:9 Aspect Ratio Image Container */}
-                    {article.featured_image_url && (
-                      <div className="w-full aspect-video overflow-hidden bg-gray-200">
-                        <img
-                          src={article.featured_image_url}
-                          alt={article.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      </div>
-                    )}
-                    <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        {article.category_name && (
-                          <span className="inline-block px-3 py-1 bg-saffron/10 text-saffron text-xs font-semibold rounded-md mb-3">
-                            {article.category_name}
-                          </span>
-                        )}
-                        <h3 className="text-base font-bold text-darkBrown mb-2 line-clamp-2 group-hover:text-saffron transition-colors">
-                          {article.title}
-                        </h3>
-                        {article.excerpt && (
-                          <p className="text-slate-600 text-xs line-clamp-3 mb-4 leading-relaxed">{article.excerpt}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-3">
-                        <SocialShareButtons
-                          title={article.title}
-                          excerpt={article.excerpt}
-                          url={`/articles/${article.slug || article.id}`}
-                        />
-                        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-orange-600 transition-colors shrink-0">
-                          <span>पूरा पढ़ें</span>
-                          <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover:bg-saffron group-hover:text-white transition-colors shadow-xs">
-                            <ChevronRight className="w-3.5 h-3.5" />
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                  <ArticleCard
+                    id={article.id}
+                    slug={article.slug}
+                    title={article.title}
+                    featuredImageUrl={article.featured_image_url}
+                    excerpt={article.excerpt}
+                    categoryName={article.category_name}
+                  />
                 </motion.div>
               ))}
             </div>
@@ -476,36 +443,25 @@ export const Home: React.FC = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
             {data.puranas.map((puran: any, i: number) => (
               <motion.div
                 key={puran.id}
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -5, scale: 1.04 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.25 }}
+                className="h-full"
               >
-                <Link
-                  to={`/puranas/${puran.slug || puran.id}`}
-                  className="group flex flex-col items-center text-center bg-white p-3.5 rounded-xl border border-gray-100 hover:border-saffron/40 hover:shadow-xl transition-all cursor-pointer"
-                >
-                  <div className="w-full aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center border border-amber-200/50 shadow-sm">
-                    {puran.cover_image ? (
-                      <img
-                        src={puran.cover_image}
-                        alt={puran.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <BookOpen className="w-10 h-10 text-saffron fill-saffron/30" />
-                    )}
-                  </div>
-                  <h3 className="font-bold text-xs md:text-sm text-darkBrown group-hover:text-saffron transition-colors line-clamp-1">
-                    {puran.title}
-                  </h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5 font-medium">{puran.language || 'Sanskrit/Hindi'}</p>
-                </Link>
+                <PuranaCard
+                  id={puran.id}
+                  slug={puran.slug}
+                  title={puran.title}
+                  coverImage={puran.cover_image}
+                  shortDescription={puran.short_description}
+                  language={puran.language}
+                  viewCount={puran.views}
+                />
               </motion.div>
             ))}
           </div>

@@ -4,10 +4,7 @@ import { Search, Loader2, BookOpen, Filter } from 'lucide-react';
 import { PublicApi } from '@api/publicApi';
 import { LanguageSwitcher } from '@components/common/LanguageSwitcher';
 import { Select } from '@components/ui/Select';
-import { Link } from 'react-router-dom';
-
-import { SocialShareButtons } from '@components/common/SocialShareButtons';
-import { ChevronRight } from 'lucide-react';
+import { ArticleCard } from '@components/cards/ArticleCard';
 
 export const ArticlesList: React.FC = () => {
   const [articles, setArticles] = useState<any[]>([]);
@@ -83,7 +80,7 @@ export const ArticlesList: React.FC = () => {
         </div>
 
         {/* Filter Bar */}
-        <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="bg-white rounded-xl p-4 md:p-5 shadow-xs border border-gray-100 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative w-full md:w-96">
             <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
@@ -124,59 +121,23 @@ export const ArticlesList: React.FC = () => {
           </div>
         ) : articles.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {articles.map((art, i) => (
                 <motion.div
                   key={art.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  transition={{ duration: 0.25 }}
-                  className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
+                  transition={{ delay: i * 0.04 }}
+                  className="h-full"
                 >
-                  {art.featured_image_url && (
-                    <div className="w-full h-52 overflow-hidden bg-gray-100">
-                      <img
-                        src={art.featured_image_url}
-                        alt={art.displayTitle || art.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                      {art.category_name && (
-                        <span className="inline-block px-3 py-1 bg-saffron/10 text-saffron text-xs font-bold rounded-full mb-3">
-                          {art.category_name}
-                        </span>
-                      )}
-                      <h2 className="text-xl font-bold text-darkBrown mb-3 line-clamp-2 hover:text-saffron transition-colors">
-                        <Link to={`/articles/${art.slug || art.id}`}>{art.displayTitle || art.title}</Link>
-                      </h2>
-                      {(art.displayExcerpt || art.excerpt) && (
-                        <p className="text-slate-600 text-sm line-clamp-3 mb-4 leading-relaxed">
-                          {art.displayExcerpt || art.excerpt}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-3">
-                      <SocialShareButtons
-                        title={art.displayTitle || art.title}
-                        excerpt={art.displayExcerpt || art.excerpt}
-                        url={`/articles/${art.slug || art.id}`}
-                      />
-                      <Link
-                        to={`/articles/${art.slug || art.id}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link"
-                      >
-                        <span>पूरा पढ़ें</span>
-                        <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover/link:bg-saffron group-hover/link:text-white transition-colors shadow-xs">
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </span>
-                      </Link>
-                    </div>
-                  </div>
+                  <ArticleCard
+                    id={art.id}
+                    slug={art.slug}
+                    title={art.displayTitle || art.title}
+                    featuredImageUrl={art.featured_image_url}
+                    excerpt={art.displayExcerpt || art.excerpt}
+                    categoryName={art.category_name}
+                  />
                 </motion.div>
               ))}
             </div>
@@ -187,7 +148,7 @@ export const ArticlesList: React.FC = () => {
                 <button
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
-                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
                 >
                   पिछला
                 </button>
@@ -196,8 +157,8 @@ export const ArticlesList: React.FC = () => {
                 </span>
                 <button
                   disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors"
+                  onClick={() => setPage((p) => p - 1)}
+                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
                 >
                   अगला
                 </button>
@@ -205,7 +166,7 @@ export const ArticlesList: React.FC = () => {
             )}
           </>
         ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 p-8">
+          <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8">
             <BookOpen className="w-12 h-12 text-saffron mx-auto mb-4" />
             <h3 className="text-xl font-bold text-darkBrown mb-2">कोई लेख नहीं मिला</h3>
             <p className="text-slate-500 text-sm">कृपया अन्य श्रेणी या खोज शब्द का चयन करें।</p>

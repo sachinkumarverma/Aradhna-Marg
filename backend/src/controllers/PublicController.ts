@@ -218,7 +218,11 @@ export class PublicController {
             thumbnail_url: yt.thumbnail,
             youtube_video_id: yt.youtube_video_id,
             views: yt.view_count || 0,
-            god_name: yt.channel_name || 'Devotional'
+            god_name: yt.channel_name || 'Devotional',
+            duration: yt.duration,
+            published_at: yt.published_at,
+            publish_date: yt.published_at,
+            created_at: yt.published_at || yt.created_at
           });
         }
         return sendSuccess(res, 'Bhajan not found', null);
@@ -245,13 +249,19 @@ export class PublicController {
         [slug]
       );
 
-      if (bhajanRes.rows.length === 0) {
-        return sendSuccess(res, 'Related content fetched', { relatedBhajans: [], relatedArticles: [] });
+      let bhajanId = '00000000-0000-0000-0000-000000000000';
+      let godId = '00000000-0000-0000-0000-000000000000';
+      let categoryId = '00000000-0000-0000-0000-000000000000';
+      let festivalId = '00000000-0000-0000-0000-000000000000';
+
+      if (bhajanRes.rows.length > 0) {
+        bhajanId = bhajanRes.rows[0].id || bhajanId;
+        godId = bhajanRes.rows[0].god_id || godId;
+        categoryId = bhajanRes.rows[0].category_id || categoryId;
+        festivalId = bhajanRes.rows[0].festival_id || festivalId;
       }
 
-      const { id, god_id, category_id, festival_id } = bhajanRes.rows[0];
-
-      // Related Bhajans (same deity or category)
+      // Related Bhajans (same deity/category or fallback popular)
       const relatedBhajansQuery = `
         SELECT b.id, b.title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration,
                d.name as god_name, c.name as category_name
@@ -259,38 +269,41 @@ export class PublicController {
         LEFT JOIN deities d ON b.god_id = d.id
         LEFT JOIN categories c ON b.category_id = c.id
         WHERE b.id != $1 AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
-          AND (b.god_id = $2 OR b.category_id = $3 OR b.festival_id = $4)
+          AND ($2::uuid = '00000000-0000-0000-0000-000000000000' OR b.god_id = $2 OR b.category_id = $3 OR b.festival_id = $4)
         ORDER BY b.popularity_score DESC, b.created_at DESC
         LIMIT 6
       `;
 
-      // Related Articles (same deity / category)
+      // Related Articles (same deity / category or fallback recent)
       const relatedArticlesQuery = `
-        SELECT a.id, a.title, a.title_en, a.slug, a.excerpt, a.excerpt_en, m.url as featured_image_url
+        SELECT a.id, a.title, a.title_en, a.slug, a.excerpt, a.excerpt_en, m.url as featured_image_url, a.publish_date, a.created_at
         FROM articles a
         LEFT JOIN media_files m ON a.featured_image_id = m.id
         WHERE a.status = 'PUBLISHED' AND a.deleted_at IS NULL
-          AND (a.category_id = $1 OR EXISTS (SELECT 1 FROM article_gods WHERE article_id = a.id AND god_id = $2))
+          AND ($1::uuid = '00000000-0000-0000-0000-000000000000' OR a.category_id = $1 OR EXISTS (SELECT 1 FROM article_gods WHERE article_id = a.id AND god_id = $2))
         ORDER BY a.created_at DESC
         LIMIT 4
       `;
 
-      const [bhajans, articles] = await Promise.all([
-        db.query(relatedBhajansQuery, [
-          id,
-          god_id || '00000000-0000-0000-0000-000000000000',
-          category_id || '00000000-0000-0000-0000-000000000000',
-          festival_id || '00000000-0000-0000-0000-000000000000'
-        ]),
-        db.query(relatedArticlesQuery, [
-          category_id || '00000000-0000-0000-0000-000000000000',
-          god_id || '00000000-0000-0000-0000-000000000000'
-        ])
+      // Related Sacred Scriptures / Puranas (PDFs)
+      const relatedPuranasQuery = `
+        SELECT id, title, title_en, slug, short_description, cover_image, pdf_file, language, author, view_count, download_count
+        FROM puranas
+        WHERE status = 'PUBLISHED' AND deleted_at IS NULL
+        ORDER BY view_count DESC, created_at DESC
+        LIMIT 4
+      `;
+
+      const [bhajans, articles, puranas] = await Promise.all([
+        db.query(relatedBhajansQuery, [bhajanId, godId, categoryId, festivalId]),
+        db.query(relatedArticlesQuery, [categoryId, godId]),
+        db.query(relatedPuranasQuery)
       ]);
 
       return sendSuccess(res, 'Related content fetched', {
         relatedBhajans: bhajans.rows,
-        relatedArticles: articles.rows
+        relatedArticles: articles.rows,
+        relatedPuranas: puranas.rows
       });
     } catch (error) {
       next(error);

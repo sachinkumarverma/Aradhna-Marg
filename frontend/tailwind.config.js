@@ -20,9 +20,15 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
-        serif: ['Merriweather', 'serif'],
-        devotional: ['Yatra One', 'cursive'],
+        sans: ['Outfit', 'Hind', 'Mukta', 'Anek Devanagari', 'sans-serif'],
+        serif: ['Lora', 'Tiro Devanagari Hindi', 'Merriweather', 'serif'],
+        devotional: ['"Rozha One"', 'Yatra One', 'Tiro Devanagari Hindi', 'serif'],
+        hindiHeading: ['"Anek Devanagari"', 'Hind', 'sans-serif'],
+        hindiBody: ['Hind', 'Mukta', 'sans-serif'],
+        hindiSub: ['Mukta', 'Hind', 'sans-serif'],
+        hindiDisplay: ['"Rozha One"', '"Tiro Devanagari Hindi"', 'serif'],
+        hindi: ['"Anek Devanagari"', 'Hind', 'sans-serif'],
+        hindiSans: ['Hind', 'Mukta', 'sans-serif'],
         logo: ['"Rekord Antiqua"', 'Lora', 'serif'],
       },
       spacing: {

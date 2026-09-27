@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { DeityCard } from '@components/cards/DeityCard';
 
 const defaultDeities = [
   { id: 1, name: 'Ganesh', slug: 'ganesh', image: '/Deities/Ganesh.png' },
@@ -126,7 +127,7 @@ export const DeitiesCarousel: React.FC<DeitiesCarouselProps> = ({ deities: apiDe
       )}
 
       {/* Items Slider Track */}
-      <div className="overflow-hidden w-full rounded-2xl">
+      <div className="overflow-hidden w-full rounded-xl">
         <div
           className="flex transition-transform duration-700 ease-out"
           style={{
@@ -135,27 +136,7 @@ export const DeitiesCarousel: React.FC<DeitiesCarouselProps> = ({ deities: apiDe
         >
           {displayDeities.map((deity: any) => (
             <div key={deity.id || deity.name} className="px-2.5 shrink-0" style={{ width: `${100 / itemsToShow}%` }}>
-              <Link
-                to={`/gods/${deity.slug || deity.id}`}
-                className="group block relative w-full aspect-square rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-black/5 hover:border-saffron/40 cursor-pointer"
-              >
-                {/* Background Image */}
-                <img
-                  src={getImageSrc(deity)}
-                  alt={deity.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-
-                {/* Dark Overlay for contrast */}
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-
-                {/* Tag at bottom center */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-md shadow-md group-hover:bg-saffron transition-colors">
-                  <span className="text-darkBrown group-hover:text-white font-bold text-xs tracking-wide uppercase whitespace-nowrap transition-colors">
-                    {deity.name}
-                  </span>
-                </div>
-              </Link>
+              <DeityCard id={deity.id} slug={deity.slug} name={deity.name} image={deity.image} />
             </div>
           ))}
         </div>

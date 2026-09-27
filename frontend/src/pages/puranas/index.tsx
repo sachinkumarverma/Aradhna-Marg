@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Loader2, Search, Download, Eye, FileText } from 'lucide-react';
+import { BookOpen, Loader2, Search } from 'lucide-react';
 import { PublicApi } from '@api/publicApi';
 import { LanguageSwitcher } from '@components/common/LanguageSwitcher';
-import { Link } from 'react-router-dom';
+import { PuranaCard } from '@components/cards/PuranaCard';
 
 export const PuranasList: React.FC = () => {
   const [puranas, setPuranas] = useState<any[]>([]);
@@ -54,7 +54,7 @@ export const PuranasList: React.FC = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white rounded-3xl p-4 md:p-6 shadow-sm border border-gray-100 mb-10 max-w-xl mx-auto">
+        <div className="bg-white rounded-xl p-4 md:p-5 shadow-xs border border-gray-100 mb-10 max-w-xl mx-auto">
           <div className="relative w-full">
             <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
@@ -65,7 +65,7 @@ export const PuranasList: React.FC = () => {
                 setPage(1);
               }}
               placeholder={lang === 'en' ? 'Search scripture...' : 'पुराण का नाम खोजें...'}
-              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-2xl outline-none border border-transparent focus:border-saffron text-sm font-medium text-darkBrown"
+              className="w-full pl-11 pr-4 py-2.5 bg-[#F9F7F3] rounded-lg outline-none border border-transparent focus:border-saffron text-sm font-medium text-darkBrown"
             />
           </div>
         </div>
@@ -77,53 +77,24 @@ export const PuranasList: React.FC = () => {
           </div>
         ) : puranas.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
               {puranas.map((puran, i) => (
                 <motion.div
                   key={puran.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  className="bg-white rounded-3xl p-5 border border-gray-100 hover:border-saffron/40 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+                  className="h-full"
                 >
-                  <div>
-                    {/* Book Cover Container */}
-                    <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center border border-amber-200/50 shadow-sm">
-                      {puran.cover_image ? (
-                        <img
-                          src={puran.cover_image}
-                          alt={puran.displayTitle || puran.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <BookOpen className="w-16 h-16 text-saffron" />
-                      )}
-                    </div>
-
-                    <h2 className="text-xl font-extrabold text-darkBrown mb-2 line-clamp-1 group-hover:text-saffron transition-colors">
-                      <Link to={`/puranas/${puran.slug || puran.id}`}>{puran.displayTitle || puran.title}</Link>
-                    </h2>
-
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2.5 py-0.5 bg-amber-50 text-saffron text-xs font-bold rounded-md border border-amber-200">
-                        {puran.language || 'संस्कृत/हिंदी'}
-                      </span>
-                      {puran.author && <span className="text-xs text-slate-500 font-medium truncate">वेद व्यास</span>}
-                    </div>
-
-                    {(puran.displayDescription || puran.short_description) && (
-                      <p className="text-slate-600 text-xs line-clamp-2 leading-relaxed mb-4">
-                        {puran.displayDescription || puran.short_description}
-                      </p>
-                    )}
-                  </div>
-
-                  <Link
-                    to={`/puranas/${puran.slug || puran.id}`}
-                    className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-saffron text-white rounded-xl font-bold text-xs hover:brightness-90 transition-all shadow-sm"
-                  >
-                    <FileText className="w-4 h-4" /> पढ़ें / डाउनलोड PDF
-                  </Link>
+                  <PuranaCard
+                    id={puran.id}
+                    slug={puran.slug}
+                    title={puran.displayTitle || puran.title}
+                    coverImage={puran.cover_image}
+                    shortDescription={puran.displayDescription || puran.short_description}
+                    viewCount={puran.view_count || puran.views}
+                    language={puran.language}
+                  />
                 </motion.div>
               ))}
             </div>
@@ -134,7 +105,7 @@ export const PuranasList: React.FC = () => {
                 <button
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
-                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
                 >
                   पिछला
                 </button>
@@ -144,7 +115,7 @@ export const PuranasList: React.FC = () => {
                 <button
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
-                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
                 >
                   अगला
                 </button>
@@ -152,7 +123,7 @@ export const PuranasList: React.FC = () => {
             )}
           </>
         ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 p-8">
+          <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8">
             <BookOpen className="w-12 h-12 text-saffron mx-auto mb-4" />
             <h3 className="text-xl font-bold text-darkBrown mb-2">कोई ग्रंथ नहीं मिला</h3>
             <p className="text-slate-500 text-sm">कृपया अन्य शब्द का प्रयोग करें।</p>
