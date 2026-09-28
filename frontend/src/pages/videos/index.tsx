@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Loader2, Video as VideoIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiClient } from '@api/client';
@@ -12,18 +12,22 @@ export const VideosList = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [includeShorts, setIncludeShorts] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchVideos = async () => {
       setLoading(true);
       try {
-        const params: Record<string, any> = { limit: 1000, page: 1 };
+        const params: Record<string, any> = { limit: 12, page };
         if (searchQuery.trim()) params.search = searchQuery.trim();
         if (!includeShorts) params.excludeShorts = true;
 
         const res = await apiClient.get('/public/videos', { params });
         const data = res.data.data || [];
+        const meta = res.data.meta || {};
         setVideos(data);
+        setTotalPages(meta.totalPages || 1);
       } catch (err) {
         console.error('Error fetching videos:', err);
       }
@@ -32,7 +36,7 @@ export const VideosList = () => {
 
     const debounceTimeout = setTimeout(fetchVideos, 300);
     return () => clearTimeout(debounceTimeout);
-  }, [searchQuery, includeShorts]);
+  }, [page, searchQuery, includeShorts]);
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-24 pb-20">
@@ -60,7 +64,10 @@ export const VideosList = () => {
                   type="text"
                   placeholder={t('common.searchPlaceholder')}
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPage(1);
+                  }}
                   className="w-full pl-10 pr-4 pt-3 pb-2 bg-transparent outline-none text-sm font-medium text-darkBrown placeholder:text-gray-400 font-hindi-body"
                 />
               </div>
@@ -71,7 +78,10 @@ export const VideosList = () => {
                     type="checkbox"
                     className="sr-only"
                     checked={includeShorts}
-                    onChange={(e) => setIncludeShorts(e.target.checked)}
+                    onChange={(e) => {
+                      setIncludeShorts(e.target.checked);
+                      setPage(1);
+                    }}
                   />
                   <div
                     className={`block w-9 h-5 rounded-full transition-colors ${includeShorts ? 'bg-saffron' : 'bg-gray-200'}`}
@@ -90,37 +100,62 @@ export const VideosList = () => {
 
         {/* Grid Section */}
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 animate-spin text-saffron" />
           </div>
-        ) : (
+        ) : videos.length > 0 ? (
           <>
-            {videos.length === 0 ? (
-              <div className="text-center py-20 text-gray-500">{t('empty.noVideos')}</div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {videos.map((video, i) => (
-                  <motion.div
-                    key={video.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <Link to={`/videos/${video.youtube_video_id}`} className="block h-full">
-                      <VideoCard
-                        title={video.title}
-                        godName={video.channel_name || 'Devotional'}
-                        views={video.view_count || 0}
-                        duration={video.duration || '00:00'}
-                        thumbnailUrl={video.thumbnail}
-                        publishDate={video.published_at}
-                      />
-                    </Link>
-                  </motion.div>
-                ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {videos.map((video, i) => (
+                <motion.div
+                  key={video.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Link to={`/videos/${video.youtube_video_id}`} className="block h-full">
+                    <VideoCard
+                      title={video.title}
+                      godName={video.channel_name || 'Devotional'}
+                      views={video.view_count || 0}
+                      duration={video.duration || '00:00'}
+                      thumbnailUrl={video.thumbnail}
+                      publishDate={video.published_at}
+                    />
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => p - 1)}
+                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
+                >
+                  {t('common.previous')}
+                </button>
+                <span className="text-sm font-bold text-slate-600 px-3 font-hindi-body">
+                  {t('common.page')} {page} / {totalPages}
+                </span>
+                <button
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
+                >
+                  {t('common.next')}
+                </button>
               </div>
             )}
           </>
+        ) : (
+          <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8">
+            <VideoIcon className="w-12 h-12 text-saffron mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noVideos')}</h3>
+            <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noResultsDesc')}</p>
+          </div>
         )}
       </div>
     </div>
