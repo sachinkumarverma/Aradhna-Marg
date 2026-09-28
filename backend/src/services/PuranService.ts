@@ -92,7 +92,7 @@ export class PuranService {
     return storageKey;
   }
 
-  public async getPdfUrl(id: string) {
+  public async getPdfUrl(id: string, isDownload: boolean = false) {
     const puran = await puranRepository.getById(id);
     if (!puran || !puran.pdf_file) throw new Error('PDF not found');
 
@@ -100,7 +100,8 @@ export class PuranService {
       return puran.pdf_file;
     }
 
-    return backblazeStorageService.getSignedUrl(puran.pdf_file);
+    const downloadFilename = isDownload ? `${puran.title || 'Purana'}.pdf` : undefined;
+    return backblazeStorageService.getSignedUrl(puran.pdf_file, 3600, downloadFilename);
   }
 }
 

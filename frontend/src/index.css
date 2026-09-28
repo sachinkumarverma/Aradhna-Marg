@@ -90,16 +90,38 @@
   }
 }
 
-/* Keep main window scrollbar default */
-main.overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Main Page Window Custom Scrollbar */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+main::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
 }
-main.overflow-y-auto::-webkit-scrollbar-track {
-  @apply bg-cream;
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+main::-webkit-scrollbar-track {
+  background: #F9F7F3;
 }
-main.overflow-y-auto::-webkit-scrollbar-thumb {
-  @apply bg-golden/50 rounded-full hover:bg-saffron transition-colors;
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+main::-webkit-scrollbar-thumb:hover {
+  background: #ff3402;
+}
+
+/* Explicitly disable scrollbars on Navbar and Header components */
+nav::-webkit-scrollbar,
+nav *::-webkit-scrollbar,
+header::-webkit-scrollbar,
+header *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Thin scrollbars for sidebar and tables */
@@ -113,9 +135,28 @@ main.overflow-y-auto::-webkit-scrollbar-thumb {
   @apply bg-transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb,
-.scrollbar-thin::-webkit-scrollbar-thumb,
 .overflow-x-auto::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+  @apply bg-slate-300 rounded-full hover:bg-saffron transition-colors;
+}
+
+/* Custom dark scrollbar for PDF Viewer and dark elements */
+.custom-scrollbar::-webkit-scrollbar,
+.custom-scrollbar *::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+.custom-scrollbar::-webkit-scrollbar-track,
+.custom-scrollbar *::-webkit-scrollbar-track {
+  background: #090d16;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.custom-scrollbar *::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar *::-webkit-scrollbar-thumb:hover {
+  background: #ff3402;
 }
 
 /* ReactQuill Editor Styles */

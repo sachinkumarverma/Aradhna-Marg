@@ -29,10 +29,13 @@ router.get('/puranas', publicController.getPuranas);
 router.get('/puranas/:id/pdf', publicController.getPuranPdfUrl);
 router.get('/puranas/:slug', publicController.getPuranBySlug);
 
-// PDF CORS Proxy for client PDF.js rendering
+// PDF CORS Proxy for client PDF.js rendering & direct attachment downloads
 router.get('/proxy-pdf', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const pdfUrl = req.query.url as string;
+    const download = req.query.download === 'true';
+    const filename = (req.query.filename as string) || 'document.pdf';
+
     if (!pdfUrl) {
       return res.status(400).json({ error: 'url parameter is required' });
     }
@@ -48,7 +51,11 @@ router.get('/proxy-pdf', async (req: Request, res: Response, next: NextFunction)
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
+    if (download) {
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+    }
     return res.send(Buffer.from(response.data));
   } catch (error) {
     next(error);

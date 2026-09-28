@@ -758,7 +758,8 @@ export class PublicController {
   // 12. Purana PDF URL
   public getPuranPdfUrl = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const url = await puranService.getPdfUrl(req.params.id as string);
+      const isDownload = req.query.download === 'true';
+      const url = await puranService.getPdfUrl(req.params.id as string, isDownload);
       return sendSuccess(res, 'PDF URL generated', { url });
     } catch (error) {
       next(error);

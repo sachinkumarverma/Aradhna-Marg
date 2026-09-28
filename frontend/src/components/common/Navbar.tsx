@@ -6,11 +6,15 @@ import { Button } from '@components/ui/Button';
 import { useTranslation } from '@i18n/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  containerRef?: React.RefObject<HTMLElement | null>;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
   const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { scrollY } = useScroll();
+  const { scrollY } = useScroll(containerRef ? { container: containerRef as any } : undefined);
   const location = useLocation();
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
@@ -37,7 +41,7 @@ export const Navbar: React.FC = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] border-b-2 border-saffron/20 py-4"
+        className="fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] border-b-2 border-saffron/20 py-4 overflow-hidden"
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">

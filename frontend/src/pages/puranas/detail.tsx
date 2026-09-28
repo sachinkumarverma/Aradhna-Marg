@@ -66,20 +66,64 @@ export const PuranDetail: React.FC = () => {
     if (!data?.id) return;
     trackDownloadMutation.mutate(data.id);
 
+    const toastId = toast.loading('PDF डाउनलोड हो रहा है...');
     try {
-      const finalUrl = pdfUrl || data.pdf_file;
-      if (finalUrl) {
-        const a = document.createElement('a');
-        a.href = finalUrl;
-        a.target = '_blank';
-        a.download = `${data.title || 'Purana'}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        toast.success(t('common.download'));
+      const fileName = `${getLocalizedField(data, 'title') || data.title || 'Purana'}.pdf`;
+
+      // 1. Fetch current PDF signed URL from public API
+      let targetUrl = pdfUrl || data.pdf_file;
+      try {
+        const res = await apiClient.get<{ data: { url: string } } | { url: string }>(
+          `/v1/public/puranas/${data.id}/pdf?download=true`
+        );
+        const urlFromApi = (res.data as any)?.data?.url || (res.data as any)?.url;
+        if (urlFromApi) {
+          targetUrl = urlFromApi;
+        }
+      } catch (e) {
+        console.warn('Using default pdfUrl:', e);
       }
-    } catch {
-      toast.error('Failed to download PDF.');
+
+      if (!targetUrl) {
+        toast.error('PDF file not available.', { id: toastId });
+        return;
+      }
+
+      // 2. Build backend proxy download URL (bypasses browser CORS & sets Content-Disposition attachment)
+      const proxyDownloadUrl = `${apiClient.defaults.baseURL}/v1/public/proxy-pdf?url=${encodeURIComponent(targetUrl)}&download=true&filename=${encodeURIComponent(fileName)}`;
+
+      // 3. Fetch as blob from same-origin backend proxy to open native Save As file dialog
+      try {
+        const response = await fetch(proxyDownloadUrl);
+        if (response.ok) {
+          const blob = await response.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(blobUrl);
+          toast.success(t('common.download'), { id: toastId });
+          return;
+        }
+      } catch (fetchErr) {
+        console.warn('Proxy blob fetch failed, falling back to direct link:', fetchErr);
+      }
+
+      // 4. Fallback: Trigger direct browser download using backend proxy attachment URL
+      const a = document.createElement('a');
+      a.href = proxyDownloadUrl;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      toast.success(t('common.download'), { id: toastId });
+    } catch (err) {
+      console.error('Download failed:', err);
+      toast.error('Failed to download PDF.', { id: toastId });
     }
   };
 
@@ -250,10 +294,10 @@ export const PuranDetail: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setShowPdfViewer(false)}
-                      className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-xl font-bold text-xs hover:bg-slate-700 transition-all shadow-xs"
+                      className="flex items-center gap-2 px-3.5 py-1.5 bg-slate-800 text-white rounded-lg font-bold text-xs hover:bg-slate-700 transition-all shadow-xs"
                     >
-                      <BookOpen className="w-4 h-4" />
-                      {t('common.close')}
+                      <BookOpen className="w-4 h-4 shrink-0" />
+                      <span className="translate-y-[1.5px]">{t('common.close')}</span>
                     </button>
                   </div>
                 )}

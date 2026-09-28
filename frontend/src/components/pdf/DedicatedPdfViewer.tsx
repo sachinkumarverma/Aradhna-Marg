@@ -1,20 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
 import {
   Maximize2,
   Minimize2,
   Download,
-  ExternalLink,
-  ZoomIn,
-  ZoomOut,
   Sun,
   Moon,
   BookOpen,
   FileText,
-  ShieldCheck,
   ChevronLeft,
   ChevronRight,
-  CornerDownLeft
+  CornerDownLeft,
+  Loader2
 } from 'lucide-react';
+
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
+// Configure pdfjs worker locally via Vite asset URL
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 interface DedicatedPdfViewerProps {
   pdfUrl: string;
@@ -30,13 +33,18 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
   initialPage = 1
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(100);
   const [readerTheme, setReaderTheme] = useState<'default' | 'sepia' | 'dark'>('default');
   const [pageNumber, setPageNumber] = useState<number>(initialPage);
   const [inputPage, setInputPage] = useState<string>(String(initialPage));
 
+  const [pdfDoc, setPdfDoc] = useState<any>(null);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Synchronize text input box with pageNumber unless user is currently editing
   useEffect(() => {
@@ -45,18 +53,101 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
     }
   }, [pageNumber]);
 
+  // Load PDF with PDF.js
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    setError(false);
+
+    const loadPdf = async () => {
+      try {
+        let targetUrl = pdfUrl;
+        if (pdfUrl.startsWith('http') && !pdfUrl.includes(window.location.hostname)) {
+          targetUrl = `/api/public/proxy-pdf?url=${encodeURIComponent(pdfUrl)}`;
+        }
+
+        const loadingTask = pdfjsLib.getDocument({
+          url: targetUrl,
+          cMapUrl: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/cmaps/`,
+          cMapPacked: true
+        });
+
+        const doc = await loadingTask.promise;
+        if (isMounted) {
+          setPdfDoc(doc);
+          setTotalPages(doc.numPages);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Failed to load PDF using PDF.js:', err);
+        if (isMounted) {
+          setError(true);
+          setLoading(false);
+        }
+      }
+    };
+
+    loadPdf();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pdfUrl]);
+
+  // Render current page to canvas
+  useEffect(() => {
+    if (!pdfDoc || !canvasRef.current) return;
+
+    let renderTask: any = null;
+
+    const renderPage = async () => {
+      try {
+        const page = await pdfDoc.getPage(pageNumber);
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const viewport = page.getViewport({ scale: 1.5 });
+        const context = canvas.getContext('2d');
+        if (!context) return;
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+          canvasContext: context,
+          viewport
+        };
+
+        renderTask = page.render(renderContext);
+        await renderTask.promise;
+      } catch (err: any) {
+        if (err.name !== 'RenderingCancelledException') {
+          console.error('Error rendering PDF page canvas:', err);
+        }
+      }
+    };
+
+    renderPage();
+
+    return () => {
+      if (renderTask) {
+        renderTask.cancel();
+      }
+    };
+  }, [pdfDoc, pageNumber]);
+
   const handlePrevPage = () => {
     setPageNumber((prev) => Math.max(1, prev - 1));
   };
 
   const handleNextPage = () => {
-    setPageNumber((prev) => prev + 1);
+    setPageNumber((prev) => (totalPages > 0 ? Math.min(totalPages, prev + 1) : prev + 1));
   };
 
   const handlePageJumpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = parseInt(inputPage, 10);
-    if (!isNaN(parsed) && parsed > 0) {
+    if (!isNaN(parsed) && parsed > 0 && (totalPages === 0 || parsed <= totalPages)) {
       setPageNumber(parsed);
     } else {
       setInputPage(String(pageNumber));
@@ -79,14 +170,10 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
     }
   };
 
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 25, 200));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 25, 75));
-  const resetZoom = () => setZoomLevel(100);
-
   const getThemeFilterClass = () => {
     switch (readerTheme) {
       case 'sepia':
-        return 'sepia-[0.3] hue-rotate-[-30deg] contrast-[0.95] bg-[#F4ECD8]';
+        return 'sepia-[0.35] hue-rotate-[-30deg] contrast-[0.95] bg-[#F4ECD8]';
       case 'dark':
         return 'invert-[0.9] hue-rotate-180 bg-slate-900';
       default:
@@ -97,51 +184,57 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`flex flex-col bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 transition-all duration-300 ${
+      className={`flex flex-col bg-slate-900 rounded-xl overflow-hidden shadow-2xl border border-slate-800 transition-all duration-300 ${
         isFullscreen ? 'fixed inset-0 z-50 rounded-none h-screen w-screen' : 'w-full h-[750px] my-6'
       }`}
     >
       {/* Control Toolbar */}
-      <div className="bg-slate-950 text-white px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+      <div className="bg-slate-950 text-white px-3.5 py-2 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2.5 shrink-0">
         {/* Title & Document Badge */}
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-saffron/20 text-saffron flex items-center justify-center shrink-0">
-            <FileText className="w-4 h-4" />
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-7 h-7 rounded-md bg-saffron/20 text-saffron flex items-center justify-center shrink-0">
+            <FileText className="w-3.5 h-3.5" />
           </div>
           <div className="min-w-0">
-            <h3 className="text-sm font-bold text-slate-100 truncate max-w-xs sm:max-w-xs md:max-w-sm">{title}</h3>
+            <h3 className="text-xs sm:text-sm font-bold text-slate-100 truncate max-w-xs sm:max-w-xs md:max-w-sm">
+              {title}
+            </h3>
           </div>
         </div>
 
         {/* Toolbar Controls */}
-        <div className="flex items-center flex-wrap gap-2 sm:gap-3">
+        <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
           {/* Page Navigation & Jump Control */}
-          <div className="flex items-center bg-slate-800/80 rounded-xl p-1 border border-slate-700/60">
+          <div className="h-8 flex items-center bg-slate-800/80 rounded-lg px-1.5 border border-slate-700/60">
             <button
               onClick={handlePrevPage}
               title="Previous Page"
               disabled={pageNumber <= 1}
-              className="p-1.5 hover:bg-slate-700 rounded-lg text-slate-300 hover:text-white disabled:opacity-30 transition-colors"
+              className="w-5 h-5 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white disabled:opacity-30 transition-colors"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
             </button>
 
             <form onSubmit={handlePageJumpSubmit} className="flex items-center gap-1 px-1">
-              <span className="text-xs text-slate-400 font-medium hidden sm:inline">Page</span>
+              <span className="text-[11px] text-slate-400 font-medium hidden sm:inline translate-y-[2px]">Page</span>
               <input
                 ref={inputRef}
                 type="number"
                 min="1"
+                max={totalPages || undefined}
                 value={inputPage}
                 onChange={(e) => setInputPage(e.target.value)}
                 onBlur={handlePageJumpSubmit}
-                className="w-12 h-6 bg-slate-900 text-center text-xs font-bold text-white rounded border border-slate-700 focus:border-saffron focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-9 h-5 bg-slate-900 text-center text-xs font-bold text-white rounded border border-slate-700 focus:border-saffron focus:outline-none pt-[3px] leading-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 title="Type page number and press Enter to jump"
               />
+              {totalPages > 0 && (
+                <span className="text-[11px] text-slate-400 font-medium translate-y-[2.5px]">/ {totalPages}</span>
+              )}
               <button
                 type="submit"
                 title="Jump to Page"
-                className="p-1 hover:bg-slate-700 text-slate-400 hover:text-saffron rounded transition-colors"
+                className="w-5 h-5 flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-saffron rounded transition-colors"
               >
                 <CornerDownLeft className="w-3 h-3" />
               </button>
@@ -150,67 +243,41 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
             <button
               onClick={handleNextPage}
               title="Next Page"
-              className="p-1.5 hover:bg-slate-700 rounded-lg text-slate-300 hover:text-white disabled:opacity-30 transition-colors"
+              disabled={totalPages > 0 && pageNumber >= totalPages}
+              className="w-5 h-5 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white disabled:opacity-30 transition-colors"
             >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Zoom Controls */}
-          <div className="hidden sm:flex items-center bg-slate-800/80 rounded-xl p-1 border border-slate-700/60">
-            <button
-              onClick={handleZoomOut}
-              title="Zoom Out"
-              disabled={zoomLevel <= 75}
-              className="p-1.5 hover:bg-slate-700 rounded-lg text-slate-300 hover:text-white disabled:opacity-40 transition-colors"
-            >
-              <ZoomOut className="w-4 h-4" />
-            </button>
-            <button
-              onClick={resetZoom}
-              title="Reset Zoom"
-              className="px-2 py-0.5 text-xs font-bold text-slate-300 hover:text-white transition-colors"
-            >
-              {zoomLevel}%
-            </button>
-            <button
-              onClick={handleZoomIn}
-              title="Zoom In"
-              disabled={zoomLevel >= 200}
-              className="p-1.5 hover:bg-slate-700 rounded-lg text-slate-300 hover:text-white disabled:opacity-40 transition-colors"
-            >
-              <ZoomIn className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Theme Filters */}
-          <div className="flex items-center bg-slate-800/80 rounded-xl p-1 border border-slate-700/60">
+          <div className="flex h-8 items-center bg-slate-800/80 rounded-lg p-0.5 border border-slate-700/60">
             <button
               onClick={() => setReaderTheme('default')}
               title="Light Mode"
-              className={`p-1.5 rounded-lg text-xs font-bold transition-colors ${
+              className={`w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold transition-colors ${
                 readerTheme === 'default' ? 'bg-saffron text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Sun className="w-4 h-4" />
+              <Sun className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setReaderTheme('sepia')}
               title="Sepia Mode"
-              className={`p-1.5 rounded-lg text-xs font-bold transition-colors ${
+              className={`w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold transition-colors ${
                 readerTheme === 'sepia' ? 'bg-amber-700 text-amber-100' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <BookOpen className="w-4 h-4" />
+              <BookOpen className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setReaderTheme('dark')}
               title="Night Reading"
-              className={`p-1.5 rounded-lg text-xs font-bold transition-colors ${
+              className={`w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold transition-colors ${
                 readerTheme === 'dark' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Moon className="w-4 h-4" />
+              <Moon className="w-3.5 h-3.5" />
             </button>
           </div>
 
@@ -220,50 +287,44 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
               <button
                 onClick={onDownload}
                 title="Download PDF"
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-saffron text-white rounded-xl text-xs font-bold hover:bg-orange-600 transition-colors shadow-sm"
+                className="h-8 flex items-center gap-1.5 px-3 bg-saffron text-white rounded-lg text-xs font-bold hover:bg-orange-600 transition-colors shadow-sm"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Download</span>
+                <Download className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline translate-y-[1px]">Download</span>
               </button>
             )}
-
-            <a
-              href={pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Open in new window"
-              className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-colors border border-slate-700/60"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </a>
 
             <button
               onClick={toggleFullscreen}
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Reader'}
-              className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-colors border border-slate-700/60"
+              className="h-8 w-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-700/60"
             >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Document Content Container */}
-      <div className="flex-1 w-full bg-slate-950 overflow-auto p-4 sm:p-6 relative flex flex-col items-center">
-        <div
-          className="h-full min-h-[600px] w-full relative flex justify-center items-start origin-top"
-          style={{
-            width: zoomLevel > 100 ? `${zoomLevel}%` : '100%',
-            minWidth: '100%'
-          }}
-        >
+      {/* Main Document Content Container with Custom Dark Scrollbar */}
+      <div className="flex-1 w-full bg-slate-950 overflow-y-auto custom-scrollbar relative flex flex-col items-center py-6 px-4">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-64 text-slate-400 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-saffron" />
+            <span className="text-xs font-medium font-hindi-body">पावन ग्रंथ लोड हो रहा है...</span>
+          </div>
+        ) : error ? (
           <iframe
-            key={`${pdfUrl}-page-${pageNumber}-zoom-${zoomLevel}`}
-            src={`${pdfUrl}#page=${pageNumber}&zoom=${zoomLevel}&toolbar=0&navpanes=0&scrollbar=1`}
+            key={`${pdfUrl}-page-${pageNumber}`}
+            src={`${pdfUrl}#page=${pageNumber}&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
             title={title}
-            className={`w-full h-full min-h-[600px] border-0 rounded-xl shadow-lg ${getThemeFilterClass()}`}
+            className={`w-full h-full min-h-[650px] border-none outline-none ${getThemeFilterClass()}`}
           />
-        </div>
+        ) : (
+          <canvas
+            ref={canvasRef}
+            className={`max-w-full shadow-2xl rounded-lg border border-slate-800/80 transition-all duration-300 ${getThemeFilterClass()}`}
+          />
+        )}
       </div>
     </div>
   );

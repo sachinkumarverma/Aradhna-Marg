@@ -512,15 +512,20 @@ export const Home: React.FC = () => {
         <section className="py-8 md:py-10 bg-gradient-to-br from-amber-50 to-orange-50 border-t border-orange-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-5">
-              <IconText
-                icon={<Calendar className="w-7 h-7 text-saffron fill-saffron/20" />}
-                gap="gap-3"
-                text={
-                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
-                    <span className="text-saffron">{t('navigation.festivals')}</span>
-                  </h2>
-                }
-              />
+              <div>
+                <IconText
+                  icon={<Calendar className="w-7 h-7 text-saffron fill-saffron/20" />}
+                  gap="gap-3"
+                  text={
+                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
+                      <span className="text-saffron">{t('navigation.festivals')}</span>
+                    </h2>
+                  }
+                />
+                <p className="text-darkBrown/60 text-xs md:text-sm mt-1.5 font-medium font-hindi-heading">
+                  {t('content.festivalsSubtitle')}
+                </p>
+              </div>
               <Link to="/festivals">
                 <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs font-hindi-heading">
                   {t('common.viewAll')} <ArrowRight className="w-3.5 h-3.5 ml-1" />

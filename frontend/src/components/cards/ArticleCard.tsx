@@ -76,8 +76,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   }
 
   return (
-    <div
-      className={`group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col h-full ${className}`}
+    <Link
+      to={articleUrl}
+      className={`group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col h-full block cursor-pointer ${className}`}
     >
       {/* Featured Image (Strict 16:9 Aspect Ratio) */}
       {featuredImageUrl && (
@@ -99,11 +100,23 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               {categoryName}
             </span>
           )}
-          <h2 className="text-lg md:text-xl font-bold text-darkBrown mb-2 line-clamp-2 hover:text-saffron transition-colors font-hindi-heading pt-1 pb-0.5 leading-relaxed">
-            <Link to={articleUrl}>{title}</Link>
+          <h2
+            className="text-lg md:text-xl font-bold text-darkBrown mb-2 group-hover:text-saffron transition-colors font-hindi-heading pt-0.5 pb-0.5 leading-snug line-clamp-2 overflow-hidden"
+            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+          >
+            {title}
           </h2>
           {cleanExcerpt && (
-            <p className="text-slate-600 text-xs md:text-sm line-clamp-3 mb-4 leading-relaxed font-hindi-body">
+            <p
+              className="text-slate-600 text-xs md:text-sm mb-4 leading-normal font-hindi-body overflow-hidden"
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                maxHeight: '3.6rem'
+              }}
+            >
               {cleanExcerpt}
             </p>
           )}
@@ -112,17 +125,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-3">
           <SocialShareButtons title={title} excerpt={cleanExcerpt} url={articleUrl} />
-          <Link
-            to={articleUrl}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link"
-          >
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-orange-600 transition-colors shrink-0">
             <span>{t('common.readMore')}</span>
-            <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover/link:bg-saffron group-hover/link:text-white transition-colors shadow-xs">
+            <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover:bg-saffron group-hover:text-white transition-colors shadow-xs">
               <ChevronRight className="w-3.5 h-3.5" />
             </span>
-          </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };

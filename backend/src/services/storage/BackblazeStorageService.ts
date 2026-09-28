@@ -47,13 +47,20 @@ class BackblazeStorageService {
     await this.client.send(command);
   }
 
-  public async getSignedUrl(storageKey: string, expiresInSeconds: number = 3600): Promise<string> {
+  public async getSignedUrl(
+    storageKey: string,
+    expiresInSeconds: number = 3600,
+    downloadFilename?: string
+  ): Promise<string> {
     const bucket = process.env.B2_BUCKET_NAME;
     if (!bucket) throw new Error('B2_BUCKET_NAME is not configured');
 
     const command = new GetObjectCommand({
       Bucket: bucket,
-      Key: storageKey
+      Key: storageKey,
+      ResponseContentDisposition: downloadFilename
+        ? `attachment; filename="${encodeURIComponent(downloadFilename)}"`
+        : undefined
     });
     return getSignedUrl(this.client, command, { expiresIn: expiresInSeconds });
   }
