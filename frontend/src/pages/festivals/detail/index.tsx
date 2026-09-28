@@ -100,9 +100,9 @@ export const FestivalDetail: React.FC = () => {
           <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Festivals', to: '/festivals' }, { label: name }]} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column Primary Content (8 Columns) */}
-          <div className="lg:col-span-8 flex flex-col gap-8">
+          <div className="lg:col-span-8 min-w-0 w-full flex flex-col gap-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -159,8 +159,8 @@ export const FestivalDetail: React.FC = () => {
           </div>
 
           {/* Right Column Intelligent Recommendation Sidebar (4 Columns) */}
-          <div className="lg:col-span-4">
-            <div className="sticky top-28">
+          <div className="lg:col-span-4 min-w-0 w-full">
+            <div className="sticky top-28 overflow-hidden">
               <RelatedContentSection
                 relatedBhajans={
                   Array.isArray(festival.related_bhajans) && festival.related_bhajans.length > 0

@@ -45,7 +45,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
   if (language === 'hi' && hindiTitle) {
     displayTitle = hindiTitle;
-    displaySubtitle = titleKey ? t(titleKey) : title;
+    displaySubtitle = title;
   }
 
   const actionLabelKey = actionLink ? sectionHeaderKeyMap[actionLink.label] : undefined;

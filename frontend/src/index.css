@@ -67,6 +67,71 @@
     justify-content: center;
     flex-shrink: 0;
   }
+
+  /* SafeHtmlContent Rich Text Formatting */
+  .safe-html-content h2,
+  .safe-html-content h1 {
+    font-family: 'Anek Devanagari', 'Hind', sans-serif !important;
+    font-size: 1.75rem !important; /* 28px on mobile */
+    line-height: 1.35 !important;
+    font-weight: 700 !important;
+    color: #3b1d0c !important;
+    margin-top: 2rem !important;
+    margin-bottom: 1rem !important;
+    border: none !important;
+    padding-top: 0 !important;
+  }
+
+  @media (min-width: 768px) {
+    .safe-html-content h2,
+    .safe-html-content h1 {
+      font-size: 2.125rem !important; /* 34px on desktop */
+    }
+  }
+
+  .safe-html-content h3,
+  .safe-html-content h4 {
+    font-family: 'Anek Devanagari', 'Hind', sans-serif !important;
+    font-size: 1.5rem !important; /* 24px */
+    line-height: 1.4 !important;
+    font-weight: 600 !important;
+    color: #4a2e19 !important;
+    margin-top: 1.75rem !important;
+    margin-bottom: 0.875rem !important;
+  }
+
+  .safe-html-content p {
+    font-family: 'Tiro Devanagari Hindi', 'Hind', serif !important;
+    font-size: 1.25rem !important; /* 20px on mobile */
+    line-height: 1.95 !important;
+    color: #27272a !important;
+    margin-top: 0 !important;
+    margin-bottom: 1.75rem !important;
+    font-weight: 400 !important;
+  }
+
+  @media (min-width: 768px) {
+    .safe-html-content p {
+      font-size: 1.375rem !important; /* 22px on desktop */
+      line-height: 2.0 !important;
+    }
+  }
+
+  .safe-html-content strong,
+  .safe-html-content b {
+    color: #3b1d0c !important;
+    font-weight: 700 !important;
+  }
+
+  .safe-html-content h1 strong,
+  .safe-html-content h2 strong,
+  .safe-html-content h3 strong,
+  .safe-html-content h4 strong {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    color: inherit !important;
+  }
 }
 
 @layer utilities {
