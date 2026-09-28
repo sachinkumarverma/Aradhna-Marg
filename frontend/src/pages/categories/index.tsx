@@ -124,10 +124,7 @@ export const CategoriesList: React.FC = () => {
                     </div>
 
                     {/* Bottom Link Bar */}
-                    <div className="flex items-center justify-between mt-5 pt-3.5 border-t border-gray-100/80 font-hindi-heading">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-saffron transition-colors">
-                        Explore Portal
-                      </span>
+                    <div className="flex items-center justify-end mt-5 pt-3.5 border-t border-gray-100/80 font-hindi-heading">
                       <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:translate-x-1 transition-transform">
                         देखें <ArrowRight className="w-3.5 h-3.5 ml-1" />
                       </span>
