@@ -7,7 +7,6 @@ import {
   Download,
   Calendar,
   ArrowRight,
-  Loader2,
   ChevronRight,
   Play,
   Heart,
@@ -18,6 +17,7 @@ import {
   Scroll,
   BookMarked
 } from 'lucide-react';
+import { CustomLoader } from '@components/common/CustomLoader';
 import { Button } from '@components/ui/Button';
 import { BhajanCard } from '@components/cards/BhajanCard';
 import { ArticleCard } from '@components/cards/ArticleCard';
@@ -198,9 +198,7 @@ export const Home: React.FC = () => {
             </div>
 
             {loading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-saffron" />
-              </div>
+              <CustomLoader fullScreen={false} />
             ) : fullVideos.length > 0 || (data?.featuredBhajans && data.featuredBhajans.length > 0) ? (
               <div className="flex flex-col gap-5">
                 {(fullVideos.length > 0 ? fullVideos : data.featuredBhajans).slice(0, 5).map((video: any) => {

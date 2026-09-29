@@ -8,6 +8,9 @@ import { Breadcrumb } from '@components/common/Breadcrumb';
 import { PublicApi } from '@api/publicApi';
 import { useTranslation } from '@i18n/LanguageContext';
 
+import { AdUnit } from '@components/common/AdUnit';
+import { CustomLoader } from '@components/common/CustomLoader';
+
 export const ArticleDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
@@ -48,11 +51,7 @@ export const ArticleDetail: React.FC = () => {
   }, [slug, language]);
 
   if (loading) {
-    return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[#F9F7F3] pt-28">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
-      </div>
-    );
+    return <CustomLoader fullScreen text="धार्मिक लेख लोड हो रहा है..." />;
   }
 
   if (!article) {
@@ -140,6 +139,11 @@ export const ArticleDetail: React.FC = () => {
                 <SafeHtmlContent content={content} />
               </div>
 
+              {/* Content Ad Unit */}
+              <div className="my-8">
+                <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
+              </div>
+
               {/* Deities / Tags footer */}
               {article.deities && article.deities.length > 0 && (
                 <div className="mt-8 pt-6 border-t border-gray-100 flex flex-wrap items-center gap-2 font-hindi-body">
@@ -161,7 +165,8 @@ export const ArticleDetail: React.FC = () => {
           </div>
 
           {/* Right Recommendation Sidebar (4 Columns) */}
-          <div className="lg:col-span-4 min-w-0 w-full">
+          <div className="lg:col-span-4 min-w-0 w-full flex flex-col gap-6">
+            <AdUnit slot="sidebar" label="ADVERTISEMENT • विज्ञापन" />
             <div className="sticky top-28 overflow-hidden">
               <RelatedContentSection
                 relatedArticles={relatedData.relatedArticles}

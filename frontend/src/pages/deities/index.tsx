@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Loader2, Sparkles, ArrowRight } from 'lucide-react';
+import { Search, Sparkles, ArrowRight } from 'lucide-react';
+import { CustomLoader } from '@components/common/CustomLoader';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
@@ -78,9 +79,7 @@ export const DeitiesList: React.FC = () => {
 
         {/* Divine Darshan Gallery Grid */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-saffron" />
-          </div>
+          <CustomLoader fullScreen />
         ) : filteredDeities.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
             {filteredDeities.map((deity, i) => {

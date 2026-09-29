@@ -4,6 +4,7 @@ import { Search, Loader2, BookOpen, Filter } from 'lucide-react';
 import { PublicApi } from '@api/publicApi';
 import { Select } from '@components/ui/Select';
 import { ArticleCard } from '@components/cards/ArticleCard';
+import { AdUnit } from '@components/common/AdUnit';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
 
@@ -133,6 +134,11 @@ export const ArticlesList: React.FC = () => {
                   />
                 </motion.div>
               ))}
+            </div>
+
+            {/* Banner Ad Unit Placeholder */}
+            <div className="mb-12">
+              <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
             </div>
 
             {/* Pagination Controls */}

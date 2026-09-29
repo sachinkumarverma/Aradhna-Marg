@@ -746,7 +746,10 @@ export class PublicController {
       const result = {
         ...data,
         displayTitle: lang === 'en' && data.title_en ? data.title_en : data.title,
-        displayDescription: lang === 'en' && data.description_en ? data.description_en : data.shortDescription
+        displayDescription:
+          lang === 'en' && data.description_en
+            ? data.description_en
+            : data.short_description || data.shortDescription || data.description
       };
 
       return sendSuccess(res, 'Purana fetched successfully', result);
@@ -802,8 +805,8 @@ export class PublicController {
       const bhajansRes = await db.query(
         `SELECT b.id, b.title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration
          FROM bhajans b
-         WHERE b.god_id = $1 AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
-         ORDER BY b.popularity_score DESC LIMIT 8`,
+         WHERE (b.god_id = $1 OR b.god_id::text = $1::text) AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
+         ORDER BY b.popularity_score DESC NULLS LAST, b.created_at DESC LIMIT 8`,
         [deity.id]
       );
 
@@ -818,10 +821,20 @@ export class PublicController {
         [deity.id]
       );
 
+      // Fetch related Festivals
+      const festivalsRes = await db.query(
+        `SELECT f.id, f.name, f.name_en, f.slug, f.short_description, f.banner_image, f.festival_date, f.category
+         FROM festivals f
+         WHERE (f.deity_id = $1 OR f.deity_id::text = $1::text) AND (f.status = 'PUBLISHED' OR f.status IS NULL)
+         ORDER BY f.festival_date ASC NULLS LAST LIMIT 6`,
+        [deity.id]
+      );
+
       return sendSuccess(res, 'Deity retrieved successfully', {
         deity,
         relatedBhajans: bhajansRes.rows,
-        relatedArticles: articlesRes.rows
+        relatedArticles: articlesRes.rows,
+        relatedFestivals: festivalsRes.rows
       });
     } catch (error) {
       next(error);

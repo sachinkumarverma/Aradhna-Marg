@@ -3,9 +3,11 @@ import { useParams, useLocation, Link } from 'react-router-dom';
 import { CollectionHero } from '@components/layout/CollectionHero';
 import { BhajanCard } from '@components/cards/BhajanCard';
 import { PublicApi } from '@api/publicApi';
-import { Loader2, Music, BookOpen } from 'lucide-react';
+import { Loader2, Music, BookOpen, Calendar } from 'lucide-react';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
 import { useTranslation } from '../../i18n/LanguageContext';
+import { CustomLoader } from '@components/common/CustomLoader';
+import { AdUnit } from '@components/common/AdUnit';
 
 export const CollectionDetails: React.FC = () => {
   const { id } = useParams();
@@ -28,10 +30,12 @@ export const CollectionDetails: React.FC = () => {
           const deity = res.deity;
           setData({
             title: getLocalizedField(deity, 'name') || 'Deity',
-            description: getLocalizedField(deity, 'short_description') || 'पावन देवी-देवता के समस्त भजन एवं लेख संग्रह',
+            description:
+              getLocalizedField(deity, 'short_description') || 'पावन देवी-देवता के समस्त भजन, लेख एवं त्योहार संग्रह',
             image: deity?.image,
             bhajans: res.relatedBhajans || [],
-            articles: res.relatedArticles || []
+            articles: res.relatedArticles || [],
+            festivals: res.relatedFestivals || []
           });
         } else if (collectionType === 'categories') {
           const res = await PublicApi.getCategoryBySlug(id);
@@ -67,11 +71,7 @@ export const CollectionDetails: React.FC = () => {
   }, [id, collectionType, getLocalizedField]);
 
   if (loading) {
-    return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[#F9F7F3] pt-24">
-        <Loader2 className="w-10 h-10 animate-spin text-saffron" />
-      </div>
-    );
+    return <CustomLoader fullScreen text="संग्रह लोड हो रहा है..." />;
   }
 
   if (!data) {
@@ -96,7 +96,8 @@ export const CollectionDetails: React.FC = () => {
         ]}
         stats={[
           { label: t('navigation.bhajans'), value: `${data.bhajans?.length || 0}` },
-          { label: t('navigation.articles'), value: `${data.articles?.length || 0}` }
+          { label: t('navigation.articles'), value: `${data.articles?.length || 0}` },
+          { label: t('navigation.festivals'), value: `${data.festivals?.length || 0}` }
         ]}
       />
 
@@ -175,6 +176,56 @@ export const CollectionDetails: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Associated Festivals Section */}
+        {data.festivals && data.festivals.length > 0 && (
+          <div>
+            <h2 className="text-3xl font-bold text-darkBrown mb-8 flex items-center gap-3 font-hindi-heading leading-snug">
+              <div className="shrink-0 flex items-center justify-center">
+                <Calendar className="w-7 h-7 text-saffron" />
+              </div>
+              <span className="translate-y-[2.5px]">
+                {t('navigation.festivals')} ({data.festivals.length})
+              </span>
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {data.festivals.map((fest: any) => {
+                const festName = fest.displayName || getLocalizedField(fest, 'name') || fest.name;
+                const festDesc =
+                  fest.displayDescription || getLocalizedField(fest, 'short_description') || fest.short_description;
+                return (
+                  <Link
+                    key={fest.id}
+                    to={`/festivals/${fest.slug || fest.id}`}
+                    className="bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-saffron/30 shadow-sm hover:shadow-md transition-all flex flex-col p-5 group"
+                  >
+                    {fest.banner_image && (
+                      <img
+                        src={fest.banner_image}
+                        alt={festName}
+                        className="w-full h-44 object-cover rounded-2xl mb-4 group-hover:scale-105 transition-transform duration-300"
+                      />
+                    )}
+                    <h3 className="font-bold text-lg text-darkBrown line-clamp-2 group-hover:text-saffron transition-colors font-hindi-heading">
+                      {festName}
+                    </h3>
+                    {festDesc && (
+                      <p className="text-slate-600 text-xs line-clamp-2 mt-2 leading-relaxed font-hindi-body">
+                        {festDesc}
+                      </p>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Ad Unit Placeholder */}
+        <div className="pt-4">
+          <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
+        </div>
       </div>
     </div>
   );

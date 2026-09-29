@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Loader2, Music, BookOpen, Flame, Compass, ArrowRight, FolderKanban } from 'lucide-react';
+import { Search, Music, BookOpen, Flame, Compass, ArrowRight, FolderKanban } from 'lucide-react';
+import { CustomLoader } from '@components/common/CustomLoader';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
@@ -76,9 +77,7 @@ export const CategoriesList: React.FC = () => {
 
         {/* Categories Directory Layout */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-saffron" />
-          </div>
+          <CustomLoader fullScreen />
         ) : filteredCategories.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCategories.map((cat, i) => {
@@ -96,21 +95,23 @@ export const CategoriesList: React.FC = () => {
                 >
                   <Link
                     to={`/categories/${cat.slug || cat.id}`}
-                    className="group block bg-white rounded-2xl p-6 border border-orange-100 shadow-xs hover:shadow-xl hover:border-saffron/50 transition-all duration-300 h-full flex flex-col justify-between cursor-pointer"
+                    className="group block bg-white rounded-2xl p-5 border border-orange-100 shadow-xs hover:shadow-xl hover:border-saffron/50 transition-all duration-300 flex flex-col justify-between cursor-pointer"
                   >
                     <div className="flex items-start gap-4">
-                      {/* Left Icon / Image Portal */}
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-amber-50/80 border border-amber-200/80 p-2.5 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                      {/* Left 16:9 Image Portal (no inner padding, 16:9 aspect ratio) */}
+                      <div className="w-24 sm:w-28 aspect-video rounded-xl overflow-hidden bg-amber-50/60 border border-amber-200/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
                         {catImg ? (
-                          <img src={catImg} alt={catName} className="w-full h-full object-cover rounded-xl" />
+                          <img src={catImg} alt={catName} className="w-full h-full object-cover" />
                         ) : (
-                          getCategoryIcon(catName)
+                          <div className="w-full h-full flex items-center justify-center bg-amber-50/90 p-2">
+                            {getCategoryIcon(catName)}
+                          </div>
                         )}
                       </div>
 
                       {/* Right Title & Description */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold text-darkBrown group-hover:text-saffron transition-colors font-hindi-heading leading-tight mb-1.5">
+                        <h3 className="text-xl font-bold text-darkBrown group-hover:text-saffron transition-colors font-hindi-heading leading-tight mb-1">
                           {catName}
                         </h3>
                         {catDesc ? (
@@ -123,10 +124,11 @@ export const CategoriesList: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Bottom Link Bar */}
-                    <div className="flex items-center justify-end mt-5 pt-3.5 border-t border-gray-100/80 font-hindi-heading">
-                      <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:translate-x-1 transition-transform">
-                        देखें <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                    {/* Bottom Link Bar - देखें text aligned perfectly on same baseline as ArrowRight */}
+                    <div className="flex items-center justify-end mt-3.5 pt-2.5 border-t border-gray-100/80 font-hindi-heading">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-saffron group-hover:translate-x-1 transition-transform leading-none">
+                        <span className="translate-y-[2px] inline-block pt-[1px]">देखें</span>
+                        <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                       </span>
                     </div>
                   </Link>

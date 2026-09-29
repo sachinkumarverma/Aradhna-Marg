@@ -7,7 +7,7 @@ export const Footer: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <footer className="bg-[#0a0a0a] text-gray-400 pt-16 pb-8 border-t-4 border-saffron relative overflow-hidden">
+    <footer className="bg-[#0a0a0a] text-gray-400 pt-16 pb-8 border-t-4 border-saffron relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand Col */}

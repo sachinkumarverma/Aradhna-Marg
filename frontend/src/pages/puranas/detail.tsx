@@ -13,6 +13,8 @@ import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
 import { SectionHeader } from '@components/common/SectionHeader';
 import { ArticleCard } from '@components/cards/ArticleCard';
+import { CustomLoader } from '@components/common/CustomLoader';
+import { AdUnit } from '@components/common/AdUnit';
 
 export const PuranDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -128,14 +130,7 @@ export const PuranDetail: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F9F7F3]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-saffron border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-600 text-sm font-bold font-hindi-body">{t('common.loading')}</p>
-        </div>
-      </div>
-    );
+    return <CustomLoader fullScreen text={t('common.loading')} />;
   }
 
   if (!data) {
@@ -275,6 +270,11 @@ export const PuranDetail: React.FC = () => {
             <SafeHtmlContent content={descriptionContent} />
           </div>
         )}
+
+        {/* Ad Unit Placeholder */}
+        <div className="my-8">
+          <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
+        </div>
 
         {/* Dedicated PDF Viewer Section */}
         <div id="pdf-viewer-section">

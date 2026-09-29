@@ -14,6 +14,8 @@ import { BottomRelatedContent } from '@components/common/BottomRelatedContent';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
 
+import { CustomLoader } from '@components/common/CustomLoader';
+
 export const BhajanDetail: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
@@ -50,11 +52,7 @@ export const BhajanDetail: React.FC = () => {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[#F9F7F3] pt-28">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saffron"></div>
-      </div>
-    );
+    return <CustomLoader fullScreen text="भजन लोड हो रहा है..." />;
   }
 
   if (!bhajan) {
@@ -162,6 +160,9 @@ export const BhajanDetail: React.FC = () => {
                 <p className="text-gray-500 italic">बोल उपलब्ध नहीं हैं।</p>
               )}
             </motion.div>
+
+            {/* Ad Unit Placeholder */}
+            <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
 
             {/* Bottom Related Content: Scriptures & PDFs, Bhajans */}
             <BottomRelatedContent

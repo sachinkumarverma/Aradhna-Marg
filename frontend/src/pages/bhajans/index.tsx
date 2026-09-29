@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Loader2, Music, Filter, Disc, Sparkles } from 'lucide-react';
+import { Search, Music, Filter, Disc, Sparkles } from 'lucide-react';
+import { CustomLoader } from '@components/common/CustomLoader';
 import { BhajanCard } from '@components/cards/BhajanCard';
 import { Select } from '@components/ui/Select';
 import { PublicApi } from '@api/publicApi';
@@ -192,9 +193,7 @@ export const BhajansList: React.FC = () => {
 
         {/* Bhajans Grid */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-saffron" />
-          </div>
+          <CustomLoader fullScreen />
         ) : bhajans.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">

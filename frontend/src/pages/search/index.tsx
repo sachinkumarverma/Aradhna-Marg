@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Loader2, Search as SearchIcon } from 'lucide-react';
+import { Search as SearchIcon } from 'lucide-react';
+import { CustomLoader } from '@components/common/CustomLoader';
 import { SearchBar } from '@components/search/SearchBar';
 import { useSearch } from '@hooks/useSearch';
 import { useTranslation } from '../../i18n/LanguageContext';
@@ -51,9 +52,7 @@ export const SearchPage: React.FC = () => {
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-10 h-10 animate-spin text-saffron" />
-            </div>
+            <CustomLoader fullScreen />
           ) : isError ? (
             <div className="text-center py-20 text-red-500 font-bold">{t('errors.failedToLoad')}</div>
           ) : data && data.length > 0 ? (

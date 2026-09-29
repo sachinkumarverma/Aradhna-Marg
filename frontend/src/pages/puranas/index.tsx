@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Loader2, Search } from 'lucide-react';
+import { BookOpen, Search } from 'lucide-react';
+import { CustomLoader } from '@components/common/CustomLoader';
 import { PublicApi } from '@api/publicApi';
 import { PuranaCard } from '@components/cards/PuranaCard';
 import { useTranslation } from '@i18n/LanguageContext';
@@ -68,9 +69,7 @@ export const PuranasList: React.FC = () => {
 
         {/* Puranas Grid */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-saffron" />
-          </div>
+          <CustomLoader fullScreen />
         ) : puranas.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">

@@ -4,7 +4,8 @@ import { CollectionCarousel } from '@components/carousels/CollectionCarousel';
 import { PublicApi } from '@api/publicApi';
 import { BhajanCard } from '@components/cards/BhajanCard';
 import { Link } from 'react-router-dom';
-import { Loader2, Flame } from 'lucide-react';
+import { CustomLoader } from '@components/common/CustomLoader';
+import { Flame } from 'lucide-react';
 import { useTranslation } from '../../i18n/LanguageContext';
 
 import { IconText } from '@components/common/IconText';
@@ -64,9 +65,7 @@ export const ExplorePage: React.FC = () => {
 
       <div className="mt-6 space-y-4">
         {loading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-10 h-10 animate-spin text-saffron shrink-0" />
-          </div>
+          <CustomLoader fullScreen />
         ) : (
           <>
             {/* Popular Deities Collection */}

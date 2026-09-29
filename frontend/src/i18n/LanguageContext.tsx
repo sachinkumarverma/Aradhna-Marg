@@ -69,12 +69,40 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const getLocalizedField = (item: any, fieldName: string): string => {
     if (!item) return '';
     if (language === 'en') {
-      const enVal = item[`${fieldName}_en`] || item[`en_${fieldName}`] || item[`${fieldName}En`];
+      const enVal =
+        item[`${fieldName}_en`] ||
+        item[`en_${fieldName}`] ||
+        item[`${fieldName}En`] ||
+        (fieldName === 'short_description'
+          ? item['description_en'] ||
+            item['short_description_en'] ||
+            item['shortDescription_en'] ||
+            item['displayDescription']
+          : undefined) ||
+        (fieldName === 'description'
+          ? item['description_en'] ||
+            item['short_description_en'] ||
+            item['shortDescription_en'] ||
+            item['displayDescription']
+          : undefined) ||
+        (fieldName === 'title' ? item['title_en'] || item['english_title'] || item['displayTitle'] : undefined) ||
+        (fieldName === 'name' ? item['name_en'] || item['displayName'] : undefined) ||
+        (fieldName === 'content' ? item['content_en'] || item['displayContent'] : undefined) ||
+        (fieldName === 'excerpt' ? item['excerpt_en'] || item['displayExcerpt'] : undefined);
+
       if (enVal && typeof enVal === 'string' && enVal.trim() !== '') {
         return enVal;
       }
+
+      // Check display field fallback
+      const capitalized = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+      const displayVal =
+        item[`display${capitalized}`] || item.displayDescription || item.displayTitle || item.displayName;
+      if (displayVal && typeof displayVal === 'string' && displayVal.trim() !== '') {
+        return displayVal;
+      }
     }
-    return item[fieldName] || item[`${fieldName}_hi`] || '';
+    return item[fieldName] || item[`${fieldName}_hi`] || item.displayDescription || item.displayTitle || '';
   };
 
   return (

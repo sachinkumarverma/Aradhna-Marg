@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Loader2, Video as VideoIcon } from 'lucide-react';
+import { Search, Video as VideoIcon } from 'lucide-react';
+import { CustomLoader } from '@components/common/CustomLoader';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiClient } from '@api/client';
@@ -100,9 +101,7 @@ export const VideosList = () => {
 
         {/* Grid Section */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-saffron" />
-          </div>
+          <CustomLoader fullScreen />
         ) : videos.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
