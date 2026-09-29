@@ -95,10 +95,12 @@ const SaveButton = ({ isPending }: { isPending: boolean }) => (
     <button
       type="submit"
       disabled={isPending}
-      className="flex items-center gap-2 px-5 py-2.5 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
     >
-      {isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-      {isPending ? 'Saving...' : 'Save Changes'}
+      <span className="shrink-0">
+        {isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+      </span>
+      <span className="leading-none translate-y-[1px]">{isPending ? 'Saving...' : 'Save Changes'}</span>
     </button>
   </div>
 );

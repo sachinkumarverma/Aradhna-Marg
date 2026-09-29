@@ -21,7 +21,7 @@ import {
   RefreshCw,
   BrainCircuit
 } from 'lucide-react';
-import { Button } from '@components/ui/Button';
+import { AdminButton } from '@components/admin/AdminButton';
 
 export function AdminAI() {
   const queryClient = useQueryClient();
@@ -366,14 +366,14 @@ export function AdminAI() {
                     </div>
                   </div>
                   <div className="mt-5 pt-4 border-t border-gray-200">
-                    <Button
+                    <AdminButton
                       onClick={() => handleQueueJob(tool.name, tool.content, tool.type, tool.items)}
                       disabled={queueMutation.isPending}
                       className="w-full justify-center"
+                      leftIcon={<Zap className="w-4 h-4" />}
                     >
-                      <Zap className="w-4 h-4 mr-2" />
                       Run Bulk Job
-                    </Button>
+                    </AdminButton>
                   </div>
                 </div>
               ))}

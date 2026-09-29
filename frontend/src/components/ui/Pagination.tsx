@@ -86,7 +86,7 @@ export function Pagination({
 
       <div className="flex items-center gap-3 text-sm text-gray-600 font-medium whitespace-nowrap">
         <span className="hidden lg:inline">Rows per page</span>
-        <div className="w-16 sm:w-18">
+        <div className="w-16 sm:w-18 translate-y-[2px]">
           <Select
             options={limitOptions.map((l) => ({ label: l.toString(), value: l.toString() }))}
             value={limit.toString()}

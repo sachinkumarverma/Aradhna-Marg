@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Music2, CheckCircle2, XCircle } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '@components/admin/DataTable';
-import { Button } from '@components/ui/Button';
+import { AdminButton } from '@components/admin/AdminButton';
 import { Select } from '@components/ui/Select';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
@@ -129,13 +129,13 @@ export const AdminBhajans: React.FC = () => {
           <p className="text-sm text-gray-500 mt-1">Manage and supervise all imported and generated content.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
+          <AdminButton
             onClick={() => navigate('/admin/bhajans/new')}
             variant="primary"
             leftIcon={<Plus className="w-4 h-4" />}
           >
             Create Bhajan
-          </Button>
+          </AdminButton>
         </div>
       </div>
 

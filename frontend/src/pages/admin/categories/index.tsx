@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '@components/ui/Select';
-import { Button } from '@components/ui/Button';
+import { AdminButton } from '@components/admin/AdminButton';
 import {
   FolderTree,
   Plus,
@@ -148,9 +148,9 @@ export const AdminCategories = () => {
           <p className="text-sm text-gray-500 mt-1">Manage content taxonomies and hierarchies.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => openDrawer()} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
+          <AdminButton onClick={() => openDrawer()} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
             Create Category
-          </Button>
+          </AdminButton>
         </div>
       </div>
 
@@ -314,14 +314,18 @@ export const AdminCategories = () => {
                   type="submit"
                   form="category-form"
                   disabled={saveMutation.isPending || !isValid || (editingId ? !actuallyDirty : false)}
-                  className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {saveMutation.isPending ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )}
-                  {saveMutation.isPending ? 'Saving...' : 'Save'}
+                  <span className="shrink-0">
+                    {saveMutation.isPending ? (
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                  </span>
+                  <span className="leading-none translate-y-[1.5px]">
+                    {saveMutation.isPending ? 'Saving...' : 'Save'}
+                  </span>
                 </button>
               </div>
 

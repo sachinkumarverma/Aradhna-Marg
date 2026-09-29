@@ -235,10 +235,10 @@ export const AdminFestivalForm = () => {
                 <button
                   type="button"
                   onClick={handlePreview}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm cursor-pointer"
                 >
-                  <Eye className="w-4 h-4" />
-                  Live Preview
+                  <Eye className="w-4 h-4 shrink-0" />
+                  <span className="leading-none translate-y-[1.5px]">Live Preview</span>
                 </button>
                 <button
                   type="button"
@@ -247,10 +247,10 @@ export const AdminFestivalForm = () => {
                     onSubmit({ ...getValues(), status: 'Draft' });
                   }}
                   disabled={saveMutation.isPending || isUploading || (isEditing ? !actuallyDirty : false)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  <Save className="w-4 h-4" />
-                  Save Draft
+                  <Save className="w-4 h-4 shrink-0" />
+                  <span className="leading-none translate-y-[1.5px]">Save Draft</span>
                 </button>
                 <button
                   type="button"
@@ -259,14 +259,16 @@ export const AdminFestivalForm = () => {
                     handleSubmit(onSubmit)();
                   }}
                   disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !actuallyDirty : false)}
-                  className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {saveMutation.isPending || isUploading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin shrink-0" />
                   ) : (
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4 shrink-0" />
                   )}
-                  {saveMutation.isPending || isUploading ? 'Publishing...' : 'Publish'}
+                  <span className="leading-none translate-y-[1.5px]">
+                    {saveMutation.isPending || isUploading ? 'Publishing...' : 'Publish'}
+                  </span>
                 </button>
               </div>
             </div>

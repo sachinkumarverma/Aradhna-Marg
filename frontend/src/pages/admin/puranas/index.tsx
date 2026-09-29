@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, BookOpen, CheckCircle2, XCircle } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '@components/admin/DataTable';
-import { Button } from '@components/ui/Button';
+import { AdminButton } from '@components/admin/AdminButton';
 import { Select } from '@components/ui/Select';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
@@ -145,13 +145,13 @@ export const AdminPuranas: React.FC = () => {
           <p className="text-sm text-gray-500 mt-1">Manage document-based content like PDFs and holy scriptures.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
+          <AdminButton
             onClick={() => navigate('/admin/puranas/new')}
             variant="primary"
             leftIcon={<Plus className="w-4 h-4" />}
           >
             Add Purana
-          </Button>
+          </AdminButton>
         </div>
       </div>
 

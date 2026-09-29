@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Calendar, CheckCircle2, XCircle } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '@components/admin/DataTable';
-import { Button } from '@components/ui/Button';
+import { AdminButton } from '@components/admin/AdminButton';
 import { Select } from '@components/ui/Select';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
@@ -153,13 +153,13 @@ export const AdminFestivals: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
+          <AdminButton
             onClick={() => navigate('/admin/festivals/new')}
             variant="primary"
             leftIcon={<Plus className="w-4 h-4" />}
           >
             Add Festival
-          </Button>
+          </AdminButton>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, isAuthenticated } from '@api/auth';
-import { Button } from '@components/ui/Button';
+import { AdminButton } from '@components/admin/AdminButton';
 import { Loader2, Lock, Eye, EyeOff } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
 
@@ -101,13 +101,14 @@ export const AdminLogin: React.FC = () => {
               </div>
             )}
 
-            <Button
+            <AdminButton
               type="submit"
               className="w-full h-12 bg-saffron hover:bg-[#d96a1a] text-white font-bold rounded-md shadow-md flex justify-center items-center"
               disabled={loading}
+              isLoading={loading}
             >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Secure Login'}
-            </Button>
+              Secure Login
+            </AdminButton>
           </form>
         </div>
       </div>

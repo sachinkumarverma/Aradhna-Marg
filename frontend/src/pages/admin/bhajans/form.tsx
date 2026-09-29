@@ -173,10 +173,10 @@ export const AdminBhajanForm = () => {
                 onSubmit({ ...getValues(), status: 'DRAFT' });
               }}
               disabled={saveMutation.isPending || (isEditing ? !actuallyDirty : false)}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
-              <Save className="w-4 h-4" />
-              Save as Draft
+              <Save className="w-4 h-4 shrink-0" />
+              <span className="leading-none translate-y-[1.5px]">Save as Draft</span>
             </button>
             <button
               onClick={() => {
@@ -184,10 +184,16 @@ export const AdminBhajanForm = () => {
                 handleSubmit(onSubmit)();
               }}
               disabled={saveMutation.isPending || !isValid || (isEditing ? !actuallyDirty : false)}
-              className="flex items-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
-              {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              {saveMutation.isPending ? 'Publishing...' : 'Publish'}
+              {saveMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+              ) : (
+                <Send className="w-4 h-4 shrink-0" />
+              )}
+              <span className="leading-none translate-y-[1.5px]">
+                {saveMutation.isPending ? 'Publishing...' : 'Publish'}
+              </span>
             </button>
           </div>
         </div>

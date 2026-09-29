@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, FileText, CheckCircle2, XCircle, Star } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '@components/admin/DataTable';
-import { Button } from '@components/ui/Button';
+import { AdminButton } from '@components/admin/AdminButton';
 import { Select } from '@components/ui/Select';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
@@ -137,13 +137,13 @@ export const AdminArticles: React.FC = () => {
           <p className="text-sm text-gray-500 mt-1">Manage spiritual knowledge, stories, and lifestyle articles.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
+          <AdminButton
             onClick={() => navigate('/admin/articles/new')}
             variant="primary"
             leftIcon={<Plus className="w-4 h-4" />}
           >
             Create Article
-          </Button>
+          </AdminButton>
         </div>
       </div>
 
