@@ -224,7 +224,7 @@ export const AdminArticleForm = () => {
                   className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm cursor-pointer"
                 >
                   <Eye className="w-4 h-4 shrink-0" />
-                  <span className="leading-none translate-y-[1.5px]">Live Preview</span>
+                  <span className="leading-none">Live Preview</span>
                 </button>
                 <button
                   type="button"
@@ -236,7 +236,7 @@ export const AdminArticleForm = () => {
                   className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <Save className="w-4 h-4 shrink-0" />
-                  <span className="leading-none translate-y-[1.5px]">Save as Draft</span>
+                  <span className="leading-none">Save as Draft</span>
                 </button>
                 <button
                   onClick={() => {
@@ -251,7 +251,7 @@ export const AdminArticleForm = () => {
                   ) : (
                     <Send className="w-4 h-4 shrink-0" />
                   )}
-                  <span className="leading-none translate-y-[1.5px]">
+                  <span className="leading-none">
                     {saveMutation.isPending || isUploading ? 'Publishing...' : 'Publish'}
                   </span>
                 </button>

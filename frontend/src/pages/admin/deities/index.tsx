@@ -307,9 +307,7 @@ export const AdminDeities = () => {
                       <Save className="w-4 h-4" />
                     )}
                   </span>
-                  <span className="leading-none translate-y-[1.5px]">
-                    {saveMutation.isPending ? 'Saving...' : 'Save'}
-                  </span>
+                  <span className="leading-none">{saveMutation.isPending ? 'Saving...' : 'Save'}</span>
                 </button>
               </div>
 
