@@ -21,7 +21,7 @@ export class GroqProvider implements IAIProvider {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        model: options?.model || 'llama-3.3-70b-versatile',
+        model: options?.model || config.GROQ_DEFAULT_MODEL || 'openai/gpt-oss-20b',
         temperature: options?.temperature || 0.7,
         max_tokens: options?.maxTokens,
         response_format: options?.jsonMode ? { type: 'json_object' } : { type: 'text' }

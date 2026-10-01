@@ -166,4 +166,10 @@ router.get('/videos/:slug', async (req: Request, res: Response, next: NextFuncti
   }
 });
 
+// Donation / Razorpay Payment Routes
+import { paymentController } from '@controllers/PaymentController';
+router.get('/payments/config', paymentController.getConfig);
+router.post('/payments/create-order', paymentController.createOrder);
+router.post('/payments/verify', paymentController.verifyPayment);
+
 export default router;

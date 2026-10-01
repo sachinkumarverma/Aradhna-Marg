@@ -115,6 +115,15 @@ export const Footer: React.FC = () => {
                   {t('footer.privacy')}
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/support-us"
+                  className="text-saffron hover:text-orange-400 font-bold transition-colors flex items-center gap-1.5"
+                >
+                  <Heart className="w-3.5 h-3.5 fill-saffron" />
+                  <span>{t('navigation.supportUs')}</span>
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

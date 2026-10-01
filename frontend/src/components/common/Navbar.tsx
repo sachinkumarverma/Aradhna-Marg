@@ -86,14 +86,16 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
               <div className="flex items-center gap-3 border-l border-slate-200 pl-6 ml-2">
                 <LanguageSwitcher />
 
-                <Button
-                  size="sm"
-                  leftIcon={<Heart className="w-3.5 h-3.5 fill-white" />}
-                  className="bg-saffron hover:brightness-90 text-white font-bold rounded-full px-4 shadow-md hover:shadow-lg transition-all text-xs font-hindi-heading"
-                  style={{ fontFamily: '"Anek Devanagari", sans-serif' }}
-                >
-                  {t('navigation.supportUs')}
-                </Button>
+                <Link to="/support-us">
+                  <Button
+                    size="sm"
+                    leftIcon={<Heart className="w-3.5 h-3.5 fill-white" />}
+                    className="bg-saffron hover:brightness-90 text-white font-bold rounded-full px-4 shadow-md hover:shadow-lg transition-all text-xs font-hindi-heading cursor-pointer"
+                    style={{ fontFamily: '"Anek Devanagari", sans-serif' }}
+                  >
+                    {t('navigation.supportUs')}
+                  </Button>
+                </Link>
                 <Link
                   to="/search"
                   className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center cursor-pointer hover:bg-orange-50 hover:text-saffron transition-colors text-slate-600"
@@ -124,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
           className="fixed inset-0 z-40 bg-cream pt-24 px-4 pb-6 md:hidden overflow-y-auto"
         >
           <div className="flex flex-col gap-4">
-            <Link to="/search" className="relative mb-4 block">
+            <Link to="/search" onClick={() => setMobileMenuOpen(false)} className="relative mb-4 block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
@@ -138,11 +140,21 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
               <Link
                 key={link.path}
                 to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
                 className="text-xl font-bold font-hindi-heading text-darkBrown py-3 border-b border-black/5 flex items-center justify-between"
               >
                 <span>{link.name}</span>
               </Link>
             ))}
+
+            <Link
+              to="/support-us"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-3.5 bg-saffron text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md font-hindi-heading mt-2 cursor-pointer"
+            >
+              <Heart className="w-4 h-4 fill-white" />
+              <span>{t('navigation.supportUs')}</span>
+            </Link>
           </div>
         </motion.div>
       )}
