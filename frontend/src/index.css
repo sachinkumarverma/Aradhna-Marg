@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700;800&family=Hind:wght@400;500;600;700&family=Mukta:wght@400;500;600;700&family=Rozha+One&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap');
 
 @tailwind base;
@@ -21,7 +21,7 @@
   }
 
   body {
-    font-family: 'Anek Devanagari', 'Outfit', 'Hind', sans-serif;
+    font-family: inherit;
     @apply bg-[#F9F7F3] text-darkBrown antialiased selection:bg-saffron/20 selection:text-saffron;
   }
 
@@ -38,7 +38,7 @@
 
 @layer utilities {
   .font-hindi-heading {
-    font-family: 'Anek Devanagari', 'Hind', sans-serif;
+    font-family: 'Outfit', 'Anek Devanagari', 'Hind', sans-serif !important;
   }
   .font-hindi-body {
     font-family: 'Anek Devanagari', 'Hind', 'Mukta', sans-serif;
@@ -54,6 +54,9 @@
   }
   .font-hindi-sans {
     font-family: 'Anek Devanagari', 'Hind', sans-serif;
+  }
+  .font-legal {
+    font-family: 'Tiro Devanagari Hindi', 'Lora', 'Merriweather', Georgia, serif;
   }
 
   /* Centered Icon + Text Flex Primitive Utilities */

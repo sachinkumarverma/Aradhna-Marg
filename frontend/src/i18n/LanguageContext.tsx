@@ -17,6 +17,25 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const STORAGE_KEY = 'aradhnamarg_lang';
 
+function parseBilingualString(val: any, lang: LanguageMode): string {
+  if (!val || typeof val !== 'string') return typeof val === 'string' ? val : '';
+  const trimmed = val.trim();
+
+  // Format: "English (Hindi)" e.g. "Morning Bhajans (प्रातःकालीन भजन)"
+  const enWithHiMatch = trimmed.match(/^([^()]+?)\s*\(([\u0900-\u097F\s.,-]+)\)$/);
+  if (enWithHiMatch) {
+    return lang === 'en' ? enWithHiMatch[1].trim() : enWithHiMatch[2].trim();
+  }
+
+  // Format: "Hindi (English)" e.g. "प्रातःकालीन भजन (Morning Bhajans)"
+  const hiWithEnMatch = trimmed.match(/^([\u0900-\u097F\s.,-]+?)\s*\(([A-Za-z0-9\s.,-]+)\)$/);
+  if (hiWithEnMatch) {
+    return lang === 'en' ? hiWithEnMatch[2].trim() : hiWithEnMatch[1].trim();
+  }
+
+  return trimmed;
+}
+
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageMode>(() => {
     try {
@@ -68,6 +87,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const getLocalizedField = (item: any, fieldName: string): string => {
     if (!item) return '';
+    const capitalized = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+
     if (language === 'en') {
       const enVal =
         item[`${fieldName}_en`] ||
@@ -91,18 +112,42 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         (fieldName === 'excerpt' ? item['excerpt_en'] || item['displayExcerpt'] : undefined);
 
       if (enVal && typeof enVal === 'string' && enVal.trim() !== '') {
-        return enVal;
+        return parseBilingualString(enVal, 'en');
       }
 
-      // Check display field fallback
-      const capitalized = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
-      const displayVal =
-        item[`display${capitalized}`] || item.displayDescription || item.displayTitle || item.displayName;
+      // Check display field fallback only for matching field types
+      let displayVal: any = item[`display${capitalized}`];
+      if (!displayVal) {
+        if (fieldName === 'title' || fieldName === 'name') {
+          displayVal = item.displayTitle || item.displayName;
+        } else if (fieldName === 'description' || fieldName === 'short_description' || fieldName === 'excerpt') {
+          displayVal = item.displayDescription || item.displayExcerpt;
+        } else if (fieldName === 'content') {
+          displayVal = item.displayContent;
+        }
+      }
+
       if (displayVal && typeof displayVal === 'string' && displayVal.trim() !== '') {
-        return displayVal;
+        return parseBilingualString(displayVal, 'en');
+      }
+
+      const defaultRaw = item[fieldName] || item[`${fieldName}_en`] || '';
+      return parseBilingualString(defaultRaw, 'en');
+    }
+
+    let hiVal = item[`${fieldName}_hi`] || item[`hi_${fieldName}`] || item[fieldName];
+
+    if (!hiVal) {
+      if (fieldName === 'title' || fieldName === 'name') {
+        hiVal = item.displayTitle || item.displayName;
+      } else if (fieldName === 'description' || fieldName === 'short_description' || fieldName === 'excerpt') {
+        hiVal = item.displayDescription || item.displayExcerpt;
+      } else if (fieldName === 'content') {
+        hiVal = item.displayContent;
       }
     }
-    return item[fieldName] || item[`${fieldName}_hi`] || item.displayDescription || item.displayTitle || '';
+
+    return parseBilingualString(hiVal || '', 'hi');
   };
 
   return (

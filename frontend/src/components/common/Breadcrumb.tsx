@@ -33,9 +33,17 @@ const breadcrumbsKeyMap: Record<string, string> = {
   'दिव्य वीडियो': 'breadcrumbs.videos',
   Videos: 'breadcrumbs.videos',
   'खोज परिणाम': 'breadcrumbs.search',
-  'Search Results': 'breadcrumbs.search',
   'खोजें (Explore)': 'breadcrumbs.explore',
-  Explore: 'breadcrumbs.explore'
+  Explore: 'breadcrumbs.explore',
+  'नियम व शर्तें': 'breadcrumbs.terms',
+  'Terms of Service': 'breadcrumbs.terms',
+  अस्वीकरण: 'breadcrumbs.disclaimer',
+  Disclaimer: 'breadcrumbs.disclaimer',
+  'गोपनीयता नीति': 'breadcrumbs.privacy',
+  'Privacy Policy': 'breadcrumbs.privacy',
+  'हमारे बारे में': 'breadcrumbs.about',
+  'About Us': 'breadcrumbs.about',
+  About: 'breadcrumbs.about'
 };
 
 export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', variant = 'light' }) => {
@@ -73,7 +81,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
             </span>
             {isLast || !item.to ? (
               <span
-                className={`font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md inline-block py-0.5 translate-y-[2px] ${
+                className={`font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md inline-flex items-center ${
                   isDark ? 'text-amber-400' : 'text-saffron'
                 }`}
                 title={displayLabel}
@@ -83,7 +91,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
             ) : (
               <Link
                 to={item.to}
-                className={`transition-colors font-medium inline-block py-0.5 translate-y-[2px] ${
+                className={`transition-colors font-medium inline-flex items-center ${
                   isDark ? 'text-slate-200 hover:text-white' : 'text-slate-600 hover:text-saffron'
                 }`}
               >

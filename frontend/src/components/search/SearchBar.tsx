@@ -57,7 +57,7 @@ export const SearchBar: React.FC = () => {
           isOpen ? 'shadow-2xl ring-2 ring-saffron/50 rounded-b-none' : 'shadow-md hover:shadow-lg'
         )}
       >
-        <Search className="w-5 h-5 text-saffron absolute left-4" />
+        <Search className="w-5 h-5 text-saffron absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -69,7 +69,7 @@ export const SearchBar: React.FC = () => {
           onFocus={() => setIsOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={t('common.searchPlaceholder')}
-          className="w-full h-14 bg-transparent pl-12 pr-12 outline-none text-darkBrown placeholder:text-darkBrown/40 pt-2.5 font-hindi-body"
+          className="w-full h-14 bg-transparent pl-12 pr-12 outline-none text-darkBrown placeholder:text-darkBrown/40 font-hindi-body flex items-center leading-normal"
         />
         {query && (
           <button

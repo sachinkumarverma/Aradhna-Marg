@@ -42,9 +42,18 @@ export const en: TranslationKeys = {
     readPdf: 'Read PDF',
     page: 'Page',
     recentSearches: 'Recent Searches',
-    trendingNow: 'Trending Now'
+    trendingNow: 'Trending Now',
+    searchCategories: 'Search categories...',
+    searchDeities: 'Search deities...',
+    view: 'View',
+    exploreDeity: 'Explore'
   },
   content: {
+    categoriesSubtitle:
+      'Complete directory of sacred bhajans, katha, stotra, chalisa, and mantras categorized for easy exploration.',
+    deitiesSubtitle: 'Sacred darshan, stuti, aarti, and devotional bhajan collection of revered deities.',
+    bhajansAndLiterature: 'Bhajans & Literature',
+    allSacredLiterature: 'All sacred collections and literature',
     relatedBhajans: 'Related Bhajans',
     relatedArticles: 'Related Articles',
     relatedFestivals: 'Related Festivals',
@@ -84,9 +93,22 @@ export const en: TranslationKeys = {
     categories: 'Categories',
     videos: 'Videos',
     search: 'Search Results',
-    explore: 'Explore'
+    explore: 'Explore',
+    about: 'About Us',
+    terms: 'Terms of Service',
+    disclaimer: 'Disclaimer',
+    privacy: 'Privacy Policy'
+  },
+  legal: {
+    about: 'About Us',
+    terms: 'Terms of Service',
+    disclaimer: 'Disclaimer',
+    privacy: 'Privacy Policy'
   },
   empty: {
+    noCategories: 'No Categories Found',
+    noDeities: 'No Deities Found',
+    noItemsDesc: 'Please try searching with different keywords.',
     noBhajans: 'No Bhajans Found',
     noBhajansDesc: 'No bhajans matched your search criteria. Please try another keyword or filter.',
     noArticles: 'No Articles Found',
@@ -111,6 +133,10 @@ export const en: TranslationKeys = {
     quickLinks: 'Quick Links',
     sacredContent: 'Sacred Content',
     supportText: 'Support the propagation of Sanatan Dharma',
-    copyright: 'All rights reserved © Aradhna Marg'
+    copyright: 'All rights reserved © Aradhna Marg',
+    about: 'About Us',
+    terms: 'Terms of Service',
+    disclaimer: 'Disclaimer',
+    privacy: 'Privacy Policy'
   }
 };

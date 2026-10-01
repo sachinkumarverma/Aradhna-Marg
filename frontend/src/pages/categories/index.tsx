@@ -5,6 +5,7 @@ import { CustomLoader } from '@components/common/CustomLoader';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
+import { IconText } from '@components/common/IconText';
 
 export const CategoriesList: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
@@ -55,7 +56,7 @@ export const CategoriesList: React.FC = () => {
                 {t('navigation.categories')}
               </h1>
               <p className="text-slate-600 text-sm sm:text-base md:text-lg font-medium leading-relaxed font-hindi-heading">
-                भजन, कथा, स्तोत्र एवं पावन मंत्रों की विषय-वार संपूर्ण सूचकांक श्रेणियाँ।
+                {t('content.categoriesSubtitle')}
               </p>
             </div>
 
@@ -67,7 +68,7 @@ export const CategoriesList: React.FC = () => {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="श्रेणी खोजें..."
+                  placeholder={t('common.searchCategories')}
                   className="w-full pl-10 pr-4 pt-3 pb-2 bg-transparent outline-none text-sm font-medium text-darkBrown placeholder:text-gray-400 font-hindi-body"
                 />
               </div>
@@ -119,17 +120,23 @@ export const CategoriesList: React.FC = () => {
                             {catDesc}
                           </p>
                         ) : (
-                          <p className="text-xs text-slate-500 font-hindi-body italic">समस्त पावन संग्रह एवं साहित्य</p>
+                          <p className="text-xs text-slate-500 font-hindi-body italic">
+                            {t('content.allSacredLiterature')}
+                          </p>
                         )}
                       </div>
                     </div>
 
-                    {/* Bottom Link Bar - देखें text aligned perfectly on same baseline as ArrowRight */}
+                    {/* Bottom Link Bar - View text aligned perfectly on same line as ArrowRight */}
                     <div className="flex items-center justify-end mt-3.5 pt-2.5 border-t border-gray-100/80 font-hindi-heading">
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-saffron group-hover:translate-x-1 transition-transform leading-none">
-                        <span className="translate-y-[2px] inline-block pt-[1px]">देखें</span>
-                        <ArrowRight className="w-3.5 h-3.5 shrink-0" />
-                      </span>
+                      <IconText
+                        icon={<ArrowRight className="w-3.5 h-3.5 shrink-0" />}
+                        iconPosition="right"
+                        gap="gap-1"
+                        align="center"
+                        className="text-xs font-bold text-saffron group-hover:translate-x-1 transition-transform leading-none"
+                        text={t('common.view')}
+                      />
                     </div>
                   </Link>
                 </motion.div>
@@ -139,8 +146,8 @@ export const CategoriesList: React.FC = () => {
         ) : (
           <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 p-8">
             <Compass className="w-12 h-12 text-saffron mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">कोई श्रेणी नहीं मिली</h3>
-            <p className="text-slate-500 text-sm font-hindi-body">कृपया भिन्न खोज शब्द दर्ज करें।</p>
+            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noCategories')}</h3>
+            <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noItemsDesc')}</p>
           </div>
         )}
       </div>

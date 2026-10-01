@@ -261,7 +261,7 @@ export const PuranDetail: React.FC = () => {
                 icon={<BookOpen className="w-6 h-6 text-saffron" />}
                 gap="gap-2.5"
                 text={
-                  <h2 className="text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[2.5px]">
+                  <h2 className="text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                     {t('content.puranasSubtitle')}
                   </h2>
                 }
@@ -285,7 +285,7 @@ export const PuranDetail: React.FC = () => {
                   icon={<FileText className="w-6 h-6 text-saffron" />}
                   gap="gap-2.5"
                   text={
-                    <h2 className="text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[2.5px]">
+                    <h2 className="text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                       {t('common.readPdf')}
                     </h2>
                   }

@@ -22,6 +22,7 @@ import { PuranasList } from '@pages/puranas';
 import { PuranDetail } from '@pages/puranas/detail';
 import { CategoriesList } from '@pages/categories';
 import { DeitiesList } from '@pages/deities';
+import { TermsPage, DisclaimerPage, PrivacyPolicyPage, AboutPage } from '@pages/legal';
 
 // Lazy loaded placeholders for future pages (Admin)
 const AdminYoutube = lazy(() => import('../pages/admin/youtube').then((m) => ({ default: m.AdminYoutube })));
@@ -164,6 +165,22 @@ const router = createBrowserRouter([
       {
         path: 'deities/:id',
         element: <CollectionDetails />
+      },
+      {
+        path: 'about',
+        element: <AboutPage />
+      },
+      {
+        path: 'terms',
+        element: <TermsPage />
+      },
+      {
+        path: 'disclaimer',
+        element: <DisclaimerPage />
+      },
+      {
+        path: 'privacy',
+        element: <PrivacyPolicyPage />
       },
       {
         path: '*',

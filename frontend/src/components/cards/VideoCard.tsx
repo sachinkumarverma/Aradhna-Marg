@@ -114,9 +114,10 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
           <IconText
             icon={<ChevronRight className="w-3.5 h-3.5" />}
+            iconPosition="right"
             gap="gap-1"
             align="center"
-            className="text-xs font-bold text-saffron group-hover:text-orange-600 transition-colors shrink-0 font-hindi-heading"
+            className="text-xs font-bold text-saffron group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all shrink-0 font-hindi-heading"
             text={<span>{t('common.watch')}</span>}
           />
         </div>

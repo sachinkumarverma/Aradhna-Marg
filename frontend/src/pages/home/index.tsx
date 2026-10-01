@@ -118,13 +118,13 @@ export const Home: React.FC = () => {
             {/* Master Search Bar */}
             <motion.form variants={fadeUpVariant} onSubmit={handleSearchSubmit} className="w-full max-w-2xl relative">
               <div className="relative flex items-center bg-white rounded-full p-2 shadow-2xl">
-                <Search className="w-6 h-6 text-saffron absolute left-6 pointer-events-none" />
+                <Search className="w-6 h-6 text-saffron absolute left-6 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('common.searchPlaceholder')}
-                  className="w-full h-12 md:h-14 bg-transparent pl-12 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading pt-2.5"
+                  className="w-full h-12 md:h-14 bg-transparent pl-16 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading flex items-center leading-normal"
                 />
                 <Button
                   type="submit"
@@ -181,7 +181,7 @@ export const Home: React.FC = () => {
                   icon={<Play className="w-7 h-7 text-saffron fill-saffron" />}
                   gap="gap-3"
                   text={
-                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
+                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                       <span className="text-saffron">{t('content.divineVideos')}</span>
                     </h2>
                   }
@@ -319,7 +319,7 @@ export const Home: React.FC = () => {
                   icon={<Flame className="w-6 h-6 text-saffron fill-saffron" />}
                   gap="gap-2.5"
                   text={
-                    <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
+                    <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                       <span className="text-saffron">{t('content.trendingBhajans')}</span>
                     </h3>
                   }
@@ -386,7 +386,7 @@ export const Home: React.FC = () => {
                   icon={<BookOpen className="w-7 h-7 text-saffron fill-saffron" />}
                   gap="gap-3"
                   text={
-                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
+                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                       <span className="text-saffron">{t('content.articlesAndInsights')}</span>
                     </h2>
                   }
@@ -436,7 +436,7 @@ export const Home: React.FC = () => {
                 icon={<Sparkles className="w-7 h-7 text-saffron fill-saffron" />}
                 gap="gap-3"
                 text={
-                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                     <span className="text-saffron">{t('content.popularDeities')}</span>
                   </h2>
                 }
@@ -464,7 +464,7 @@ export const Home: React.FC = () => {
                 icon={<Scroll className="w-7 h-7 text-saffron stroke-[2.2]" />}
                 gap="gap-3"
                 text={
-                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
+                  <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                     <span className="text-saffron">{t('content.scripturesAndPuranas')}</span>
                   </h2>
                 }
@@ -515,7 +515,7 @@ export const Home: React.FC = () => {
                   icon={<Calendar className="w-7 h-7 text-saffron fill-saffron/20" />}
                   gap="gap-3"
                   text={
-                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight translate-y-[3px]">
+                    <h2 className="text-2xl md:text-3xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                       <span className="text-saffron">{t('navigation.festivals')}</span>
                     </h2>
                   }

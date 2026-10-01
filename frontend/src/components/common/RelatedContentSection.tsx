@@ -104,19 +104,20 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-xs font-bold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 font-hindi-body pt-1 pb-0.5 leading-relaxed">
-                    {bhajan.title}
+                    {getLocalizedField(bhajan, 'title') || bhajan.title}
                   </h4>
-                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500 font-medium font-hindi-body">
-                    <span className="truncate">
-                      {bhajan.god_name || bhajan.category_name || t('navigation.bhajans')}
+                  <div className="flex items-center gap-2.5 mt-1 text-[11px] text-gray-500 font-medium font-hindi-body leading-none">
+                    <span className="truncate leading-none">
+                      {getLocalizedField(bhajan, 'god_name') ||
+                        bhajan.god_name ||
+                        bhajan.category_name ||
+                        t('navigation.bhajans')}
                     </span>
                     {bhajan.views > 0 && (
-                      <IconText
-                        icon={<Eye className="w-3 h-3" />}
-                        gap="gap-0.5"
-                        className="shrink-0"
-                        text={bhajan.views}
-                      />
+                      <span className="inline-flex items-center gap-1 shrink-0 text-slate-500 leading-none">
+                        <Eye className="w-3.5 h-3.5 text-slate-400 shrink-0 -translate-y-[1px]" />
+                        <span className="leading-none">{bhajan.views}</span>
+                      </span>
                     )}
                   </div>
                 </div>

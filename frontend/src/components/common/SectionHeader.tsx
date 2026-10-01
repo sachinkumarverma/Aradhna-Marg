@@ -60,11 +60,11 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
         className="min-w-0"
         text={
           <div className="flex items-center gap-2.5 min-w-0">
-            <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-tight inline-block translate-y-[2.5px]">
+            <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-tight inline-block">
               {displayTitle}
             </h2>
             {displaySubtitle && displaySubtitle !== displayTitle && (
-              <span className="text-sm sm:text-base font-semibold text-darkBrown/75 font-hindi-heading leading-tight hidden sm:inline-block translate-y-[2.5px]">
+              <span className="text-sm sm:text-base font-semibold text-darkBrown/75 font-hindi-heading leading-tight hidden sm:inline-block">
                 ({displaySubtitle})
               </span>
             )}

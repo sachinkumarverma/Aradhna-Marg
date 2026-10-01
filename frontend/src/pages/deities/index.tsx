@@ -5,6 +5,7 @@ import { CustomLoader } from '@components/common/CustomLoader';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
+import { IconText } from '@components/common/IconText';
 
 export const DeitiesList: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
@@ -57,7 +58,7 @@ export const DeitiesList: React.FC = () => {
                 {t('navigation.gods')}
               </h1>
               <p className="text-amber-100/90 text-sm sm:text-base md:text-lg font-medium leading-relaxed font-hindi-heading">
-                पावन देवी-देवताओं के दर्शन, स्तुति, आरती एवं पावन भजन संग्रह।
+                {t('content.deitiesSubtitle')}
               </p>
             </div>
 
@@ -69,7 +70,7 @@ export const DeitiesList: React.FC = () => {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="देवी-देवता खोजें..."
+                  placeholder={t('common.searchDeities')}
                   className="w-full pl-10 pr-4 pt-3 pb-2 bg-transparent outline-none text-sm font-medium text-white placeholder:text-amber-200/50 font-hindi-body"
                 />
               </div>
@@ -117,10 +118,15 @@ export const DeitiesList: React.FC = () => {
                       </h3>
 
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/20 font-hindi-heading text-xs text-amber-200/90 font-medium">
-                        <span>भजन एवं साहित्य</span>
-                        <span className="inline-flex items-center text-saffron font-bold group-hover:translate-x-1 transition-transform">
-                          दर्शन करें <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                        </span>
+                        <span>{t('content.bhajansAndLiterature')}</span>
+                        <IconText
+                          icon={<ArrowRight className="w-3.5 h-3.5 ml-0.5 shrink-0" />}
+                          iconPosition="right"
+                          gap="gap-1"
+                          align="center"
+                          className="text-saffron font-bold group-hover:translate-x-1 transition-transform"
+                          text={t('common.exploreDeity')}
+                        />
                       </div>
                     </div>
                   </Link>
@@ -131,8 +137,8 @@ export const DeitiesList: React.FC = () => {
         ) : (
           <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 p-8">
             <Sparkles className="w-12 h-12 text-saffron mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">कोई देवी-देवता नहीं मिले</h3>
-            <p className="text-slate-500 text-sm font-hindi-body">कृपया भिन्न खोज शब्द दर्ज करें।</p>
+            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noDeities')}</h3>
+            <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noItemsDesc')}</p>
           </div>
         )}
       </div>

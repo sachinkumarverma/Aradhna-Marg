@@ -40,9 +40,17 @@ export const hi = {
     readPdf: 'PDF पढ़ें',
     page: 'पृष्ठ',
     recentSearches: 'हाल की खोजें',
-    trendingNow: 'लोकप्रिय खोजें'
+    trendingNow: 'लोकप्रिय खोजें',
+    searchCategories: 'श्रेणी खोजें...',
+    searchDeities: 'देवी-देवता खोजें...',
+    view: 'देखें',
+    exploreDeity: 'दर्शन करें'
   },
   content: {
+    categoriesSubtitle: 'भजन, कथा, स्तोत्र एवं पावन मंत्रों की विषय-वार संपूर्ण सूचकांक श्रेणियाँ।',
+    deitiesSubtitle: 'पावन देवी-देवताओं के दर्शन, स्तुति, आरती एवं पावन भजन संग्रह।',
+    bhajansAndLiterature: 'भजन एवं साहित्य',
+    allSacredLiterature: 'समस्त पावन संग्रह एवं साहित्य',
     relatedBhajans: 'संबंधित भजन',
     relatedArticles: 'संबंधित लेख',
     relatedFestivals: 'संबंधित त्योहार',
@@ -82,9 +90,22 @@ export const hi = {
     categories: 'श्रेणियाँ',
     videos: 'दिव्य वीडियो',
     search: 'खोज परिणाम',
-    explore: 'खोजें (Explore)'
+    explore: 'खोजें (Explore)',
+    about: 'हमारे बारे में',
+    terms: 'नियम व शर्तें',
+    disclaimer: 'अस्वीकरण',
+    privacy: 'गोपनीयता नीति'
+  },
+  legal: {
+    about: 'हमारे बारे में',
+    terms: 'नियम व शर्तें',
+    disclaimer: 'अस्वीकरण',
+    privacy: 'गोपनीयता नीति'
   },
   empty: {
+    noCategories: 'कोई श्रेणी नहीं मिली',
+    noDeities: 'कोई देवी-देवता नहीं मिले',
+    noItemsDesc: 'कृपया भिन्न खोज शब्द दर्ज करें।',
     noBhajans: 'कोई भजन नहीं मिला',
     noBhajansDesc: 'आपकी खोज के अनुसार कोई परिणाम प्राप्त नहीं हुआ। कृपया अन्य शब्द या फ़िल्टर का प्रयास करें।',
     noArticles: 'कोई लेख नहीं मिला',
@@ -109,7 +130,11 @@ export const hi = {
     quickLinks: 'त्वरित संपर्क',
     sacredContent: 'पावन सामग्री',
     supportText: 'धर्म प्रचार एवं सेवा में सहयोग करें',
-    copyright: 'सर्वाधिकार सुरक्षित © आराधना मार्ग'
+    copyright: 'सर्वाधिकार सुरक्षित © आराधना मार्ग',
+    about: 'हमारे बारे में',
+    terms: 'नियम व शर्तें',
+    disclaimer: 'अस्वीकरण',
+    privacy: 'गोपनीयता नीति'
   }
 };
 

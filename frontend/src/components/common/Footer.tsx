@@ -95,6 +95,26 @@ export const Footer: React.FC = () => {
                   {t('navigation.explore')}
                 </Link>
               </li>
+              <li>
+                <Link to="/about" className="hover:text-white transition-colors">
+                  {t('footer.about')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="hover:text-white transition-colors">
+                  {t('footer.terms')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/disclaimer" className="hover:text-white transition-colors">
+                  {t('footer.disclaimer')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="hover:text-white transition-colors">
+                  {t('footer.privacy')}
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

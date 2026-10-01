@@ -107,17 +107,17 @@ export const FestivalDetail: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-xl p-6 sm:p-10 border border-gray-100 shadow-sm"
             >
-              {/* Title Header Row with Date Badge to the Right of Name & Special Badge at Right End */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+              {/* Title Header Row with Name, Date Badge & Special Badge all on the same line */}
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 {/* Left: Festival Name + Date Badge on its right */}
-                <div className="flex flex-wrap items-center gap-3.5">
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight leading-tight font-hindi-heading pt-1 pb-1">
+                <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-darkBrown tracking-tight leading-tight font-hindi-heading">
                     {name}
                   </h1>
                   {festival.festival_date && (
-                    <span className="px-3.5 py-1.5 bg-amber-50 text-saffron font-bold text-xs sm:text-sm rounded-full border border-amber-200 inline-flex items-center gap-2 font-hindi-body shrink-0 -translate-y-2 sm:-translate-y-2.5 shadow-xs">
-                      <Calendar className="w-4 h-4 text-orange-600 fill-orange-500/25 shrink-0" />
-                      <span className="pt-[1px] inline-block">
+                    <span className="px-2.5 py-1 bg-amber-50 text-saffron font-bold text-xs rounded-full border border-amber-200 inline-flex items-center gap-1.5 font-hindi-body shrink-0 shadow-xs">
+                      <Calendar className="w-3.5 h-3.5 text-orange-600 fill-orange-500/25 shrink-0 -translate-y-[0.5px]" />
+                      <span className="translate-y-[1px] inline-block leading-none">
                         {new Date(festival.festival_date).toLocaleDateString(language === 'en' ? 'en-US' : 'hi-IN', {
                           year: 'numeric',
                           month: 'long',
@@ -129,9 +129,10 @@ export const FestivalDetail: React.FC = () => {
                 </div>
 
                 {/* Right End: Special / Category Badge */}
-                <span className="px-3.5 py-1.5 bg-orange-50 text-orange-700 font-bold text-xs sm:text-sm rounded-full border border-orange-200 shrink-0 font-hindi-heading inline-flex items-center self-start md:self-auto -translate-y-2 sm:-translate-y-2.5 shadow-xs">
-                  <span className="pt-[1px] inline-block">
-                    {festival.category || 'Festival Special (त्योहार विशेष)'}
+                <span className="px-2.5 py-1 bg-orange-50 text-orange-700 font-bold text-xs rounded-full border border-orange-200 shrink-0 font-hindi-heading inline-flex items-center shadow-xs">
+                  <span>
+                    {getLocalizedField(festival, 'category') ||
+                      (language === 'hi' ? 'त्योहार विशेष' : 'Festival Special')}
                   </span>
                 </span>
               </div>
