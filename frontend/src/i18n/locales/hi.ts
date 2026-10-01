@@ -43,6 +43,11 @@ export const hi = {
     trendingNow: 'लोकप्रिय खोजें',
     searchCategories: 'श्रेणी खोजें...',
     searchDeities: 'देवी-देवता खोजें...',
+    searchPuranas: 'पुराण खोजें...',
+    searchArticles: 'धार्मिक लेख खोजें...',
+    searchVideos: 'वीडियो खोजें...',
+    searchFestivals: 'त्यौहार एवं व्रत खोजें...',
+    searchBhajans: 'भजन खोजें...',
     view: 'देखें',
     exploreDeity: 'दर्शन करें'
   },

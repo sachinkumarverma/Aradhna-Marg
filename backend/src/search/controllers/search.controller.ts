@@ -8,16 +8,19 @@ class SearchController {
     try {
       const q = (req.query.q as string) || '';
       const sort = req.query.sort as any;
+      const type = (req.query.type as string) || 'ALL';
       const { page, limit } = getPaginationData(req.query as any);
 
       const filters = {
         hasPdf: req.query.hasPdf === 'true' ? true : undefined,
         hasVideo: req.query.hasVideo === 'true' ? true : undefined,
-        categoryId: req.query.categoryId as string
+        categoryId: req.query.categoryId as string,
+        type
       };
 
       const result = await searchService.executeSearch({
         query: q,
+        type,
         sort,
         filters,
         page,
@@ -35,7 +38,8 @@ class SearchController {
   public getSuggestions = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const q = (req.query.q as string) || '';
-      const suggestions = await searchService.getSuggestions(q);
+      const type = (req.query.type as string) || 'ALL';
+      const suggestions = await searchService.getSuggestions(q, type);
       return sendSuccess(res, 'Suggestions fetched', { suggestions });
     } catch (error) {
       next(error);

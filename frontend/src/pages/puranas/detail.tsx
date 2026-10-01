@@ -224,23 +224,27 @@ export const PuranDetail: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 font-hindi-body">
+              <div className="flex flex-wrap items-center gap-4 font-hindi-heading">
                 {pdfUrl && (
                   <>
                     <button
+                      type="button"
                       onClick={() => {
                         setShowPdfViewer(true);
                         document.getElementById('pdf-viewer-section')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="inline-flex items-center justify-center px-6 py-3 bg-saffron text-white rounded-2xl font-bold text-sm hover:brightness-110 transition-all shadow-lg hover:shadow-saffron/20"
+                      className="h-11 px-6 inline-flex items-center justify-center gap-2.5 bg-saffron hover:bg-orange-600 text-white rounded-full font-bold text-sm hover:brightness-105 transition-all shadow-lg hover:shadow-saffron/20 cursor-pointer"
                     >
-                      <IconText icon={<BookOpen className="w-4 h-4" />} gap="gap-2.5" text={t('common.readPdf')} />
+                      <BookOpen className="w-4 h-4 shrink-0" />
+                      <span>{t('common.readPdf')}</span>
                     </button>
                     <button
+                      type="button"
                       onClick={handleDownload}
-                      className="inline-flex items-center justify-center px-6 py-3 bg-white/10 text-amber-100 border border-amber-200/20 rounded-2xl font-bold text-sm hover:bg-white/20 transition-all shadow-sm"
+                      className="h-11 px-6 inline-flex items-center justify-center gap-2.5 bg-white/10 hover:bg-white/20 text-amber-100 border border-amber-200/20 rounded-full font-bold text-sm transition-all shadow-sm cursor-pointer"
                     >
-                      <IconText icon={<Download className="w-4 h-4" />} gap="gap-2.5" text={t('common.download')} />
+                      <Download className="w-4 h-4 shrink-0" />
+                      <span>{t('common.download')}</span>
                     </button>
                   </>
                 )}

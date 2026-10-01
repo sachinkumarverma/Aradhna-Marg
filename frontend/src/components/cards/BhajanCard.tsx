@@ -9,6 +9,8 @@ import { useTranslation } from '@i18n/LanguageContext';
 interface BhajanCardProps {
   id?: string | number;
   title: string;
+  englishTitle?: string;
+  titleEn?: string;
   godName?: string;
   views?: number;
   duration?: string;
@@ -22,6 +24,8 @@ import { IconText } from '@components/common/IconText';
 export const BhajanCard: React.FC<BhajanCardProps> = ({
   id,
   title,
+  englishTitle,
+  titleEn,
   godName,
   duration,
   thumbnailUrl,
@@ -33,6 +37,8 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
   const cardId = String(id || slug || title);
   const { isFavorite, toggleFavorite } = useFavorites();
   const hearted = isFavorite(cardId);
+  const subtitle = englishTitle || titleEn;
+  const showEnglish = subtitle && subtitle.trim().toLowerCase() !== title.trim().toLowerCase();
 
   return (
     <Card className="group p-0 relative isolate overflow-hidden flex flex-col h-full bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] border border-amber-100/90 hover:border-saffron/60 hover:shadow-xl hover:shadow-saffron/10 hover:-translate-y-1 transition-all duration-300 rounded-xl">
@@ -125,6 +131,9 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
           <h3 className="font-bold text-darkBrown text-base line-clamp-2 pt-0.5 pb-0.5 leading-snug group-hover:text-saffron transition-colors font-hindi-heading">
             {title}
           </h3>
+          {showEnglish && (
+            <p className="text-xs text-slate-500 font-sans line-clamp-1 mt-0.5 font-medium">{subtitle}</p>
+          )}
         </div>
 
         {/* Devotional Footer */}

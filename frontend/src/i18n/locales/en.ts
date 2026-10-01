@@ -45,6 +45,11 @@ export const en: TranslationKeys = {
     trendingNow: 'Trending Now',
     searchCategories: 'Search categories...',
     searchDeities: 'Search deities...',
+    searchPuranas: 'Search Puranas...',
+    searchArticles: 'Search articles...',
+    searchVideos: 'Search videos...',
+    searchFestivals: 'Search festivals...',
+    searchBhajans: 'Search bhajans...',
     view: 'View',
     exploreDeity: 'Explore'
   },

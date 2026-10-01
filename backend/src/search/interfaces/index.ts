@@ -1,6 +1,8 @@
 export interface ISearchOptions {
   query: string;
+  type?: string;
   filters?: {
+    type?: string;
     categoryId?: string;
     godId?: string;
     festivalId?: string;

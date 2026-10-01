@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Search, ChevronRight } from 'lucide-react';
-import { CustomLoader } from '@components/common/CustomLoader';
+import { FestivalCardSkeleton } from '@components/common/SkeletonLoader';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
@@ -61,7 +61,7 @@ export const FestivalsList: React.FC = () => {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  placeholder={t('common.searchPlaceholder')}
+                  placeholder={t('common.searchFestivals')}
                   className="w-full pl-10 pr-4 pt-3 pb-2 bg-transparent outline-none text-sm font-medium text-darkBrown placeholder:text-gray-400 font-hindi-body"
                 />
               </div>
@@ -71,7 +71,11 @@ export const FestivalsList: React.FC = () => {
 
         {/* Festivals Grid */}
         {loading ? (
-          <CustomLoader fullScreen />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <FestivalCardSkeleton key={n} />
+            ))}
+          </div>
         ) : festivals.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">

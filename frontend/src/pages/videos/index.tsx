@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Video as VideoIcon } from 'lucide-react';
-import { CustomLoader } from '@components/common/CustomLoader';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiClient } from '@api/client';
 import { VideoCard } from '@components/cards/VideoCard';
+import { VideoGridCardSkeleton } from '@components/common/SkeletonLoader';
 import { useTranslation } from '../../i18n/LanguageContext';
 
 export const VideosList = () => {
@@ -63,7 +63,7 @@ export const VideosList = () => {
                 <Search className="w-4 h-4 text-saffron absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder={t('common.searchPlaceholder')}
+                  placeholder={t('common.searchVideos')}
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -101,7 +101,11 @@ export const VideosList = () => {
 
         {/* Grid Section */}
         {loading ? (
-          <CustomLoader fullScreen />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <VideoGridCardSkeleton key={n} />
+            ))}
+          </div>
         ) : videos.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">

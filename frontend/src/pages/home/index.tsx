@@ -31,6 +31,13 @@ import { isShortVideo } from '@utils/videoUtils';
 import { useFavorites } from '@hooks/useFavorites';
 import { useTranslation } from '../../i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import {
+  VideoCardSkeleton,
+  TrendingBhajanSkeleton,
+  ArticleCardSkeleton,
+  PuranaCardSkeleton,
+  FestivalCardSkeleton
+} from '@components/common/SkeletonLoader';
 
 export const Home: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
@@ -198,7 +205,11 @@ export const Home: React.FC = () => {
             </div>
 
             {loading ? (
-              <CustomLoader fullScreen={false} />
+              <div className="flex flex-col gap-5">
+                {[1, 2, 3, 4].map((n) => (
+                  <VideoCardSkeleton key={n} />
+                ))}
+              </div>
             ) : fullVideos.length > 0 || (data?.featuredBhajans && data.featuredBhajans.length > 0) ? (
               <div className="flex flex-col gap-5">
                 {(fullVideos.length > 0 ? fullVideos : data.featuredBhajans).slice(0, 5).map((video: any) => {
@@ -326,9 +337,15 @@ export const Home: React.FC = () => {
                 />
               </div>
 
-              {data?.featuredBhajans && data.featuredBhajans.length > 0 ? (
+              {loading ? (
                 <div className="flex flex-col gap-2.5">
-                  {data.featuredBhajans.slice(0, 6).map((bhajan: any, i: number) => {
+                  {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <TrendingBhajanSkeleton key={n} />
+                  ))}
+                </div>
+              ) : data?.featuredBhajans && data.featuredBhajans.length > 0 ? (
+                <div className="flex flex-col gap-2.5">
+                  {data.featuredBhajans.slice(0, 6).map((bhajan: any) => {
                     const hindiTitle = bhajan.hindi_title || bhajan.title;
                     const englishTitle =
                       bhajan.english_title ||
@@ -377,7 +394,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* 4. SPIRITUAL ARTICLES & STORIES SECTION (1 Row of 3 Articles) */}
-      {data?.featuredArticles && data.featuredArticles.length > 0 && (
+      {(loading || (data?.featuredArticles && data.featuredArticles.length > 0)) && (
         <section className="py-8 md:py-10 bg-white border-y border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-end justify-between mb-5">
@@ -403,25 +420,33 @@ export const Home: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {data.featuredArticles.slice(0, 3).map((article: any, i: number) => (
-                <motion.div
-                  key={article.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.25 }}
-                  className="h-full"
-                >
-                  <ArticleCard
-                    id={article.id}
-                    slug={article.slug}
-                    title={getLocalizedField(article, 'title')}
-                    featuredImageUrl={article.featured_image_url}
-                    excerpt={getLocalizedField(article, 'excerpt')}
-                    categoryName={article.category_name}
-                  />
-                </motion.div>
-              ))}
+              {loading ? (
+                <>
+                  <ArticleCardSkeleton />
+                  <ArticleCardSkeleton />
+                  <ArticleCardSkeleton />
+                </>
+              ) : (
+                data.featuredArticles.slice(0, 3).map((article: any) => (
+                  <motion.div
+                    key={article.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.25 }}
+                    className="h-full"
+                  >
+                    <ArticleCard
+                      id={article.id}
+                      slug={article.slug}
+                      title={getLocalizedField(article, 'title')}
+                      featuredImageUrl={article.featured_image_url}
+                      excerpt={getLocalizedField(article, 'excerpt')}
+                      categoryName={article.category_name}
+                    />
+                  </motion.div>
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -456,7 +481,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* 6. SACRED SCRIPTURES / PURANAS SECTION */}
-      {data?.puranas && data.puranas.length > 0 && (
+      {(loading || (data?.puranas && data.puranas.length > 0)) && (
         <section className="py-8 md:py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-5">
             <div>
@@ -481,32 +506,40 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
-            {data.puranas.map((puran: any, i: number) => (
-              <motion.div
-                key={puran.id}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.25 }}
-                className="h-full"
-              >
-                <PuranaCard
-                  id={puran.id}
-                  slug={puran.slug}
-                  title={getLocalizedField(puran, 'title')}
-                  coverImage={puran.cover_image}
-                  shortDescription={getLocalizedField(puran, 'short_description')}
-                  language={puran.language}
-                  viewCount={puran.views}
-                />
-              </motion.div>
-            ))}
+            {loading ? (
+              <>
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <PuranaCardSkeleton key={n} />
+                ))}
+              </>
+            ) : (
+              data.puranas.map((puran: any) => (
+                <motion.div
+                  key={puran.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.25 }}
+                  className="h-full"
+                >
+                  <PuranaCard
+                    id={puran.id}
+                    slug={puran.slug}
+                    title={getLocalizedField(puran, 'title')}
+                    coverImage={puran.cover_image}
+                    shortDescription={getLocalizedField(puran, 'short_description')}
+                    language={puran.language}
+                    viewCount={puran.views}
+                  />
+                </motion.div>
+              ))
+            )}
           </div>
         </section>
       )}
 
       {/* 7. MAJOR FESTIVALS & VRATS SECTION */}
-      {data?.festivals && data.festivals.length > 0 && (
+      {(loading || (data?.festivals && data.festivals.length > 0)) && (
         <section className="py-8 md:py-10 bg-gradient-to-br from-amber-50 to-orange-50 border-t border-orange-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-5">
@@ -532,57 +565,65 @@ export const Home: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {data.festivals.map((fest: any, i: number) => {
-                const festName = fest.displayName || getLocalizedField(fest, 'name');
-                const festDesc = fest.displayDescription || getLocalizedField(fest, 'short_description');
-                return (
-                  <motion.div
-                    key={fest.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    whileHover={{ y: -5, scale: 1.02 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <Link
-                      to={`/festivals/${fest.slug || fest.id}`}
-                      className="group block bg-white rounded-xl p-4 border border-orange-100/80 shadow-sm hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex items-center gap-4 cursor-pointer"
+              {loading ? (
+                <>
+                  <FestivalCardSkeleton />
+                  <FestivalCardSkeleton />
+                  <FestivalCardSkeleton />
+                </>
+              ) : (
+                data.festivals.map((fest: any) => {
+                  const festName = fest.displayName || getLocalizedField(fest, 'name');
+                  const festDesc = fest.displayDescription || getLocalizedField(fest, 'short_description');
+                  return (
+                    <motion.div
+                      key={fest.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      whileHover={{ y: -5, scale: 1.02 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.25 }}
                     >
-                      {fest.banner_image ? (
-                        <div className="aspect-video w-20 rounded overflow-hidden shrink-0 bg-gray-100">
-                          <img
-                            src={fest.banner_image}
-                            alt={festName}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
+                      <Link
+                        to={`/festivals/${fest.slug || fest.id}`}
+                        className="group block bg-white rounded-xl p-4 border border-orange-100/80 shadow-sm hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex items-center gap-4 cursor-pointer"
+                      >
+                        {fest.banner_image ? (
+                          <div className="aspect-video w-20 rounded overflow-hidden shrink-0 bg-gray-100">
+                            <img
+                              src={fest.banner_image}
+                              alt={festName}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-16 h-16 rounded bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
+                            <Calendar className="w-6 h-6" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
+                          <div>
+                            <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading">
+                              {festName}
+                            </h3>
+                            {festDesc && (
+                              <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed font-hindi-body">
+                                {festDesc}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-end mt-1.5">
+                            <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:underline font-hindi-heading">
+                              {t('common.read')}{' '}
+                              <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                            </span>
+                          </div>
                         </div>
-                      ) : (
-                        <div className="w-16 h-16 rounded bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
-                          <Calendar className="w-6 h-6" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">
-                        <div>
-                          <h3 className="font-bold text-base text-darkBrown line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading">
-                            {festName}
-                          </h3>
-                          {festDesc && (
-                            <p className="text-xs text-slate-600 line-clamp-2 mt-0.5 leading-relaxed font-hindi-body">
-                              {festDesc}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-end mt-1.5">
-                          <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:underline font-hindi-heading">
-                            {t('common.read')}{' '}
-                            <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
+                      </Link>
+                    </motion.div>
+                  );
+                })
+              )}
             </div>
           </div>
         </section>

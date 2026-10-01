@@ -50,12 +50,42 @@ class SearchService {
     };
   }
 
-  public async getSuggestions(query: string): Promise<string[]> {
-    if (!query || query.length < 2) return [];
+  public async getSuggestions(query: string, type: string = 'ALL'): Promise<any[]> {
+    const trimmed = query?.trim() || '';
 
-    // In production, hit a fast indexed table (e.g., search_logs grouped) or a dedicated suggestions index.
-    const result = await searchRepository.searchFTS({ query, limit: 5 });
-    return result.data.map((r) => r.title);
+    // Initial focus with empty query -> return trending devotional bhajans and puranas
+    if (trimmed.length === 0) {
+      const result = await searchRepository.searchFTS({ query: '', type, limit: 12 });
+      const nonVideoItems = type === 'ALL' ? result.data.filter((r) => r.type !== 'VIDEO') : result.data;
+
+      return nonVideoItems.slice(0, 6).map((r) => ({
+        id: r.id,
+        title: r.title,
+        title_en: r.title_en,
+        slug: r.slug,
+        type: r.type,
+        type_label: r.type_label,
+        image: r.image,
+        views: r.views
+      }));
+    }
+
+    const result = await searchRepository.searchFTS({ query: trimmed, type, limit: 15 });
+    const filteredItems = type === 'ALL' ? result.data.filter((r) => r.type !== 'VIDEO') : result.data;
+
+    // If no non-video items matched and query was typed, fallback to any matching items
+    const finalItems = filteredItems.length > 0 ? filteredItems : result.data;
+
+    return finalItems.slice(0, 8).map((r) => ({
+      id: r.id,
+      title: r.title,
+      title_en: r.title_en,
+      slug: r.slug,
+      type: r.type,
+      type_label: r.type_label,
+      image: r.image,
+      views: r.views
+    }));
   }
 
   public async getTrending(): Promise<string[]> {

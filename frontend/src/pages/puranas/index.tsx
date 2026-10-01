@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Search } from 'lucide-react';
-import { CustomLoader } from '@components/common/CustomLoader';
+import { PuranaCardSkeleton } from '@components/common/SkeletonLoader';
 import { PublicApi } from '@api/publicApi';
 import { PuranaCard } from '@components/cards/PuranaCard';
 import { useTranslation } from '@i18n/LanguageContext';
@@ -59,7 +59,7 @@ export const PuranasList: React.FC = () => {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  placeholder={t('common.searchPlaceholder')}
+                  placeholder={t('common.searchPuranas')}
                   className="w-full pl-10 pr-4 pt-3 pb-2 bg-transparent outline-none text-sm font-medium text-darkBrown placeholder:text-gray-400 font-hindi-body"
                 />
               </div>
@@ -69,7 +69,11 @@ export const PuranasList: React.FC = () => {
 
         {/* Puranas Grid */}
         {loading ? (
-          <CustomLoader fullScreen />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <PuranaCardSkeleton key={n} />
+            ))}
+          </div>
         ) : puranas.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Search, Music, Filter, Disc, Sparkles } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { BhajanCard } from '@components/cards/BhajanCard';
+import { BhajanCardSkeleton } from '@components/common/SkeletonLoader';
 import { Select } from '@components/ui/Select';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
@@ -142,7 +143,7 @@ export const BhajansList: React.FC = () => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder={t('common.searchPlaceholder')}
+              placeholder={t('common.searchBhajans')}
               className="w-full pl-11 pr-4 pt-3 pb-2 bg-[#F9F7F3] rounded-xl outline-none border border-amber-100 focus:border-saffron text-sm font-medium text-darkBrown transition-colors font-hindi-body"
             />
           </div>
@@ -193,7 +194,11 @@ export const BhajansList: React.FC = () => {
 
         {/* Bhajans Grid */}
         {loading ? (
-          <CustomLoader fullScreen />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <BhajanCardSkeleton key={n} />
+            ))}
+          </div>
         ) : bhajans.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
@@ -209,6 +214,7 @@ export const BhajansList: React.FC = () => {
                       id={bhajan.id}
                       slug={bhajan.slug}
                       title={bhajan.title}
+                      englishTitle={bhajan.english_title || bhajan.title_en}
                       godName={getLocalizedField(bhajan, 'god_name') || bhajan.god_name || bhajan.category_name}
                       views={bhajan.views || 0}
                       duration={

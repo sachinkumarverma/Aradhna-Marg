@@ -6,6 +6,8 @@ import { Button } from '@components/ui/Button';
 import { useTranslation } from '@i18n/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
+import { NavbarSearchOverlay } from '@components/search/NavbarSearchOverlay';
+
 interface NavbarProps {
   containerRef?: React.RefObject<HTMLElement | null>;
 }
@@ -14,6 +16,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
   const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { scrollY } = useScroll(containerRef ? { container: containerRef as any } : undefined);
   const location = useLocation();
 
@@ -21,9 +24,22 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
     setIsScrolled(latest > 50);
   });
 
+  // Global Ctrl+K / Cmd+K shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
+    setSearchOpen(false);
   }, [location.pathname]);
 
   const navLinks = [
@@ -41,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="w-full shrink-0 z-50 transition-all duration-300 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] border-b-2 border-saffron/20 py-4 relative"
+        className="w-full shrink-0 z-40 transition-all duration-300 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] border-b-2 border-saffron/20 py-4 relative"
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
@@ -96,18 +112,27 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                     {t('navigation.supportUs')}
                   </Button>
                 </Link>
-                <Link
-                  to="/search"
-                  className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center cursor-pointer hover:bg-orange-50 hover:text-saffron transition-colors text-slate-600"
-                  title={t('common.search')}
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center cursor-pointer hover:bg-orange-50 hover:text-saffron transition-colors text-slate-600 shadow-xs border border-gray-100"
+                  title={`${t('common.search')} (Ctrl+K)`}
                 >
                   <Search className="w-4 h-4" />
-                </Link>
+                </button>
               </div>
             </div>
 
             {/* Mobile Menu Toggle & Language Switcher */}
             <div className="md:hidden flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center cursor-pointer hover:bg-orange-50 hover:text-saffron transition-colors text-slate-600"
+                title={t('common.search')}
+              >
+                <Search className="w-4 h-4" />
+              </button>
               <LanguageSwitcher />
               <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -116,6 +141,9 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
           </div>
         </div>
       </motion.nav>
+
+      {/* Navbar Search Overlay */}
+      <NavbarSearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
@@ -126,15 +154,22 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
           className="fixed inset-0 z-40 bg-cream pt-24 px-4 pb-6 md:hidden overflow-y-auto"
         >
           <div className="flex flex-col gap-4">
-            <Link to="/search" onClick={() => setMobileMenuOpen(false)} className="relative mb-4 block">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setSearchOpen(true);
+              }}
+              className="relative mb-4 block w-full text-left cursor-pointer"
+            >
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 readOnly
                 placeholder={t('common.searchPlaceholder')}
-                className="w-full bg-white h-12 rounded-md pl-12 pr-4 outline-none focus:ring-2 focus:ring-saffron shadow-sm cursor-pointer font-hindi-heading"
+                className="w-full bg-white h-12 rounded-xl pl-12 pr-4 outline-none border border-orange-100 shadow-xs cursor-pointer font-hindi-heading text-sm"
               />
-            </Link>
+            </button>
 
             {navLinks.map((link) => (
               <Link

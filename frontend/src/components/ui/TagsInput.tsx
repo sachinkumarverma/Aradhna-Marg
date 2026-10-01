@@ -33,17 +33,18 @@ export const TagsInput: React.FC<TagsInputProps> = ({ value, onChange, placehold
   };
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-md focus-within:ring-2 focus-within:ring-saffron/20 focus-within:border-saffron transition-all p-1 flex flex-wrap items-center gap-1 min-h-[42px]">
+    <div className="w-full bg-white border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-saffron/20 focus-within:border-saffron transition-all p-2.5 flex flex-wrap items-center gap-2 min-h-[48px]">
       {tags.map((tag, i) => (
         <span
           key={i}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm leading-none rounded-full font-medium shadow-sm transition-all"
+          className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full shadow-2xs transition-all"
         >
-          {tag}
+          <span>{tag}</span>
           <button
             type="button"
             onClick={() => removeTag(tag)}
-            className="text-blue-200 hover:text-white transition-colors focus:outline-none flex items-center justify-center"
+            className="text-blue-200 hover:text-white transition-colors focus:outline-none flex items-center justify-center cursor-pointer ml-0.5"
+            title="Remove tag"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -55,7 +56,7 @@ export const TagsInput: React.FC<TagsInputProps> = ({ value, onChange, placehold
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={tags.length === 0 ? placeholder : ''}
-        className="flex-1 outline-none min-w-[120px] text-sm px-2 py-1 bg-transparent"
+        className="flex-1 outline-none min-w-[120px] text-sm px-1 py-1 bg-transparent placeholder:text-gray-400"
       />
     </div>
   );

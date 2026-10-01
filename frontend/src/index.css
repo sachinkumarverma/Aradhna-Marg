@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Cinzel:wght@500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700;800&family=Hind:wght@400;500;600;700&family=Mukta:wght@400;500;600;700&family=Rozha+One&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap');
 
 @tailwind base;
@@ -37,6 +37,12 @@
 }
 
 @layer utilities {
+  .font-devotional-title {
+    font-family: 'Playfair Display', 'Lora', 'Tiro Devanagari Hindi', 'Rozha One', Georgia, serif !important;
+  }
+  .font-cinzel {
+    font-family: 'Cinzel', 'Tiro Devanagari Hindi', serif !important;
+  }
   .font-hindi-heading {
     font-family: 'Outfit', 'Anek Devanagari', 'Hind', sans-serif !important;
   }

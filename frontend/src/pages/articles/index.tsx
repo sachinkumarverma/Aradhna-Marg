@@ -4,6 +4,7 @@ import { Search, Loader2, BookOpen, Filter } from 'lucide-react';
 import { PublicApi } from '@api/publicApi';
 import { Select } from '@components/ui/Select';
 import { ArticleCard } from '@components/cards/ArticleCard';
+import { ArticleCardSkeleton } from '@components/common/SkeletonLoader';
 import { AdUnit } from '@components/common/AdUnit';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
@@ -86,7 +87,7 @@ export const ArticlesList: React.FC = () => {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  placeholder={t('common.searchPlaceholder')}
+                  placeholder={t('common.searchArticles')}
                   className="w-full pl-10 pr-4 pt-3 pb-2 bg-transparent outline-none text-sm font-medium text-darkBrown placeholder:text-gray-400 font-hindi-body"
                 />
               </div>
@@ -110,8 +111,10 @@ export const ArticlesList: React.FC = () => {
 
         {/* Articles Grid */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-saffron" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <ArticleCardSkeleton key={n} />
+            ))}
           </div>
         ) : articles.length > 0 ? (
           <>
