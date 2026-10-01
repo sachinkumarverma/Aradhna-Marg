@@ -136,70 +136,77 @@ export class EmailService {
     const subject = `[Aradhna Marg] नया संदेश / New Message from ${data.name} (${data.category || data.subject || 'General'})`;
 
     const html = `
-      <!DOCTYPE html>
-      <html>
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9f7f3; margin: 0; padding: 20px; color: #2C1810; }
-          .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #fed7aa; }
-          .header { background: linear-gradient(135deg, #1C0F08 0%, #3D1E0B 100%); color: #ffffff; padding: 24px; text-align: center; }
-          .header h1 { margin: 0; font-size: 22px; color: #FF9933; letter-spacing: 1px; }
-          .header p { margin: 6px 0 0 0; font-size: 13px; color: #fde68a; }
-          .body { padding: 30px 24px; }
-          .badge { display: inline-block; background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: bold; margin-bottom: 16px; }
-          .field { margin-bottom: 16px; }
-          .field-label { font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: bold; margin-bottom: 4px; }
-          .field-value { font-size: 15px; color: #0f172a; font-weight: 500; }
-          .message-box { background: #f8fafc; border-left: 4px solid #FF9933; padding: 16px; border-radius: 8px; margin-top: 16px; font-size: 14px; line-height: 1.6; color: #334155; }
-          .footer { background: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #64748b; }
-        </style>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>नया संदेश - आराधना मार्ग</title>
       </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>॥ आराधना मार्ग ॥</h1>
-            <p>नया संपर्क एवं सुझाव संदेश प्राप्त हुआ</p>
-          </div>
-          <div class="body">
-            <span class="badge">${data.category || data.subject || 'सुझाव एवं संपर्क'}</span>
-            
-            <div class="field">
-              <div class="field-label">प्रेषक का नाम (Sender Name)</div>
-              <div class="field-value">${data.name}</div>
-            </div>
+      <body style="margin: 0; padding: 20px 10px; background-color: #f9f7f3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #fed7aa; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #1C0F08 0%, #3D1E0B 100%); background-color: #1C0F08; padding: 26px 20px;">
+              <div style="font-size: 28px; color: #FF9933; margin-bottom: 4px; font-weight: bold;">ॐ</div>
+              <h1 style="margin: 0; font-size: 22px; color: #ffffff; letter-spacing: 1px; font-weight: 800;">॥ आराधना मार्ग ॥</h1>
+              <p style="margin: 6px 0 0 0; font-size: 13px; color: #fde68a;">नया संपर्क एवं सुझाव संदेश प्राप्त हुआ</p>
+            </td>
+          </tr>
 
-            <div class="field">
-              <div class="field-label">ईमेल पता (Email Address)</div>
-              <div class="field-value"><a href="mailto:${data.email}" style="color: #ea580c; text-decoration: none;">${data.email}</a></div>
-            </div>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 28px 24px;">
+              <div style="margin-bottom: 20px;">
+                <span style="display: inline-block; background-color: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; padding: 6px 14px; border-radius: 9999px; font-size: 12px; font-weight: bold;">
+                  📌 ${data.category || data.subject || 'सुझाव एवं संपर्क'}
+                </span>
+              </div>
 
-            ${
-              data.phone
-                ? `
-            <div class="field">
-              <div class="field-label">दूरभाष (Phone Number)</div>
-              <div class="field-value">${data.phone}</div>
-            </div>`
-                : ''
-            }
+              <!-- Details Table -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fbfbfb; border: 1px solid #f1f5f9; border-radius: 12px; margin-bottom: 20px;">
+                <tr>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 12px; text-transform: uppercase; font-weight: bold; width: 35%;">प्रेषक का नाम</td>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 14px; font-weight: 600; width: 65%;">${data.name}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 12px; text-transform: uppercase; font-weight: bold;">ईमेल पता</td>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 600;">
+                    <a href="mailto:${data.email}" style="color: #ea580c; text-decoration: none;">${data.email}</a>
+                  </td>
+                </tr>
+                ${
+                  data.phone
+                    ? `
+                <tr>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 12px; text-transform: uppercase; font-weight: bold;">दूरभाष (Phone)</td>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 14px; font-weight: 600;">${data.phone}</td>
+                </tr>`
+                    : ''
+                }
+                <tr>
+                  <td style="padding: 12px 16px; color: #64748b; font-size: 12px; text-transform: uppercase; font-weight: bold;">विषय (Subject)</td>
+                  <td style="padding: 12px 16px; color: #0f172a; font-size: 14px; font-weight: 600;">${data.subject || 'सामान्य सुझाव'}</td>
+                </tr>
+              </table>
 
-            <div class="field">
-              <div class="field-label">विषय (Subject)</div>
-              <div class="field-value">${data.subject || 'सामान्य सुझाव'}</div>
-            </div>
-
-            <div class="field">
-              <div class="field-label">संदेश / सुझाव (Message Content)</div>
-              <div class="message-box">
+              <!-- Message Box -->
+              <div style="font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: bold; margin-bottom: 8px;">
+                संदेश / सुझाव (Message Content):
+              </div>
+              <div style="background-color: #fffaf5; border-left: 4px solid #FF9933; border: 1px solid #fed7aa; border-left-width: 4px; padding: 16px 18px; border-radius: 8px; font-size: 14px; line-height: 1.6; color: #334155;">
                 ${data.message.replace(/\n/g, '<br/>')}
               </div>
-            </div>
-          </div>
-          <div class="footer">
-            यह संदेश Aradhna Marg वेबसाइट के संपर्क फॉर्म द्वारा भेजा गया है।
-          </div>
-        </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background-color: #0e0703; color: #94a3b8; padding: 18px; font-size: 12px;">
+              यह संदेश <strong style="color: #fde68a;">Aradhna Marg</strong> वेबसाइट के संपर्क फॉर्म द्वारा स्वतः प्राप्त हुआ है।
+            </td>
+          </tr>
+        </table>
       </body>
       </html>
     `;
@@ -219,61 +226,72 @@ export class EmailService {
     const subject = `हार्दिक धन्यवाद! आपका संदेश हमें प्राप्त हो गया है | Aradhna Marg`;
 
     const html = `
-      <!DOCTYPE html>
-      <html>
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #FAF7F2; margin: 0; padding: 20px; color: #2C1810; }
-          .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.06); border: 1px solid #fed7aa; }
-          .header { background: linear-gradient(135deg, #1A0D07 0%, #3B1B09 100%); color: #ffffff; padding: 32px 24px; text-align: center; }
-          .om-logo { font-size: 36px; color: #FF9933; margin-bottom: 8px; font-weight: bold; }
-          .header h1 { margin: 0; font-size: 24px; color: #ffffff; letter-spacing: 1px; font-weight: 800; }
-          .header p { margin: 8px 0 0 0; font-size: 13px; color: #fde68a; letter-spacing: 0.5px; }
-          .body { padding: 32px 28px; }
-          .greeting { font-size: 18px; font-weight: bold; color: #1e293b; margin-bottom: 16px; }
-          .content-p { font-size: 14px; line-height: 1.7; color: #475569; margin-bottom: 16px; }
-          .highlight-card { background: #fff7ed; border: 1px solid #ffedd5; border-radius: 12px; padding: 18px; margin: 20px 0; }
-          .highlight-card h4 { margin: 0 0 8px 0; font-size: 13px; color: #ea580c; text-transform: uppercase; font-weight: bold; }
-          .highlight-card p { margin: 0; font-size: 13px; color: #7c2d12; line-height: 1.5; }
-          .btn-container { text-align: center; margin: 28px 0 10px 0; }
-          .btn { display: inline-block; background: linear-gradient(to right, #FF9933, #EA580C); color: #ffffff !important; text-decoration: none; padding: 12px 30px; border-radius: 9999px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25); }
-          .footer { background: #0e0703; color: #94a3b8; padding: 24px; text-align: center; font-size: 12px; line-height: 1.6; }
-          .footer a { color: #fde68a; text-decoration: none; }
-        </style>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>हार्दिक धन्यवाद - आराधना मार्ग</title>
       </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <div class="om-logo">ॐ</div>
-            <h1>ARADHNA MARG</h1>
-            <p>सनातन धर्म • ज्ञान-मंदिर • डिजिटल सेवा</p>
-          </div>
-          <div class="body">
-            <div class="greeting">नमस्ते ${data.name} जी,</div>
-            <p class="content-p">
-              आराधना मार्ग पर अपना अमूल्य विचार एवं सुझाव साझा करने के लिए आपका <strong>हार्दिक धन्यवाद</strong>।
-            </p>
-            <p class="content-p">
-              आपका संदेश हमारी टीम को सफलतापूर्वक प्राप्त हो चुका है। हम सनातन धर्म ग्रंथों, भजनों, आरतियों एवं डिजिटल सेवाओं को और अधिक शुद्ध, प्रामाणिक व उपयोगी बनाने हेतु निरंतर प्रयासरत हैं। यदि आपके संदेश में कोई विशेष प्रश्न या सुधार प्रस्ताव है, तो हमारी टीम शीघ्र ही आपसे संपर्क करेगी।
-            </p>
+      <body style="margin: 0; padding: 20px 10px; background-color: #FAF7F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #fed7aa; box-shadow: 0 6px 24px rgba(0,0,0,0.06);">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #1A0D07 0%, #3B1B09 100%); background-color: #1A0D07; padding: 32px 20px;">
+              <div style="font-size: 38px; color: #FF9933; margin-bottom: 6px; font-weight: bold;">ॐ</div>
+              <h1 style="margin: 0; font-size: 24px; color: #ffffff; letter-spacing: 1.5px; font-weight: 800;">ARADHNA MARG</h1>
+              <p style="margin: 6px 0 0 0; font-size: 13px; color: #fde68a;">सनातन धर्म • ज्ञान-मंदिर • डिजिटल सेवा</p>
+            </td>
+          </tr>
 
-            <div class="highlight-card">
-              <h4>आपके द्वारा प्रेषित विषय:</h4>
-              <p><strong>${data.subject || data.category || 'सुझाव एवं संदेश'}</strong></p>
-              <p style="margin-top: 6px; font-style: italic;">"${data.message.length > 120 ? data.message.substring(0, 120) + '...' : data.message}"</p>
-            </div>
+          <!-- Content -->
+          <tr>
+            <td style="padding: 32px 24px;">
+              <h2 style="font-size: 18px; font-weight: bold; color: #1e293b; margin: 0 0 16px 0;">
+                नमस्ते ${data.name} जी, 🙏
+              </h2>
+              <p style="font-size: 14px; line-height: 1.7; color: #475569; margin: 0 0 14px 0;">
+                आराधना मार्ग पर अपना अमूल्य विचार एवं सुझाव साझा करने के लिए आपका <strong>हार्दिक धन्यवाद</strong>।
+              </p>
+              <p style="font-size: 14px; line-height: 1.7; color: #475569; margin: 0 0 20px 0;">
+                आपका संदेश हमारी सेवा टीम को प्राप्त हो चुका है। हम सनातन धर्म ग्रंथों, भजनों, आरतियों एवं डिजिटल सेवाओं को और अधिक शुद्ध, प्रामाणिक व उपयोगी बनाने हेतु निरंतर प्रयासरत हैं।
+              </p>
 
-            <div class="btn-container">
-              <a href="https://aradhnamarg.com" class="btn">आराधना मार्ग पर पधारें</a>
-            </div>
-          </div>
-          <div class="footer">
-            <p style="margin: 0 0 8px 0; color: #e2e8f0; font-weight: bold;">॥ धर्मो रक्षति रक्षितः ॥</p>
-            <p style="margin: 0 0 8px 0;">वेदों, 18 महापुराणों, स्तोत्रों एवं भजनों का प्रामाणिक डिजिटल संकलन।</p>
-            <p style="margin: 0;">© ${new Date().getFullYear()} Aradhna Marg. All Rights Reserved.</p>
-          </div>
-        </div>
+              <!-- Highlight Card -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 16px 18px;">
+                    <div style="font-size: 11px; text-transform: uppercase; color: #ea580c; font-weight: bold; margin-bottom: 4px;">आपके द्वारा प्रेषित विषय:</div>
+                    <div style="font-size: 14px; font-weight: 700; color: #7c2d12;">${data.subject || data.category || 'सुझाव एवं संदेश'}</div>
+                    <div style="font-size: 13px; color: #9a3412; font-style: italic; margin-top: 6px; line-height: 1.5;">
+                      "${data.message.length > 140 ? data.message.substring(0, 140) + '...' : data.message}"
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Action Button -->
+              <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 10px auto;">
+                <tr>
+                  <td align="center" style="border-radius: 9999px; background: linear-gradient(to right, #FF9933, #EA580C); background-color: #EA580C;">
+                    <a href="https://aradhnamarg.com" target="_blank" style="display: inline-block; padding: 12px 32px; font-size: 14px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 9999px;">
+                      आराधना मार्ग पर पधारें ➜
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background-color: #0e0703; color: #94a3b8; padding: 22px 18px; font-size: 12px; line-height: 1.6;">
+              <div style="color: #e2e8f0; font-weight: bold; margin-bottom: 4px;">॥ धर्मो रक्षति रक्षितः ॥</div>
+              <div>वेदों, 18 महापुराणों, स्तोत्रों एवं भजनों का प्रामाणिक डिजिटल संकलन।</div>
+              <div style="margin-top: 6px; color: #64748b;">© ${new Date().getFullYear()} Aradhna Marg. All Rights Reserved.</div>
+            </td>
+          </tr>
+        </table>
       </body>
       </html>
     `;
@@ -302,118 +320,176 @@ export class EmailService {
     const subject = `पावन धर्म सेवा सहयोग रसीद (Contribution Receipt) # ${receiptId} | Aradhna Marg`;
 
     const html = `
-      <!DOCTYPE html>
-      <html>
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #FAF7F2; margin: 0; padding: 20px; color: #2C1810; }
-          .container { max-width: 620px; margin: 0 auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #fed7aa; }
-          .header { background: linear-gradient(135deg, #1A0D07 0%, #351608 50%, #1A0D07 100%); color: #ffffff; padding: 36px 24px; text-align: center; position: relative; }
-          .om-logo { font-size: 40px; color: #FF9933; margin-bottom: 6px; font-weight: 900; }
-          .header h1 { margin: 0; font-size: 26px; color: #ffffff; letter-spacing: 1.5px; font-weight: 900; }
-          .header p { margin: 6px 0 0 0; font-size: 13px; color: #fde68a; letter-spacing: 0.5px; }
-          .receipt-title-badge { display: inline-block; background: rgba(255, 153, 51, 0.2); border: 1px solid #FF9933; color: #FF9933; padding: 4px 16px; border-radius: 9999px; font-size: 12px; font-weight: bold; margin-top: 14px; text-transform: uppercase; letter-spacing: 1px; }
-          .body { padding: 32px 28px; }
-          .thank-you-box { background: linear-gradient(to right, #fff7ed, #fef3c7); border: 1px solid #fed7aa; border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 24px; }
-          .thank-you-box h3 { margin: 0 0 6px 0; color: #c2410c; font-size: 18px; font-weight: 800; }
-          .thank-you-box p { margin: 0; color: #7c2d12; font-size: 13px; line-height: 1.5; }
-          
-          /* Invoice Table */
-          .invoice-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-          .invoice-header { background: #f8fafc; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; font-weight: bold; font-size: 13px; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
-          .invoice-row { display: flex; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-          .invoice-row:last-child { border-bottom: none; }
-          .invoice-label { color: #64748b; font-weight: 500; }
-          .invoice-value { color: #0f172a; font-weight: 600; text-align: right; }
-          .total-row { background: #fffaf0; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-top: 2px dashed #fed7aa; }
-          .total-label { font-size: 16px; font-weight: 800; color: #1e293b; }
-          .total-value { font-size: 22px; font-weight: 900; color: #ea580c; }
-          
-          .blessing-box { background: #FAF7F2; border-left: 4px solid #FF9933; border-radius: 8px; padding: 16px 20px; margin: 20px 0; font-size: 13px; line-height: 1.6; color: #442211; }
-          .btn-container { text-align: center; margin: 24px 0 10px 0; }
-          .btn { display: inline-block; background: linear-gradient(to right, #FF9933, #EA580C); color: #ffffff !important; text-decoration: none; padding: 12px 32px; border-radius: 9999px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.28); }
-          .footer { background: #0e0703; color: #94a3b8; padding: 26px; text-align: center; font-size: 12px; line-height: 1.6; }
-        </style>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>सहयोग रसीद - आराधना मार्ग</title>
       </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <div class="om-logo">ॐ</div>
-            <h1>ARADHNA MARG</h1>
-            <p>सनातन धर्म • ज्ञान-मंदिर • डिजिटल सेवा</p>
-            <div class="receipt-title-badge">पावन सहयोग रसीद / Contribution Receipt</div>
-          </div>
-          <div class="body">
-            <div class="thank-you-box">
-              <h3>कोटि-कोटि धन्यवाद! 🙏</h3>
-              <p>आराधना मार्ग परिवार आपके इस पावन सहयोग व समर्पण हेतु हृदय से आभारी है।</p>
-            </div>
-
-            <div class="invoice-card">
-              <div class="invoice-header">रसीद एवं भुगतान विवरण (Receipt Details)</div>
+      <body style="margin: 0; padding: 20px 10px; background-color: #FAF7F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 620px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #fed7aa; box-shadow: 0 8px 30px rgba(0,0,0,0.08);">
+          
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #1A0D07 0%, #351608 50%, #1A0D07 100%); background-color: #1A0D07; padding: 34px 20px;">
+              <div style="font-size: 40px; color: #FF9933; margin-bottom: 4px; font-weight: 900;">ॐ</div>
+              <h1 style="margin: 0; font-size: 26px; color: #ffffff; letter-spacing: 1.5px; font-weight: 900;">ARADHNA MARG</h1>
+              <p style="margin: 6px 0 0 0; font-size: 13px; color: #fde68a;">सनातन धर्म • ज्ञान-मंदिर • डिजिटल सेवा</p>
               
-              <div class="invoice-row">
-                <span class="invoice-label">रसीद संख्या (Receipt No.):</span>
-                <span class="invoice-value" style="font-family: monospace; color: #ea580c;">${receiptId}</span>
+              <div style="margin-top: 14px;">
+                <span style="display: inline-block; background-color: rgba(255, 153, 51, 0.15); border: 1px solid #FF9933; color: #FF9933; padding: 5px 16px; border-radius: 9999px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                  पावन सहयोग रसीद / Contribution Receipt
+                </span>
               </div>
+            </td>
+          </tr>
 
-              <div class="invoice-row">
-                <span class="invoice-label">सहयोगी नाम (Donor Name):</span>
-                <span class="invoice-value">${data.donorName || 'Devotee / श्रद्धालु'}</span>
-              </div>
+          <!-- Main Body -->
+          <tr>
+            <td style="padding: 28px 24px;">
+              
+              <!-- Gratitude Banner -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background: linear-gradient(to right, #fff7ed, #fef3c7); background-color: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; margin-bottom: 24px;">
+                <tr>
+                  <td align="center" style="padding: 18px 20px;">
+                    <h3 style="margin: 0 0 6px 0; color: #c2410c; font-size: 18px; font-weight: 800;">कोटि-कोटि धन्यवाद! 🙏</h3>
+                    <p style="margin: 0; color: #7c2d12; font-size: 13px; line-height: 1.5;">
+                      आराधना मार्ग परिवार आपके इस पावन सहयोग व समर्पण हेतु हृदय से आभारी है।
+                    </p>
+                  </td>
+                </tr>
+              </table>
 
-              <div class="invoice-row">
-                <span class="invoice-label">ईमेल (Email):</span>
-                <span class="invoice-value">${data.donorEmail}</span>
-              </div>
+              <!-- Invoice Card Table (Strict 2-Column Table for 100% Email Client Support) -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; margin-bottom: 24px; border-collapse: separate;">
+                
+                <!-- Table Header Row -->
+                <tr>
+                  <td colspan="2" style="background-color: #f8fafc; padding: 14px 18px; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">
+                    रसीद एवं भुगतान विवरण (Receipt Details)
+                  </td>
+                </tr>
 
-              ${
-                data.donorPhone
-                  ? `
-              <div class="invoice-row">
-                <span class="invoice-label">दूरभाष (Phone):</span>
-                <span class="invoice-value">${data.donorPhone}</span>
-              </div>`
-                  : ''
-              }
+                <!-- Row: Receipt No -->
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 13px; font-weight: 500; width: 45%;">
+                    रसीद संख्या (Receipt No.):
+                  </td>
+                  <td align="right" style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #ea580c; font-size: 14px; font-weight: 700; font-family: 'Courier New', Courier, monospace; width: 55%;">
+                    ${receiptId}
+                  </td>
+                </tr>
 
-              <div class="invoice-row">
-                <span class="invoice-label">दिनांक व समय (Date & Time):</span>
-                <span class="invoice-value">${formattedDate}</span>
-              </div>
+                <!-- Row: Donor Name -->
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 13px; font-weight: 500;">
+                    सहयोगी नाम (Donor Name):
+                  </td>
+                  <td align="right" style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 14px; font-weight: 700;">
+                    ${data.donorName || 'Devotee / श्रद्धालु'}
+                  </td>
+                </tr>
 
-              <div class="invoice-row">
-                <span class="invoice-label">भुगतान संदर्भ (Transaction ID):</span>
-                <span class="invoice-value" style="font-family: monospace; font-size: 12px;">${data.paymentId}</span>
-              </div>
+                <!-- Row: Email -->
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 13px; font-weight: 500;">
+                    ईमेल (Email):
+                  </td>
+                  <td align="right" style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; font-size: 13px; font-weight: 600;">
+                    <a href="mailto:${data.donorEmail}" style="color: #ea580c; text-decoration: none;">${data.donorEmail}</a>
+                  </td>
+                </tr>
 
-              <div class="invoice-row">
-                <span class="invoice-label">सहयोग प्रयोजन (Purpose):</span>
-                <span class="invoice-value">सनातन धर्म सेवा एवं डिजिटल संकलन</span>
-              </div>
+                <!-- Row: Phone (Optional) -->
+                ${
+                  data.donorPhone
+                    ? `
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 13px; font-weight: 500;">
+                    दूरभाष (Phone):
+                  </td>
+                  <td align="right" style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 13px; font-weight: 600;">
+                    ${data.donorPhone}
+                  </td>
+                </tr>`
+                    : ''
+                }
 
-              <div class="total-row">
-                <span class="total-label">समर्पित सहयोग राशि (Total Paid):</span>
-                <span class="total-value">₹${data.amount}</span>
-              </div>
-            </div>
+                <!-- Row: Date & Time -->
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 13px; font-weight: 500;">
+                    दिनांक व समय (Date & Time):
+                  </td>
+                  <td align="right" style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-size: 13px; font-weight: 600;">
+                    ${formattedDate}
+                  </td>
+                </tr>
 
-            <div class="blessing-box">
-              <strong>॥ दाता एक राम भिखारी सारी दुनिया ॥</strong><br/>
-              आपका यह सहयोग महापुराणों के डिजिटलीकरण, प्रामाणिक श्लोकों, दुर्लभ स्तोत्रों, भजनों तथा आगामी पीढ़ियों तक सनातन ज्ञान के निःशुल्क प्रसार में समर्पित रहेगा।
-            </div>
+                <!-- Row: Payment ID -->
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 13px; font-weight: 500;">
+                    भुगतान संदर्भ (Transaction ID):
+                  </td>
+                  <td align="right" style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; color: #475569; font-size: 12px; font-family: 'Courier New', Courier, monospace; font-weight: 600;">
+                    ${data.paymentId}
+                  </td>
+                </tr>
 
-            <div class="btn-container">
-              <a href="https://aradhnamarg.com" class="btn">आराधना मार्ग पर जाएं</a>
-            </div>
-          </div>
-          <div class="footer">
-            <p style="margin: 0 0 6px 0; color: #ffffff; font-weight: bold; font-size: 13px;">॥ धर्मो रक्षति रक्षितः ॥</p>
-            <p style="margin: 0 0 6px 0;">यह इलेक्ट्रॉनिक रसीद Aradhna Marg द्वारा स्वतः उत्पन्न की गई है।</p>
-            <p style="margin: 0;">संपर्क: <a href="mailto:support@aradhnamarg.com" style="color: #fde68a;">support@aradhnamarg.com</a></p>
-          </div>
-        </div>
+                <!-- Row: Purpose -->
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #fed7aa; color: #64748b; font-size: 13px; font-weight: 500;">
+                    सहयोग प्रयोजन (Purpose):
+                  </td>
+                  <td align="right" style="padding: 12px 18px; border-bottom: 1px solid #fed7aa; color: #0f172a; font-size: 13px; font-weight: 600;">
+                    सनातन धर्म सेवा एवं डिजिटल संकलन
+                  </td>
+                </tr>
+
+                <!-- Row: TOTAL AMOUNT PAID (Properly Aligned on One Line with Big Spacing) -->
+                <tr style="background-color: #fffaf0;">
+                  <td style="padding: 18px 18px; color: #1e293b; font-size: 15px; font-weight: 800; vertical-align: middle;">
+                    समर्पित सहयोग राशि (Total Paid):
+                  </td>
+                  <td align="right" style="padding: 18px 18px; color: #ea580c; font-size: 24px; font-weight: 900; vertical-align: middle; white-space: nowrap;">
+                    ₹${data.amount}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Blessing Box -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #FAF7F2; border-left: 4px solid #FF9933; border-radius: 8px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 14px 18px; font-size: 13px; line-height: 1.6; color: #442211;">
+                    <strong style="color: #9a3412;">॥ दाता एक राम भिखारी सारी दुनिया ॥</strong><br/>
+                    आपका यह सहयोग महापुराणों के डिजिटलीकरण, प्रामाणिक श्लोकों, दुर्लभ स्तोत्रों, भजनों तथा आगामी पीढ़ियों तक सनातन ज्ञान के निःशुल्क प्रसार में समर्पित रहेगा।
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Visit Portal Button -->
+              <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 10px auto;">
+                <tr>
+                  <td align="center" style="border-radius: 9999px; background: linear-gradient(to right, #FF9933, #EA580C); background-color: #EA580C;">
+                    <a href="https://aradhnamarg.com" target="_blank" style="display: inline-block; padding: 12px 34px; font-size: 14px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 9999px;">
+                      आराधना मार्ग पर जाएं ➜
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background-color: #0e0703; color: #94a3b8; padding: 22px 18px; font-size: 12px; line-height: 1.6;">
+              <div style="color: #ffffff; font-weight: bold; font-size: 13px; margin-bottom: 4px;">॥ धर्मो रक्षति रक्षितः ॥</div>
+              <div style="margin-bottom: 4px;">यह इलेक्ट्रॉनिक रसीद Aradhna Marg द्वारा स्वतः उत्पन्न की गई है।</div>
+              <div>संपर्क: <a href="mailto:sachinv1410@gmail.com" style="color: #fde68a; text-decoration: none;">sachinv1410@gmail.com</a></div>
+            </td>
+          </tr>
+        </table>
       </body>
       </html>
     `;
@@ -434,17 +510,69 @@ export class EmailService {
     const subject = `💰 [नया सहयोग] ₹${data.amount} received from ${data.donorName || 'Devotee'}`;
 
     const html = `
-      <div style="font-family: sans-serif; max-width: 500px; padding: 20px; border: 1px solid #fed7aa; border-radius: 12px;">
-        <h2 style="color: #ea580c; margin-top: 0;">नया धर्म सहयोग प्राप्त हुआ! 🎉</h2>
-        <p><strong>दाता (Donor):</strong> ${data.donorName || 'Anonymous'}</p>
-        <p><strong>राशि (Amount):</strong> <span style="font-size: 18px; color: #16a34a; font-weight: bold;">₹${data.amount}</span></p>
-        <p><strong>ईमेल (Email):</strong> ${data.donorEmail}</p>
-        <p><strong>फ़ोन (Phone):</strong> ${data.donorPhone || 'N/A'}</p>
-        <p><strong>Payment ID:</strong> ${data.paymentId}</p>
-        <p><strong>Order ID:</strong> ${data.orderId}</p>
-        <p><strong>संदेश/Note:</strong> ${data.note || 'None'}</p>
-        <p><strong>दिनांक:</strong> ${new Date().toLocaleString()}</p>
-      </div>
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      </head>
+      <body style="margin: 0; padding: 15px; font-family: sans-serif; background-color: #f8fafc;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; background-color: #ffffff; border: 1px solid #fed7aa; border-radius: 14px; overflow: hidden;">
+          <tr>
+            <td style="background-color: #1a0d07; padding: 18px 20px; text-align: center;">
+              <h2 style="color: #FF9933; margin: 0; font-size: 20px;">नया धर्म सहयोग प्राप्त हुआ! 🎉</h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 20px;">
+              <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 13px;">दाता (Donor):</td>
+                  <td align="right" style="padding: 8px 0; color: #0f172a; font-weight: bold; font-size: 14px;">${data.donorName || 'Anonymous'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 13px;">राशि (Amount):</td>
+                  <td align="right" style="padding: 8px 0; color: #16a34a; font-weight: 900; font-size: 20px;">₹${data.amount}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 13px;">ईमेल (Email):</td>
+                  <td align="right" style="padding: 8px 0; color: #ea580c; font-weight: 600; font-size: 13px;">${data.donorEmail}</td>
+                </tr>
+                ${
+                  data.donorPhone
+                    ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 13px;">दूरभाष (Phone):</td>
+                  <td align="right" style="padding: 8px 0; color: #0f172a; font-size: 13px;">${data.donorPhone}</td>
+                </tr>`
+                    : ''
+                }
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 13px;">Payment ID:</td>
+                  <td align="right" style="padding: 8px 0; color: #475569; font-family: monospace; font-size: 12px;">${data.paymentId}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 13px;">Order ID:</td>
+                  <td align="right" style="padding: 8px 0; color: #475569; font-family: monospace; font-size: 12px;">${data.orderId}</td>
+                </tr>
+                ${
+                  data.note
+                    ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 13px;">संदेश/Note:</td>
+                  <td align="right" style="padding: 8px 0; color: #0f172a; font-size: 13px; font-style: italic;">"${data.note}"</td>
+                </tr>`
+                    : ''
+                }
+                <tr>
+                  <td style="padding: 8px 0; color: #64748b; font-size: 13px;">दिनांक:</td>
+                  <td align="right" style="padding: 8px 0; color: #0f172a; font-size: 13px;">${new Date().toLocaleString('hi-IN')}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
     `;
 
     return this.sendMail({
