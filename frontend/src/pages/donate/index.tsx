@@ -146,7 +146,10 @@ export const DonatePage: React.FC = () => {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               donorName: donorName.trim() || 'श्रद्धालु',
-              amount: currentAmount
+              donorEmail: donorEmail.trim() || undefined,
+              donorPhone: donorPhone.trim() || undefined,
+              amount: currentAmount,
+              note: donorNote.trim() || undefined
             });
 
             setSuccessPaymentDetails({

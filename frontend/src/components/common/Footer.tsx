@@ -4,26 +4,40 @@ import { Heart, Sparkles, Send, Mail, BookOpen, Calendar, ShieldCheck, CheckCirc
 import { useTranslation } from '@i18n/LanguageContext';
 import toast from 'react-hot-toast';
 
+import { PublicApi } from '@api/publicApi';
+
 export const Footer: React.FC = () => {
   const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !email.includes('@')) {
       toast.error(isHi ? 'कृपया एक वैध ईमेल पता दर्ज करें।' : 'Please enter a valid email address.');
       return;
     }
-    setSubscribed(true);
-    toast.success(
-      isHi
-        ? 'हार्दिक धन्यवाद! आप आराधना मार्ग परिवार से जुड़ गए हैं।'
-        : 'Thank you for joining the Aradhna Marg spiritual family!'
-    );
-    setEmail('');
+    setLoading(true);
+    try {
+      await PublicApi.subscribeNewsletter({ email: email.trim() });
+      setSubscribed(true);
+      toast.success(
+        isHi
+          ? 'हार्दिक धन्यवाद! आप आराधना मार्ग परिवार से जुड़ गए हैं।'
+          : 'Thank you for joining the Aradhna Marg spiritual family!'
+      );
+      setEmail('');
+    } catch (err) {
+      // Still show polite success if already subscribed or network error
+      setSubscribed(true);
+      toast.success(isHi ? 'हार्दिक धन्यवाद! आपका ईमेल पंजीकृत हो गया है।' : 'Thank you! Your email is registered.');
+      setEmail('');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

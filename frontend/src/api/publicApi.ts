@@ -221,4 +221,21 @@ export class PublicApi {
     });
     return response.data;
   }
+
+  static async submitContact(data: {
+    name?: string;
+    email: string;
+    phone?: string;
+    subject?: string;
+    category?: string;
+    message: string;
+  }) {
+    const response = await apiClient.post('/v1/public/contact', data);
+    return response.data;
+  }
+
+  static async subscribeNewsletter(data: { email: string; name?: string }) {
+    const response = await apiClient.post('/v1/public/subscribe', data);
+    return response.data;
+  }
 }

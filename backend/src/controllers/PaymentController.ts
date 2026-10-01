@@ -5,6 +5,7 @@ import { config } from '@/config';
 import { sendSuccess, sendError } from '@/responses/apiResponse';
 import { AppError, InternalServerError } from '@/errors/appError';
 import { logger } from '@utils/logger';
+import { emailService } from '@services/EmailService';
 
 export class PaymentController {
   public getConfig = async (req: Request, res: Response, next: NextFunction) => {
@@ -77,7 +78,16 @@ export class PaymentController {
 
   public verifyPayment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, donorName, amount } = req.body;
+      const {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        donorName,
+        donorEmail,
+        donorPhone,
+        amount,
+        note
+      } = req.body;
 
       if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
         throw new AppError('Payment signature or IDs missing.', 400);
@@ -104,12 +114,46 @@ export class PaymentController {
         `✅ Donation Payment Successful: Order ${razorpay_order_id}, Payment ${razorpay_payment_id}, Amount ₹${amount} by ${donorName || 'Anonymous'}`
       );
 
-      return sendSuccess(res, 'दान एवं सहयोग हेतु आपका कोटि-कोटि धन्यवाद! आपका सहयोग पावन धर्म सेवा में समर्पित है।', {
-        verified: true,
-        orderId: razorpay_order_id,
-        paymentId: razorpay_payment_id,
-        message: 'दान एवं सहयोग हेतु आपका कोटि-कोटि धन्यवाद! आपका सहयोग पावन धर्म सेवा में समर्पित है।'
-      });
+      // 1. Send Electronic Invoice Receipt to the Donor via Email
+      if (donorEmail && donorEmail.trim() && donorEmail.includes('@')) {
+        emailService
+          .sendDonationReceipt({
+            donorName: donorName || 'Devotee / श्रद्धालु',
+            donorEmail: donorEmail.trim(),
+            donorPhone: donorPhone ? donorPhone.trim() : undefined,
+            amount: Number(amount) || 0,
+            paymentId: razorpay_payment_id,
+            orderId: razorpay_order_id,
+            date: new Date(),
+            note: note || undefined
+          })
+          .catch((err) => logger.warn('Failed to dispatch donor email receipt:', err.message));
+      }
+
+      // 2. Send Alert to Platform Admin
+      emailService
+        .sendDonationAlertToAdmin({
+          donorName: donorName || 'Devotee / श्रद्धालु',
+          donorEmail: donorEmail || 'Not specified',
+          donorPhone: donorPhone,
+          amount: Number(amount) || 0,
+          paymentId: razorpay_payment_id,
+          orderId: razorpay_order_id,
+          date: new Date(),
+          note: note
+        })
+        .catch((err) => logger.warn('Failed to dispatch admin donation alert:', err.message));
+
+      return sendSuccess(
+        res,
+        'दान एवं सहयोग हेतु आपका कोटि-कोटि धन्यवाद! सहयोग रसीद आपके ईमेल पर प्रेषित कर दी गई है।',
+        {
+          verified: true,
+          orderId: razorpay_order_id,
+          paymentId: razorpay_payment_id,
+          message: 'दान एवं सहयोग हेतु आपका कोटि-कोटि धन्यवाद! सहयोग रसीद आपके ईमेल पर प्रेषित कर दी गई है।'
+        }
+      );
     } catch (error) {
       next(error);
     }

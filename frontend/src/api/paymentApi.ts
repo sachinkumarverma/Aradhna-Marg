@@ -21,7 +21,10 @@ export interface VerifyPaymentPayload {
   razorpay_payment_id: string;
   razorpay_signature: string;
   donorName?: string;
+  donorEmail?: string;
+  donorPhone?: string;
   amount: number;
+  note?: string;
 }
 
 export const PaymentApi = {

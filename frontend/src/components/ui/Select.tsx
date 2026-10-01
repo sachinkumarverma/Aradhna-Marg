@@ -15,6 +15,7 @@ interface SelectProps {
   placeholder?: string;
   searchable?: boolean;
   className?: string;
+  triggerClassName?: string;
   error?: boolean;
   menuPlacement?: 'top' | 'bottom';
   isLoading?: boolean;
@@ -27,6 +28,7 @@ export const Select: React.FC<SelectProps> = ({
   placeholder = 'Select an option',
   searchable = true,
   className,
+  triggerClassName,
   error,
   menuPlacement = 'bottom',
   isLoading = false
@@ -55,9 +57,10 @@ export const Select: React.FC<SelectProps> = ({
     <div className={cn('relative w-full text-sm font-hindi-heading', className)} ref={wrapperRef}>
       <div
         className={cn(
-          'flex items-center justify-between w-full px-3 py-2.5 bg-white border rounded-md cursor-pointer transition-colors',
+          'flex items-center justify-between w-full px-4 py-3 bg-white border rounded-xl cursor-pointer transition-colors text-sm',
           isOpen ? 'border-saffron ring-2 ring-saffron/20' : 'border-gray-200 hover:border-gray-300',
-          error && 'border-red-500 ring-2 ring-red-500/20'
+          error && 'border-red-500 ring-2 ring-red-500/20',
+          triggerClassName
         )}
         onClick={() => setIsOpen(!isOpen)}
       >

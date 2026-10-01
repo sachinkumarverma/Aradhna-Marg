@@ -172,4 +172,9 @@ router.get('/payments/config', paymentController.getConfig);
 router.post('/payments/create-order', paymentController.createOrder);
 router.post('/payments/verify', paymentController.verifyPayment);
 
+// Contact & Suggestions / Newsletter Routes
+import { contactController } from '@controllers/ContactController';
+router.post('/contact', contactController.submitContact);
+router.post('/subscribe', contactController.subscribeNewsletter);
+
 export default router;
