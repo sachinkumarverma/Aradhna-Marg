@@ -26,7 +26,7 @@ export const PublicLayout: React.FC = () => {
         ref={scrollContainerRef}
         className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col main-scroll-container"
       >
-        <main className="flex-1 flex flex-col w-full relative z-0">
+        <main className="flex-1 w-full relative z-0 flex flex-col">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -34,16 +34,18 @@ export const PublicLayout: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="flex-1 flex flex-col w-full"
+              className="flex-1 w-full flex flex-col"
             >
-              <Suspense fallback={<PageLoader />}>
-                <Outlet />
-              </Suspense>
+              <div className="flex-1 w-full">
+                <Suspense fallback={<PageLoader />}>
+                  <Outlet />
+                </Suspense>
+              </div>
+
+              <Footer />
             </motion.div>
           </AnimatePresence>
         </main>
-
-        <Footer />
       </div>
     </div>
   );

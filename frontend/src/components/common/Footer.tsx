@@ -27,7 +27,7 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-[#0e0703] text-gray-400 pt-12 pb-8 border-t border-amber-900/40 relative overflow-hidden font-hindi-body">
+    <footer className="w-full shrink-0 bg-[#0e0703] text-gray-400 pt-12 pb-8 border-t border-amber-900/40 relative overflow-hidden font-hindi-body">
       {/* Background Sacred Glows */}
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-48 bg-gradient-to-r from-amber-500/10 via-saffron/15 to-orange-600/10 blur-3xl pointer-events-none" />
 
