@@ -75,7 +75,7 @@ export const BhajansList: React.FC = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Devotional Music Banner */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#3D261C] via-[#5C3421] to-[#3D261C] p-6 sm:p-10 text-white shadow-xl mb-10 border border-amber-900/40">

@@ -9,34 +9,42 @@ const PageLoader = () => <CustomLoader fullScreen />;
 
 export const PublicLayout: React.FC = () => {
   const location = useLocation();
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
-  // Scroll to top on route change
+  // Scroll to top of container on route change
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    }
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-[#F9F7F3] font-sans text-darkBrown selection:bg-saffron/20 selection:text-saffron">
-      <Navbar />
+    <div className="h-screen w-full flex flex-col bg-[#F9F7F3] font-sans text-darkBrown selection:bg-saffron/20 selection:text-saffron overflow-hidden">
+      <Navbar containerRef={scrollContainerRef} />
 
-      <main className="flex-1 flex flex-col w-full relative z-0">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2, ease: 'easeInOut' }}
-            className="flex-1 flex flex-col w-full"
-          >
-            <Suspense fallback={<PageLoader />}>
-              <Outlet />
-            </Suspense>
-          </motion.div>
-        </AnimatePresence>
-      </main>
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col main-scroll-container"
+      >
+        <main className="flex-1 flex flex-col w-full relative z-0">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="flex-1 flex flex-col w-full"
+            >
+              <Suspense fallback={<PageLoader />}>
+                <Outlet />
+              </Suspense>
+            </motion.div>
+          </AnimatePresence>
+        </main>
 
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
 };

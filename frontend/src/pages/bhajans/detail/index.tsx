@@ -81,7 +81,7 @@ export const BhajanDetail: React.FC = () => {
     : '';
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <div className="mb-8">

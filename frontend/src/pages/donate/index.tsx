@@ -283,7 +283,7 @@ export const DonatePage: React.FC = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#FAF7F2] pt-24 pb-20 font-hindi-body selection:bg-saffron selection:text-white">
+    <div className="w-full min-h-screen bg-[#FAF7F2] pt-6 pb-20 font-hindi-body selection:bg-saffron selection:text-white">
       {/* 1. Hero & Vedic Mission Banner */}
       <section className="relative overflow-hidden pt-6 pb-10 sm:pt-12 sm:pb-14 px-4">
         {/* Subtle Decorative Background Glow */}

@@ -84,7 +84,7 @@ export const Home: React.FC = () => {
   return (
     <div className="w-full relative bg-[#F9F7F3]">
       {/* 1. HERO SECTION */}
-      <section className="relative w-full overflow-hidden bg-black isolate aspect-[16/9] md:aspect-[21/9] lg:aspect-[16/9] mt-20 pb-12 flex items-center">
+      <section className="relative w-full overflow-hidden bg-black isolate aspect-[16/9] md:aspect-[21/9] lg:aspect-[16/9] mt-0 pb-12 flex items-center">
         {heroImages.map((img, i) => (
           <div
             key={i}

@@ -45,7 +45,7 @@ export const DeitiesList: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-28 pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Divine Hero Banner for Deities */}
         <div className="bg-gradient-to-r from-[#2C1A12] via-[#4A291A] to-[#2C1A12] rounded-3xl p-6 sm:p-10 text-amber-50 shadow-2xl border border-amber-900/50 relative overflow-hidden mb-12">

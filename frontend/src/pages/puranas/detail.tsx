@@ -158,7 +158,7 @@ export const PuranDetail: React.FC = () => {
     '';
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pb-24 pt-20">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pb-24 pt-0">
       {/* Dark Hero Section Header */}
       <div className="bg-gradient-to-br from-[#2C1810] via-[#3D2317] to-[#1F100B] text-cream pt-8 pb-16 shadow-xl relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

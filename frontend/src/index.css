@@ -161,24 +161,28 @@
 /* Main Page Window Custom Scrollbar */
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
-main::-webkit-scrollbar {
+main::-webkit-scrollbar,
+.main-scroll-container::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 html::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track,
-main::-webkit-scrollbar-track {
+main::-webkit-scrollbar-track,
+.main-scroll-container::-webkit-scrollbar-track {
   background: #F9F7F3;
 }
 html::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb,
-main::-webkit-scrollbar-thumb {
+main::-webkit-scrollbar-thumb,
+.main-scroll-container::-webkit-scrollbar-thumb {
   background: #CBD5E1;
   border-radius: 9999px;
 }
 html::-webkit-scrollbar-thumb:hover,
 body::-webkit-scrollbar-thumb:hover,
-main::-webkit-scrollbar-thumb:hover {
+main::-webkit-scrollbar-thumb:hover,
+.main-scroll-container::-webkit-scrollbar-thumb:hover {
   background: #ff3402;
 }
 
