@@ -42,10 +42,6 @@ export const DisclaimerPage: React.FC = () => {
           <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-3xl mx-auto">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/20 text-amber-400 shadow-inner">
-              <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-amber-400" />
-            </div>
-
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4">
               {isHi ? 'अस्वीकरण' : 'Disclaimer'}
               <span className="block text-xl sm:text-2xl md:text-3xl text-amber-300/95 font-semibold mt-3">
@@ -197,10 +193,10 @@ export const DisclaimerPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl p-6 sm:p-8 border border-orange-100 shadow-sm">
               <h2
-                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight flex items-center gap-2.5`}
+                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight flex items-start gap-2.5 leading-snug`}
               >
-                <Info className="w-6 h-6 text-blue-600 shrink-0" />
-                {isHi ? '5. जानकारी की सटीकता (Accuracy)' : '5. Accuracy of Information'}
+                <Info className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
+                <span>{isHi ? '5. जानकारी की सटीकता (Accuracy)' : '5. Accuracy of Information'}</span>
               </h2>
               <p
                 className={`text-gray-700 text-[17px] sm:text-[18px] md:text-[19px] leading-[1.8] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -213,10 +209,10 @@ export const DisclaimerPage: React.FC = () => {
 
             <div className="bg-white rounded-2xl p-6 sm:p-8 border border-orange-100 shadow-sm">
               <h2
-                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight flex items-center gap-2.5`}
+                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight flex items-start gap-2.5 leading-snug`}
               >
-                <AlertOctagon className="w-6 h-6 text-amber-600 shrink-0" />
-                {isHi ? '6. कोई परामर्श नहीं' : '6. No Professional Advice'}
+                <AlertOctagon className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
+                <span>{isHi ? '6. कोई परामर्श नहीं' : '6. No Professional Advice'}</span>
               </h2>
               <p
                 className={`text-gray-700 text-[17px] sm:text-[18px] md:text-[19px] leading-[1.8] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -231,10 +227,12 @@ export const DisclaimerPage: React.FC = () => {
           {/* Section 7 - DMCA / Copyright Grievance */}
           <div className="bg-gradient-to-br from-amber-50 via-white to-orange-50 rounded-2xl p-6 sm:p-10 border border-orange-200/80 shadow-sm">
             <h2
-              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-center gap-3`}
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-start gap-3 leading-snug`}
             >
-              <FileCheck2 className="w-7 h-7 text-saffron shrink-0" />
-              {isHi ? '7. कॉपीराइट आपत्ति एवं निवारण (Copyright Concerns)' : '7. Copyright Concerns & Grievance'}
+              <FileCheck2 className="w-7 h-7 sm:w-8 sm:h-8 text-saffron shrink-0 mt-0.5" />
+              <span>
+                {isHi ? '7. कॉपीराइट आपत्ति एवं निवारण (Copyright Concerns)' : '7. Copyright Concerns & Grievance'}
+              </span>
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}

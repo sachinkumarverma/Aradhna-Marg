@@ -14,6 +14,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
+import { IconText } from '@components/common/IconText';
 import { useTranslation } from '@i18n/LanguageContext';
 
 export const AboutPage: React.FC = () => {
@@ -45,10 +46,6 @@ export const AboutPage: React.FC = () => {
           <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-3xl mx-auto">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/20 text-golden shadow-inner">
-              <Compass className="w-8 h-8 sm:w-10 sm:h-10 text-golden" />
-            </div>
-
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4">
               {isHi ? 'हमारे बारे में' : 'About Aradhna Marg'}
               <span className="block text-xl sm:text-2xl md:text-3xl text-amber-300/95 font-semibold mt-3">
@@ -134,10 +131,11 @@ export const AboutPage: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-orange-100/60">
-                <div className="flex items-center gap-3 mb-2 text-saffron font-bold text-lg">
-                  <Music className="w-5 h-5 shrink-0" />
-                  <span>{isHi ? 'पावन भजन एवं भावार्थ' : 'Bhajans & Bhavarth'}</span>
-                </div>
+                <IconText
+                  icon={<Music className="w-5 h-5 shrink-0 -translate-y-[1px]" />}
+                  text={isHi ? 'पावन भजन एवं भावार्थ' : 'Bhajans & Bhavarth'}
+                  className="mb-2 text-saffron font-bold text-lg leading-snug"
+                />
                 <p
                   className={`text-[16px] sm:text-[17px] text-gray-700 leading-relaxed ${isHi ? 'font-hindi-body' : 'font-legal'}`}
                 >
@@ -148,10 +146,11 @@ export const AboutPage: React.FC = () => {
               </div>
 
               <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-orange-100/60">
-                <div className="flex items-center gap-3 mb-2 text-amber-700 font-bold text-lg">
-                  <BookOpen className="w-5 h-5 shrink-0" />
-                  <span>{isHi ? '18 महापुराण संग्रह' : '18 Mahapuranas'}</span>
-                </div>
+                <IconText
+                  icon={<BookOpen className="w-5 h-5 shrink-0 -translate-y-[1px]" />}
+                  text={isHi ? '18 महापुराण संग्रह' : '18 Mahapuranas'}
+                  className="mb-2 text-amber-700 font-bold text-lg leading-snug"
+                />
                 <p
                   className={`text-[16px] sm:text-[17px] text-gray-700 leading-relaxed ${isHi ? 'font-hindi-body' : 'font-legal'}`}
                 >
@@ -162,10 +161,11 @@ export const AboutPage: React.FC = () => {
               </div>
 
               <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-orange-100/60">
-                <div className="flex items-center gap-3 mb-2 text-emerald-700 font-bold text-lg">
-                  <Flame className="w-5 h-5 shrink-0" />
-                  <span>{isHi ? 'आरती, चालीसा व स्तोत्र' : 'Aarti, Chalisa & Stotram'}</span>
-                </div>
+                <IconText
+                  icon={<Flame className="w-5 h-5 shrink-0 -translate-y-[1px]" />}
+                  text={isHi ? 'आरती, चालीसा व स्तोत्र' : 'Aarti, Chalisa & Stotram'}
+                  className="mb-2 text-emerald-700 font-bold text-lg leading-snug"
+                />
                 <p
                   className={`text-[16px] sm:text-[17px] text-gray-700 leading-relaxed ${isHi ? 'font-hindi-body' : 'font-legal'}`}
                 >
@@ -176,10 +176,11 @@ export const AboutPage: React.FC = () => {
               </div>
 
               <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-orange-100/60">
-                <div className="flex items-center gap-3 mb-2 text-purple-700 font-bold text-lg">
-                  <Calendar className="w-5 h-5 shrink-0" />
-                  <span>{isHi ? 'धार्मिक पर्व व तिथियाँ' : 'Festivals & Wisdom'}</span>
-                </div>
+                <IconText
+                  icon={<Calendar className="w-5 h-5 shrink-0 -translate-y-[1px]" />}
+                  text={isHi ? 'धार्मिक पर्व व तिथियाँ' : 'Festivals & Wisdom'}
+                  className="mb-2 text-purple-700 font-bold text-lg leading-snug"
+                />
                 <p
                   className={`text-[16px] sm:text-[17px] text-gray-700 leading-relaxed ${isHi ? 'font-hindi-body' : 'font-legal'}`}
                 >

@@ -44,10 +44,6 @@ export const PrivacyPolicyPage: React.FC = () => {
           <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-3xl mx-auto">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/20 text-emerald-400 shadow-inner">
-              <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-400" />
-            </div>
-
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4">
               {isHi ? 'गोपनीयता नीति' : 'Privacy Policy'}
               <span className="block text-xl sm:text-2xl md:text-3xl text-emerald-300/95 font-semibold mt-3">
