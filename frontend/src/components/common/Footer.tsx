@@ -5,7 +5,7 @@ import { useTranslation } from '@i18n/LanguageContext';
 import toast from 'react-hot-toast';
 
 export const Footer: React.FC = () => {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [email, setEmail] = useState('');
@@ -217,15 +217,6 @@ export const Footer: React.FC = () => {
                 <Link to="/contact" className="hover:text-amber-400 transition-colors flex items-center gap-2 py-0.5">
                   <span className="text-xs text-amber-500">•</span>
                   <span>{isHi ? 'संपर्क एवं सुझाव' : 'Contact & Suggestions'}</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/support-us"
-                  className="text-saffron hover:text-orange-400 font-bold transition-colors flex items-center gap-1.5"
-                >
-                  <Heart className="w-3.5 h-3.5 fill-saffron" />
-                  <span>{t('navigation.supportUs')}</span>
                 </Link>
               </li>
             </ul>
