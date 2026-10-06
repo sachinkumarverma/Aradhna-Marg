@@ -127,12 +127,16 @@ export class PublicController {
 
       if (category) {
         queryParams.push(category);
-        whereClauses.push(`(b.category_id = $${queryParams.length} OR c.slug = $${queryParams.length})`);
+        whereClauses.push(
+          `(b.category_id::text = $${queryParams.length} OR c.slug = $${queryParams.length} OR c.id::text = $${queryParams.length})`
+        );
       }
 
       if (deity) {
         queryParams.push(deity);
-        whereClauses.push(`(b.god_id = $${queryParams.length} OR d.slug = $${queryParams.length})`);
+        whereClauses.push(
+          `(b.god_id::text = $${queryParams.length} OR d.slug = $${queryParams.length} OR d.id::text = $${queryParams.length} OR EXISTS (SELECT 1 FROM bhajan_gods bg WHERE bg.bhajan_id = b.id AND (bg.god_id::text = $${queryParams.length})))`
+        );
       }
 
       let orderBy = 'ORDER BY b.created_at DESC';

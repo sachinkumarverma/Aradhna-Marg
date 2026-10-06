@@ -117,7 +117,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           ) : (
             <RefreshCw className="w-3.5 h-3.5 text-white shrink-0" />
           )}
-          <span className="leading-none">Regenerate</span>
+          <span className="leading-none translate-y-[2px]">Regenerate</span>
         </button>
 
         <button
@@ -135,7 +135,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           className="inline-flex items-center justify-center gap-2 bg-[#2E9E5B] text-white hover:bg-[#25824b] px-4 py-2 rounded-md text-[13px] font-medium transition-colors shadow-sm cursor-pointer"
         >
           <Edit3 className="w-3.5 h-3.5 shrink-0" />
-          <span className="leading-none">Edit</span>
+          <span className="leading-none translate-y-[2px]">Edit</span>
         </button>
       </div>
 

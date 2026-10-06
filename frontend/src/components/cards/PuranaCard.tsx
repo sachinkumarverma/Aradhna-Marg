@@ -67,18 +67,32 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
         </div>
 
         {/* Title */}
-        <h4 className="font-bold text-sm text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 pt-1 pb-0.5 leading-relaxed font-hindi-body mb-1">
+        <h4
+          className="font-bold text-sm text-darkBrown group-hover:text-saffron transition-colors font-hindi-heading leading-snug line-clamp-1 mb-1.5 overflow-hidden"
+          style={{ display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+        >
           {title}
         </h4>
 
         {/* Short Description */}
         {cleanDescription && (
-          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-3 font-hindi-body">{cleanDescription}</p>
+          <p
+            className="text-xs text-slate-600 line-clamp-2 overflow-hidden leading-normal mb-3 font-hindi-body"
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              maxHeight: '2.8em'
+            }}
+          >
+            {cleanDescription}
+          </p>
         )}
       </div>
 
       {/* Footer */}
-      <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between text-[11px] text-slate-500 font-medium mt-2">
+      <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between text-[11px] text-slate-500 font-medium mt-auto">
         <IconText icon={<Eye className="w-3.5 h-3.5 text-saffron" />} gap="gap-1" text={viewCount || 0} />
         <IconText
           icon={<BookOpen className="w-3.5 h-3.5" />}

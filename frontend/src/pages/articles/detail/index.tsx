@@ -75,10 +75,10 @@ export const ArticleDetail: React.FC = () => {
   const categoryName = getLocalizedField(article, 'category_name') || article.category_name;
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-3 sm:pt-6 md:pt-8 pb-16 sm:pb-24">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs Header */}
-        <div className="mb-8">
+        <div className="mb-3.5 sm:mb-6">
           <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Articles', to: '/articles' }, { label: title }]} />
         </div>
 
@@ -91,32 +91,39 @@ export const ArticleDetail: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm overflow-hidden"
             >
-              {/* Meta Badges */}
-              <div className="flex flex-wrap items-center gap-3 mb-4">
+              {/* Category & Meta Information Row */}
+              <div className="flex flex-wrap items-center justify-between gap-y-2.5 gap-x-4 mb-4 pb-3 border-b border-gray-100">
                 {categoryName && (
-                  <span className="px-3 py-1 bg-saffron/10 text-saffron font-bold text-xs rounded-md">
+                  <span className="px-3 py-1 bg-saffron/10 text-saffron border border-saffron/20 font-bold text-xs rounded-full inline-flex items-center shrink-0 font-hindi-heading shadow-2xs">
                     {categoryName}
                   </span>
                 )}
-                {article.publish_date && (
-                  <span className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                    <Calendar className="w-3.5 h-3.5 text-saffron" />
-                    {new Date(article.publish_date).toLocaleDateString(language === 'en' ? 'en-US' : 'hi-IN', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </span>
-                )}
-                {article.author_name && (
-                  <span className="flex items-center gap-1.5 text-xs text-slate-500 font-medium ml-auto">
-                    <User className="w-3.5 h-3.5 text-saffron" /> {article.author_name}
-                  </span>
-                )}
+
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 font-medium font-hindi-body">
+                  {article.publish_date && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-saffron shrink-0" />
+                      <span>
+                        {new Date(article.publish_date).toLocaleDateString(language === 'en' ? 'en-US' : 'hi-IN', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </span>
+                  )}
+                  {article.publish_date && article.author_name && <span className="text-slate-300 select-none">•</span>}
+                  {article.author_name && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-saffron shrink-0" />
+                      <span>{article.author_name}</span>
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-darkBrown tracking-tight leading-tight mb-4 font-hindi-heading">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-darkBrown tracking-tight leading-snug sm:leading-tight mb-4 font-hindi-heading">
                 {title}
               </h1>
 

@@ -18,7 +18,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
   thumbnailUrl
 }) => {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-darkBrown to-[#3d2b1f] text-cream pt-28 pb-14 shadow-xl">
+    <div className="relative overflow-hidden bg-gradient-to-br from-darkBrown to-[#3d2b1f] text-cream pt-4 sm:pt-6 md:pt-10 pb-8 sm:pb-12 md:pb-14 shadow-xl">
       {/* Decorative SVG Pattern */}
       <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +36,7 @@ export const CollectionHero: React.FC<CollectionHeroProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-10">
         <div className="flex-1 w-full">
           {/* Breadcrumbs */}
-          <div className="mb-6">
+          <div className="mb-3.5 sm:mb-6">
             <Breadcrumb items={breadcrumbs.map((c) => ({ label: c.label, to: c.path }))} variant="dark" />
           </div>
 

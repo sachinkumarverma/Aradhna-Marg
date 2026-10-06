@@ -91,14 +91,14 @@ export const Home: React.FC = () => {
   return (
     <div className="w-full relative bg-[#F9F7F3]">
       {/* 1. HERO SECTION */}
-      <section className="relative w-full overflow-hidden bg-black isolate aspect-[16/9] md:aspect-[21/9] lg:aspect-[16/9] mt-0 pb-12 flex items-center">
+      <section className="relative w-full overflow-hidden bg-black isolate min-h-[580px] sm:min-h-[640px] md:min-h-[700px] lg:min-h-[760px] py-16 sm:py-20 md:py-24 flex items-center">
         {heroImages.map((img, i) => (
           <div
             key={i}
             className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${i === bgIndex ? 'opacity-100' : 'opacity-0'}`}
             style={{
               backgroundImage: `url("${img}")`,
-              backgroundPosition: 'center 20%'
+              backgroundPosition: 'center center'
             }}
           ></div>
         ))}
@@ -146,7 +146,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* 2. QUICK FEATURES SECTION */}
-      <section className="py-6 bg-white relative z-20 -mt-12 rounded-t-xl shadow-[0_-15px_30px_-10px_rgba(0,0,0,0.2)]">
+      <section className="py-6 bg-white relative z-20 -mt-8 sm:-mt-10 rounded-t-2xl shadow-[0_-15px_30px_-10px_rgba(0,0,0,0.2)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-8">
             {[
@@ -254,8 +254,8 @@ export const Home: React.FC = () => {
                         <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                           <div>
                             {/* Top Row: Title & Heart Favorite */}
-                            <div className="flex items-start justify-between gap-3 pt-1">
-                              <h3 className="text-lg md:text-xl font-semibold text-darkBrown leading-relaxed line-clamp-1 group-hover:text-saffron transition-colors font-hindi-heading py-0.5">
+                            <div className="flex items-start justify-between gap-3 pt-0.5">
+                              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-darkBrown leading-normal line-clamp-2 group-hover:text-saffron transition-colors font-hindi-heading pt-0.5 pb-0.5">
                                 {title}
                               </h3>
                               <button
@@ -277,13 +277,15 @@ export const Home: React.FC = () => {
                             </div>
 
                             {/* Subtitle / Channel Name */}
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5 line-clamp-1">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1 line-clamp-1">
                               {subtitle}
                             </p>
 
-                            {/* Quote / Short Snippet - Strict 2 lines overflow hidden */}
-                            <div className="border-l-2 border-saffron/40 pl-3 py-1 text-xs md:text-sm text-slate-600 italic line-clamp-2 overflow-hidden leading-snug max-h-[2.6rem] my-2 bg-amber-50/40 rounded-r-lg font-serif">
-                              "{snippet}"
+                            {/* Quote / Short Snippet - Clean isolated clamp so line 3 never bleeds into padding */}
+                            <div className="border-l-2 border-saffron/40 pl-3 pr-2 py-2 my-2 bg-amber-50/40 rounded-r-lg overflow-hidden">
+                              <p className="text-xs md:text-sm text-slate-600 italic line-clamp-2 leading-normal font-serif m-0 p-0">
+                                "{snippet}"
+                              </p>
                             </div>
                           </div>
 
@@ -442,7 +444,7 @@ export const Home: React.FC = () => {
                       title={getLocalizedField(article, 'title')}
                       featuredImageUrl={article.featured_image_url}
                       excerpt={getLocalizedField(article, 'excerpt')}
-                      categoryName={article.category_name}
+                      categoryName={getLocalizedField(article, 'category_name') || article.category_name}
                     />
                   </motion.div>
                 ))

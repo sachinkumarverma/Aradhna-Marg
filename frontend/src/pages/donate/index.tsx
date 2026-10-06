@@ -286,7 +286,7 @@ export const DonatePage: React.FC = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#FAF7F2] pt-6 pb-20 font-hindi-body selection:bg-saffron selection:text-white">
+    <div className="w-full min-h-screen bg-[#FAF7F2] pt-6 pb-20 selection:bg-saffron selection:text-white">
       {/* 1. Hero & Vedic Mission Banner */}
       <section className="relative overflow-hidden pt-6 pb-10 sm:pt-12 sm:pb-14 px-4">
         {/* Subtle Decorative Background Glow */}
@@ -297,29 +297,29 @@ export const DonatePage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center gap-2 text-saffron text-sm sm:text-base font-bold tracking-wide mb-4 font-hindi-heading"
+            className="flex items-center justify-center gap-1.5 sm:gap-2 text-saffron text-xs sm:text-sm md:text-base font-bold tracking-wide mb-3 sm:mb-4 font-hindi-heading"
           >
-            <Sparkles className="w-4 h-4 fill-saffron shrink-0" />
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-saffron shrink-0" />
             <span>{isHi ? 'सनातन धर्म सेवा एवं सहयोग संकल्प' : 'Sanatan Seva & Platform Support'}</span>
-            <span className="font-black text-lg">ॐ</span>
+            <span className="font-extrabold text-base sm:text-lg">ॐ</span>
           </motion.div>
 
-          {/* Main Hero Headline - Clear line spacing & no clipping */}
+          {/* Main Hero Headline - Clear line spacing, matching Deities page styling */}
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-2xl sm:text-4xl md:text-5xl font-black font-hindi-heading mb-6 flex flex-col items-center gap-2.5 sm:gap-3.5 leading-normal"
+            className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold font-hindi-heading tracking-tight mb-3 sm:mb-5 flex flex-col items-center gap-1 sm:gap-2 leading-tight"
           >
             {isHi ? (
               <>
-                <span className="block text-darkBrown">सनातन ज्ञान और भक्ति की अविरल धारा</span>
-                <span className="block text-saffron">को सशक्त व सर्वसुलभ बनाएं</span>
+                <span className="block text-darkBrown font-hindi-heading">सनातन ज्ञान और भक्ति की अविरल धारा</span>
+                <span className="block text-saffron font-hindi-heading">को सशक्त व सर्वसुलभ बनाएं</span>
               </>
             ) : (
               <>
-                <span className="block text-darkBrown">Empowering Devotion & Vedic Wisdom</span>
-                <span className="block text-saffron">For Devotees Worldwide</span>
+                <span className="block text-darkBrown font-hindi-heading">Empowering Devotion & Vedic Wisdom</span>
+                <span className="block text-saffron font-hindi-heading">For Devotees Worldwide</span>
               </>
             )}
           </motion.h1>
@@ -329,7 +329,7 @@ export const DonatePage: React.FC = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-600 text-sm sm:text-base md:text-lg max-w-2xl mx-auto font-medium leading-relaxed sm:leading-loose mb-8"
+            className="text-slate-600 text-xs sm:text-base md:text-lg max-w-2xl mx-auto font-normal leading-relaxed mb-6 sm:mb-8"
           >
             {isHi
               ? 'आराधना मार्ग पर प्रतिदिन श्रद्धालु 18 महापुराणों, स्तोत्रों, भजनों व पंचांग का निशुल्क अध्ययन व श्रवण करते हैं। इस डिजिटल ज्ञान-मंदिर को अविरल, तीव्र और विज्ञापन-मुक्त रखने में आपकी दक्षिणा पावन योगदान है।'
@@ -341,14 +341,14 @@ export const DonatePage: React.FC = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.25 }}
-            className="max-w-xl mx-auto mb-8 p-4 rounded-2xl bg-amber-50/70 border border-amber-200/70 backdrop-blur-xs text-center shadow-xs"
+            className="max-w-xl mx-auto mb-6 sm:mb-8 p-3 sm:p-4 rounded-2xl bg-amber-50/70 border border-amber-200/70 backdrop-blur-xs text-center shadow-xs"
           >
-            <p className="text-saffron font-black text-sm sm:text-base font-hindi-heading tracking-wide">
+            <p className="text-saffron font-bold text-xs sm:text-sm md:text-base font-hindi-heading tracking-wide leading-snug">
               {isHi
                 ? '॥ स्वल्पमप्यस्य धर्मस्य त्रायते महतो भयात् ॥'
                 : '“Svalpam apy asya dharmasya trāyate mahato bhayāt”'}
             </p>
-            <p className="text-xs text-slate-500 font-medium mt-1">
+            <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-1">
               {isHi
                 ? '— श्रीमद्भगवद्गीता (धर्म के मार्ग पर किया गया थोड़ा सा भी प्रयास महान फल देता है)'
                 : '— Bhagavad Gita (Even a small step in dharma protects from great fear)'}
@@ -360,19 +360,19 @@ export const DonatePage: React.FC = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
           >
             <a
               href="#checkout-section"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-saffron to-orange-600 hover:from-orange-600 hover:to-saffron active:scale-95 text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg shadow-saffron/25 transition-all font-hindi-heading cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-saffron to-orange-600 hover:from-orange-600 hover:to-saffron active:scale-95 text-white font-bold text-sm sm:text-base md:text-lg rounded-2xl shadow-lg shadow-saffron/25 transition-all font-hindi-heading cursor-pointer"
             >
-              <Heart className="w-5 h-5 fill-white" />
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 fill-white" />
               <span>{isHi ? 'श्रद्धा दक्षिणा भेंट करें' : 'Offer Seva Contribution'}</span>
               <ArrowRight className="w-4 h-4 ml-1" />
             </a>
             <a
               href="#impact-section"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 bg-white hover:bg-amber-50/70 border border-orange-200 text-darkBrown font-bold text-sm sm:text-base rounded-2xl transition-all font-hindi-heading shadow-xs"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 sm:py-4 bg-white hover:bg-amber-50/70 border border-orange-200 text-darkBrown font-bold text-xs sm:text-sm md:text-base rounded-2xl transition-all font-hindi-heading shadow-xs"
             >
               <BookOpen className="w-4 h-4 text-saffron" />
               <span>{isHi ? 'हमारी सेवा एवं उपयोगिता देखें ↓' : 'Explore Platform Impact ↓'}</span>
@@ -380,7 +380,7 @@ export const DonatePage: React.FC = () => {
           </motion.div>
 
           {/* Security & Authenticity Trust Badge */}
-          <div className="mt-7 flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-500 font-medium">
+          <div className="mt-6 sm:mt-7 flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-500 font-medium">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>
               {isHi
@@ -392,7 +392,7 @@ export const DonatePage: React.FC = () => {
       </section>
 
       {/* 2. Interactive Seva Contribution Section */}
-      <section id="checkout-section" className="px-4 py-8 sm:py-12 relative z-10 scroll-mt-28">
+      <section id="checkout-section" className="px-4 py-6 sm:py-12 relative z-10 scroll-mt-28">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -403,19 +403,19 @@ export const DonatePage: React.FC = () => {
           {/* Top Decorative Gradient Accent Bar */}
           <div className="h-2.5 w-full bg-gradient-to-r from-amber-400 via-saffron to-orange-600" />
 
-          <div className="p-6 sm:p-8 text-center">
+          <div className="p-5 sm:p-8 text-center">
             {/* Sacred Vedic Emblem */}
-            <div className="w-14 h-14 mx-auto mb-3.5 text-saffron font-black text-3xl flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200 shadow-inner font-hindi-heading">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2.5 sm:mb-3.5 text-saffron font-extrabold text-2xl sm:text-3xl flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200 shadow-inner font-hindi-heading">
               ॐ
             </div>
 
-            <p className="text-xs font-bold uppercase tracking-widest text-saffron mb-1.5 font-hindi-heading">
+            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-saffron mb-1 font-hindi-heading">
               {isHi ? 'आराधना मार्ग सेवा कोष' : 'Aradhna Marg Seva Fund'}
             </p>
-            <h2 className="text-2xl sm:text-3xl font-black text-darkBrown mb-1.5 leading-snug font-hindi-heading">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-1.5 leading-snug font-hindi-heading">
               {isHi ? 'पावन सेवा में सहयोग दें' : 'Make Your Sacred Offering'}
             </h2>
-            <p className="text-slate-500 font-medium text-xs sm:text-sm mb-6 leading-relaxed">
+            <p className="text-slate-500 font-normal text-xs sm:text-sm mb-5 sm:mb-6 leading-relaxed">
               {isHi
                 ? 'अपनी सामर्थ्य और श्रद्धा अनुसार कोई भी राशि चुनें।'
                 : 'Choose an amount according to your wish and devotion.'}
@@ -443,7 +443,7 @@ export const DonatePage: React.FC = () => {
                         key={amt}
                         type="button"
                         onClick={() => handleAmountSelect(amt)}
-                        className={`py-3 px-2 rounded-xl border font-bold text-base sm:text-lg transition-all flex items-center justify-center gap-1 cursor-pointer font-hindi-heading ${
+                        className={`py-2.5 sm:py-3 px-2 rounded-xl border font-bold text-sm sm:text-lg transition-all flex items-center justify-center gap-1 cursor-pointer font-hindi-heading ${
                           isSelected
                             ? 'border-saffron bg-gradient-to-r from-saffron to-orange-600 text-white shadow-md shadow-saffron/25 scale-[1.02]'
                             : 'border-gray-200 bg-white text-darkBrown hover:border-saffron/60 hover:bg-amber-50/40'
@@ -530,7 +530,7 @@ export const DonatePage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || !currentAmount || currentAmount < 1}
-                className="w-full py-4 bg-gradient-to-r from-saffron via-orange-600 to-amber-600 hover:from-orange-600 hover:to-saffron text-white font-black text-lg sm:text-xl rounded-2xl shadow-lg shadow-saffron/30 transition-all active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer font-hindi-heading"
+                className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-saffron via-orange-600 to-amber-600 hover:from-orange-600 hover:to-saffron text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg shadow-saffron/30 transition-all active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer font-hindi-heading"
               >
                 {loading ? (
                   <>
@@ -559,16 +559,16 @@ export const DonatePage: React.FC = () => {
       </section>
 
       {/* 3. Unique Aradhna Marg Impact Pillars */}
-      <section id="impact-section" className="max-w-6xl mx-auto px-4 py-12 sm:py-16 scroll-mt-24">
-        <div className="text-center max-w-2xl mx-auto mb-12">
+      <section id="impact-section" className="max-w-6xl mx-auto px-4 py-10 sm:py-16 scroll-mt-24">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
           <div className="flex items-center justify-center gap-2 text-saffron text-xs sm:text-sm font-bold uppercase tracking-wider mb-2 font-hindi-heading">
             <Flame className="w-4 h-4 fill-saffron text-saffron" />
             <span>{isHi ? 'आपकी दक्षिणा का पावन सदुपयोग' : 'Where Your Contribution Reaches'}</span>
           </div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-darkBrown font-hindi-heading leading-snug mb-3">
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown font-hindi-heading leading-tight mb-2.5 sm:mb-3">
             {isHi ? 'सनातन धर्म के 4 डिजिटल स्तंभ' : 'The 4 Digital Pillars We Build Together'}
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 text-xs sm:text-base leading-relaxed">
             {isHi
               ? 'आराधना मार्ग पर हर दिन हज़ारों श्रद्धालु भक्ति व ज्ञान प्राप्त करते हैं। आपके सहयोग से यह सेवा निर्बाध चलती है।'
               : 'Every single rupee directly enriches scriptures, audio feeds, and authentic spiritual tools for everyone.'}
@@ -581,15 +581,15 @@ export const DonatePage: React.FC = () => {
             return (
               <div
                 key={i}
-                className="bg-white p-6 sm:p-7 rounded-3xl border border-orange-100/90 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-start gap-4"
+                className="bg-white p-5 sm:p-7 rounded-3xl border border-orange-100/90 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-start gap-4"
               >
                 <div
-                  className={`w-14 h-14 rounded-2xl ${uc.bgColor} ${uc.borderColor} border flex items-center justify-center text-saffron shrink-0 shadow-xs`}
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl ${uc.bgColor} ${uc.borderColor} border flex items-center justify-center text-saffron shrink-0 shadow-xs`}
                 >
-                  <Icon className="w-7 h-7 text-saffron" />
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-saffron" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-darkBrown font-hindi-heading mb-2 leading-snug">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-darkBrown font-hindi-heading mb-1.5 sm:mb-2 leading-snug">
                     {isHi ? uc.titleHi : uc.titleEn}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed sm:leading-loose">
@@ -602,8 +602,8 @@ export const DonatePage: React.FC = () => {
         </div>
 
         {/* Commitment Badge Cards */}
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50/50 p-5 rounded-2xl border border-amber-200/80 text-center">
+        <div className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50/50 p-4 sm:p-5 rounded-2xl border border-amber-200/80 text-center">
             <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-amber-100 flex items-center justify-center text-saffron">
               <Zap className="w-5 h-5 text-saffron" />
             </div>
@@ -615,7 +615,7 @@ export const DonatePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50/50 p-5 rounded-2xl border border-amber-200/80 text-center">
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50/50 p-4 sm:p-5 rounded-2xl border border-amber-200/80 text-center">
             <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-amber-100 flex items-center justify-center text-saffron">
               <ShieldCheck className="w-5 h-5 text-emerald-600" />
             </div>
@@ -627,7 +627,7 @@ export const DonatePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50/50 p-5 rounded-2xl border border-amber-200/80 text-center">
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50/50 p-4 sm:p-5 rounded-2xl border border-amber-200/80 text-center">
             <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-amber-100 flex items-center justify-center text-saffron">
               <Award className="w-5 h-5 text-amber-600" />
             </div>
@@ -643,9 +643,9 @@ export const DonatePage: React.FC = () => {
 
       {/* 4. Frequently Asked Questions Section */}
       <section className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
-        <div className="text-center mb-8">
-          <HelpCircle className="w-8 h-8 text-saffron mx-auto mb-2" />
-          <h2 className="text-2xl sm:text-3xl font-bold text-darkBrown font-hindi-heading leading-snug">
+        <div className="text-center mb-6 sm:mb-8">
+          <HelpCircle className="w-7 h-7 sm:w-8 sm:h-8 text-saffron mx-auto mb-2" />
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown font-hindi-heading leading-tight">
             {isHi ? 'अक्सर पूछे जाने वाले प्रश्न' : 'Frequently Asked Questions'}
           </h2>
         </div>
@@ -661,8 +661,8 @@ export const DonatePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                  className={`w-full px-5 text-left font-bold text-darkBrown flex items-center justify-between gap-4 font-hindi-heading text-sm sm:text-base cursor-pointer hover:text-saffron transition-colors ${
-                    isOpen ? 'pt-4 pb-3' : 'py-4'
+                  className={`w-full px-4 sm:px-5 text-left font-bold text-darkBrown flex items-center justify-between gap-4 font-hindi-heading text-xs sm:text-sm md:text-base cursor-pointer hover:text-saffron transition-colors ${
+                    isOpen ? 'pt-3.5 sm:pt-4 pb-2.5 sm:pb-3' : 'py-3.5 sm:py-4'
                   }`}
                 >
                   <span className="leading-snug">{faq.q}</span>
@@ -673,7 +673,7 @@ export const DonatePage: React.FC = () => {
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-5 pt-3.5 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed sm:leading-loose border-t border-gray-100">
+                  <div className="px-4 sm:px-5 pt-3 pb-3.5 sm:pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed sm:leading-loose border-t border-gray-100">
                     {faq.a}
                   </div>
                 )}
@@ -693,11 +693,11 @@ export const DonatePage: React.FC = () => {
               exit={{ opacity: 0, scale: 0.9 }}
               className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border border-orange-100 relative"
             >
-              <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8" />
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" />
               </div>
 
-              <h3 className="text-2xl font-black text-darkBrown font-hindi-heading mb-2">
+              <h3 className="text-xl sm:text-2xl font-extrabold text-darkBrown font-hindi-heading mb-2">
                 {isHi ? 'सहयोग सफल रहा! जय श्री राम' : 'Contribution Successful!'}
               </h3>
 

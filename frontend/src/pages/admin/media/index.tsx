@@ -109,12 +109,13 @@ export const AdminMedia = () => {
 
   return (
     <div className="space-y-6 flex flex-col flex-1 pb-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-            <ImageIcon className="w-6 h-6 text-saffron" /> MEDIA LIBRARY
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+            <ImageIcon className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />{' '}
+            <span className="truncate">MEDIA LIBRARY</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Manage images, audio, and documents securely.</p>
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">Manage images, audio, and documents securely.</p>
         </div>
       </div>
 

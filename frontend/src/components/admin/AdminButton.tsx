@@ -49,7 +49,9 @@ export const AdminButton = React.forwardRef<HTMLButtonElement, AdminButtonProps>
       >
         {isLoading && <Loader2 className="h-4 w-4 animate-spin shrink-0" />}
         {!isLoading && leftIcon && <span className="inline-flex items-center justify-center shrink-0">{leftIcon}</span>}
-        {children && <span className="inline-flex items-center leading-none">{children as any}</span>}
+        {children && (
+          <span className="inline-flex items-center justify-center leading-normal text-center">{children as any}</span>
+        )}
         {!isLoading && rightIcon && (
           <span className="inline-flex items-center justify-center shrink-0">{rightIcon}</span>
         )}

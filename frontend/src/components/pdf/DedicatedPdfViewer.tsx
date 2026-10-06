@@ -189,34 +189,56 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
       }`}
     >
       {/* Control Toolbar */}
-      <div className="bg-slate-950 text-white px-3.5 py-2 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2.5 shrink-0">
-        {/* Title & Document Badge */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-md bg-saffron/20 text-saffron flex items-center justify-center shrink-0">
-            <FileText className="w-3.5 h-3.5" />
+      <div className="bg-slate-950 text-white px-3 sm:px-4 py-2 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-3 shrink-0">
+        {/* Row 1 on Mobile: Document Title on Left + Action Buttons on Right | Desktop: Left Side Title */}
+        <div className="flex items-center justify-between sm:justify-start gap-2.5 sm:gap-3 w-full sm:w-auto min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-7 h-7 rounded-md bg-saffron/20 text-saffron flex items-center justify-center shrink-0">
+              <FileText className="w-3.5 h-3.5" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-xs sm:text-sm font-bold text-slate-100 truncate max-w-[160px] xs:max-w-[220px] sm:max-w-xs md:max-w-sm">
+                {title}
+              </h3>
+            </div>
           </div>
-          <div className="min-w-0">
-            <h3 className="text-xs sm:text-sm font-bold text-slate-100 truncate max-w-xs sm:max-w-xs md:max-w-sm">
-              {title}
-            </h3>
+
+          {/* Action Buttons: Mobile visible here on the right */}
+          <div className="flex sm:hidden items-center gap-2 shrink-0">
+            {onDownload && (
+              <button
+                onClick={onDownload}
+                title="Download PDF"
+                className="h-8 w-8 flex items-center justify-center bg-saffron text-white rounded-lg hover:bg-orange-600 transition-colors shadow-xs cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Reader'}
+              className="h-8 w-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-700/60 cursor-pointer"
+            >
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
           </div>
         </div>
 
-        {/* Toolbar Controls */}
-        <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
+        {/* Row 2 on Mobile (Page jump + Theme Switchers) | Desktop Right Side Controls */}
+        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
           {/* Page Navigation & Jump Control */}
-          <div className="h-8 flex items-center bg-slate-800/80 rounded-lg px-1.5 border border-slate-700/60">
+          <div className="h-8 flex items-center bg-slate-800/80 rounded-lg px-1.5 border border-slate-700/60 gap-0.5">
             <button
               onClick={handlePrevPage}
               title="Previous Page"
               disabled={pageNumber <= 1}
-              className="w-5 h-5 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white disabled:opacity-30 transition-colors"
+              className="w-6 h-6 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white disabled:opacity-30 transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
 
             <form onSubmit={handlePageJumpSubmit} className="flex items-center gap-1 px-1">
-              <span className="text-[11px] text-slate-400 font-medium hidden sm:inline translate-y-[2px]">Page</span>
+              <span className="text-[11px] text-slate-400 font-medium hidden sm:inline translate-y-[1px]">Page</span>
               <input
                 ref={inputRef}
                 type="number"
@@ -225,16 +247,16 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
                 value={inputPage}
                 onChange={(e) => setInputPage(e.target.value)}
                 onBlur={handlePageJumpSubmit}
-                className="w-9 h-5 bg-slate-900 text-center text-xs font-bold text-white rounded border border-slate-700 focus:border-saffron focus:outline-none pt-[3px] leading-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="w-8 h-6 bg-slate-900 text-center text-xs font-bold text-white rounded border border-slate-700 focus:border-saffron focus:outline-none leading-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 title="Type page number and press Enter to jump"
               />
               {totalPages > 0 && (
-                <span className="text-[11px] text-slate-400 font-medium translate-y-[2.5px]">/ {totalPages}</span>
+                <span className="text-[11px] text-slate-400 font-medium translate-y-[1px]">/ {totalPages}</span>
               )}
               <button
                 type="submit"
                 title="Jump to Page"
-                className="w-5 h-5 flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-saffron rounded transition-colors"
+                className="w-5 h-5 hidden xs:flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-saffron rounded transition-colors cursor-pointer"
               >
                 <CornerDownLeft className="w-3 h-3" />
               </button>
@@ -244,60 +266,60 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
               onClick={handleNextPage}
               title="Next Page"
               disabled={totalPages > 0 && pageNumber >= totalPages}
-              className="w-5 h-5 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white disabled:opacity-30 transition-colors"
+              className="w-6 h-6 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white disabled:opacity-30 transition-colors cursor-pointer"
             >
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Theme Filters */}
-          <div className="flex h-8 items-center bg-slate-800/80 rounded-lg p-0.5 border border-slate-700/60">
+          <div className="flex h-8 items-center bg-slate-800/80 rounded-lg p-1 gap-1 border border-slate-700/60">
             <button
               onClick={() => setReaderTheme('default')}
               title="Light Mode"
-              className={`w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold transition-colors ${
-                readerTheme === 'default' ? 'bg-saffron text-white' : 'text-slate-400 hover:text-white'
+              className={`w-6 h-6 flex items-center justify-center rounded text-xs font-bold transition-colors cursor-pointer ${
+                readerTheme === 'default' ? 'bg-saffron text-white shadow-xs' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Sun className="w-3.5 h-3.5" />
+              <Sun className="w-3.5 h-3.5 shrink-0" />
             </button>
             <button
               onClick={() => setReaderTheme('sepia')}
               title="Sepia Mode"
-              className={`w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold transition-colors ${
-                readerTheme === 'sepia' ? 'bg-amber-700 text-amber-100' : 'text-slate-400 hover:text-white'
+              className={`w-6 h-6 flex items-center justify-center rounded text-xs font-bold transition-colors cursor-pointer ${
+                readerTheme === 'sepia' ? 'bg-amber-700 text-amber-100 shadow-xs' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5" />
+              <BookOpen className="w-3.5 h-3.5 shrink-0" />
             </button>
             <button
               onClick={() => setReaderTheme('dark')}
               title="Night Reading"
-              className={`w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold transition-colors ${
-                readerTheme === 'dark' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+              className={`w-6 h-6 flex items-center justify-center rounded text-xs font-bold transition-colors cursor-pointer ${
+                readerTheme === 'dark' ? 'bg-slate-700 text-white shadow-xs' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Moon className="w-3.5 h-3.5" />
+              <Moon className="w-3.5 h-3.5 shrink-0" />
             </button>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-1.5">
+          {/* Action Buttons for Desktop */}
+          <div className="hidden sm:flex items-center gap-2">
             {onDownload && (
               <button
                 onClick={onDownload}
                 title="Download PDF"
-                className="h-8 flex items-center gap-1.5 px-3 bg-saffron text-white rounded-lg text-xs font-bold hover:bg-orange-600 transition-colors shadow-sm"
+                className="h-8 flex items-center gap-1.5 px-3 bg-saffron text-white rounded-lg text-xs font-bold hover:bg-orange-600 transition-colors shadow-sm cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline translate-y-[1px]">Download</span>
+                <span className="translate-y-[1px]">Download</span>
               </button>
             )}
 
             <button
               onClick={toggleFullscreen}
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Reader'}
-              className="h-8 w-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-700/60"
+              className="h-8 w-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-700/60 cursor-pointer"
             >
               {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
             </button>

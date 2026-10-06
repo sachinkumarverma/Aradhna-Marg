@@ -160,10 +160,10 @@ export const PuranDetail: React.FC = () => {
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pb-24 pt-0">
       {/* Dark Hero Section Header */}
-      <div className="bg-gradient-to-br from-[#2C1810] via-[#3D2317] to-[#1F100B] text-cream pt-8 pb-16 shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#2C1810] via-[#3D2317] to-[#1F100B] text-cream pt-3 sm:pt-6 md:pt-8 pb-12 sm:pb-16 shadow-xl relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Top Navigation & Breadcrumbs */}
-          <div className="mb-8">
+          <div className="mb-3.5 sm:mb-6">
             <Breadcrumb
               items={[{ label: 'Home', to: '/' }, { label: 'Sacred Texts', to: '/puranas' }, { label: title }]}
               variant="dark"
@@ -191,40 +191,40 @@ export const PuranDetail: React.FC = () => {
 
             {/* Right Meta Details */}
             <div className="lg:col-span-8 flex flex-col justify-center">
-              <div className="flex flex-wrap items-center gap-3.5 mb-6">
-                <span className="px-3 py-1 bg-saffron/20 text-saffron border border-saffron/30 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3.5 mb-3 sm:mb-6">
+                <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-saffron/20 text-saffron border border-saffron/30 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   {data.language || 'संस्कृत / हिंदी'}
                 </span>
                 {data.author && (
-                  <span className="px-3 py-1 bg-white/10 text-amber-100 rounded-full text-xs font-bold">
+                  <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-white/10 text-amber-100 rounded-full text-[11px] sm:text-xs font-bold truncate max-w-[220px] sm:max-w-none">
                     Author: {data.author}
                   </span>
                 )}
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4 mt-1 font-hindi-heading">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight mb-3 sm:mb-4 mt-1 font-hindi-heading">
                 {title}
               </h1>
 
               {/* View & Download Stats Badges */}
-              <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm text-amber-100/80 mb-6 py-3 border-y border-amber-200/10 font-hindi-body">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm text-amber-100/80 mb-4 sm:mb-6 py-2 sm:py-3 border-y border-amber-200/10 font-hindi-body">
                 <IconText
-                  icon={<Eye className="w-4 h-4 text-saffron" />}
-                  gap="gap-2"
+                  icon={<Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-saffron" />}
+                  gap="gap-1.5 sm:gap-2"
                   textClassName="font-semibold"
                   text={`${data.view_count?.toLocaleString() || 0} ${t('common.views')}`}
                 />
                 <IconText
-                  icon={<Download className="w-4 h-4 text-saffron" />}
-                  gap="gap-2"
+                  icon={<Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-saffron" />}
+                  gap="gap-1.5 sm:gap-2"
                   textClassName="font-semibold"
                   text={`${data.download_count?.toLocaleString() || 0} ${t('common.download')}`}
                 />
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 font-hindi-heading">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 font-hindi-heading">
                 {pdfUrl && (
                   <>
                     <button
@@ -233,17 +233,17 @@ export const PuranDetail: React.FC = () => {
                         setShowPdfViewer(true);
                         document.getElementById('pdf-viewer-section')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="h-11 px-6 inline-flex items-center justify-center gap-2.5 bg-saffron hover:bg-orange-600 text-white rounded-full font-bold text-sm hover:brightness-105 transition-all shadow-lg hover:shadow-saffron/20 cursor-pointer"
+                      className="h-9 sm:h-11 px-3.5 sm:px-6 inline-flex items-center justify-center gap-1.5 sm:gap-2.5 bg-saffron hover:bg-orange-600 text-white rounded-full font-bold text-xs sm:text-sm hover:brightness-105 transition-all shadow-lg hover:shadow-saffron/20 cursor-pointer"
                     >
-                      <BookOpen className="w-4 h-4 shrink-0" />
+                      <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                       <span>{t('common.readPdf')}</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleDownload}
-                      className="h-11 px-6 inline-flex items-center justify-center gap-2.5 bg-white/10 hover:bg-white/20 text-amber-100 border border-amber-200/20 rounded-full font-bold text-sm transition-all shadow-sm cursor-pointer"
+                      className="h-9 sm:h-11 px-3.5 sm:px-6 inline-flex items-center justify-center gap-1.5 sm:gap-2.5 bg-white/10 hover:bg-white/20 text-amber-100 border border-amber-200/20 rounded-full font-bold text-xs sm:text-sm transition-all shadow-sm cursor-pointer"
                     >
-                      <Download className="w-4 h-4 shrink-0" />
+                      <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                       <span>{t('common.download')}</span>
                     </button>
                   </>
@@ -259,13 +259,13 @@ export const PuranDetail: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20 font-hindi-body">
         {/* Description Card */}
         {descriptionContent && (
-          <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100 mb-10">
-            <div className="pb-4 mb-6 border-b border-gray-100">
+          <div className="bg-white rounded-xl p-4 sm:p-8 shadow-xs border border-gray-100 mb-8">
+            <div className="pb-3 sm:pb-4 mb-4 sm:mb-6 border-b border-gray-100">
               <IconText
-                icon={<BookOpen className="w-6 h-6 text-saffron" />}
-                gap="gap-2.5"
+                icon={<BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-saffron" />}
+                gap="gap-2 sm:gap-2.5"
                 text={
-                  <h2 className="text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                     {t('content.puranasSubtitle')}
                   </h2>
                 }
@@ -276,32 +276,32 @@ export const PuranDetail: React.FC = () => {
         )}
 
         {/* Ad Unit Placeholder */}
-        <div className="my-8">
+        <div className="my-6">
           <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
         </div>
 
         {/* Dedicated PDF Viewer Section */}
         <div id="pdf-viewer-section">
           {pdfUrl ? (
-            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-12">
-              <div className="flex items-center justify-between gap-4 pb-4 mb-6 border-b border-gray-100">
+            <div className="bg-white rounded-xl p-3.5 sm:p-8 shadow-xs border border-gray-100 mb-10">
+              <div className="flex items-center justify-between gap-3 pb-3 sm:pb-4 mb-4 sm:mb-6 border-b border-gray-100">
                 <IconText
-                  icon={<FileText className="w-6 h-6 text-saffron" />}
-                  gap="gap-2.5"
+                  icon={<FileText className="w-5 h-5 sm:w-6 sm:h-6 text-saffron" />}
+                  gap="gap-2 sm:gap-2.5"
                   text={
-                    <h2 className="text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
                       {t('common.readPdf')}
                     </h2>
                   }
                 />
                 {showPdfViewer && (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => setShowPdfViewer(false)}
-                      className="flex items-center gap-2 px-3.5 py-1.5 bg-slate-800 text-white rounded-lg font-bold text-xs hover:bg-slate-700 transition-all shadow-xs"
+                      className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 bg-slate-800 text-white rounded-lg font-bold text-xs hover:bg-slate-700 transition-all shadow-xs cursor-pointer"
                     >
-                      <BookOpen className="w-4 h-4 shrink-0" />
-                      <span className="translate-y-[1.5px]">{t('common.close')}</span>
+                      <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                      <span className="translate-y-[1px] leading-none">{t('common.close')}</span>
                     </button>
                   </div>
                 )}
@@ -310,26 +310,26 @@ export const PuranDetail: React.FC = () => {
               {showPdfViewer ? (
                 <DedicatedPdfViewer pdfUrl={pdfUrl} title={title} onDownload={handleDownload} />
               ) : (
-                <div className="bg-amber-50/50 rounded-2xl p-6 sm:p-8 border border-amber-200/60 flex flex-col sm:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-saffron/10 text-saffron flex items-center justify-center shrink-0">
-                      <BookOpen className="w-7 h-7" />
+                <div className="bg-amber-50/50 rounded-xl sm:rounded-2xl p-3.5 sm:p-6 border border-amber-200/60 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-saffron/10 text-saffron flex items-center justify-center shrink-0 shadow-2xs">
+                      <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-black text-darkBrown mb-1 font-hindi-heading">
+                    <div className="min-w-0">
+                      <h3 className="text-sm sm:text-base font-bold text-darkBrown font-hindi-heading leading-tight truncate">
                         {t('common.readPdf')}
                       </h3>
-                      <p className="text-slate-600 text-xs sm:text-sm font-medium">PDF Reader Interface</p>
+                      <p className="text-slate-600 text-[11px] sm:text-xs font-medium truncate">PDF Reader Interface</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => setShowPdfViewer(true)}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-saffron text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all shadow-md"
+                      className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-saffron text-white rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm hover:brightness-110 transition-all shadow-xs shrink-0 cursor-pointer active:scale-95"
                     >
-                      <BookOpen className="w-4 h-4 shrink-0" />
-                      <span className="inline-block translate-y-[2px]">{t('common.readPdf')}</span>
+                      <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                      <span className="inline-block translate-y-[1px] leading-none">{t('common.readPdf')}</span>
                     </button>
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export const PuranDetail: React.FC = () => {
                   title={getLocalizedField(article, 'title')}
                   featuredImageUrl={article.featured_image_url}
                   excerpt={getLocalizedField(article, 'excerpt')}
-                  categoryName={article.category_name}
+                  categoryName={getLocalizedField(article, 'category_name') || article.category_name}
                 />
               ))}
             </div>
@@ -385,10 +385,10 @@ export const PuranDetail: React.FC = () => {
                   <Link
                     key={fest.id}
                     to={`/festivals/${fest.slug || fest.id}`}
-                    className="group block bg-white rounded-2xl p-4 border border-orange-100/80 shadow-sm hover:shadow-md hover:border-saffron/40 transition-all flex items-center gap-4 cursor-pointer"
+                    className="group block bg-white rounded-xl p-3.5 sm:p-4 border border-orange-100/80 shadow-2xs hover:shadow-md hover:border-saffron/40 transition-all flex items-center gap-3.5 cursor-pointer"
                   >
                     {fest.banner_image ? (
-                      <div className="aspect-video w-20 rounded overflow-hidden shrink-0 bg-gray-100">
+                      <div className="aspect-video w-20 rounded-lg overflow-hidden shrink-0 bg-gray-100">
                         <img
                           src={fest.banner_image}
                           alt={festName}
@@ -396,8 +396,8 @@ export const PuranDetail: React.FC = () => {
                         />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 rounded bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
-                        <Calendar className="w-6 h-6" />
+                      <div className="w-14 h-14 rounded-lg bg-orange-100 flex items-center justify-center text-saffron shrink-0 group-hover:scale-105 transition-transform">
+                        <Calendar className="w-5 h-5" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch">

@@ -128,17 +128,24 @@ export function AdminTags() {
 
   return (
     <div className="space-y-4 flex flex-col min-h-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-            <TagIcon className="w-6 h-6 text-saffron" />
-            TAGS
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+            <TagIcon className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+            <span className="truncate">TAGS</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Manage lightweight labels for content.</p>
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">Manage lightweight labels for content.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <AdminButton onClick={() => openDrawer()} variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
-            Create Tag
+        <div className="flex items-center gap-2 shrink-0">
+          <AdminButton
+            onClick={() => openDrawer()}
+            variant="primary"
+            title="Create Tag"
+            aria-label="Create Tag"
+            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 gap-0 shrink-0"
+          >
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Create Tag</span>
           </AdminButton>
         </div>
       </div>
@@ -308,17 +315,17 @@ export function AdminTags() {
             <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeDrawer} />
             <div className="relative w-full max-w-md bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 bg-orange-100 border-b border-orange-200">
-                <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 bg-orange-100 border-b border-orange-200 gap-2">
+                <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                   <button
                     type="button"
                     onClick={closeDrawer}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="p-1.5 sm:p-2 hover:bg-black/5 rounded-full transition-colors shrink-0"
                   >
                     <ArrowLeft className="w-5 h-5 text-gray-600" />
                   </button>
-                  <div>
-                    <h1 className="text-xl font-bold tracking-wide text-slate-900 uppercase">
+                  <div className="min-w-0">
+                    <h1 className="text-base sm:text-xl font-bold tracking-wide text-slate-900 uppercase truncate">
                       {editingId ? 'Edit Tag' : 'Create Tag'}
                     </h1>
                   </div>
@@ -327,7 +334,9 @@ export function AdminTags() {
                   type="submit"
                   form="tag-form"
                   disabled={saveMutation.isPending || !isValid || (editingId ? !actuallyDirty : false)}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                  title={saveMutation.isPending ? 'Saving...' : 'Save'}
+                  aria-label={saveMutation.isPending ? 'Saving...' : 'Save'}
+                  className="inline-flex items-center justify-center gap-2 p-2 sm:px-5 sm:py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
                 >
                   <span className="shrink-0">
                     {saveMutation.isPending ? (
@@ -336,7 +345,9 @@ export function AdminTags() {
                       <Save className="w-4 h-4" />
                     )}
                   </span>
-                  <span className="leading-none">{saveMutation.isPending ? 'Saving...' : 'Save'}</span>
+                  <span className="hidden sm:inline leading-none translate-y-[1px]">
+                    {saveMutation.isPending ? 'Saving...' : 'Save'}
+                  </span>
                 </button>
               </div>
 

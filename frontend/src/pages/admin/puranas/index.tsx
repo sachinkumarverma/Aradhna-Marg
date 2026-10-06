@@ -136,21 +136,26 @@ export const AdminPuranas: React.FC = () => {
 
   return (
     <div className="space-y-6 flex flex-col min-h-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-            <BookOpen className="w-6 h-6 text-saffron" />
-            PURANAS
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+            <BookOpen className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+            <span className="truncate">PURANAS</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Manage document-based content like PDFs and holy scriptures.</p>
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
+            Manage document-based content like PDFs and holy scriptures.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <AdminButton
             onClick={() => navigate('/admin/puranas/new')}
             variant="primary"
-            leftIcon={<Plus className="w-4 h-4" />}
+            title="Add Purana"
+            aria-label="Add Purana"
+            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 gap-0 shrink-0"
           >
-            Add Purana
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Add Purana</span>
           </AdminButton>
         </div>
       </div>

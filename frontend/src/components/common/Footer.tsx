@@ -41,15 +41,15 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="w-full shrink-0 bg-[#0e0703] text-gray-400 pt-12 pb-8 border-t border-amber-900/40 relative overflow-hidden font-hindi-body">
+    <footer className="w-full shrink-0 bg-[#0e0703] text-gray-400 pt-6 sm:pt-8 md:pt-12 pb-8 border-t border-amber-900/40 relative overflow-hidden font-hindi-body">
       {/* Background Sacred Glows */}
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-48 bg-gradient-to-r from-amber-500/10 via-saffron/15 to-orange-600/10 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* 1. Top Devotional Connect Banner */}
-        <div className="mb-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#1c0f08] via-[#24130a] to-[#1c0f08] border border-amber-500/20 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-6">
-          <div className="max-w-xl text-center lg:text-left">
-            <div className="flex items-center justify-center lg:justify-start gap-2 text-saffron text-xs sm:text-sm font-bold mb-1.5 font-hindi-heading">
+        <div className="mb-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#1c0f08] via-[#24130a] to-[#1c0f08] border border-amber-500/20 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="max-w-xl text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-2 text-saffron text-xs sm:text-sm font-bold mb-1.5 font-hindi-heading">
               <Sparkles className="w-4 h-4 fill-saffron shrink-0" />
               <span>{isHi ? 'सनातन सत्संग एवं ज्ञान संदेश' : 'Sanatan Wisdom Community'}</span>
             </div>
@@ -67,7 +67,7 @@ export const Footer: React.FC = () => {
 
           <form
             onSubmit={handleSubscribe}
-            className="w-full lg:w-auto flex-1 max-w-md flex flex-col sm:flex-row gap-2.5"
+            className="w-full md:w-auto flex-1 max-w-md flex flex-col sm:flex-row gap-2.5 md:justify-end"
           >
             <input
               type="email"
@@ -95,12 +95,12 @@ export const Footer: React.FC = () => {
           </form>
         </div>
 
-        {/* 2. Main Navigation Grid - Robust 4-Column Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8 mb-12">
+        {/* 2. Main Navigation Grid - Balanced Responsive Columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8 mb-12 w-full">
           {/* Column 1: Brand & Identity */}
-          <div>
+          <div className="flex flex-col max-w-sm">
             <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500/25 to-orange-600/30 border border-amber-500/40 flex items-center justify-center text-saffron shadow-inner group-hover:scale-105 transition-transform">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500/25 to-orange-600/30 border border-amber-500/40 flex items-center justify-center text-saffron shadow-inner group-hover:scale-105 transition-transform shrink-0">
                 <span className="font-black text-2xl font-hindi-heading">ॐ</span>
               </div>
               <div>
@@ -120,7 +120,7 @@ export const Footer: React.FC = () => {
             </p>
 
             {/* Sacred Shloka Seal */}
-            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-xs text-amber-200/90 font-medium space-y-1">
+            <div className="p-3 rounded-2xl bg-white/5 border border-white/10 text-xs text-amber-200/90 font-medium space-y-1 mt-auto">
               <p className="text-saffron font-bold font-hindi-heading">॥ धर्मो रक्षति रक्षितः ॥</p>
               <p className="text-slate-400 text-[11px]">
                 {isHi ? 'सनातन धर्म सेवा में समर्पित' : 'Dedicated to Sanatan Dharma Seva'}
@@ -128,8 +128,8 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Column 2: शास्त्र एवं ग्रंथालय */}
-          <div>
+          {/* Column 2: शास्त्र एवं ग्रंथालय (Aligned right on 2-col tablet) */}
+          <div className="sm:justify-self-end sm:w-fit sm:min-w-[200px] lg:w-full lg:justify-self-auto">
             <h4 className="font-bold text-white mb-4 text-base flex items-center gap-2 font-hindi-heading">
               <BookOpen className="w-4 h-4 text-saffron shrink-0" />
               <span>{isHi ? 'शास्त्र एवं ग्रंथालय' : 'Scriptures & Library'}</span>
@@ -172,7 +172,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Column 3: दैनिक साधना व सुविधाएं */}
-          <div>
+          <div className="flex flex-col max-w-sm">
             <h4 className="font-bold text-white mb-4 text-base flex items-center gap-2 font-hindi-heading">
               <Calendar className="w-4 h-4 text-amber-400 shrink-0" />
               <span>{isHi ? 'दैनिक साधना व सुविधाएं' : 'Devotional Tools'}</span>
@@ -205,8 +205,8 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Column 4: संस्थान एवं सेवा + Social Media */}
-          <div>
+          {/* Column 4: संस्थान एवं सेवा + Social Media (Aligned right on 2-col tablet) */}
+          <div className="sm:justify-self-end sm:w-fit sm:min-w-[200px] lg:w-full lg:justify-self-auto">
             <h4 className="font-bold text-white mb-4 text-base flex items-center gap-2 font-hindi-heading">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{isHi ? 'संस्थान एवं सेवा' : 'Mission & Seva'}</span>
@@ -306,7 +306,7 @@ export const Footer: React.FC = () => {
               : 'All rights reserved. Dedicated to Sanatan Dharma.'}
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-slate-400">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-5 text-slate-400">
             <Link to="/disclaimer" className="hover:text-white transition-colors">
               {isHi ? 'अस्वीकरण (Disclaimer)' : 'Disclaimer'}
             </Link>

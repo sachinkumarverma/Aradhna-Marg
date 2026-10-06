@@ -6,22 +6,35 @@ import { BhajanCard } from '@components/cards/BhajanCard';
 import { BhajanCardSkeleton } from '@components/common/SkeletonLoader';
 import { Select } from '@components/ui/Select';
 import { PublicApi } from '@api/publicApi';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
 
 export const BhajansList: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [bhajans, setBhajans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [categories, setCategories] = useState<any[]>([]);
   const [deities, setDeities] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedDeity, setSelectedDeity] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [selectedDeity, setSelectedDeity] = useState(searchParams.get('deity') || '');
   const [sort, setSort] = useState('newest');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Sync URL search params if changed externally
+  useEffect(() => {
+    const deityFromUrl = searchParams.get('deity');
+    const categoryFromUrl = searchParams.get('category');
+    if (deityFromUrl !== null && deityFromUrl !== selectedDeity) {
+      setSelectedDeity(deityFromUrl);
+    }
+    if (categoryFromUrl !== null && categoryFromUrl !== selectedCategory) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchFilters = async () => {
@@ -59,6 +72,18 @@ export const BhajansList: React.FC = () => {
     fetchBhajans();
   }, [page, search, selectedCategory, selectedDeity, sort]);
 
+  const getDeityFallbackImage = (name: string = '') => {
+    const lower = name.toLowerCase();
+    if (lower.includes('ganesh')) return '/Deities/Ganesh.png';
+    if (lower.includes('krishna')) return '/Deities/Krishna.png';
+    if (lower.includes('durga')) return '/Deities/MataDurga.png';
+    if (lower.includes('radha')) return '/Deities/Radharamanji.png';
+    if (lower.includes('shiv')) return '/Deities/ShivJi.png';
+    if (lower.includes('ram')) return '/Deities/Shriram.png';
+    if (lower.includes('hanuman')) return '/Deities/Hanuman.png';
+    return '/Deities/Krishna.png';
+  };
+
   const deityOptions = [
     { label: t('common.allDeities'), value: '' },
     ...deities.map((d) => ({ label: getLocalizedField(d, 'name') || d.name, value: d.id }))
@@ -93,49 +118,63 @@ export const BhajansList: React.FC = () => {
               {t('content.devotionalMusicSubtitle')}
             </p>
 
-            {/* Quick Filter Chips */}
+            {/* Quick Filter Chips with Deity Thumbnails */}
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setSelectedDeity('');
                   setSelectedCategory('');
+                  setSearchParams({});
                   setPage(1);
                 }}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
                   !selectedDeity && !selectedCategory
                     ? 'bg-saffron text-white border-saffron shadow-sm'
                     : 'bg-white/10 text-amber-100 border-white/15 hover:bg-white/20'
                 }`}
               >
-                {t('common.all')}
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                <span>{t('common.all')}</span>
               </button>
-              {deities.slice(0, 5).map((d) => (
-                <button
-                  key={d.id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedDeity(d.id);
-                    setPage(1);
-                  }}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${
-                    selectedDeity === d.id
-                      ? 'bg-saffron text-white border-saffron shadow-sm'
-                      : 'bg-white/10 text-amber-100 border-white/15 hover:bg-white/20'
-                  }`}
-                >
-                  {getLocalizedField(d, 'name') || d.name}
-                </button>
-              ))}
+              {deities.slice(0, 5).map((d) => {
+                const deityName = getLocalizedField(d, 'name') || d.name || '';
+                const deityImg = d.image || d.thumbnail_url || getDeityFallbackImage(d.name || '');
+                const isSelected = selectedDeity === d.id;
+
+                return (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedDeity(d.id);
+                      setSearchParams({ deity: d.id });
+                      setPage(1);
+                    }}
+                    className={`pl-1.5 pr-3 py-1 rounded-full text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
+                      isSelected
+                        ? 'bg-saffron text-white border-saffron shadow-sm'
+                        : 'bg-white/10 text-amber-100 border-white/15 hover:bg-white/20'
+                    }`}
+                  >
+                    <img
+                      src={deityImg}
+                      alt={deityName}
+                      className="w-5 h-5 rounded-full object-cover border border-white/30 shrink-0 bg-white/10"
+                    />
+                    <span>{deityName}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Filter Controls Bar */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-amber-100 mb-10 flex flex-col md:flex-row gap-4 items-center justify-between">
+        {/* Filter Controls Bar - Responsive layout to fit tablet and mobile without overflow */}
+        <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-amber-100/80 mb-10 flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
           {/* Search Input */}
-          <div className="relative w-full md:w-96">
-            <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
+          <div className="relative flex-1 w-full min-w-0">
+            <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
@@ -144,22 +183,19 @@ export const BhajansList: React.FC = () => {
                 setPage(1);
               }}
               placeholder={t('common.searchBhajans')}
-              className="w-full pl-11 pr-4 pt-3 pb-2 bg-[#F9F7F3] rounded-xl outline-none border border-amber-100 focus:border-saffron text-sm font-medium text-darkBrown transition-colors font-hindi-body"
+              className="w-full pl-11 pr-4 py-3 bg-[#F9F7F3] rounded-xl outline-none border border-amber-100 focus:border-saffron focus:bg-white text-sm font-medium text-darkBrown transition-all font-hindi-body"
             />
           </div>
 
           {/* Custom Select Dropdowns */}
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider mr-1 shrink-0">
-              <Filter className="w-4 h-4 text-saffron" /> {t('common.filters')}
-            </div>
-
-            <div className="w-48">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full lg:w-auto shrink-0">
+            <div className="w-full lg:w-44">
               <Select
                 options={deityOptions}
                 value={selectedDeity}
                 onChange={(val) => {
                   setSelectedDeity(val);
+                  setSearchParams(val ? { deity: val } : {});
                   setPage(1);
                 }}
                 placeholder={t('common.allDeities')}
@@ -167,7 +203,7 @@ export const BhajansList: React.FC = () => {
               />
             </div>
 
-            <div className="w-48">
+            <div className="w-full lg:w-44">
               <Select
                 options={categoryOptions}
                 value={selectedCategory}
@@ -180,7 +216,7 @@ export const BhajansList: React.FC = () => {
               />
             </div>
 
-            <div className="w-44">
+            <div className="w-full lg:w-36">
               <Select
                 options={sortOptions}
                 value={sort}

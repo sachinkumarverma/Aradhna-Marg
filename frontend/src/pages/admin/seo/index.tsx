@@ -101,13 +101,15 @@ export const AdminSEO = () => {
   return (
     <div className="space-y-6 flex flex-col flex-1 pb-8">
       <div className="space-y-2">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-              <Search className="w-6 h-6 text-saffron" />
-              SEO ENGINE
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+              <Search className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+              <span className="truncate">SEO ENGINE</span>
             </h1>
-            <p className="text-sm text-gray-500 mt-1">Monitor, audit, and manage global search engine optimization.</p>
+            <p className="hidden sm:block text-sm text-gray-500 mt-1">
+              Monitor, audit, and manage global search engine optimization.
+            </p>
           </div>
         </div>
 

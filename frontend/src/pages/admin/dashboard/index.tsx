@@ -45,11 +45,11 @@ export const AdminDashboard: React.FC = () => {
     return (
       <div className="space-y-6 flex flex-col min-h-full">
         <div>
-          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-            <LayoutDashboard className="w-6 h-6 text-saffron" />
-            DASHBOARD
+          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+            <LayoutDashboard className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+            <span className="truncate">DASHBOARD</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Platform overview and automation status</p>
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">Platform overview and automation status</p>
         </div>
         <div className="space-y-6 animate-pulse flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -72,11 +72,11 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-          <LayoutDashboard className="w-6 h-6 text-saffron" />
-          DASHBOARD
+        <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+          <LayoutDashboard className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+          <span className="truncate">DASHBOARD</span>
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Platform overview and automation status</p>
+        <p className="hidden sm:block text-sm text-gray-500 mt-1">Platform overview and automation status</p>
       </div>
 
       {/* Primary Stats Grid */}
@@ -122,8 +122,8 @@ export const AdminDashboard: React.FC = () => {
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-semibold text-gray-900">Recently Added Bhajans</h3>
           </div>
-          <div className="p-0">
-            <table className="w-full text-left text-sm whitespace-nowrap">
+          <div className="p-0 overflow-x-auto w-full scrollbar-thin">
+            <table className="w-full min-w-[520px] text-left text-sm whitespace-nowrap">
               <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                 <tr>
                   <th className="px-5 py-4 font-bold">Event</th>

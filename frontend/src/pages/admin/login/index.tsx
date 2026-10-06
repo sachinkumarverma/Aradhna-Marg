@@ -103,7 +103,8 @@ export const AdminLogin: React.FC = () => {
 
             <AdminButton
               type="submit"
-              className="w-full h-12 bg-saffron hover:bg-[#d96a1a] text-white font-bold rounded-md shadow-md flex justify-center items-center"
+              size="lg"
+              className="w-full h-12 bg-saffron hover:bg-[#d96a1a] text-white font-bold text-lg tracking-wide rounded-md shadow-md flex justify-center items-center text-center cursor-pointer font-hindi-heading"
               disabled={loading}
               isLoading={loading}
             >

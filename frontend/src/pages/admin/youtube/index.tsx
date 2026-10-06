@@ -234,13 +234,13 @@ export const AdminYoutube = () => {
   return (
     <div className="space-y-6 flex flex-col flex-1 pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-            <PlaySquare className="w-6 h-6 text-red-600" />
-            YOUTUBE SYNCING
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+            <PlaySquare className="w-4 h-4 sm:w-6 sm:h-6 text-red-600 shrink-0" />
+            <span className="truncate">YOUTUBE SYNCING</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
             Import, review, and link YouTube videos directly to your platform.
           </p>
         </div>
@@ -248,10 +248,14 @@ export const AdminYoutube = () => {
           type="button"
           onClick={() => syncMutation.mutate()}
           disabled={syncMutation.isPending}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#ff3b00] text-white rounded-md font-bold hover:bg-[#e63500] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          title={syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
+          aria-label={syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
+          className="flex items-center justify-center h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 bg-[#ff3b00] text-white rounded-md font-bold hover:bg-[#e63500] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
         >
-          <RefreshCw className={`w-4 h-4 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
-          {syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
+          <RefreshCw className={`w-4 h-4 shrink-0 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
+          <span className="hidden sm:inline ml-1.5 text-xs font-semibold">
+            {syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
+          </span>
         </button>
       </div>
 
@@ -294,22 +298,22 @@ export const AdminYoutube = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide">
         <button
           onClick={() => setActiveTab('videos')}
-          className={`px-6 py-3 text-sm font-bold uppercase border-b-2 transition-colors ${activeTab === 'videos' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
+          className={`whitespace-nowrap px-4 sm:px-6 py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${activeTab === 'videos' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
         >
           Imported Videos
         </button>
         <button
           onClick={() => setActiveTab('history')}
-          className={`px-6 py-3 text-sm font-bold uppercase border-b-2 transition-colors ${activeTab === 'history' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
+          className={`whitespace-nowrap px-4 sm:px-6 py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${activeTab === 'history' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
         >
           Sync History
         </button>
         <button
           onClick={() => setActiveTab('settings')}
-          className={`px-6 py-3 text-sm font-bold uppercase border-b-2 transition-colors ${activeTab === 'settings' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
+          className={`whitespace-nowrap px-4 sm:px-6 py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${activeTab === 'settings' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
         >
           Configuration
         </button>
@@ -427,8 +431,8 @@ export const AdminYoutube = () => {
       {/* Videos Tab */}
       {activeTab === 'videos' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4 justify-between bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100">
-            <div className="relative flex-1 max-w-md">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100">
+            <div className="relative flex-1 w-full max-w-none sm:max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
@@ -453,8 +457,8 @@ export const AdminYoutube = () => {
               )}
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="flex items-center gap-2 w-full sm:w-80">
-                <Filter className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial min-w-0">
+                <Filter className="w-4 h-4 text-gray-400 shrink-0" />
                 <Select
                   value={statusFilter}
                   onChange={(val) => {
@@ -468,7 +472,7 @@ export const AdminYoutube = () => {
                     { label: 'Linked', value: 'LINKED' },
                     { label: 'Ignored', value: 'IGNORED' }
                   ]}
-                  className="w-36"
+                  className="flex-1 sm:w-36 min-w-0"
                   searchable={false}
                 />
                 <Select
@@ -482,7 +486,7 @@ export const AdminYoutube = () => {
                     { label: 'Videos', value: 'VIDEO' },
                     { label: 'Shorts', value: 'SHORT' }
                   ]}
-                  className="w-32"
+                  className="flex-1 sm:w-32 min-w-0"
                   searchable={false}
                 />
               </div>
@@ -494,10 +498,11 @@ export const AdminYoutube = () => {
                   queryClient.invalidateQueries({ queryKey: ['youtube-history'] });
                 }}
                 disabled={isFetchingVideos}
-                className="p-2 rounded-md text-white bg-saffron hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-10 h-10 p-0 rounded-md text-white bg-saffron hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 title="Refresh Data"
+                aria-label="Refresh Data"
               >
-                <RefreshCw className={`w-5 h-5 ${isFetchingVideos ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isFetchingVideos ? 'animate-spin' : ''}`} />
               </button>
             </div>
           </div>

@@ -65,23 +65,25 @@ export const AdminSystemHealth: React.FC = () => {
 
   return (
     <div className="space-y-6 flex flex-col flex-1 pb-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-            <Activity className="w-6 h-6 text-saffron" />
-            SYSTEM HEALTH
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+            <Activity className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+            <span className="truncate">SYSTEM HEALTH</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
             Read-only monitoring of all core services and application status.
           </p>
         </div>
         <button
           onClick={() => refetch()}
           disabled={isFetching}
-          className="flex items-center gap-2 px-4 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          title="Refresh"
+          aria-label="Refresh"
+          className="flex items-center justify-center h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium shadow-sm disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
         >
-          <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
-          Refresh
+          <RefreshCw className={`w-4 h-4 shrink-0 ${isFetching ? 'animate-spin' : ''}`} />
+          <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Refresh</span>
         </button>
       </div>
 

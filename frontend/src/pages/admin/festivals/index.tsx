@@ -142,23 +142,26 @@ export const AdminFestivals: React.FC = () => {
 
   return (
     <div className="space-y-6 flex flex-col min-h-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-            <Calendar className="w-6 h-6 text-saffron" />
-            FESTIVALS
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+            <Calendar className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+            <span className="truncate">FESTIVALS</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
             Manage spiritual festivals, events, and their associated content.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <AdminButton
             onClick={() => navigate('/admin/festivals/new')}
             variant="primary"
-            leftIcon={<Plus className="w-4 h-4" />}
+            title="Add Festival"
+            aria-label="Add Festival"
+            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 gap-0 shrink-0"
           >
-            Add Festival
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Add Festival</span>
           </AdminButton>
         </div>
       </div>

@@ -57,7 +57,8 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
 
   return (
     <nav
-      className={`inline-flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold font-hindi-heading leading-normal py-1 ${
+      aria-label="Breadcrumb"
+      className={`flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold font-hindi-heading leading-normal py-1 max-w-full min-w-0 overflow-hidden ${
         isDark ? 'text-slate-200' : 'text-slate-600'
       } ${className}`}
     >
@@ -76,14 +77,12 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
 
         return (
           <React.Fragment key={idx}>
-            <span className="inline-flex items-center justify-center shrink-0 icon-wrapper">
+            <span className="inline-flex items-center justify-center shrink-0 icon-wrapper text-slate-300">
               <ChevronRight className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white/40' : 'text-slate-300'}`} />
             </span>
             {isLast || !item.to ? (
               <span
-                className={`font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md inline-flex items-center ${
-                  isDark ? 'text-amber-400' : 'text-saffron'
-                }`}
+                className={`font-bold truncate min-w-0 flex-1 block ${isDark ? 'text-amber-400' : 'text-saffron'}`}
                 title={displayLabel}
               >
                 {displayLabel}
@@ -91,7 +90,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
             ) : (
               <Link
                 to={item.to}
-                className={`transition-colors font-medium inline-flex items-center ${
+                className={`transition-colors font-medium shrink-0 hover:underline ${
                   isDark ? 'text-slate-200 hover:text-white' : 'text-slate-600 hover:text-saffron'
                 }`}
               >

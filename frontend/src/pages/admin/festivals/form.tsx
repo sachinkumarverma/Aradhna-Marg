@@ -210,35 +210,37 @@ export const AdminFestivalForm = () => {
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={handleClose} />
           <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 bg-orange-100 border-b border-orange-200">
-              <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 bg-orange-100 border-b border-orange-200 gap-2">
+              <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-1.5 sm:p-2 hover:bg-black/5 rounded-full transition-colors shrink-0"
                 >
                   <ArrowLeft className="w-5 h-5 text-gray-600" />
                 </button>
-                <div>
-                  <h1 className="text-xl font-bold tracking-wide text-slate-900 uppercase">
+                <div className="min-w-0">
+                  <h1 className="text-base sm:text-xl font-bold tracking-wide text-slate-900 uppercase truncate">
                     {isEditing ? 'Edit Festival' : 'Create Festival'}
                   </h1>
                   {lastSaved && (
-                    <p className="text-xs text-green-600 font-medium mt-1">
+                    <p className="text-[10px] sm:text-xs text-green-600 font-medium mt-0.5 sm:mt-1 truncate">
                       Last saved: {lastSaved.toLocaleTimeString()}
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={handlePreview}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm cursor-pointer"
+                  title="Live Preview"
+                  aria-label="Live Preview"
+                  className="inline-flex items-center justify-center gap-2 p-2 sm:px-4 sm:py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm cursor-pointer shrink-0"
                 >
                   <Eye className="w-4 h-4 shrink-0" />
-                  <span className="leading-none">Live Preview</span>
+                  <span className="hidden sm:inline leading-none translate-y-[1px]">Live Preview</span>
                 </button>
                 <button
                   type="button"
@@ -247,10 +249,12 @@ export const AdminFestivalForm = () => {
                     onSubmit({ ...getValues(), status: 'Draft' });
                   }}
                   disabled={saveMutation.isPending || isUploading || (isEditing ? !actuallyDirty : false)}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  title="Save as Draft"
+                  aria-label="Save as Draft"
+                  className="inline-flex items-center justify-center gap-2 p-2 sm:px-4 sm:py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
                 >
                   <Save className="w-4 h-4 shrink-0" />
-                  <span className="leading-none">Save Draft</span>
+                  <span className="hidden sm:inline leading-none translate-y-[1px]">Save Draft</span>
                 </button>
                 <button
                   type="button"
@@ -259,14 +263,16 @@ export const AdminFestivalForm = () => {
                     handleSubmit(onSubmit)();
                   }}
                   disabled={saveMutation.isPending || isUploading || !isValid || (isEditing ? !actuallyDirty : false)}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  title={saveMutation.isPending || isUploading ? 'Publishing...' : 'Publish'}
+                  aria-label={saveMutation.isPending || isUploading ? 'Publishing...' : 'Publish'}
+                  className="inline-flex items-center justify-center gap-2 p-2 sm:px-5 sm:py-2 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
                 >
                   {saveMutation.isPending || isUploading ? (
                     <Loader2 className="w-4 h-4 animate-spin shrink-0" />
                   ) : (
                     <Send className="w-4 h-4 shrink-0" />
                   )}
-                  <span className="leading-none">
+                  <span className="hidden sm:inline leading-none translate-y-[1px]">
                     {saveMutation.isPending || isUploading ? 'Publishing...' : 'Publish'}
                   </span>
                 </button>

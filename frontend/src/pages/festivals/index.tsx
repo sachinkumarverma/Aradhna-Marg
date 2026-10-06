@@ -112,16 +112,16 @@ export const FestivalsList: React.FC = () => {
                           </div>
                         )}
 
-                        <div className="p-6 pb-0">
+                        <div className="p-4 sm:p-6 pb-0">
                           {/* Title Row with Festival Name on Left & Date Badge on Right */}
-                          <div className="flex items-center justify-between gap-3 mb-3 pt-1">
-                            <h2 className="text-xl sm:text-2xl font-bold text-darkBrown group-hover:text-saffron transition-colors font-hindi-heading line-clamp-1 pt-1.5 pb-1 leading-snug">
+                          <div className="flex items-center justify-between gap-2 sm:gap-3 mb-2.5 sm:mb-3 pt-0.5">
+                            <h2 className="text-lg sm:text-2xl font-bold text-darkBrown group-hover:text-saffron transition-colors font-hindi-heading line-clamp-1 pt-1 pb-0.5 leading-snug">
                               {festName}
                             </h2>
                             {fest.festival_date && (
-                              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-50 text-saffron text-xs font-bold rounded-full border border-amber-200 font-hindi-body shrink-0 -translate-y-1 shadow-xs">
-                                <Calendar className="w-3.5 h-3.5 text-orange-600 fill-orange-500/25 shrink-0" />
-                                <span className="pt-[1.5px] inline-block">
+                              <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-[3px] sm:py-1 bg-amber-50 text-saffron text-[11px] sm:text-xs font-bold rounded-full border border-amber-200 font-hindi-body shrink-0 shadow-xs">
+                                <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600 fill-orange-500/25 shrink-0 -translate-y-[0.5px]" />
+                                <span className="translate-y-[1px] inline-block leading-none">
                                   {new Date(fest.festival_date).toLocaleDateString(
                                     language === 'en' ? 'en-US' : 'hi-IN'
                                   )}

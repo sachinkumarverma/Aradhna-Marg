@@ -33,7 +33,7 @@ export const BottomRelatedContent: React.FC<BottomRelatedContentProps> = ({
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-white rounded-xl p-5 border border-amber-100 shadow-xs"
+          className="bg-white rounded-xl p-3.5 sm:p-5 border border-amber-100 shadow-xs"
         >
           <SectionHeader
             icon={<Scroll className="w-5 h-5 text-saffron" />}
@@ -65,7 +65,7 @@ export const BottomRelatedContent: React.FC<BottomRelatedContentProps> = ({
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-white rounded-xl p-5 border border-amber-100 shadow-xs"
+          className="bg-white rounded-xl p-3.5 sm:p-5 border border-amber-100 shadow-xs"
         >
           <SectionHeader
             icon={<BookOpen className="w-5 h-5 text-saffron" />}
@@ -97,7 +97,7 @@ export const BottomRelatedContent: React.FC<BottomRelatedContentProps> = ({
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-white rounded-xl p-5 border border-orange-100 shadow-xs"
+          className="bg-white rounded-xl p-3.5 sm:p-5 border border-orange-100 shadow-xs"
         >
           <SectionHeader
             icon={<Music className="w-5 h-5 text-saffron" />}

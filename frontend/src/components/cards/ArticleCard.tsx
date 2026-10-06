@@ -38,9 +38,24 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   layout = 'grid',
   className = ''
 }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const articleUrl = `/articles/${slug || id}`;
   const cleanExcerpt = stripHtml(excerpt);
+
+  const formatCategoryBadge = (rawName?: string) => {
+    if (!rawName) return '';
+    if (rawName.includes('(') && rawName.includes(')')) {
+      const match = rawName.match(/^([^(]+)\(([^)]+)\)$/);
+      if (match) {
+        const enPart = match[1].trim();
+        const hiPart = match[2].trim();
+        return language === 'hi' ? hiPart || enPart : enPart || hiPart;
+      }
+    }
+    return rawName;
+  };
+
+  const displayCategory = formatCategoryBadge(categoryName);
 
   if (layout === 'horizontal') {
     return (
@@ -93,11 +108,11 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       )}
 
       {/* Card Content */}
-      <div className="p-5 flex-1 flex flex-col justify-between">
+      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
-          {categoryName && (
-            <span className="inline-block px-2.5 py-0.5 bg-saffron/10 text-saffron text-xs font-bold rounded-md mb-2.5">
-              {categoryName}
+          {displayCategory && (
+            <span className="inline-flex items-center px-2.5 py-1 bg-saffron/10 text-saffron text-[11px] sm:text-xs font-bold rounded-md mb-2.5 leading-normal max-w-full font-hindi-heading">
+              {displayCategory}
             </span>
           )}
           <h2

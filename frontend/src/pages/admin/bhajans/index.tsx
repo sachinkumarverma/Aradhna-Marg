@@ -120,21 +120,26 @@ export const AdminBhajans: React.FC = () => {
 
   return (
     <div className="space-y-6 flex flex-col min-h-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase">
-            <Music2 className="w-6 h-6 text-saffron" />
-            BHAJANS
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
+            <Music2 className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+            <span className="truncate">BHAJANS</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Manage and supervise all imported and generated content.</p>
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
+            Manage and supervise all imported and generated content.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <AdminButton
             onClick={() => navigate('/admin/bhajans/new')}
             variant="primary"
-            leftIcon={<Plus className="w-4 h-4" />}
+            title="Create Bhajan"
+            aria-label="Create Bhajan"
+            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 gap-0 shrink-0"
           >
-            Create Bhajan
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Create Bhajan</span>
           </AdminButton>
         </div>
       </div>

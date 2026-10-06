@@ -52,19 +52,21 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   const displayActionLabel = actionLink ? (actionLabelKey ? t(actionLabelKey) : actionLink.label) : '';
 
   return (
-    <div className={`flex items-center justify-between pb-3 border-b border-gray-200/60 mb-5 ${className}`}>
+    <div
+      className={`flex items-center justify-between pb-2.5 sm:pb-3 border-b border-gray-200/60 mb-4 sm:mb-5 ${className}`}
+    >
       {/* Icon + Title + Subtitle */}
       <IconText
         icon={icon}
-        gap="gap-2.5"
+        gap="gap-2 sm:gap-2.5"
         className="min-w-0"
         text={
-          <div className="flex items-center gap-2.5 min-w-0">
-            <h2 className="text-xl sm:text-2xl font-bold text-darkBrown font-hindi-heading leading-tight inline-block">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <h2 className="text-base sm:text-lg md:text-xl font-bold text-darkBrown font-hindi-heading leading-tight inline-block">
               {displayTitle}
             </h2>
             {displaySubtitle && displaySubtitle !== displayTitle && (
-              <span className="text-sm sm:text-base font-semibold text-darkBrown/75 font-hindi-heading leading-tight hidden sm:inline-block">
+              <span className="text-xs sm:text-sm md:text-base font-semibold text-darkBrown/75 font-hindi-heading leading-tight hidden sm:inline-block">
                 ({displaySubtitle})
               </span>
             )}
@@ -76,10 +78,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
       {actionLink && (
         <Link
           to={actionLink.to}
-          className={`inline-flex items-center gap-1 text-xs font-bold transition-colors shrink-0 ${linkColor}`}
+          className={`inline-flex items-center gap-0.5 sm:gap-1 text-[11px] sm:text-xs font-bold transition-colors shrink-0 translate-y-[2px] sm:translate-y-[1px] ${linkColor}`}
         >
-          <span>{displayActionLabel}</span>
-          <ChevronRight className="w-4 h-4 shrink-0" />
+          <span className="leading-none">{displayActionLabel}</span>
+          <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
         </Link>
       )}
     </div>
