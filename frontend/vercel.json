@@ -1,6 +1,4 @@
 {
-  "version": 2,
-  "cleanUrls": true,
   "headers": [
     {
       "source": "/robots.txt",
@@ -61,7 +59,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!.*\\.(?:txt|xml|json|png|jpg|jpeg|svg|webp|ico|css|js|map|woff2?|ttf|pdf)$).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
