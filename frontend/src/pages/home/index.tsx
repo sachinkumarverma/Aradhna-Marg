@@ -70,6 +70,8 @@ export const Home: React.FC = () => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      navigate('/search');
     }
   };
 
@@ -251,7 +253,7 @@ export const Home: React.FC = () => {
                     >
                       <Link
                         to={videoUrl}
-                        className="group block bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-xs hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex flex-col md:flex-row gap-5 items-stretch relative"
+                        className="group block bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-xs hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex flex-col md:flex-row gap-5 items-stretch relative cursor-pointer"
                       >
                         {/* Left Column: Video Thumbnail with Play Button & Zoom to crop black borders */}
                         <div className="relative aspect-video w-full md:w-60 lg:w-64 rounded-lg overflow-hidden bg-black shrink-0 border border-black/5">
@@ -279,7 +281,7 @@ export const Home: React.FC = () => {
                                 type="button"
                                 onClick={(e) => toggleFavorite(favoriteItem, e)}
                                 title={isHearted ? 'Remove from favorites' : 'Add to favorites'}
-                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 relative z-10 ${
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 relative z-10 cursor-pointer ${
                                   isHearted
                                     ? 'bg-rose-50 text-rose-500 hover:bg-rose-100 shadow-xs'
                                     : 'bg-gray-50 text-gray-400 group-hover:text-rose-500 hover:bg-rose-50'
@@ -378,7 +380,7 @@ export const Home: React.FC = () => {
                       <Link
                         key={bhajan.id}
                         to={`/bhajans/${bhajan.slug || bhajan.id}`}
-                        className="group flex items-center gap-3 p-2 rounded-lg hover:bg-amber-50/70 transition-all border border-transparent hover:border-amber-200/50"
+                        className="group flex items-center gap-3 p-2 rounded-lg hover:bg-amber-50/70 transition-all border border-transparent hover:border-amber-200/50 cursor-pointer"
                       >
                         {/* Thumbnail Image */}
                         <div className="w-11 h-11 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-black/5">

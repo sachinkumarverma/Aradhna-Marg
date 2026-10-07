@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { createBrowserRouter, RouterProvider, Link, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { Home } from '@pages/home';
 import { BhajanDetail } from '@pages/bhajans/detail';
@@ -125,7 +125,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'search',
-        element: <Navigate to="/" replace />
+        element: <SearchPage />
       },
       {
         path: 'explore',

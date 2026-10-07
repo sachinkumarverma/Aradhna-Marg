@@ -24,6 +24,7 @@ class SearchRepository {
           COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as image, 
           COALESCE(b.views, 0) as views, 
           b.short_description as excerpt, 
+          NULL as excerpt_en,
           b.created_at, 
           '🪔 भजन' as type_label
         FROM bhajans b
@@ -42,6 +43,7 @@ class SearchRepository {
           y.thumbnail as image, 
           COALESCE(y.view_count, 0) as views, 
           y.description as excerpt, 
+          NULL as excerpt_en,
           COALESCE(y.published_at, y.created_at) as created_at, 
           '▶ वीडियो' as type_label
         FROM youtube_videos y
@@ -58,7 +60,8 @@ class SearchRepository {
           'ARTICLE' as type, 
           m.url as image, 
           COALESCE(a.view_count, 0) as views, 
-          COALESCE(a.excerpt, a.excerpt_en) as excerpt, 
+          a.excerpt as excerpt, 
+          a.excerpt_en as excerpt_en,
           a.created_at, 
           '📖 लेख' as type_label
         FROM articles a
@@ -77,7 +80,8 @@ class SearchRepository {
           'FESTIVAL' as type, 
           f.banner_image as image, 
           0 as views, 
-          COALESCE(f.short_description, f.short_description_en) as excerpt, 
+          f.short_description as excerpt, 
+          f.short_description_en as excerpt_en,
           f.created_at, 
           '🌸 त्यौहार' as type_label
         FROM festivals f
@@ -95,7 +99,8 @@ class SearchRepository {
           'PURANA' as type, 
           p.cover_image as image, 
           COALESCE(p.view_count, 0) as views, 
-          COALESCE(p.short_description, p.description_en) as excerpt, 
+          p.short_description as excerpt, 
+          p.description_en as excerpt_en,
           p.created_at, 
           '📜 पुराण' as type_label
         FROM puranas p
@@ -114,6 +119,7 @@ class SearchRepository {
           d.image, 
           0 as views, 
           d.short_description as excerpt, 
+          NULL as excerpt_en,
           d.created_at, 
           '🙏 देवी-देवता' as type_label
         FROM deities d
@@ -132,6 +138,7 @@ class SearchRepository {
           c.image_url as image, 
           0 as views, 
           c.description as excerpt, 
+          NULL as excerpt_en,
           c.created_at, 
           '📂 श्रेणी' as type_label
         FROM categories c

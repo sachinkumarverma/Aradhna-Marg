@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Search as SearchIcon, Sparkles, ArrowRight, Eye } from 'lucide-react';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { Search as SearchIcon, Sparkles } from 'lucide-react';
 import { SearchBar } from '@components/search/SearchBar';
+import { PuranaCard } from '@components/cards/PuranaCard';
+import { BhajanCard } from '@components/cards/BhajanCard';
+import { ArticleCard } from '@components/cards/ArticleCard';
+import { VideoCard } from '@components/cards/VideoCard';
 import { useSearch, useTrendingSearches } from '@hooks/useSearch';
 import { useTranslation } from '../../i18n/LanguageContext';
 import { motion } from 'framer-motion';
@@ -11,7 +15,8 @@ export const SearchPage: React.FC = () => {
   const query = searchParams.get('q') || '';
   const [page, setPage] = useState(1);
   const [sort] = useState('RELEVANCE');
-  const { t } = useTranslation();
+  const { t, language, getLocalizedField } = useTranslation();
+  const isHi = language === 'hi';
   const navigate = useNavigate();
 
   const { data: trending = [] } = useTrendingSearches();
@@ -22,44 +27,78 @@ export const SearchPage: React.FC = () => {
   const totalCount = data?.total || items.length;
   const totalPages = data?.pagination?.totalPages || 1;
 
-  const getTargetUrl = (item: any) => {
-    const slugOrId = item.slug || item.id;
-    switch (item.type) {
-      case 'BHAJAN':
-        return `/bhajans/${slugOrId}`;
-      case 'VIDEO':
-        return `/videos/${slugOrId}`;
-      case 'ARTICLE':
-        return `/articles/${slugOrId}`;
-      case 'FESTIVAL':
-        return `/festivals/${slugOrId}`;
-      case 'PURANA':
-        return `/puranas/${slugOrId}`;
-      case 'DEITY':
-        return `/gods/${slugOrId}`;
-      case 'CATEGORY':
-        return `/categories/${slugOrId}`;
-      default:
-        return `/bhajans/${slugOrId}`;
-    }
-  };
+  const renderCard = (item: any) => {
+    const itemType = (item.type || '').toUpperCase();
+    const title = getLocalizedField(item, 'title') || (isHi ? item.title : item.title_en || item.title);
+    const description =
+      getLocalizedField(item, 'excerpt') ||
+      getLocalizedField(item, 'short_description') ||
+      getLocalizedField(item, 'description') ||
+      (isHi ? item.excerpt : item.excerpt_en || item.excerpt) ||
+      '';
 
-  const getTypeBadgeColor = (type: string) => {
-    switch (type) {
-      case 'BHAJAN':
-        return 'bg-amber-50 text-amber-800 border-amber-200';
-      case 'VIDEO':
-        return 'bg-red-50 text-red-700 border-red-200';
+    switch (itemType) {
       case 'PURANA':
-        return 'bg-orange-50 text-orange-800 border-orange-200';
+        return (
+          <PuranaCard
+            id={item.id}
+            slug={item.slug}
+            title={title}
+            coverImage={item.image || item.cover_image}
+            shortDescription={description}
+            language={item.language}
+            viewCount={item.views}
+          />
+        );
+      case 'BHAJAN':
+        return (
+          <BhajanCard
+            id={item.id}
+            slug={item.slug}
+            title={title}
+            englishTitle={item.title_en}
+            godName={item.category || item.god_name}
+            duration={item.duration}
+            thumbnailUrl={item.image || item.thumbnail}
+            views={item.views}
+          />
+        );
       case 'ARTICLE':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'FESTIVAL':
-        return 'bg-rose-50 text-rose-700 border-rose-200';
-      case 'DEITY':
-        return 'bg-purple-50 text-purple-700 border-purple-200';
+        return (
+          <ArticleCard
+            id={item.id}
+            slug={item.slug}
+            title={title}
+            featuredImageUrl={item.image || item.featured_image_url}
+            excerpt={description}
+            categoryName={item.category || item.category_name}
+          />
+        );
+      case 'VIDEO':
+        return (
+          <VideoCard
+            id={item.id || item.youtube_video_id}
+            slug={item.slug || item.youtube_video_id || item.id}
+            title={title}
+            godName={item.category || item.channel_name || 'Devotional'}
+            views={item.views || 0}
+            duration={item.duration || '00:00'}
+            thumbnailUrl={item.image || item.thumbnail}
+            publishDate={item.published_at}
+          />
+        );
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
+        return (
+          <BhajanCard
+            id={item.id}
+            slug={item.slug}
+            title={title}
+            englishTitle={item.title_en}
+            godName={item.category}
+            thumbnailUrl={item.image}
+            views={item.views}
+          />
+        );
     }
   };
 
@@ -76,13 +115,17 @@ export const SearchPage: React.FC = () => {
           <div className="max-w-3xl mx-auto text-center mb-6 relative z-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-saffron/10 text-saffron text-xs font-bold font-hindi-heading mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>संपूर्ण सनातन ज्ञान कोष एवं भक्ति साहित्य</span>
+              <span>
+                {isHi ? 'संपूर्ण सनातन ज्ञान कोष एवं भक्ति साहित्य' : 'Sanatan Wisdom & Devotional Literature'}
+              </span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-darkBrown tracking-tight mb-2.5 font-hindi-heading leading-tight">
               {t('content.searchTitle')}
             </h1>
             <p className="text-slate-600 text-sm sm:text-base font-medium font-hindi-heading">
-              महापुराण, दुर्लभ भजन, आरती, श्लोक, त्यौहार, कथा एवं दिव्य वीडियो खोजें
+              {isHi
+                ? 'महापुराण, दुर्लभ भजन, आरती, श्लोक, त्यौहार, कथा एवं दिव्य वीडियो खोजें'
+                : 'Search Mahapuranas, rare Bhajans, Aartis, Shlokas, Festivals, and Divine Videos'}
             </p>
           </div>
 
@@ -95,23 +138,24 @@ export const SearchPage: React.FC = () => {
         <div className="w-full">
           {!hasSearchQuery ? (
             /* Initial Clean State: When user hasn't typed anything yet */
-            <div className="text-center py-16 bg-white rounded-3xl border border-orange-100/80 p-8 max-w-2xl mx-auto shadow-xs">
+            <div className="text-center py-16 bg-white rounded-2xl border border-orange-100/80 p-8 max-w-2xl mx-auto shadow-xs">
               <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-saffron text-2xl shadow-xs">
                 🔍
               </div>
               <h3 className="text-2xl font-bold text-darkBrown mb-2 font-hindi-heading">
-                सनातन धर्म का कोई भी विषय खोजें
+                {isHi ? 'सनातन धर्म का कोई भी विषय खोजें' : 'Search any Sanatan topic'}
               </h3>
               <p className="text-slate-500 text-sm mb-6 font-hindi-body max-w-md mx-auto leading-relaxed">
-                ऊपर दिए गए सर्च बॉक्स में किसी भी पुराण (जैसे वायु पुराण, शिव पुराण), भजन, देवी-देवता, त्यौहार या लेख का
-                नाम लिखें।
+                {isHi
+                  ? 'ऊपर दिए गए सर्च बॉक्स में किसी भी पुराण (जैसे वायु पुराण, शिव पुराण), भजन, देवी-देवता, त्यौहार या लेख का नाम लिखें।'
+                  : 'Search for any Purana, Bhajan, Deity, Festival, or Article in the search box above.'}
               </p>
 
               {/* Quick Search Chips */}
               {trending.length > 0 && (
                 <div className="pt-5 border-t border-gray-100">
                   <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 font-hindi-heading">
-                    लोकप्रिय खोजें / Popular Searches
+                    {isHi ? 'लोकप्रिय खोजें' : 'Popular Searches'}
                   </div>
                   <div className="flex flex-wrap items-center justify-center gap-2">
                     {trending.map((trend: string, i: number) => (
@@ -136,10 +180,15 @@ export const SearchPage: React.FC = () => {
                   <span className="text-sm md:text-base font-bold text-darkBrown font-hindi-heading">
                     {isLoading ? (
                       `${t('common.loading')}...`
-                    ) : (
+                    ) : isHi ? (
                       <>
                         "<span className="text-darkBrown font-black">{query}</span>" के लिए{' '}
                         <span className="text-saffron font-black">{totalCount}</span> परिणाम प्राप्त हुए
+                      </>
+                    ) : (
+                      <>
+                        Found <span className="text-saffron font-black">{totalCount}</span> results for "
+                        <span className="text-darkBrown font-black">{query}</span>"
                       </>
                     )}
                   </span>
@@ -151,7 +200,7 @@ export const SearchPage: React.FC = () => {
                   {[1, 2, 3, 4, 5, 6].map((n) => (
                     <div
                       key={n}
-                      className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs animate-pulse flex flex-col justify-between h-56"
+                      className="bg-white rounded-xl p-5 border border-gray-100 shadow-xs animate-pulse flex flex-col justify-between h-56"
                     >
                       <div>
                         <div className="h-4 bg-amber-100 rounded w-24 mb-3" />
@@ -164,14 +213,16 @@ export const SearchPage: React.FC = () => {
                   ))}
                 </div>
               ) : isError ? (
-                <div className="text-center py-16 bg-white rounded-3xl border border-red-100 p-8 max-w-xl mx-auto shadow-xs">
+                <div className="text-center py-16 bg-white rounded-2xl border border-red-100 p-8 max-w-xl mx-auto shadow-xs">
                   <div className="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">
                     !
                   </div>
                   <h3 className="text-lg font-bold text-darkBrown mb-1 font-hindi-heading">
                     {t('errors.failedToLoad')}
                   </h3>
-                  <p className="text-slate-500 text-xs mb-4 font-hindi-body">कृपया पुनः प्रयास करें।</p>
+                  <p className="text-slate-500 text-xs mb-4 font-hindi-body">
+                    {isHi ? 'कृपया पुनः प्रयास करें।' : 'Please try again.'}
+                  </p>
                   <button
                     type="button"
                     onClick={() => window.location.reload()}
@@ -182,104 +233,18 @@ export const SearchPage: React.FC = () => {
                 </div>
               ) : items.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                    {items.map((item: any, i: number) => {
-                      const targetUrl = getTargetUrl(item);
-                      const hasEnglishSubtitle = item.title_en && item.title_en !== item.title;
-
-                      return (
-                        <motion.div
-                          key={item.id || i}
-                          initial={{ opacity: 0, y: 15 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.03 }}
-                        >
-                          <Link
-                            to={targetUrl}
-                            className="bg-white rounded-2xl p-5 border border-orange-100/70 hover:border-saffron/50 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group h-full cursor-pointer relative overflow-hidden"
-                          >
-                            <div>
-                              {/* Image thumbnail or devotional gradient banner */}
-                              {item.image ? (
-                                <div className="aspect-video w-full rounded-xl overflow-hidden bg-gray-100 mb-4 border border-black/5 shadow-xs">
-                                  <img
-                                    src={item.image}
-                                    alt={item.title}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                  />
-                                </div>
-                              ) : (
-                                <div className="h-28 w-full rounded-xl bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100/50 mb-4 border border-orange-100/80 flex items-center justify-center text-4xl shadow-xs">
-                                  {item.type === 'PURANA'
-                                    ? '📜'
-                                    : item.type === 'BHAJAN'
-                                      ? '🪔'
-                                      : item.type === 'VIDEO'
-                                        ? '▶'
-                                        : item.type === 'FESTIVAL'
-                                          ? '🌸'
-                                          : item.type === 'DEITY'
-                                            ? '🙏'
-                                            : '📖'}
-                                </div>
-                              )}
-
-                              {/* Top Badge & Views */}
-                              <div className="flex items-center justify-between mb-2.5">
-                                <span
-                                  className={`px-2.5 py-0.5 text-xs font-bold rounded-md border font-hindi-heading ${getTypeBadgeColor(item.type)}`}
-                                >
-                                  {item.type_label || item.type}
-                                </span>
-                                {item.views > 0 && (
-                                  <span className="flex items-center gap-1 text-[11px] text-slate-400 font-medium">
-                                    <Eye className="w-3.5 h-3.5 text-slate-400" />
-                                    <span>{item.views.toLocaleString()}</span>
-                                  </span>
-                                )}
-                              </div>
-
-                              {/* Title */}
-                              <h3 className="text-lg font-bold text-darkBrown mb-1 group-hover:text-saffron transition-colors line-clamp-2 font-hindi-heading leading-snug">
-                                {item.title}
-                              </h3>
-
-                              {/* English Subtitle if present */}
-                              {hasEnglishSubtitle && (
-                                <div className="text-xs font-semibold text-slate-400 mb-2 font-sans">
-                                  {item.title_en}
-                                </div>
-                              )}
-
-                              {/* Clean Excerpt */}
-                              {item.excerpt && (
-                                <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-4 font-hindi-body">
-                                  {item.excerpt.replace(/<[^>]*>?/gm, '').trim()}
-                                </p>
-                              )}
-                            </div>
-
-                            {/* Card Footer Link */}
-                            <div className="pt-3 border-t border-gray-100/80 flex items-center justify-between mt-2">
-                              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-orange-600 font-hindi-heading">
-                                <span>
-                                  {item.type === 'VIDEO'
-                                    ? 'वीडियो देखें (Watch)'
-                                    : item.type === 'PURANA'
-                                      ? 'पुराण पढ़ें (Read Purana)'
-                                      : item.type === 'BHAJAN'
-                                        ? 'भजन सुनें व पढ़ें (Listen & Read)'
-                                        : item.type === 'FESTIVAL'
-                                          ? 'त्यौहार विवरण (Festival Details)'
-                                          : 'विस्तार से देखें (View Details)'}
-                                </span>
-                                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                              </span>
-                            </div>
-                          </Link>
-                        </motion.div>
-                      );
-                    })}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+                    {items.map((item: any, i: number) => (
+                      <motion.div
+                        key={item.id || i}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.03 }}
+                        className="h-full"
+                      >
+                        {renderCard(item)}
+                      </motion.div>
+                    ))}
                   </div>
 
                   {/* Pagination Controls */}

@@ -89,7 +89,7 @@ const FavoriteSectionRow: React.FC<FavoriteSectionRowProps> = ({ config, items, 
             <h2 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-900 font-hindi-heading leading-tight truncate">
               {isHi ? config.titleHi : config.titleEn}
             </h2>
-            <p className="text-[11px] sm:text-xs md:text-sm text-slate-500 font-hindi-body truncate mt-0.5">
+            <p className="hidden sm:block text-xs md:text-sm text-slate-500 font-hindi-body truncate mt-0.5">
               {isHi ? config.subtitleHi : config.subtitleEn}
             </p>
           </div>
@@ -182,7 +182,7 @@ const FavoriteSectionRow: React.FC<FavoriteSectionRowProps> = ({ config, items, 
 
               {/* Category Badge if available */}
               {item.subtitle && (
-                <div className="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-white font-bold text-[10px] uppercase font-hindi-heading border border-white/10">
+                <div className="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-white font-medium sm:font-bold text-[10px] uppercase font-hindi-heading border border-white/10">
                   {item.subtitle}
                 </div>
               )}
@@ -190,11 +190,13 @@ const FavoriteSectionRow: React.FC<FavoriteSectionRowProps> = ({ config, items, 
 
             {/* Card Body */}
             <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-center">
-              <h3 className="font-bold text-sm sm:text-base text-slate-900 font-hindi-heading leading-snug line-clamp-2 group-hover:text-saffron transition-colors">
+              <h3 className="font-semibold sm:font-bold text-sm sm:text-base text-slate-900 font-hindi-heading leading-snug line-clamp-2 group-hover:text-saffron transition-colors">
                 {item.title}
               </h3>
               {item.englishTitle && item.englishTitle.toLowerCase() !== item.title.toLowerCase() && (
-                <p className="text-xs text-slate-500 font-sans font-medium line-clamp-1 mt-1">{item.englishTitle}</p>
+                <p className="text-xs text-slate-500 font-sans font-normal sm:font-medium line-clamp-1 mt-1">
+                  {item.englishTitle}
+                </p>
               )}
             </div>
           </Link>

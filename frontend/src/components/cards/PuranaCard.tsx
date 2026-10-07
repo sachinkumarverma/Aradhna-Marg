@@ -59,24 +59,26 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
 
   return (
     <div
-      className={`group flex flex-col justify-between bg-white hover:bg-amber-50/40 rounded-xl p-4 border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-md transition-all h-full relative ${className}`}
+      className={`group flex flex-col justify-between bg-white hover:bg-amber-50/40 rounded-xl p-4 border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-md transition-all h-full relative cursor-pointer ${className}`}
     >
       <div>
         {/* Book Cover Container (Strict 3:4 Aspect Ratio) */}
         <div className="relative aspect-[3/4] w-full rounded-lg overflow-hidden bg-amber-50 mb-3 border border-amber-200/40">
-          {coverImage ? (
-            <img
-              src={coverImage}
-              alt={title}
-              loading="lazy"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-saffron/60 p-3 text-center">
-              <BookOpen className="w-10 h-10 mb-1" />
-              <span className="text-xs font-bold">PDF</span>
-            </div>
-          )}
+          <Link to={puranUrl} className="block w-full h-full cursor-pointer">
+            {coverImage ? (
+              <img
+                src={coverImage}
+                alt={title}
+                loading="lazy"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-saffron/60 p-3 text-center">
+                <BookOpen className="w-10 h-10 mb-1" />
+                <span className="text-xs font-bold">PDF</span>
+              </div>
+            )}
+          </Link>
 
           <button
             type="button"
@@ -94,7 +96,7 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
           </button>
         </div>
 
-        <Link to={puranUrl} className="block">
+        <Link to={puranUrl} className="block cursor-pointer">
           {/* Title */}
           <h4
             className="font-bold text-sm text-darkBrown group-hover:text-saffron transition-colors font-hindi-heading leading-snug line-clamp-1 mb-1.5 overflow-hidden"

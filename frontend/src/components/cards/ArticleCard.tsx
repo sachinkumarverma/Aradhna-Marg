@@ -106,22 +106,24 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
 
   return (
     <div
-      className={`group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col h-full relative ${className}`}
+      className={`group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col h-full relative cursor-pointer ${className}`}
     >
       {/* Featured Image (Strict 16:9 Aspect Ratio) */}
       <div className="relative w-full aspect-video overflow-hidden bg-gray-100 border-b border-black/5">
-        {featuredImageUrl ? (
-          <img
-            src={featuredImageUrl}
-            alt={title}
-            loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-amber-50/60 text-saffron">
-            <BookOpen className="w-8 h-8 opacity-60" />
-          </div>
-        )}
+        <Link to={articleUrl} className="block w-full h-full cursor-pointer">
+          {featuredImageUrl ? (
+            <img
+              src={featuredImageUrl}
+              alt={title}
+              loading="lazy"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-amber-50/60 text-saffron">
+              <BookOpen className="w-8 h-8 opacity-60" />
+            </div>
+          )}
+        </Link>
 
         <button
           type="button"
@@ -139,7 +141,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         </button>
       </div>
 
-      <Link to={articleUrl} className="flex flex-col flex-1">
+      <Link to={articleUrl} className="flex flex-col flex-1 cursor-pointer">
         {/* Card Content */}
         <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
           <div>

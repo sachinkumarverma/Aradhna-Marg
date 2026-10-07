@@ -8,24 +8,51 @@ interface SocialShareButtonsProps {
   className?: string;
 }
 
-export const formatShareMessage = (title: string, excerpt?: string, url?: string) => {
+export const formatWhatsAppMessage = (title: string, excerpt?: string, url?: string) => {
+  const cleanTitle = (title || '').trim().replace(/\s+/g, ' ');
   const fullUrl = url ? (url.startsWith('http') ? url : `${window.location.origin}${url}`) : window.location.href;
   const cleanExcerpt = excerpt
     ? excerpt
         .trim()
         .replace(/<[^>]*>/g, '')
-        .slice(0, 140) + '...'
+        .replace(/\s+/g, ' ')
+        .slice(0, 140)
+        .trim() + '...'
     : '';
 
   return (
-    `🌸 *${title}* 🌸\n\n` +
+    `🌸 *${cleanTitle}* 🌸\n\n` +
     `✨ *आराधना मार्ग (Aradhna Marg) - सनातन धर्म एवं संस्कृति*\n\n` +
     (cleanExcerpt ? `📖 ${cleanExcerpt}\n\n` : '') +
     `🙏 सनातन परंपरा, पावन भजन, पौराणिक कथाएँ एवं वैदिक ज्ञान।\n\n` +
-    `🔗 *पूरा पढ़ने एवं सुनने के लिए नीचे दिए लिंक पर क्लिक करें:*\n${fullUrl}\n\n` +
+    `🔗 *पूरा पढ़ने एवं सुनने के लिए लिंक:*\n${fullUrl}\n\n` +
     `🚩 जय श्री राम | हर हर महादेव 🚩`
   );
 };
+
+export const formatPlainShareMessage = (title: string, excerpt?: string, url?: string) => {
+  const cleanTitle = (title || '').trim().replace(/\s+/g, ' ');
+  const fullUrl = url ? (url.startsWith('http') ? url : `${window.location.origin}${url}`) : window.location.href;
+  const cleanExcerpt = excerpt
+    ? excerpt
+        .trim()
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .slice(0, 140)
+        .trim() + '...'
+    : '';
+
+  return (
+    `🌸 ${cleanTitle} 🌸\n\n` +
+    `✨ आराधना मार्ग (Aradhna Marg) - सनातन धर्म एवं संस्कृति\n\n` +
+    (cleanExcerpt ? `📖 ${cleanExcerpt}\n\n` : '') +
+    `🙏 सनातन परंपरा, पावन भजन, पौराणिक कथाएँ एवं वैदिक ज्ञान।\n\n` +
+    `🔗 लिंक: ${fullUrl}\n\n` +
+    `🚩 जय श्री राम | हर हर महादेव 🚩`
+  );
+};
+
+export const formatShareMessage = formatWhatsAppMessage;
 
 export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, excerpt, url, className = '' }) => {
   const [copied, setCopied] = React.useState(false);
@@ -42,7 +69,7 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const msg = formatShareMessage(title, excerpt, url);
+    const msg = formatWhatsAppMessage(title, excerpt, url);
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
@@ -50,68 +77,49 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
     e.preventDefault();
     e.stopPropagation();
     const fullUrl = getFullUrl();
-    const msg = formatShareMessage(title, excerpt, url);
-
-    // On mobile, if native share is supported, open native share dialog
-    if (isMobile() && navigator.share) {
-      try {
-        await navigator.share({
-          title,
-          text: msg,
-          url: fullUrl
-        });
-        return;
-      } catch (err) {
-        // User closed native dialog, proceed with fallback
-      }
-    }
+    const msg = formatPlainShareMessage(title, excerpt, url);
 
     try {
       await navigator.clipboard.writeText(msg);
-      toast.success('संदेश कॉपी हो गया! Facebook पोस्ट में पेस्ट करें।', { duration: 3000 });
+      toast.success('संदेश कॉपी हो गया! Facebook पोस्ट में पेस्ट (Paste) करें।', { duration: 3500 });
     } catch {
       // ignore
     }
 
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}`, '_blank');
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
   };
 
   const handleInstagram = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const msg = formatShareMessage(title, excerpt, url);
-    const fullUrl = getFullUrl();
+    const msg = formatPlainShareMessage(title, excerpt, url);
 
-    // On mobile devices, native share integrates with Instagram App directly
-    if (isMobile() && navigator.share) {
-      try {
-        await navigator.share({
-          title,
-          text: msg,
-          url: fullUrl
-        });
-        return;
-      } catch (err) {
-        // Cancelled share
-      }
-    }
-
+    // Copy message to clipboard
     try {
       await navigator.clipboard.writeText(msg);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-      toast.success('संदेश कॉपी हो गया! Instagram स्टोरी या चैट में पेस्ट करें।', { duration: 3000 });
+      toast.success('संदेश कॉपी हो गया! Instagram स्टोरी या चैट में पेस्ट करें।', { duration: 3500 });
     } catch (err) {
       console.error('Failed to copy to clipboard', err);
     }
 
     if (isMobile()) {
-      window.location.href = 'instagram://app';
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        window.location.href = 'intent://instagram.com/#Intent;package=com.instagram.android;scheme=https;end';
+      } else {
+        window.location.href = 'instagram://app';
+      }
       setTimeout(() => {
-        window.open('https://www.instagram.com', '_blank');
-      }, 1000);
+        window.open('https://www.instagram.com', '_blank', 'noopener,noreferrer');
+      }, 1200);
     } else {
-      window.open('https://www.instagram.com', '_blank');
+      window.open('https://www.instagram.com', '_blank', 'noopener,noreferrer');
     }
   };
 

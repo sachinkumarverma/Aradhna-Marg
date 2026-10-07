@@ -17,7 +17,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ id, name, count,
   return (
     <Link
       to={targetPath}
-      className="group block h-full bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-md transition-all duration-300"
+      className="group block h-full bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer"
     >
       <div className={`relative ${aspectClass} bg-cream overflow-hidden border-b border-black/5`}>
         {thumbnailUrl ? (
