@@ -35,6 +35,16 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   const { isFavorite, toggleFavorite } = useFavorites();
   const hearted = isFavorite(cardId);
 
+  const favoriteItem = {
+    id: cardId,
+    type: 'video' as const,
+    title,
+    thumbnailUrl,
+    url: slug ? `/videos/${slug}` : shareUrl || `/videos`,
+    subtitle: godName,
+    category: 'Video'
+  };
+
   return (
     <Card className="group p-0 relative isolate overflow-hidden flex flex-col h-full bg-white border border-gray-100 hover:border-saffron/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-xl">
       {/* Thumbnail Area */}
@@ -66,9 +76,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         {/* Favorite Button */}
         <button
           type="button"
-          onClick={(e) => toggleFavorite(cardId, e)}
+          onClick={(e) => toggleFavorite(favoriteItem, e)}
           title={hearted ? 'Remove from favorites' : 'Add to favorites'}
-          className={`absolute top-2 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm backdrop-blur-xs icon-wrapper ${
+          className={`absolute top-2 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm backdrop-blur-xs icon-wrapper cursor-pointer ${
             hearted
               ? 'bg-white/95 text-rose-500 hover:bg-white'
               : 'bg-black/40 text-white hover:text-rose-500 hover:bg-white'

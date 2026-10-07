@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppRouter } from './routes';
 import { Toaster } from 'react-hot-toast';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { Analytics } from '@vercel/analytics/react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,6 +21,7 @@ function App() {
       <LanguageProvider>
         <AppRouter />
         <Toaster position="top-right" />
+        <Analytics />
       </LanguageProvider>
     </QueryClientProvider>
   );

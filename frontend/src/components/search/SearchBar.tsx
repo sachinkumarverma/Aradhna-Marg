@@ -126,7 +126,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope = 'ALL', placeholder
           onFocus={() => setIsOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder || t('common.searchPlaceholder')}
-          className="w-full h-13 md:h-14 bg-transparent pl-12 pr-12 outline-none text-darkBrown placeholder:text-gray-400 font-medium font-hindi-body text-base"
+          className="w-full h-13 md:h-14 bg-transparent pl-12 pr-12 pt-1 md:pt-1.5 outline-none text-darkBrown placeholder:text-gray-400 font-medium font-hindi-body text-base leading-normal translate-y-[1px]"
         />
         {query && (
           <button

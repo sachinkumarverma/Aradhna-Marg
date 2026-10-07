@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Eye, Clock, Calendar, Music, Sparkles } from 'lucide-react';
+import { Copy, Check, Eye, Clock, Calendar, Music, Sparkles, Heart } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { YouTubePlayer } from './components/YouTubePlayer';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
@@ -13,11 +13,12 @@ import { AdUnit } from '@components/common/AdUnit';
 import { BottomRelatedContent } from '@components/common/BottomRelatedContent';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { useFavorites } from '@hooks/useFavorites';
 
 import { CustomLoader } from '@components/common/CustomLoader';
 
 export const BhajanDetail: React.FC = () => {
-  const { t, getLocalizedField } = useTranslation();
+  const { language, t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
   const [bhajan, setBhajan] = useState<any>(null);
   const [relatedData, setRelatedData] = useState<any>({});
@@ -79,6 +80,23 @@ export const BhajanDetail: React.FC = () => {
   const formattedDate = dateSource
     ? new Date(dateSource).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
     : '';
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const cardId = String(bhajan?.id || bhajan?.slug || slug || '');
+  const hearted = isFavorite(cardId);
+  const isHi = language === 'hi';
+
+  const favoriteItem = bhajan
+    ? {
+        id: cardId,
+        type: 'bhajan' as const,
+        title: bhajan.title,
+        englishTitle: bhajan.english_title || bhajan.title_en,
+        thumbnailUrl: bhajan.thumbnail_url || bhajan.image_url,
+        url: `/bhajans/${bhajan.slug || bhajan.id}`,
+        subtitle: bhajan.god_name,
+        category: bhajan.god_name || 'Bhajan'
+      }
+    : null;
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-3 sm:pt-6 md:pt-8 pb-16 sm:pb-24">
@@ -212,12 +230,32 @@ export const BhajanDetail: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-[#3D261C] rounded-xl p-5 sm:p-6 text-white shadow-lg border border-amber-900/40 relative overflow-hidden flex flex-col gap-4"
               >
-                {/* Category / God Badge */}
-                {(bhajan.god_name || bhajan.category_name) && (
-                  <div className="inline-flex items-center px-3 py-0.5 rounded-md bg-white/10 text-saffron font-bold text-xs uppercase tracking-wider self-start border border-white/10">
-                    {bhajan.god_name || bhajan.category_name}
-                  </div>
-                )}
+                {/* Category / God Badge & Favorite Button */}
+                <div className="flex items-center justify-between gap-2">
+                  {bhajan.god_name || bhajan.category_name ? (
+                    <div className="inline-flex items-center px-3 py-0.5 rounded-md bg-white/10 text-saffron font-bold text-xs uppercase tracking-wider self-start border border-white/10">
+                      {bhajan.god_name || bhajan.category_name}
+                    </div>
+                  ) : (
+                    <div />
+                  )}
+
+                  {favoriteItem && (
+                    <button
+                      type="button"
+                      onClick={(e) => toggleFavorite(favoriteItem, e)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold font-hindi-heading flex items-center gap-1.5 transition-all cursor-pointer ${
+                        hearted
+                          ? 'bg-rose-500 text-white shadow-sm'
+                          : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                      }`}
+                      title={hearted ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      <Heart className={`w-3.5 h-3.5 ${hearted ? 'fill-white text-white' : 'text-rose-400'}`} />
+                      <span>{hearted ? (isHi ? 'सहेजा गया' : 'Favorited') : isHi ? 'पसंदीदा' : 'Favorite'}</span>
+                    </button>
+                  )}
+                </div>
 
                 {/* Title */}
                 <h3 className="text-lg font-bold text-white leading-snug tracking-tight">{bhajan.title}</h3>

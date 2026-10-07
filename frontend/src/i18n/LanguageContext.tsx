@@ -17,6 +17,26 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const STORAGE_KEY = 'aradhnamarg_lang';
 
+const DEITY_NAME_MAP: Record<string, { hi: string; en: string }> = {
+  'lord ganesh': { hi: 'श्री गणेश', en: 'Lord Ganesh' },
+  'maa durga': { hi: 'माँ दुर्गा', en: 'Maa Durga' },
+  'lord vishnu': { hi: 'भगवान विष्णु', en: 'Lord Vishnu' },
+  'lord krishna': { hi: 'श्री कृष्ण', en: 'Lord Krishna' },
+  'lord ram': { hi: 'श्री राम', en: 'Lord Ram' },
+  'lord shiva': { hi: 'भगवान शिव', en: 'Lord Shiva' },
+  'shri radha rani': { hi: 'श्री राधा रानी', en: 'Shri Radha Rani' },
+  'lord hanuman': { hi: 'हनुमान जी', en: 'Lord Hanuman' },
+  'yamuna maiya': { hi: 'यमुना मैया', en: 'Yamuna Maiya' },
+  'surya dev': { hi: 'सूर्य देव', en: 'Surya Dev' },
+  'chhathi maiya': { hi: 'छठी मैया', en: 'Chhathi Maiya' },
+  'maa saraswati': { hi: 'माँ सरस्वती', en: 'Maa Saraswati' },
+  'mata lakshmi': { hi: 'माता लक्ष्मी', en: 'Mata Lakshmi' },
+  'mata parvati': { hi: 'माता पार्वती', en: 'Mata Parvati' },
+  'khatu shyam': { hi: 'खाटू श्याम जी', en: 'Khatu Shyam Ji' },
+  'ganga maiya': { hi: 'गंगा मैया', en: 'Ganga Maiya' },
+  'shani dev': { hi: 'शनि देव', en: 'Shani Dev' }
+};
+
 function parseBilingualString(val: any, lang: LanguageMode): string {
   if (!val || typeof val !== 'string') return typeof val === 'string' ? val : '';
   const trimmed = val.trim();
@@ -33,6 +53,12 @@ function parseBilingualString(val: any, lang: LanguageMode): string {
     return lang === 'en' ? hiWithEnMatch[2].trim() : hiWithEnMatch[1].trim();
   }
 
+  // Check known deity / religious terms dictionary
+  const lower = trimmed.toLowerCase();
+  if (DEITY_NAME_MAP[lower]) {
+    return DEITY_NAME_MAP[lower][lang];
+  }
+
   return trimmed;
 }
 
@@ -44,7 +70,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } catch {
       // Fallback
     }
-    return 'hi';
+    return 'en';
   });
 
   useEffect(() => {
@@ -63,14 +89,14 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const t = (path: string): string => {
     const keys = path.split('.');
-    let currentObj: any = locales[language] || locales.hi;
+    let currentObj: any = locales[language] || locales.en;
 
     for (const k of keys) {
       if (currentObj && typeof currentObj === 'object' && k in currentObj) {
         currentObj = currentObj[k];
       } else {
-        // Fallback to Hindi locale
-        let fallbackObj: any = locales.hi;
+        // Fallback to alternate locale
+        let fallbackObj: any = locales[language === 'en' ? 'hi' : 'en'];
         for (const fk of keys) {
           if (fallbackObj && typeof fallbackObj === 'object' && fk in fallbackObj) {
             fallbackObj = fallbackObj[fk];

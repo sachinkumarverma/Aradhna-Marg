@@ -95,10 +95,10 @@ export const Home: React.FC = () => {
         {heroImages.map((img, i) => (
           <div
             key={i}
-            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${i === bgIndex ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 bg-cover bg-top bg-no-repeat transition-opacity duration-1000 ${i === bgIndex ? 'opacity-100' : 'opacity-0'}`}
             style={{
               backgroundImage: `url("${img}")`,
-              backgroundPosition: 'center center'
+              backgroundPosition: 'center top'
             }}
           ></div>
         ))}
@@ -213,6 +213,7 @@ export const Home: React.FC = () => {
             ) : fullVideos.length > 0 || (data?.featuredBhajans && data.featuredBhajans.length > 0) ? (
               <div className="flex flex-col gap-5">
                 {(fullVideos.length > 0 ? fullVideos : data.featuredBhajans).slice(0, 5).map((video: any) => {
+                  const isVideo = Boolean(video.youtube_video_id);
                   const videoUrl = video.youtube_video_id
                     ? `/videos/${video.youtube_video_id}`
                     : `/bhajans/${video.slug || video.id}`;
@@ -220,8 +221,18 @@ export const Home: React.FC = () => {
                   const title = video.title || video.hindi_title;
                   const subtitle = video.channel_name || video.hindi_title || 'Devotional Video';
                   const snippet = video.description || video.short_description || title;
-                  const videoId = String(video.id || video.youtube_video_id || video.slug || title);
-                  const isHearted = isFavorite(videoId);
+                  const videoId = String(video.youtube_video_id || video.slug || video.id || title);
+                  const isHearted = isFavorite(videoId) || isFavorite(String(video.id));
+
+                  const favoriteItem = {
+                    id: videoId,
+                    type: isVideo ? ('video' as const) : ('bhajan' as const),
+                    title,
+                    thumbnailUrl: thumb,
+                    url: videoUrl,
+                    subtitle,
+                    category: isVideo ? 'Video' : 'Bhajan'
+                  };
 
                   return (
                     <motion.div
@@ -260,7 +271,7 @@ export const Home: React.FC = () => {
                               </h3>
                               <button
                                 type="button"
-                                onClick={(e) => toggleFavorite(videoId, e)}
+                                onClick={(e) => toggleFavorite(favoriteItem, e)}
                                 title={isHearted ? 'Remove from favorites' : 'Add to favorites'}
                                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 relative z-10 ${
                                   isHearted

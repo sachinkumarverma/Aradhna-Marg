@@ -13,13 +13,16 @@ import {
   Calendar,
   Video,
   Layers,
-  Crown
+  Crown,
+  Heart,
+  HandHeart
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { PublicApi } from '@api/publicApi';
 import { useQuery } from '@tanstack/react-query';
+import { useFavorites } from '@hooks/useFavorites';
 
 interface RightNavDrawerProps {
   isOpen: boolean;
@@ -30,6 +33,7 @@ interface RightNavDrawerProps {
 export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose, onOpenSearch }) => {
   const { language, t, getLocalizedField } = useTranslation();
   const location = useLocation();
+  const { favoritesCount } = useFavorites();
 
   // Accordion states for dropdown items
   const [openAccordion, setOpenAccordion] = useState<'deities' | 'categories' | null>(null);
@@ -86,7 +90,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
       type: 'accordion',
       items: deities.slice(0, 6).map((d: any) => ({
         name: getLocalizedField(d, 'name') || d.name,
-        path: `/bhajans?deity=${d.slug || d.id}`,
+        path: `/gods/${d.slug || d.id}`,
         image: d.image || d.thumbnail_url || '/Deities/Krishna.png'
       })),
       viewAllText: isHi ? 'सभी देवी-देवता देखें' : 'View All Deities',
@@ -100,7 +104,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
       type: 'accordion',
       items: categories.slice(0, 8).map((c: any) => ({
         name: getLocalizedField(c, 'name') || c.name,
-        path: `/bhajans?category=${c.slug || c.id}`
+        path: `/categories/${c.slug || c.id}`
       })),
       viewAllText: isHi ? 'सभी श्रेणियाँ देखें' : 'View All Categories',
       viewAllPath: '/categories'
@@ -164,27 +168,29 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
             transition={{ type: 'spring', damping: 28, stiffness: 280 }}
             className="relative w-[82vw] sm:w-[360px] max-w-[380px] bg-white h-full shadow-[-10px_0_30px_rgba(0,0,0,0.25)] rounded-none flex flex-col z-10 overflow-hidden border-l border-orange-100/60"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-[#fffdfa] shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200/60 flex items-center justify-center p-1 shadow-xs">
+            {/* Header - Height and padding matched precisely to Main Navbar */}
+            <div className="flex items-center justify-between px-4 sm:px-6 h-16 sm:h-20 border-b border-orange-100 bg-white shrink-0">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-1 shadow-xs shrink-0">
                   <img src="/logo.png" alt="Aradhna Marg" className="w-full h-full object-cover rounded-md" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-extrabold text-sm tracking-wider text-slate-900 uppercase font-hindi-heading">
+                  <span className="font-extrabold text-sm sm:text-base tracking-wider text-slate-900 uppercase font-hindi-heading leading-tight">
                     {isHi ? 'मेनू' : 'MENU'}
                   </span>
-                  <span className="text-[10px] font-semibold text-saffron tracking-widest uppercase">ARADHNA MARG</span>
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-saffron tracking-widest uppercase mt-0.5">
+                    ARADHNA MARG
+                  </span>
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="w-10 h-10 rounded-full bg-slate-100 hover:bg-orange-50 hover:text-saffron flex items-center justify-center text-slate-600 transition-colors cursor-pointer"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-50 hover:bg-orange-50 hover:text-saffron text-slate-700 flex items-center justify-center transition-colors border border-gray-200/80 shadow-2xs cursor-pointer shrink-0"
                 title={isHi ? 'बंद करें' : 'Close'}
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
@@ -213,7 +219,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                     return (
                       <div
                         key={item.id}
-                        className={`rounded-xl border transition-all overflow-hidden ${
+                        className={`rounded-xl border transition-all ${
                           isAccordionOpen
                             ? 'border-saffron/30 bg-orange-50/30 shadow-xs'
                             : 'border-gray-100 bg-white hover:border-gray-200 shadow-xs'
@@ -243,24 +249,26 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.2 }}
-                              className="px-3.5 pb-3 pt-1 border-t border-orange-100/60 space-y-1.5"
+                              className="px-3 pb-3 pt-1 border-t border-orange-100/60 space-y-1.5"
                             >
-                              <div className="grid grid-cols-2 gap-1.5 pt-1">
+                              <div className="grid grid-cols-2 gap-2 pt-1.5">
                                 {item.items?.map((sub: any, sIdx: number) => (
                                   <Link
                                     key={sIdx}
                                     to={sub.path}
                                     onClick={onClose}
-                                    className="flex items-center gap-2 p-2 rounded-lg bg-white hover:bg-orange-50 text-xs font-semibold text-slate-700 hover:text-saffron border border-gray-100/80 transition-colors truncate"
+                                    className="flex items-center justify-start text-left pl-3 pr-2.5 py-2 min-h-[42px] rounded-xl bg-white hover:bg-orange-50/80 active:bg-orange-100 border border-gray-200/80 hover:border-orange-200 shadow-2xs hover:shadow-xs transition-all active:scale-[0.98] group/sub cursor-pointer"
                                   >
                                     {sub.image && (
                                       <img
                                         src={sub.image}
                                         alt={sub.name}
-                                        className="w-5 h-5 rounded-md object-cover shrink-0"
+                                        className="w-5 h-5 rounded-md object-cover shrink-0 mr-2 group-hover/sub:scale-105 transition-transform"
                                       />
                                     )}
-                                    <span className="truncate">{sub.name}</span>
+                                    <span className="truncate min-w-0 font-hindi-heading text-[11.5px] font-semibold leading-relaxed text-slate-700 group-hover/sub:text-saffron">
+                                      {sub.name}
+                                    </span>
                                   </Link>
                                 ))}
                               </div>
@@ -269,7 +277,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                                 <Link
                                   to={item.viewAllPath}
                                   onClick={onClose}
-                                  className="mt-2 block text-center py-2 text-xs font-bold text-saffron hover:underline font-hindi-heading"
+                                  className="mt-2.5 block text-center py-2 text-xs font-bold text-saffron hover:underline font-hindi-heading"
                                 >
                                   {item.viewAllText} &rarr;
                                 </Link>
@@ -305,6 +313,35 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
               {/* Divider */}
               <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
 
+              {/* Favorites Action Link */}
+              <div className="pb-2">
+                <Link
+                  to="/favourite"
+                  onClick={onClose}
+                  className="w-full flex items-center gap-3.5 p-3.5 rounded-xl border border-rose-100 bg-rose-50/40 hover:bg-rose-50 shadow-xs hover:shadow-sm transition-all group cursor-pointer text-left"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-rose-100/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform text-rose-500">
+                    <Heart className="w-5 h-5 fill-rose-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-sm text-slate-900 font-hindi-heading leading-tight">
+                        {isHi ? 'पसंदीदा संग्रह' : 'Saved Favorites'}
+                      </p>
+                      {favoritesCount > 0 && (
+                        <span className="px-1.5 py-0.2 rounded-full bg-rose-500 text-white font-bold text-[10px]">
+                          {favoritesCount}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-rose-700 truncate font-hindi-heading mt-0.5">
+                      {isHi ? 'आपके सहेजे गए भजन, वीडियो व लेख' : 'Your saved bhajans, videos & scriptures'}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-rose-400 group-hover:text-rose-600 transition-colors shrink-0" />
+                </Link>
+              </div>
+
               {/* Support Us / Daan Card */}
               <div className="pb-2">
                 <Link
@@ -313,7 +350,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                   className="w-full flex items-center gap-3.5 p-3.5 rounded-xl border border-amber-100 bg-amber-50/40 hover:bg-amber-50 shadow-xs hover:shadow-sm transition-all group"
                 >
                   <div className="w-10 h-10 rounded-lg bg-amber-100/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Sparkles className="w-5 h-5 text-amber-600" />
+                    <HandHeart className="w-4.5 h-4.5 text-amber-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-slate-900 font-hindi-heading leading-tight">

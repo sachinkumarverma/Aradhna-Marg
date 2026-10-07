@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
-import { Search, Menu, Heart } from 'lucide-react';
+import { Search, Menu, Heart, HandHeart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@components/ui/Button';
 import { useTranslation } from '@i18n/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { NavbarSearchOverlay } from '@components/search/NavbarSearchOverlay';
 import { RightNavDrawer } from './RightNavDrawer';
+import { useFavorites } from '@hooks/useFavorites';
 
 interface NavbarProps {
   containerRef?: React.RefObject<HTMLElement | null>;
@@ -17,6 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { favoritesCount } = useFavorites();
   const { scrollY } = useScroll(containerRef ? { container: containerRef as any } : undefined);
   const location = useLocation();
 
@@ -60,9 +62,9 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="w-full shrink-0 z-40 transition-all duration-300 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.08)] border-b border-orange-100 py-3 sm:py-3.5 relative"
+        className="w-full shrink-0 z-40 transition-all duration-300 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.08)] border-b border-orange-100 h-16 sm:h-20 flex items-center relative"
       >
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3">
             {/* Left: Brand Logo */}
             <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
@@ -120,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                 <Link to="/support-us">
                   <Button
                     size="sm"
-                    leftIcon={<Heart className="w-3.5 h-3.5 fill-white" />}
+                    leftIcon={<HandHeart className="w-3.5 h-3.5 text-white" />}
                     className="bg-saffron hover:brightness-90 text-white font-bold rounded-full px-4 shadow-sm hover:shadow-md transition-all text-xs font-hindi-heading cursor-pointer"
                     style={{ fontFamily: '"Anek Devanagari", sans-serif' }}
                   >
@@ -128,6 +130,39 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                   </Button>
                 </Link>
               </div>
+
+              {/* Favorites Heart Navigation Button */}
+              <Link
+                to="/favourite"
+                className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-2xs cursor-pointer active:scale-95 group ${
+                  location.pathname === '/favourite' || location.pathname === '/favorites'
+                    ? 'bg-rose-500 text-white border-rose-600 shadow-sm'
+                    : 'bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border-gray-200/80'
+                }`}
+                title={isHi ? 'पसंदीदा संग्रह' : 'Saved Favorites'}
+                aria-label="Favorites"
+              >
+                <Heart
+                  className={`w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:scale-110 ${
+                    location.pathname === '/favourite' || location.pathname === '/favorites'
+                      ? 'fill-white text-white'
+                      : favoritesCount > 0
+                        ? 'fill-rose-500 text-rose-500'
+                        : 'text-slate-700'
+                  }`}
+                />
+                {favoritesCount > 0 && (
+                  <span
+                    className={`absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full font-bold text-[10px] flex items-center justify-center shadow-xs ${
+                      location.pathname === '/favourite' || location.pathname === '/favorites'
+                        ? 'bg-white text-rose-600'
+                        : 'bg-rose-500 text-white'
+                    }`}
+                  >
+                    {favoritesCount > 99 ? '99+' : favoritesCount}
+                  </span>
+                )}
+              </Link>
 
               {/* Search Trigger Icon */}
               <button

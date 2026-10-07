@@ -25,6 +25,7 @@ import { DeitiesList } from '@pages/deities';
 import { TermsPage, DisclaimerPage, PrivacyPolicyPage, AboutPage } from '@pages/legal';
 import { DonatePage } from '@pages/donate';
 import { ContactPage } from '@pages/contact';
+import { FavoritesPage } from '@pages/favorites';
 
 // Lazy loaded placeholders for future pages (Admin)
 const AdminYoutube = lazy(() => import('../pages/admin/youtube').then((m) => ({ default: m.AdminYoutube })));
@@ -177,6 +178,14 @@ const router = createBrowserRouter([
       {
         path: 'donate',
         element: <DonatePage />
+      },
+      {
+        path: 'favourite',
+        element: <FavoritesPage />
+      },
+      {
+        path: 'favorites',
+        element: <FavoritesPage />
       },
       {
         path: 'contact',

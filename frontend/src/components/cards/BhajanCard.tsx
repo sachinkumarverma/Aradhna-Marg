@@ -40,6 +40,17 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
   const subtitle = englishTitle || titleEn;
   const showEnglish = subtitle && subtitle.trim().toLowerCase() !== title.trim().toLowerCase();
 
+  const favoriteItem = {
+    id: cardId,
+    type: 'bhajan' as const,
+    title,
+    englishTitle: subtitle,
+    thumbnailUrl,
+    url: slug ? `/bhajans/${slug}` : `/bhajans`,
+    subtitle: godName,
+    category: godName || 'Bhajan'
+  };
+
   return (
     <Card className="group p-0 relative isolate overflow-hidden flex flex-col h-full bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] border border-amber-100/90 hover:border-saffron/60 hover:shadow-xl hover:shadow-saffron/10 hover:-translate-y-1 transition-all duration-300 rounded-xl">
       {/* Devotional Thumbnail Header */}
@@ -65,9 +76,9 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
         {/* Top-Right: Favorite Button */}
         <button
           type="button"
-          onClick={(e) => toggleFavorite(cardId, e)}
+          onClick={(e) => toggleFavorite(favoriteItem, e)}
           title={hearted ? 'Remove from favorites' : 'Add to favorites'}
-          className={`absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-md backdrop-blur-md ${
+          className={`absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
             hearted
               ? 'bg-white text-rose-500 hover:bg-white scale-105'
               : 'bg-black/40 text-amber-100 hover:text-rose-400 hover:bg-black/60'

@@ -118,6 +118,8 @@ export const VideosList = () => {
                 >
                   <Link to={`/videos/${video.youtube_video_id}`} className="block h-full">
                     <VideoCard
+                      id={video.id || video.youtube_video_id}
+                      slug={video.youtube_video_id}
                       title={video.title}
                       godName={video.channel_name || 'Devotional'}
                       views={video.view_count || 0}

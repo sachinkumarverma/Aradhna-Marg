@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Sparkles, Send, Mail, BookOpen, Calendar, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Heart, Sparkles, Send, Mail, BookOpen, Calendar, ShieldCheck, CheckCircle2, HandHeart } from 'lucide-react';
 import { useTranslation } from '@i18n/LanguageContext';
 import toast from 'react-hot-toast';
 
@@ -41,7 +41,7 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="w-full shrink-0 bg-[#0e0703] text-gray-400 pt-6 sm:pt-8 md:pt-12 pb-8 border-t border-amber-900/40 relative overflow-hidden font-hindi-body">
+    <footer className="w-full shrink-0 bg-[#0e0703] text-gray-400 pt-6 sm:pt-8 md:pt-12 pb-12 sm:pb-14 border-t border-amber-900/40 relative overflow-hidden font-hindi-body">
       {/* Background Sacred Glows */}
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-48 bg-gradient-to-r from-amber-500/10 via-saffron/15 to-orange-600/10 blur-3xl pointer-events-none" />
 
@@ -190,18 +190,6 @@ export const Footer: React.FC = () => {
                   <span>{isHi ? 'भजन व कथा वीडियो' : 'Video Gallery'}</span>
                 </Link>
               </li>
-              <li>
-                <Link to="/ai" className="hover:text-amber-400 transition-colors flex items-center gap-2 py-0.5">
-                  <span className="text-xs text-amber-500">•</span>
-                  <span>{isHi ? 'वैदिक AI धर्म सहायक' : 'Vedic AI Assistant'}</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/search" className="hover:text-amber-400 transition-colors flex items-center gap-2 py-0.5">
-                  <span className="text-xs text-amber-500">•</span>
-                  <span>{isHi ? 'खोज एवं शोध' : 'Search Repository'}</span>
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -217,7 +205,7 @@ export const Footer: React.FC = () => {
                   to="/support-us"
                   className="text-saffron hover:text-orange-400 font-bold transition-colors flex items-center gap-1.5 py-0.5"
                 >
-                  <Heart className="w-3.5 h-3.5 fill-saffron shrink-0" />
+                  <HandHeart className="w-3.5 h-3.5 text-saffron shrink-0" />
                   <span>{isHi ? 'सहयोग एवं दक्षिणा कोष' : 'Support Our Seva'}</span>
                 </Link>
               </li>

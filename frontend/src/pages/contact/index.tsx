@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Send, Sparkles, MessageSquare, CheckCircle2, Phone, Heart, Globe, HelpCircle } from 'lucide-react';
+import {
+  Mail,
+  Send,
+  Sparkles,
+  MessageSquare,
+  CheckCircle2,
+  Phone,
+  Heart,
+  Globe,
+  HelpCircle,
+  HandHeart
+} from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { useTranslation } from '@i18n/LanguageContext';
 import { PublicApi } from '@api/publicApi';
@@ -365,7 +376,7 @@ export const ContactPage: React.FC = () => {
             {/* Support & Donation Card */}
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 sm:p-8 border border-orange-200 shadow-sm text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start gap-2 text-saffron font-bold text-xs uppercase tracking-wider mb-2 font-hindi-heading">
-                <Heart className="w-4 h-4 fill-saffron" />
+                <HandHeart className="w-4 h-4" />
                 <span>{isHi ? 'सहयोग एवं दक्षिणा कोष' : 'Support Our Seva'}</span>
               </div>
               <h4 className="font-black text-darkBrown text-base sm:text-lg mb-2 font-hindi-heading">
