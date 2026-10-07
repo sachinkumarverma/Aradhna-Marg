@@ -9,6 +9,7 @@ import { VideoCard } from '@components/cards/VideoCard';
 import { useSearch, useTrendingSearches } from '@hooks/useSearch';
 import { useTranslation } from '../../i18n/LanguageContext';
 import { motion } from 'framer-motion';
+import { SEOHead } from '@components/seo';
 
 export const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -104,8 +105,22 @@ export const SearchPage: React.FC = () => {
 
   const hasSearchQuery = Boolean(query && query.trim().length > 0);
 
+  const searchTitle = hasSearchQuery
+    ? isHi
+      ? `खोज परिणाम: "${query}"`
+      : `Search Results for "${query}"`
+    : isHi
+      ? 'सनातन खोज'
+      : 'Search Devotional Content';
+
   return (
     <div className="w-full min-h-screen bg-[#FDFBF7] pt-6 pb-24">
+      <SEOHead
+        title={searchTitle}
+        description="Search bhajans, aartis, puranas, festivals, and spiritual literature on Aradhna Marg."
+        canonicalPath="/search"
+        noIndex={true}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Search Hero */}
         <div className="relative overflow-hidden bg-gradient-to-b from-amber-50/90 via-orange-50/40 to-transparent rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-xs mb-8">

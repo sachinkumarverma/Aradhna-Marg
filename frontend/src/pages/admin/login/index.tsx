@@ -4,6 +4,7 @@ import { login, isAuthenticated } from '@api/auth';
 import { AdminButton } from '@components/admin/AdminButton';
 import { Loader2, Lock, Eye, EyeOff } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { SEOHead } from '@components/seo';
 
 export const AdminLogin: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -49,6 +50,7 @@ export const AdminLogin: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <SEOHead title="Admin Portal Login" canonicalPath="/admin/login" noIndex={true} />
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
         <div className="p-8">
           <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">

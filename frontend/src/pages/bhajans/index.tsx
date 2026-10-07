@@ -9,9 +9,11 @@ import { PublicApi } from '@api/publicApi';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const BhajansList: React.FC = () => {
-  const { t, getLocalizedField } = useTranslation();
+  const { language, t, getLocalizedField } = useTranslation();
+  const isHi = language === 'hi';
   const [searchParams, setSearchParams] = useSearchParams();
   const [bhajans, setBhajans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,8 +102,19 @@ export const BhajansList: React.FC = () => {
     { label: t('common.views'), value: 'views' }
   ];
 
+  const pageTitle = isHi ? 'मधुर भजन संग्रह (Devotional Bhajans & Kirtans)' : 'Devotional Bhajans & Kirtans';
+  const pageDesc = isHi
+    ? 'सनातन देवी-देवताओं के पावन एवं मधुर भजनों, आरतियों, चालीसा और स्तोत्रों का विशाल संग्रह। आनंद लें और प्रभु भक्ति में लीन हों।'
+    : 'Listen and explore sacred Hindu devotional songs, melodious bhajans, stotrams, and aartis dedicated to revered deities.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'भजन' : 'Bhajans', item: '/bhajans' }
+  ]);
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/bhajans" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Devotional Music Banner */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#3D261C] via-[#5C3421] to-[#3D261C] p-6 sm:p-10 text-white shadow-xl mb-10 border border-amber-900/40">

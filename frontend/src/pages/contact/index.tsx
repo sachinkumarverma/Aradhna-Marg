@@ -18,6 +18,7 @@ import { PublicApi } from '@api/publicApi';
 import { Select } from '@components/ui/Select';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const ContactPage: React.FC = () => {
   const { language } = useTranslation();
@@ -103,11 +104,21 @@ export const ContactPage: React.FC = () => {
   };
 
   const breadcrumbItems = [{ label: isHi ? 'संपर्क एवं सुझाव' : 'Contact & Suggestions' }];
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'संपर्क' : 'Contact', item: '/contact' }
+  ]);
+
+  const pageTitle = isHi ? 'संपर्क एवं सुझाव (Contact Us)' : 'Contact Us & Suggestions';
+  const pageDesc = isHi
+    ? 'आराधना मार्ग टीम से संपर्क करें, नए भजन या ग्रंथ का सुझाव दें अथवा किसी त्रुटि की सूचना भेजें।'
+    : 'Get in touch with Aradhna Marg team, suggest new devotional hymns or scriptures, and send your feedback.';
 
   return (
     <div
       className={`w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24 selection:bg-saffron/20 selection:text-saffron ${isHi ? 'font-hindi-body' : 'font-sans'}`}
     >
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/contact" schema={breadcrumbs} />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb Navigation */}
         <div className="mb-6">

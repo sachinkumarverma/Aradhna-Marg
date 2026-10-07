@@ -4,6 +4,7 @@ import { Menu, Bell, Search, Loader2, LogOut } from 'lucide-react';
 import { AdminSidebar } from '@components/admin/AdminSidebar';
 import { SessionManager } from '@components/admin/SessionManager';
 import { logout, verifySession } from '@api/auth';
+import { SEOHead } from '@components/seo';
 
 export const AdminLayout: React.FC = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -38,6 +39,7 @@ export const AdminLayout: React.FC = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 font-sans">
+      <SEOHead title="Admin Dashboard" noIndex={true} />
       <SessionManager />
 
       {/* Sidebar */}

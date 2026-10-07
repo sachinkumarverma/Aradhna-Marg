@@ -7,9 +7,11 @@ import { Link } from 'react-router-dom';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const FestivalsList: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
+  const isHi = language === 'hi';
   const [festivals, setFestivals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -32,8 +34,19 @@ export const FestivalsList: React.FC = () => {
     fetchFestivals();
   }, [page, search, language]);
 
+  const pageTitle = isHi ? 'सनातन हिन्दू पर्व, व्रत एवं त्योहार' : 'Sacred Hindu Festivals, Vrats & Dates';
+  const pageDesc = isHi
+    ? 'सनातन धर्म के समस्त प्रमुख पर्व, एकादशी व्रत, शुभ मुहूर्त, पूजा विधि एवं धार्मिक महत्व का प्रामाणिक विवरण।'
+    : 'Discover auspicious Hindu festivals, sacred vrats, muhurats, rituals, and festive significance on Aradhna Marg.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'त्योहार' : 'Festivals', item: '/festivals' }
+  ]);
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/festivals" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner with Top-Right Search Bar */}
         <div className="bg-gradient-to-r from-amber-50/70 via-white to-orange-50/50 rounded-2xl p-6 sm:p-8 border border-orange-100/80 shadow-sm relative overflow-hidden mb-10">

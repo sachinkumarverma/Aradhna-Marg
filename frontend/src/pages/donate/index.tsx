@@ -22,6 +22,7 @@ import {
 import { PaymentApi } from '@/api/paymentApi';
 import { useTranslation } from '@/i18n/LanguageContext';
 import toast from 'react-hot-toast';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 declare global {
   interface Window {
@@ -285,8 +286,19 @@ export const DonatePage: React.FC = () => {
     }
   ];
 
+  const pageTitle = isHi ? 'सहयोग एवं सेवा संकल्प (Support Us)' : 'Support Our Mission & Devotional Seva';
+  const pageDesc = isHi
+    ? 'सनातन धर्म, वेद, पुराणों के डिजिटलीकरण एवं भक्ति प्रचार हेतु आराधना मार्ग मंच का सहयोग करें।'
+    : 'Support Aradhna Marg mission to digitize sacred Hindu scriptures, puranas, and preserve devotional heritage.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'सहयोग' : 'Support Us', item: '/support-us' }
+  ]);
+
   return (
     <div className="w-full min-h-screen bg-[#FAF7F2] pt-6 pb-20 selection:bg-saffron selection:text-white">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/support-us" schema={breadcrumbs} />
       {/* 1. Hero & Vedic Mission Banner */}
       <section className="relative overflow-hidden pt-6 pb-10 sm:pt-12 sm:pb-14 px-4">
         {/* Subtle Decorative Background Glow */}

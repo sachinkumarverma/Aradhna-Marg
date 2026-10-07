@@ -23,6 +23,7 @@ import { useTranslation } from '@i18n/LanguageContext';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { Button } from '@components/ui/Button';
 import toast from 'react-hot-toast';
+import { SEOHead } from '@components/seo';
 
 interface SectionConfig {
   type: string;
@@ -375,6 +376,12 @@ export const FavoritesPage: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pb-24 font-sans text-darkBrown">
+      <SEOHead
+        title={isHi ? 'मेरी पसंदीदा सूची (My Favorites)' : 'My Saved Favorites'}
+        description="Your personal saved collection of Bhajans, Puranas, Articles, and Sacred Festivals on Aradhna Marg."
+        canonicalPath="/favorites"
+        noIndex={true}
+      />
       {/* 1. HERO HEADER */}
       <section className="relative w-full bg-gradient-to-b from-[#1c0f08] via-[#24130a] to-[#140a05] text-white pt-8 pb-14 sm:pb-16 px-4 sm:px-6 lg:px-8 border-b border-amber-900/40 overflow-hidden isolate">
         {/* Ambient Glows */}

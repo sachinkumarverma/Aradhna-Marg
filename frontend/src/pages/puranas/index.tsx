@@ -5,9 +5,11 @@ import { PuranaCardSkeleton } from '@components/common/SkeletonLoader';
 import { PublicApi } from '@api/publicApi';
 import { PuranaCard } from '@components/cards/PuranaCard';
 import { useTranslation } from '@i18n/LanguageContext';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const PuranasList: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
+  const isHi = language === 'hi';
   const [puranas, setPuranas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -30,8 +32,19 @@ export const PuranasList: React.FC = () => {
     fetchPuranas();
   }, [page, search, language]);
 
+  const pageTitle = isHi ? 'अष्टादश महापुराण एवं सनातन ग्रंथ' : 'Sacred 18 Maha Puranas & Scriptures';
+  const pageDesc = isHi
+    ? 'सनातन हिन्दू धर्म के १८ महापुराण, उपपुराण, श्रीमद्भागवत, शिव पुराण, विष्णु पुराण आदि का पावन संग्रह एवं प्रामाणिक विवरण।'
+    : 'Explore authentic Hindu sacred scriptures, 18 Maha Puranas, Srimad Bhagavatam, Shiva Purana, and divine texts on Aradhna Marg.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'पुराण' : 'Puranas', item: '/puranas' }
+  ]);
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/puranas" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner with Top-Right Search Bar */}
         <div className="bg-gradient-to-r from-amber-50/70 via-white to-orange-50/50 rounded-2xl p-6 sm:p-8 border border-orange-100/80 shadow-sm relative overflow-hidden mb-10">

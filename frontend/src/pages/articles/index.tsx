@@ -8,6 +8,7 @@ import { ArticleCardSkeleton } from '@components/common/SkeletonLoader';
 import { AdUnit } from '@components/common/AdUnit';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const ArticlesList: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -58,8 +59,20 @@ export const ArticlesList: React.FC = () => {
     ...categories.map((c) => ({ label: getLocalizedField(c, 'name') || c.name, value: c.id }))
   ];
 
+  const isHi = language === 'hi';
+  const pageTitle = isHi ? 'धार्मिक लेख एवं आध्यात्मिक ज्ञान' : 'Devotional Articles & Spiritual Insights';
+  const pageDesc = isHi
+    ? 'सनातन धर्म, वेद, पुराण, देवी-देवताओं की महिमा और हिन्दू पर्वों के महत्व पर आधारित ज्ञानवर्धक एवं प्रामाणिक धार्मिक लेख।'
+    : 'Read authentic articles, spiritual insights, Vedic philosophy, and Hindu scripture commentaries on Aradhna Marg.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'लेख' : 'Articles', item: '/articles' }
+  ]);
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/articles" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner with Top-Right Search & Filter Bar */}
         <div className="bg-gradient-to-r from-amber-50/70 via-white to-orange-50/50 rounded-2xl p-6 sm:p-8 border border-orange-100/80 shadow-sm relative overflow-hidden mb-10">

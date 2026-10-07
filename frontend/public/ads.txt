@@ -1,0 +1,4 @@
+# Google AdSense ads.txt for Aradhna Marg (https://aradhnamarg.com)
+# When your Google AdSense account is approved, configure your publisher ID (e.g., VITE_ADSENSE_PUBLISHER_ID=ca-pub-XXXXXXXXXXXXXXXX)
+# Google AdSense standard format:
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

@@ -6,9 +6,11 @@ import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const CategoriesList: React.FC = () => {
-  const { t, getLocalizedField } = useTranslation();
+  const { language, t, getLocalizedField } = useTranslation();
+  const isHi = language === 'hi';
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -42,8 +44,19 @@ export const CategoriesList: React.FC = () => {
     return <FolderKanban className="w-6 h-6 text-saffron" />;
   };
 
+  const pageTitle = isHi ? 'समस्त श्रेणियां (Devotional Categories)' : 'All Devotional Categories';
+  const pageDesc = isHi
+    ? 'भजन, आरती, चालीसा, स्तोत्र, मंत्र एवं धार्मिक कथाओं का श्रेणीवार पावन संकलन।'
+    : 'Browse categorized Hindu devotional literature, bhajans, aarti, chalisa, and scriptures on Aradhna Marg.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'श्रेणियां' : 'Categories', item: '/categories' }
+  ]);
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/categories" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner for Categories */}
         <div className="bg-gradient-to-r from-amber-50/70 via-white to-orange-50/50 rounded-2xl p-6 sm:p-8 border border-orange-100/80 shadow-sm relative overflow-hidden mb-10">

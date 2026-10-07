@@ -6,9 +6,11 @@ import { apiClient } from '@api/client';
 import { VideoCard } from '@components/cards/VideoCard';
 import { VideoGridCardSkeleton } from '@components/common/SkeletonLoader';
 import { useTranslation } from '../../i18n/LanguageContext';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const VideosList = () => {
-  const { t } = useTranslation();
+  const { language, t } = useTranslation();
+  const isHi = language === 'hi';
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,8 +41,19 @@ export const VideosList = () => {
     return () => clearTimeout(debounceTimeout);
   }, [page, searchQuery, includeShorts]);
 
+  const pageTitle = isHi ? 'भक्ति एवं संकीर्तन वीडियो' : 'Devotional Videos & Kirtans';
+  const pageDesc = isHi
+    ? 'सनातन भक्ति रस, संकीर्तन, कथा एवं दिव्य वीडियो दर्शन का पावन संग्रह।'
+    : 'Watch Hindu devotional video hymns, sacred kirtans, live aartis, and spiritual videos on Aradhna Marg.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'वीडियो' : 'Videos', item: '/videos' }
+  ]);
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-6 pb-20">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/videos" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner for Divine Videos */}
         <div className="bg-gradient-to-r from-amber-50/70 via-white to-orange-50/50 rounded-2xl p-6 sm:p-8 border border-orange-100/80 shadow-sm relative overflow-hidden mb-10">

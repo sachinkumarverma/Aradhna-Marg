@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { Megaphone, Info } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Megaphone, Info, ShieldAlert } from 'lucide-react';
+import { getConfiguredPublisherId, isValidPublisherId, isValidSlotId, loadAdSenseScript } from '@/utils/adsense';
 
 interface AdUnitProps {
   slot?: 'sidebar' | 'banner' | 'inline';
@@ -8,6 +9,8 @@ interface AdUnitProps {
   adSlotId?: string;
   adCode?: string;
   label?: string;
+  format?: 'auto' | 'fluid' | 'rectangle' | 'horizontal' | 'vertical';
+  responsive?: boolean;
 }
 
 declare global {
@@ -22,28 +25,122 @@ export const AdUnit: React.FC<AdUnitProps> = ({
   adClient,
   adSlotId,
   adCode,
-  label = 'ADVERTISEMENT • विज्ञापन'
+  label = 'ADVERTISEMENT • विज्ञापन',
+  format = 'auto',
+  responsive = true
 }) => {
-  const adRef = useRef<HTMLDivElement>(null);
-  const pushedRef = useRef<boolean>(false);
+  const adContainerRef = useRef<HTMLDivElement>(null);
+  const insRef = useRef<HTMLModElement>(null);
+  const isPushedRef = useRef<boolean>(false);
+  const [adError, setAdError] = useState(false);
+
+  // Active publisher ID: passed as prop or configured in environment
+  const activePublisherId = adClient || getConfiguredPublisherId();
+  const hasValidPublisher = isValidPublisherId(activePublisherId);
+  const hasValidSlot = isValidSlotId(adSlotId);
+  const isDev = import.meta.env.DEV;
 
   useEffect(() => {
+    // If custom HTML embed code is provided, no adsbygoogle push required
     if (adCode) return;
 
+    // Only proceed if valid publisher & slot IDs are available
+    if (!hasValidPublisher || !hasValidSlot || !activePublisherId) {
+      return;
+    }
+
+    // Load AdSense script once
+    loadAdSenseScript(activePublisherId);
+
+    // Guard against double pushing in React 18/19 Strict Mode
+    const insEl = insRef.current;
+    if (!insEl) return;
+
+    // Check if AdSense has already processed this ins tag
+    const isAlreadyFilled =
+      insEl.getAttribute('data-adsbygoogle-status') === 'done' ||
+      insEl.getAttribute('data-ad-status') === 'filled' ||
+      isPushedRef.current;
+
+    if (isAlreadyFilled) return;
+
     try {
-      if (typeof window !== 'undefined' && adRef.current) {
-        if (!pushedRef.current) {
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
-          pushedRef.current = true;
-        }
+      if (typeof window !== 'undefined') {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        isPushedRef.current = true;
       }
     } catch (err) {
-      console.warn('AdSense auto-push warning:', err);
+      console.warn('Google AdSense push notice:', err);
+      setAdError(true);
     }
-  }, [adCode]);
+  }, [adCode, activePublisherId, adSlotId, hasValidPublisher, hasValidSlot]);
+
+  // If custom HTML snippet is provided, render it safely
+  if (adCode) {
+    return (
+      <div
+        className={`relative w-full rounded-xl sm:rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50/40 via-white to-orange-50/30 p-3 sm:p-4 shadow-xs overflow-hidden transition-all ${className}`}
+      >
+        <div className="flex items-center justify-between pb-1.5 sm:pb-2 mb-2 sm:mb-3 border-b border-amber-200/40 text-[10px] sm:text-[11px] font-bold tracking-wider text-amber-800/80 uppercase">
+          <span className="flex items-center gap-1.5 text-saffron">
+            <Megaphone className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+            {label}
+          </span>
+          <span title="Sponsored Content" className="text-gray-400 hover:text-gray-600 transition-colors">
+            <Info className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+          </span>
+        </div>
+        <div
+          dangerouslySetInnerHTML={{ __html: adCode }}
+          className="w-full flex items-center justify-center min-h-[140px] overflow-hidden"
+        />
+      </div>
+    );
+  }
+
+  // If IDs are missing or invalid:
+  // In Development: Show informative developer placeholder
+  // In Production: Gracefully hide container (return null) without broken boxes or layout shifts
+  if (!hasValidPublisher || !hasValidSlot) {
+    if (!isDev) {
+      return null;
+    }
+
+    return (
+      <div
+        className={`relative w-full rounded-xl sm:rounded-2xl border border-dashed border-amber-300/60 bg-amber-50/40 p-4 shadow-xs overflow-hidden text-center transition-all ${className}`}
+      >
+        <div className="flex items-center justify-between pb-2 mb-2 border-b border-amber-200/50 text-[10px] font-bold tracking-wider text-amber-800 uppercase">
+          <span className="flex items-center gap-1 text-saffron">
+            <Megaphone className="w-3 h-3 shrink-0" />
+            {label} (Dev Preview)
+          </span>
+          <span className="text-amber-500 font-medium">Slot: {slot}</span>
+        </div>
+        <div className="py-4 px-2 flex flex-col items-center justify-center text-amber-900/60">
+          <ShieldAlert className="w-6 h-6 text-amber-500 mb-1" />
+          <p className="text-xs font-bold text-darkBrown">AdSense Placement Placeholder</p>
+          <p className="text-[11px] text-slate-500 mt-1 max-w-sm">
+            {!hasValidPublisher
+              ? 'Configure VITE_ADSENSE_PUBLISHER_ID (e.g. ca-pub-XXXXXXXXXXXXXXXX) in .env to activate live ads.'
+              : 'Pass a valid adSlotId prop to render this ad unit.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Determine min-height based on slot type to prevent Cumulative Layout Shift (CLS)
+  const minHeightClass =
+    slot === 'banner'
+      ? 'min-h-[90px] sm:min-h-[120px]'
+      : slot === 'inline'
+        ? 'min-h-[140px] sm:min-h-[180px]'
+        : 'min-h-[250px] sm:min-h-[280px]';
 
   return (
     <div
+      ref={adContainerRef}
       className={`relative w-full rounded-xl sm:rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50/40 via-white to-orange-50/30 p-3 sm:p-4 shadow-xs overflow-hidden transition-all ${className}`}
     >
       {/* Top Header Label */}
@@ -52,41 +149,27 @@ export const AdUnit: React.FC<AdUnitProps> = ({
           <Megaphone className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
           {label}
         </span>
-        <span title="Sponsored Content / Ads" className="text-gray-400 hover:text-gray-600 transition-colors">
+        <span title="Google AdSense" className="text-gray-400 hover:text-gray-600 transition-colors">
           <Info className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
         </span>
       </div>
 
       {/* Ad Container Box */}
       <div
-        ref={adRef}
-        className="w-full flex items-center justify-center min-h-[140px] sm:min-h-[180px] md:min-h-[220px] overflow-hidden rounded-lg sm:rounded-xl bg-white/70 border border-dashed border-amber-300/50 relative"
+        className={`w-full flex items-center justify-center overflow-hidden rounded-lg sm:rounded-xl bg-white/50 relative ${minHeightClass}`}
       >
-        {adCode ? (
-          <div dangerouslySetInnerHTML={{ __html: adCode }} className="w-full flex items-center justify-center" />
+        {adError ? (
+          <div className="text-xs text-slate-400 py-4">Ad unavailable</div>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-center p-3 sm:p-4">
-            <ins
-              className="adsbygoogle"
-              style={{ display: 'block', width: '100%', minHeight: '140px' }}
-              data-ad-client={adClient || 'ca-pub-XXXXXXXXXXXXXXXX'}
-              data-ad-slot={adSlotId || '1234567890'}
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-            />
-            {/* Soft fallback preview before AdSense loads script */}
-            <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-4 sm:p-6 text-amber-900/40 bg-gradient-to-b from-amber-50/20 to-orange-50/20 -z-0">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-amber-100/80 flex items-center justify-center mb-1.5 sm:mb-2 shadow-2xs">
-                <Megaphone className="w-4 h-4 sm:w-5 sm:h-5 text-saffron/70" />
-              </div>
-              <p className="text-[11px] sm:text-xs font-bold text-darkBrown/70 uppercase tracking-widest">
-                Google AdSense Area
-              </p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5 sm:mt-1">
-                Automatic Display & Native Ads
-              </p>
-            </div>
-          </div>
+          <ins
+            ref={insRef}
+            className="adsbygoogle"
+            style={{ display: 'block', width: '100%', minHeight: '100%' }}
+            data-ad-client={activePublisherId}
+            data-ad-slot={adSlotId}
+            data-ad-format={format}
+            data-full-width-responsive={responsive ? 'true' : 'false'}
+          />
         )}
       </div>
     </div>

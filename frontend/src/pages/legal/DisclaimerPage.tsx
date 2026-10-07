@@ -14,21 +14,28 @@ import {
 } from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { useTranslation } from '@i18n/LanguageContext';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const DisclaimerPage: React.FC = () => {
   const { language } = useTranslation();
   const isHi = language === 'hi';
 
-  useEffect(() => {
-    document.title = isHi ? 'अस्वीकरण (Disclaimer) | आराधना मार्ग - Aradhna Marg' : 'Disclaimer | Aradhna Marg';
-  }, [isHi]);
+  const pageTitle = isHi ? 'अस्वीकरण (Disclaimer)' : 'Disclaimer';
+  const pageDesc = isHi
+    ? 'आराधना मार्ग पर प्रकाशित धार्मिक सामग्री, भजन एवं शास्त्रों से संबंधित कानूनी व धार्मिक अस्वीकरण।'
+    : 'Legal and religious disclaimer regarding devotional content and scriptures on Aradhna Marg.';
 
   const breadcrumbItems = [{ label: isHi ? 'अस्वीकरण' : 'Disclaimer' }];
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'अस्वीकरण' : 'Disclaimer', item: '/disclaimer' }
+  ]);
 
   return (
     <div
       className={`w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24 selection:bg-saffron/20 selection:text-saffron ${isHi ? 'font-hindi-body' : 'font-legal'}`}
     >
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/disclaimer" schema={breadcrumbs} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <div className="mb-6">

@@ -15,6 +15,7 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from '@i18n/LanguageContext';
 import { PublicApi } from '@api/publicApi';
+import { SEOHead } from '@components/seo';
 
 export const NotFoundPage: React.FC = () => {
   const { language, t } = useTranslation();
@@ -153,6 +154,11 @@ export const NotFoundPage: React.FC = () => {
 
   return (
     <div className="relative w-full min-h-[90vh] bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#F5EFEB] py-14 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center overflow-hidden">
+      <SEOHead
+        title={isHindi ? '४०४ - पृष्ठ उपलब्ध नहीं है' : '404 - Page Not Found'}
+        description="The requested page could not be found on Aradhna Marg."
+        noIndex={true}
+      />
       {/* Spiritual Mandala & Sacred Aura Watermark Background */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center select-none overflow-hidden">
         {/* Sanskrit 404 Background Glow */}

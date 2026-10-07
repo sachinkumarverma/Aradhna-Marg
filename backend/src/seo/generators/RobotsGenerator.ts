@@ -2,9 +2,12 @@ export class RobotsGenerator {
   private readonly baseUrl = 'https://aradhnamarg.com';
 
   public generate(): string {
-    return `User-agent: *
+    return `# robots.txt for Aradhna Marg (https://aradhnamarg.com)
+User-agent: *
 Allow: /
+Disallow: /admin
 Disallow: /admin/
+Disallow: /search
 Disallow: /api/
 Disallow: /preview/
 

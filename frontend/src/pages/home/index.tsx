@@ -39,6 +39,7 @@ import {
   PuranaCardSkeleton,
   FestivalCardSkeleton
 } from '@components/common/SkeletonLoader';
+import { SEOHead, buildWebSiteSchema, buildOrganizationSchema } from '@components/seo';
 
 export const Home: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
@@ -94,8 +95,11 @@ export const Home: React.FC = () => {
 
   const fullVideos = (data?.featuredVideos || []).filter((v: any) => !isShortVideo(v));
 
+  const homeSchemas = [buildWebSiteSchema(), buildOrganizationSchema()];
+
   return (
     <div className="w-full relative bg-[#F9F7F3]">
+      <SEOHead canonicalPath="/" schema={homeSchemas} />
       {/* 1. HERO SECTION */}
       <section className="relative w-full overflow-hidden bg-black isolate min-h-[580px] sm:min-h-[640px] md:min-h-[700px] lg:min-h-[760px] py-16 sm:py-20 md:py-24 flex items-center">
         {heroImages.map((img, i) => (

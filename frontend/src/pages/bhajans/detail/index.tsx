@@ -16,6 +16,7 @@ import { IconText } from '@components/common/IconText';
 import { useFavorites } from '@hooks/useFavorites';
 
 import { CustomLoader } from '@components/common/CustomLoader';
+import { SEOHead, buildBreadcrumbSchema, buildMusicCompositionSchema } from '@components/seo';
 
 export const BhajanDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -60,13 +61,14 @@ export const BhajanDetail: React.FC = () => {
   if (!bhajan) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4">
+        <SEOHead title={language === 'hi' ? 'भजन उपलब्ध नहीं है' : 'Bhajan Not Found'} noIndex={true} />
         <h2 className="text-3xl font-black text-darkBrown mb-4">यह भजन उपलब्ध नहीं है।</h2>
         <p className="text-slate-600 mb-6">खोजें हमारे विशाल भजन संग्रह में।</p>
         <Link
           to="/bhajans"
           className="px-6 py-3 bg-saffron text-white rounded-md font-bold shadow-md hover:brightness-90"
         >
-          सभी भजन देखें
+          {t('common.allBhajans')}
         </Link>
       </div>
     );
@@ -98,8 +100,43 @@ export const BhajanDetail: React.FC = () => {
       }
     : null;
 
+  const displayTitle = getLocalizedField(bhajan, 'title') || bhajan.title;
+  const pageTitle = bhajan.seo_title || `${displayTitle} ${isHi ? '- लिरिक्स व वीडियो' : '- Lyrics & Video'}`;
+  const pageDescription =
+    bhajan.seo_description ||
+    bhajan.description ||
+    (isHi
+      ? `${displayTitle} भजन के पावन लिरिक्स, अर्थ, कथा एवं भक्तिमय वीडियो का आनंद लें।`
+      : `Read sacred lyrics, meaning, and watch devotional video for ${displayTitle} on Aradhna Marg.`);
+
+  const bhajanSchemas = [
+    buildMusicCompositionSchema({
+      name: displayTitle,
+      description: pageDescription,
+      url: `/bhajans/${bhajan.slug || slug}`,
+      composer: bhajan.singer || bhajan.author_name,
+      lyricsText: bhajan.lyrics,
+      inLanguage: isHi ? 'hi' : 'en'
+    }),
+    buildBreadcrumbSchema([
+      { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+      { name: isHi ? 'भजन' : 'Bhajans', item: '/bhajans' },
+      { name: displayTitle, item: `/bhajans/${bhajan.slug || slug}` }
+    ])
+  ];
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-3 sm:pt-6 md:pt-8 pb-16 sm:pb-24">
+      <SEOHead
+        title={pageTitle}
+        description={pageDescription}
+        canonicalPath={`/bhajans/${bhajan.slug || slug}`}
+        ogType="music.song"
+        ogImage={bhajan.thumbnail_url || bhajan.image_url}
+        publishedTime={bhajan.created_at}
+        modifiedTime={bhajan.updated_at}
+        schema={bhajanSchemas}
+      />
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <div className="mb-3.5 sm:mb-6">

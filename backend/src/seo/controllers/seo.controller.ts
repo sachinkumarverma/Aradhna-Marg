@@ -15,7 +15,7 @@ class SEOController {
 
   public getSitemapIndex = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const xml = sitemapGenerator.generateIndex();
+      const xml = await sitemapGenerator.generateFullSitemap();
       res.header('Content-Type', 'application/xml');
       return res.send(xml);
     } catch (error) {

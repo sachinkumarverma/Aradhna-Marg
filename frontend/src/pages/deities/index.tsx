@@ -6,9 +6,11 @@ import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const DeitiesList: React.FC = () => {
-  const { t, getLocalizedField } = useTranslation();
+  const { language, t, getLocalizedField } = useTranslation();
+  const isHi = language === 'hi';
   const [deities, setDeities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -44,8 +46,19 @@ export const DeitiesList: React.FC = () => {
     return '/Deities/Krishna.png';
   };
 
+  const pageTitle = isHi ? 'देवी-देवता पावन दर्शन एवं उपासना' : 'Divine Hindu Deities & Lore';
+  const pageDesc = isHi
+    ? 'सनातन देवी-देवताओं के दिव्य स्वरूप, महामंत्र, स्तुति, आरती, भजन एवं पावन गाथाओं का संकलन।'
+    : 'Discover Hindu deities, divine forms, sacred mantras, aartis, bhajans, and eternal lore on Aradhna Marg.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'देवी-देवता' : 'Deities', item: '/gods' }
+  ]);
+
   return (
     <div className="w-full flex-1 bg-[#F9F7F3] pt-4 sm:pt-6 md:pt-8 pb-8 sm:pb-16">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/gods" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Divine Hero Banner for Deities */}
         <div className="bg-gradient-to-r from-[#2C1A12] via-[#4A291A] to-[#2C1A12] rounded-3xl p-6 sm:p-10 text-amber-50 shadow-2xl border border-amber-900/50 relative overflow-hidden mb-12">

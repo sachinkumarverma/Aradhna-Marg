@@ -10,6 +10,7 @@ import { useTranslation } from '@i18n/LanguageContext';
 
 import { AdUnit } from '@components/common/AdUnit';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { SEOHead, buildBreadcrumbSchema, buildArticleSchema } from '@components/seo';
 
 export const ArticleDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -57,6 +58,7 @@ export const ArticleDetail: React.FC = () => {
   if (!article) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4">
+        <SEOHead title={language === 'hi' ? 'धार्मिक लेख उपलब्ध नहीं है' : 'Article Not Found'} noIndex={true} />
         <h2 className="text-2xl font-bold text-darkBrown mb-4 font-hindi-heading">{t('errors.contentNotAvailable')}</h2>
         <p className="text-slate-600 mb-6 font-hindi-body">{t('errors.failedToLoad')}</p>
         <Link
@@ -73,13 +75,58 @@ export const ArticleDetail: React.FC = () => {
   const excerpt = getLocalizedField(article, 'excerpt') || article.displayExcerpt || article.excerpt;
   const content = getLocalizedField(article, 'content') || article.displayContent || article.content;
   const categoryName = getLocalizedField(article, 'category_name') || article.category_name;
+  const isHi = language === 'hi';
+
+  const pageTitle = article.seo_title || article.displaySeoTitle || title;
+  const pageDesc =
+    article.seo_description ||
+    article.displaySeoDescription ||
+    excerpt ||
+    (isHi
+      ? `${title} - सनातन धर्म, संस्कृति व भक्ति पर विस्तृत धार्मिक आलेख पढ़ें।`
+      : `Read detailed spiritual article on ${title} on Aradhna Marg.`);
+
+  const articleSchemas = [
+    buildArticleSchema({
+      title,
+      description: pageDesc,
+      url: `/articles/${article.slug || slug}`,
+      image: article.banner_image || article.featured_image || article.image_url,
+      datePublished: article.publish_date || article.created_at,
+      dateModified: article.updated_at,
+      authorName: article.author_name,
+      inLanguage: isHi ? 'hi' : 'en'
+    }),
+    buildBreadcrumbSchema([
+      { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+      { name: isHi ? 'लेख' : 'Articles', item: '/articles' },
+      { name: title, item: `/articles/${article.slug || slug}` }
+    ])
+  ];
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-3 sm:pt-6 md:pt-8 pb-16 sm:pb-24">
+      <SEOHead
+        title={pageTitle}
+        description={pageDesc}
+        canonicalPath={`/articles/${article.slug || slug}`}
+        ogType="article"
+        ogImage={article.banner_image || article.featured_image || article.image_url}
+        publishedTime={article.publish_date || article.created_at}
+        modifiedTime={article.updated_at}
+        author={article.author_name}
+        schema={articleSchemas}
+      />
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs Header */}
         <div className="mb-3.5 sm:mb-6">
-          <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Articles', to: '/articles' }, { label: title }]} />
+          <Breadcrumb
+            items={[
+              { label: isHi ? 'होम' : 'Home', to: '/' },
+              { label: isHi ? 'लेख' : 'Articles', to: '/articles' },
+              { label: title }
+            ]}
+          />
         </div>
 
         {/* 12-Column Grid Layout */}

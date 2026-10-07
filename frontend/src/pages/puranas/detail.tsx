@@ -14,6 +14,7 @@ import { SectionHeader } from '@components/common/SectionHeader';
 import { ArticleCard } from '@components/cards/ArticleCard';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { AdUnit } from '@components/common/AdUnit';
+import { SEOHead, buildBreadcrumbSchema, buildBookSchema } from '@components/seo';
 
 export const PuranDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -139,6 +140,7 @@ export const PuranDetail: React.FC = () => {
   if (!data) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] p-4 font-hindi-body">
+        <SEOHead title={language === 'hi' ? 'पुराण उपलब्ध नहीं है' : 'Purana Not Found'} noIndex={true} />
         <BookOpen className="w-16 h-16 text-saffron mb-4" />
         <h2 className="text-2xl font-black text-darkBrown mb-2 font-hindi-heading">{t('empty.noPuranas')}</h2>
         <p className="text-slate-600 mb-6 text-sm">{t('errors.contentNotAvailable')}</p>
@@ -159,16 +161,50 @@ export const PuranDetail: React.FC = () => {
     data.description ||
     data.short_description ||
     '';
+  const isHi = language === 'hi';
+
+  const pageTitle = data.seo_title || title;
+  const pageDesc =
+    data.seo_description ||
+    descriptionContent ||
+    (isHi
+      ? `${title} - पवित्र हिन्दू महापुराण का सम्पूर्ण सार, अध्याय, कथाएं व विवरण पढ़ें एवं पीडीएफ डाउनलोड करें।`
+      : `Read sacred text, chapters, divine teachings, and download PDF for ${title} on Aradhna Marg.`);
+
+  const puranSchemas = [
+    buildBookSchema({
+      name: title,
+      description: pageDesc,
+      url: `/puranas/${data.slug || slug}`,
+      inLanguage: isHi ? 'hi' : 'en'
+    }),
+    buildBreadcrumbSchema([
+      { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+      { name: isHi ? 'पुराण' : 'Puranas', item: '/puranas' },
+      { name: title, item: `/puranas/${data.slug || slug}` }
+    ])
+  ];
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pb-24 pt-0">
+      <SEOHead
+        title={pageTitle}
+        description={pageDesc}
+        canonicalPath={`/puranas/${data.slug || slug}`}
+        ogImage={data.cover_image || data.image_url}
+        schema={puranSchemas}
+      />
       {/* Dark Hero Section Header */}
       <div className="bg-gradient-to-br from-[#2C1810] via-[#3D2317] to-[#1F100B] text-cream pt-3 sm:pt-6 md:pt-8 pb-12 sm:pb-16 shadow-xl relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Top Navigation & Breadcrumbs */}
           <div className="mb-3.5 sm:mb-6">
             <Breadcrumb
-              items={[{ label: 'Home', to: '/' }, { label: 'Sacred Texts', to: '/puranas' }, { label: title }]}
+              items={[
+                { label: isHi ? 'होम' : 'Home', to: '/' },
+                { label: isHi ? 'पुराण' : 'Puranas', to: '/puranas' },
+                { label: title }
+              ]}
               variant="dark"
             />
           </div>

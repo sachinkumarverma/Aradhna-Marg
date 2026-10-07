@@ -9,9 +9,10 @@ import { Flame } from 'lucide-react';
 import { useTranslation } from '../../i18n/LanguageContext';
 
 import { IconText } from '@components/common/IconText';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const ExplorePage: React.FC = () => {
-  const { t, getLocalizedField } = useTranslation();
+  const { language, t, getLocalizedField } = useTranslation();
   const [deities, setDeities] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [bhajans, setBhajans] = useState<any[]>([]);
@@ -55,8 +56,20 @@ export const ExplorePage: React.FC = () => {
     fetchExploreData();
   }, [getLocalizedField]);
 
+  const isHi = language === 'hi';
+  const pageTitle = isHi ? 'सनातन भक्ति एवं ज्ञान खोजें' : 'Explore Sanatan Devotion & Wisdom';
+  const pageDesc = isHi
+    ? 'आराधना मार्ग पर देवी-देवता, भजन, आरती, चालीसा, महापुराण एवं हिन्दू पर्वों का समग्र आध्यात्मिक अन्वेषण।'
+    : 'Explore all deities, categorized collections, devotional hymns, and sacred scriptures on Aradhna Marg.';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'अन्वेषण' : 'Explore', item: '/explore' }
+  ]);
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pb-24">
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/explore" schema={breadcrumbs} />
       <CollectionHero
         title={t('navigation.explore')}
         description={t('content.exploreSubtitle')}

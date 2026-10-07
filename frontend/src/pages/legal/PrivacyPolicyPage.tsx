@@ -14,23 +14,28 @@ import {
 } from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { useTranslation } from '@i18n/LanguageContext';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const PrivacyPolicyPage: React.FC = () => {
   const { language } = useTranslation();
   const isHi = language === 'hi';
 
-  useEffect(() => {
-    document.title = isHi
-      ? 'गोपनीयता नीति (Privacy Policy) | आराधना मार्ग - Aradhna Marg'
-      : 'Privacy Policy | Aradhna Marg';
-  }, [isHi]);
+  const pageTitle = isHi ? 'गोपनीयता नीति (Privacy Policy)' : 'Privacy Policy';
+  const pageDesc = isHi
+    ? 'आराधना मार्ग पर उपयोगकर्ताओं की निजता, डेटा सुरक्षा एवं गोपनीयता नीति का विवरण।'
+    : 'Privacy policy and user data protection details for Aradhna Marg.';
 
   const breadcrumbItems = [{ label: isHi ? 'गोपनीयता नीति' : 'Privacy Policy' }];
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'गोपनीयता नीति' : 'Privacy Policy', item: '/privacy' }
+  ]);
 
   return (
     <div
       className={`w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24 selection:bg-saffron/20 selection:text-saffron ${isHi ? 'font-hindi-body' : 'font-legal'}`}
     >
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/privacy" schema={breadcrumbs} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <div className="mb-6">

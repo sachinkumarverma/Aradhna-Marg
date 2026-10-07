@@ -16,23 +16,28 @@ import {
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { IconText } from '@components/common/IconText';
 import { useTranslation } from '@i18n/LanguageContext';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const AboutPage: React.FC = () => {
   const { language } = useTranslation();
   const isHi = language === 'hi';
 
-  useEffect(() => {
-    document.title = isHi
-      ? 'हमारे बारे में (About Us) | आराधना मार्ग - Aradhna Marg'
-      : 'About Us | Aradhna Marg - Sacred Devotional Platform';
-  }, [isHi]);
+  const pageTitle = isHi ? 'हमारे बारे में (About Us)' : 'About Us';
+  const pageDesc = isHi
+    ? 'आराधना मार्ग का उद्देश्य सनातन धर्म, भक्ति संगीत, अष्टादश महापुराण एवं हिन्दू संस्कृति का जन-जन तक प्रामाणिक प्रसार करना है।'
+    : 'Learn about Aradhna Marg, our spiritual mission, curated devotional music, authentic scriptures, and Sanatan Dharma wisdom.';
 
   const breadcrumbItems = [{ label: isHi ? 'हमारे बारे में' : 'About Us' }];
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'हमारे बारे में' : 'About Us', item: '/about' }
+  ]);
 
   return (
     <div
       className={`w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24 selection:bg-saffron/20 selection:text-saffron ${isHi ? 'font-hindi-body' : 'font-legal'}`}
     >
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/about" schema={breadcrumbSchema} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <div className="mb-6">

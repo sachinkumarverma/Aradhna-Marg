@@ -1,0 +1,10 @@
+# robots.txt for Aradhna Marg (https://aradhnamarg.com)
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /search
+Disallow: /api/
+
+# Explicit Sitemap
+Sitemap: https://aradhnamarg.com/sitemap.xml

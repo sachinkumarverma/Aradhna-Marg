@@ -8,11 +8,12 @@ import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
 import { useTranslation } from '../../i18n/LanguageContext';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { AdUnit } from '@components/common/AdUnit';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const CollectionDetails: React.FC = () => {
   const { id } = useParams();
   const location = useLocation();
-  const { t, getLocalizedField } = useTranslation();
+  const { language, t, getLocalizedField } = useTranslation();
 
   // Determine type based on URL path ('categories' vs 'gods' vs 'festivals')
   const collectionType = location.pathname.split('/')[1];
@@ -77,6 +78,7 @@ export const CollectionDetails: React.FC = () => {
   if (!data) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-24 text-center px-4">
+        <SEOHead title="Collection Not Found" noIndex={true} />
         <h2 className="text-3xl font-black text-darkBrown mb-4">{t('errors.contentNotAvailable')}</h2>
         <Link to="/" className="px-6 py-3 bg-saffron text-white rounded-full font-bold shadow-md hover:brightness-90">
           {t('errors.returnHome')}
@@ -85,8 +87,39 @@ export const CollectionDetails: React.FC = () => {
     );
   }
 
+  const isHi = language === 'hi';
+  const pageTitle = data.title;
+  const pageDesc =
+    data.description ||
+    (isHi
+      ? `${data.title} से संबंधित समस्त पावन भजन, आरती, चालीसा, धार्मिक लेख एवं कथाएं।`
+      : `Explore devotional songs, bhajans, aarti, and spiritual articles for ${data.title} on Aradhna Marg.`);
+
+  const canonicalPath = `/${collectionType}/${id}`;
+  const breadcrumbSectionLabel =
+    collectionType === 'gods' || collectionType === 'deities'
+      ? isHi
+        ? 'देवी-देवता'
+        : 'Deities'
+      : isHi
+        ? 'श्रेणियां'
+        : 'Categories';
+
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: breadcrumbSectionLabel, item: `/${collectionType}` },
+    { name: data.title, item: canonicalPath }
+  ]);
+
   return (
     <div className="w-full flex-1 bg-[#F9F7F3] pb-6 sm:pb-10">
+      <SEOHead
+        title={pageTitle}
+        description={pageDesc}
+        canonicalPath={canonicalPath}
+        ogImage={data.image}
+        schema={breadcrumbs}
+      />
       <CollectionHero
         title={data.title}
         description={data.description}

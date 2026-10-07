@@ -10,6 +10,7 @@ import { useTranslation } from '@i18n/LanguageContext';
 
 import { AdUnit } from '@components/common/AdUnit';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { SEOHead, buildBreadcrumbSchema, buildEventSchema } from '@components/seo';
 
 export const FestivalDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -72,6 +73,7 @@ export const FestivalDetail: React.FC = () => {
   if (!festival) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4 font-hindi-body">
+        <SEOHead title={language === 'hi' ? 'त्योहार विवरण उपलब्ध नहीं है' : 'Festival Not Found'} noIndex={true} />
         <h2 className="text-3xl font-black text-darkBrown mb-4 font-hindi-heading">
           {t('errors.contentNotAvailable')}
         </h2>
@@ -90,13 +92,50 @@ export const FestivalDetail: React.FC = () => {
   const description =
     getLocalizedField(festival, 'short_description') || festival.displayDescription || festival.short_description || '';
   const content = getLocalizedField(festival, 'content') || festival.displayContent || festival.content || description;
+  const isHi = language === 'hi';
+
+  const pageTitle = festival.seo_title || name;
+  const pageDesc =
+    festival.seo_description ||
+    description ||
+    (isHi
+      ? `${name} - सनातन धर्म के पावन पर्व का शुभ मुहूर्त, व्रत विधि, कथा एवं महत्व।`
+      : `Learn about ${name} festival, rituals, significance, and auspicious timings on Aradhna Marg.`);
+
+  const festivalSchemas = [
+    buildEventSchema({
+      name,
+      description: pageDesc,
+      url: `/festivals/${festival.slug || festivalIdOrSlug}`,
+      startDate: festival.start_date || festival.date,
+      endDate: festival.end_date || festival.date
+    }),
+    buildBreadcrumbSchema([
+      { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+      { name: isHi ? 'त्योहार' : 'Festivals', item: '/festivals' },
+      { name, item: `/festivals/${festival.slug || festivalIdOrSlug}` }
+    ])
+  ];
 
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-3 sm:pt-6 md:pt-8 pb-16 sm:pb-24">
+      <SEOHead
+        title={pageTitle}
+        description={pageDesc}
+        canonicalPath={`/festivals/${festival.slug || festivalIdOrSlug}`}
+        ogImage={festival.banner_image || festival.image}
+        schema={festivalSchemas}
+      />
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header Breadcrumb */}
         <div className="mb-3.5 sm:mb-6">
-          <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Festivals', to: '/festivals' }, { label: name }]} />
+          <Breadcrumb
+            items={[
+              { label: isHi ? 'होम' : 'Home', to: '/' },
+              { label: isHi ? 'त्योहार' : 'Festivals', to: '/festivals' },
+              { label: name }
+            ]}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

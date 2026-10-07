@@ -13,23 +13,28 @@ import {
 } from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { useTranslation } from '@i18n/LanguageContext';
+import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const TermsPage: React.FC = () => {
   const { language } = useTranslation();
   const isHi = language === 'hi';
 
-  useEffect(() => {
-    document.title = isHi
-      ? 'नियम एवं शर्तें (Terms of Service) | आराधना मार्ग - Aradhna Marg'
-      : 'Terms of Service | Aradhna Marg - Sacred Devotional Platform';
-  }, [isHi]);
+  const pageTitle = isHi ? 'नियम एवं शर्तें (Terms of Service)' : 'Terms of Service';
+  const pageDesc = isHi
+    ? 'आराधना मार्ग वेबसाइट एवं सेवाओं के उपयोग हेतु नियम व शर्तें।'
+    : 'Terms of Service and usage conditions for Aradhna Marg devotional portal.';
 
   const breadcrumbItems = [{ label: isHi ? 'नियम व शर्तें' : 'Terms of Service' }];
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
+    { name: isHi ? 'नियम व शर्तें' : 'Terms of Service', item: '/terms' }
+  ]);
 
   return (
     <div
       className={`w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24 selection:bg-saffron/20 selection:text-saffron ${isHi ? 'font-hindi-body' : 'font-legal'}`}
     >
+      <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/terms" schema={breadcrumbs} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <div className="mb-6">
