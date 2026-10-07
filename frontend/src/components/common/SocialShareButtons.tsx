@@ -79,15 +79,31 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
     const fullUrl = getFullUrl();
     const msg = formatPlainShareMessage(title, excerpt, url);
 
+    // Copy message to clipboard for easy pasting
     try {
       await navigator.clipboard.writeText(msg);
-      toast.success('संदेश कॉपी हो गया! Facebook पोस्ट में पेस्ट (Paste) करें।', { duration: 3500 });
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
     } catch {
-      // ignore
+      // ignore clipboard error
     }
 
+    if (navigator.share && isMobile()) {
+      try {
+        await navigator.share({
+          title,
+          text: msg,
+          url: fullUrl
+        });
+        return;
+      } catch (err: any) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+
+    toast.success('संदेश कॉपी हो गया! Facebook पोस्ट में पेस्ट (Paste) करें।', { duration: 3500 });
     window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}`,
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}&quote=${encodeURIComponent(msg)}`,
       '_blank',
       'noopener,noreferrer'
     );
@@ -96,6 +112,7 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
   const handleInstagram = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const fullUrl = getFullUrl();
     const msg = formatPlainShareMessage(title, excerpt, url);
 
     // Copy message to clipboard
@@ -103,10 +120,24 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
       await navigator.clipboard.writeText(msg);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-      toast.success('संदेश कॉपी हो गया! Instagram स्टोरी या चैट में पेस्ट करें।', { duration: 3500 });
     } catch (err) {
       console.error('Failed to copy to clipboard', err);
     }
+
+    if (navigator.share && isMobile()) {
+      try {
+        await navigator.share({
+          title,
+          text: msg,
+          url: fullUrl
+        });
+        return;
+      } catch (err: any) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+
+    toast.success('संदेश कॉपी हो गया! Instagram चैट या स्टोरी में पेस्ट करें।', { duration: 3500 });
 
     if (isMobile()) {
       const isAndroid = /Android/i.test(navigator.userAgent);

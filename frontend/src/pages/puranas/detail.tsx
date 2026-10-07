@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Download, Eye, BookOpen, FileText, Sparkles, ArrowLeft, Calendar, ArrowRight } from 'lucide-react';
+import { Download, Eye, BookOpen, Sparkles, ArrowLeft, Calendar, ArrowRight } from 'lucide-react';
 import { apiClient } from '@api/client';
 import { PublicApi } from '@api/publicApi';
 import toast from 'react-hot-toast';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
-import { DedicatedPdfViewer } from '@components/pdf/DedicatedPdfViewer';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
@@ -20,7 +19,6 @@ export const PuranDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [showPdfViewer, setShowPdfViewer] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ['puran-public', slug, language],
@@ -63,6 +61,11 @@ export const PuranDetail: React.FC = () => {
       }
     }
   }, [data?.id, data?.pdf_file]);
+
+  const handleReadPdf = () => {
+    if (!pdfUrl) return;
+    window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+  };
 
   const handleDownload = async () => {
     if (!data?.id) return;
@@ -229,19 +232,17 @@ export const PuranDetail: React.FC = () => {
                   <>
                     <button
                       type="button"
-                      onClick={() => {
-                        setShowPdfViewer(true);
-                        document.getElementById('pdf-viewer-section')?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="h-9 sm:h-11 px-3.5 sm:px-6 inline-flex items-center justify-center gap-1.5 sm:gap-2.5 bg-saffron hover:bg-orange-600 text-white rounded-full font-bold text-xs sm:text-sm hover:brightness-105 transition-all shadow-lg hover:shadow-saffron/20 cursor-pointer"
+                      onClick={handleReadPdf}
+                      className="h-9 sm:h-11 px-4 sm:px-6 inline-flex items-center justify-center gap-1.5 sm:gap-2.5 bg-saffron hover:bg-orange-600 text-white rounded-full font-bold text-xs sm:text-sm hover:brightness-105 transition-all shadow-lg hover:shadow-saffron/20 cursor-pointer active:scale-95"
                     >
                       <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                       <span>{t('common.readPdf')}</span>
                     </button>
+
                     <button
                       type="button"
                       onClick={handleDownload}
-                      className="h-9 sm:h-11 px-3.5 sm:px-6 inline-flex items-center justify-center gap-1.5 sm:gap-2.5 bg-white/10 hover:bg-white/20 text-amber-100 border border-amber-200/20 rounded-full font-bold text-xs sm:text-sm transition-all shadow-sm cursor-pointer"
+                      className="h-9 sm:h-11 px-3.5 sm:px-6 inline-flex items-center justify-center gap-1.5 sm:gap-2.5 bg-white/10 hover:bg-white/20 text-amber-100 border border-amber-200/20 rounded-full font-bold text-xs sm:text-sm transition-all shadow-sm cursor-pointer active:scale-95"
                     >
                       <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                       <span>{t('common.download')}</span>
@@ -278,69 +279,6 @@ export const PuranDetail: React.FC = () => {
         {/* Ad Unit Placeholder */}
         <div className="my-6">
           <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
-        </div>
-
-        {/* Dedicated PDF Viewer Section */}
-        <div id="pdf-viewer-section">
-          {pdfUrl ? (
-            <div className="bg-white rounded-xl p-3.5 sm:p-8 shadow-xs border border-gray-100 mb-10">
-              <div className="flex items-center justify-between gap-3 pb-3 sm:pb-4 mb-4 sm:mb-6 border-b border-gray-100">
-                <IconText
-                  icon={<FileText className="w-5 h-5 sm:w-6 sm:h-6 text-saffron" />}
-                  gap="gap-2 sm:gap-2.5"
-                  text={
-                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
-                      {t('common.readPdf')}
-                    </h2>
-                  }
-                />
-                {showPdfViewer && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setShowPdfViewer(false)}
-                      className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 bg-slate-800 text-white rounded-lg font-bold text-xs hover:bg-slate-700 transition-all shadow-xs cursor-pointer"
-                    >
-                      <BookOpen className="w-3.5 h-3.5 shrink-0" />
-                      <span className="translate-y-[1px] leading-none">{t('common.close')}</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {showPdfViewer ? (
-                <DedicatedPdfViewer pdfUrl={pdfUrl} title={title} onDownload={handleDownload} />
-              ) : (
-                <div className="bg-amber-50/50 rounded-xl sm:rounded-2xl p-3.5 sm:p-6 border border-amber-200/60 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-saffron/10 text-saffron flex items-center justify-center shrink-0 shadow-2xs">
-                      <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-sm sm:text-base font-bold text-darkBrown font-hindi-heading leading-tight truncate">
-                        {t('common.readPdf')}
-                      </h3>
-                      <p className="text-slate-600 text-[11px] sm:text-xs font-medium truncate">PDF Reader Interface</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => setShowPdfViewer(true)}
-                      className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-saffron text-white rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm hover:brightness-110 transition-all shadow-xs shrink-0 cursor-pointer active:scale-95"
-                    >
-                      <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                      <span className="inline-block translate-y-[1px] leading-none">{t('common.readPdf')}</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="bg-white rounded-3xl p-8 text-center shadow-sm border border-gray-100 mb-12">
-              <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <h3 className="text-lg font-bold text-darkBrown mb-1 font-hindi-heading">{t('empty.noPuranas')}</h3>
-            </div>
-          )}
         </div>
 
         {/* Related Articles Section */}

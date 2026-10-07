@@ -11,7 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   CornerDownLeft,
-  Loader2
+  Loader2,
+  ExternalLink
 } from 'lucide-react';
 
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
@@ -154,6 +155,10 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
     }
   };
 
+  const handleOpenInDevice = () => {
+    window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+  };
+
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
 
@@ -204,7 +209,15 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
           </div>
 
           {/* Action Buttons: Mobile visible here on the right */}
-          <div className="flex sm:hidden items-center gap-2 shrink-0">
+          <div className="flex sm:hidden items-center gap-1.5 shrink-0">
+            <button
+              onClick={handleOpenInDevice}
+              title="Open in Device Viewer"
+              className="h-8 px-2 flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg text-[11px] font-bold transition-colors border border-slate-700/60 cursor-pointer"
+            >
+              <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+              <span>डिवाइस</span>
+            </button>
             {onDownload && (
               <button
                 onClick={onDownload}
@@ -305,6 +318,15 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
 
           {/* Action Buttons for Desktop */}
           <div className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={handleOpenInDevice}
+              title="Open in Device PDF Viewer"
+              className="h-8 flex items-center gap-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg text-xs font-bold transition-colors border border-slate-700/60 cursor-pointer"
+            >
+              <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+              <span>Device Viewer</span>
+            </button>
+
             {onDownload && (
               <button
                 onClick={onDownload}
@@ -328,19 +350,45 @@ export const DedicatedPdfViewer: React.FC<DedicatedPdfViewerProps> = ({
       </div>
 
       {/* Main Document Content Container with Custom Dark Scrollbar */}
-      <div className="flex-1 w-full bg-slate-950 overflow-y-auto custom-scrollbar relative flex flex-col items-center py-6 px-4">
+      <div className="flex-1 w-full bg-slate-950 overflow-y-auto custom-scrollbar relative flex flex-col items-center justify-center py-6 px-4">
         {loading ? (
           <div className="flex flex-col items-center justify-center h-64 text-slate-400 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-saffron" />
             <span className="text-xs font-medium font-hindi-body">पावन ग्रंथ लोड हो रहा है...</span>
           </div>
         ) : error ? (
-          <iframe
-            key={`${pdfUrl}-page-${pageNumber}`}
-            src={`${pdfUrl}#page=${pageNumber}&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
-            title={title}
-            className={`w-full h-full min-h-[650px] border-none outline-none ${getThemeFilterClass()}`}
-          />
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 text-center max-w-md my-auto bg-slate-900 rounded-2xl border border-slate-800 shadow-xl">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-saffron flex items-center justify-center mb-4">
+              <BookOpen className="w-7 h-7" />
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-white mb-2 font-hindi-heading">
+              डिवाइस PDF व्यूअर में पढ़ें
+            </h3>
+            <p className="text-xs text-slate-300 mb-6 leading-relaxed font-hindi-body">
+              फोन में सुचारू एवं तीव्र पठन के लिए अपने डिवाइस के मूल PDF व्यूअर (जैसे Google Drive, Adobe Reader) में
+              खोलें।
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 w-full">
+              <button
+                type="button"
+                onClick={handleOpenInDevice}
+                className="flex-1 py-2.5 px-4 bg-saffron hover:bg-orange-600 text-white rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all active:scale-95 font-hindi-heading"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>डिवाइस में खोलें (Open in App)</span>
+              </button>
+              {onDownload && (
+                <button
+                  type="button"
+                  onClick={onDownload}
+                  className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 border border-slate-700 cursor-pointer transition-all active:scale-95 font-hindi-heading"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>डाउनलोड</span>
+                </button>
+              )}
+            </div>
+          </div>
         ) : (
           <canvas
             ref={canvasRef}
