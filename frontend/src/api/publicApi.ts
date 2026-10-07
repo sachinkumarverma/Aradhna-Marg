@@ -51,8 +51,23 @@ export class PublicApi {
     return getCached(
       `bhajan_detail_${slug}`,
       async () => {
-        const response = await apiClient.get(`/v1/public/bhajans/${slug}`);
-        return response.data.data;
+        try {
+          const response = await apiClient.get(`/v1/public/bhajans/${slug}`);
+          if (response.data && response.data.data) {
+            return response.data.data;
+          }
+        } catch {
+          // fallback to videos endpoint below
+        }
+        try {
+          const vidResponse = await apiClient.get(`/v1/public/videos/${slug}`);
+          if (vidResponse.data && vidResponse.data.data) {
+            return vidResponse.data.data;
+          }
+        } catch {
+          // fallback failed
+        }
+        return null;
       },
       2 * 60 * 1000
     );

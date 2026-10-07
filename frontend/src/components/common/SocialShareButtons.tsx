@@ -1,4 +1,5 @@
 import React from 'react';
+import toast from 'react-hot-toast';
 
 interface SocialShareButtonsProps {
   title: string;
@@ -34,6 +35,10 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
     return url.startsWith('http') ? url : `${window.location.origin}${url}`;
   };
 
+  const isMobile = () => {
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+  };
+
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -41,24 +46,14 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  const handleFacebook = (e: React.MouseEvent) => {
+  const handleFacebook = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const fullUrl = getFullUrl();
     const msg = formatShareMessage(title, excerpt, url);
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}&quote=${encodeURIComponent(msg)}`,
-      '_blank'
-    );
-  };
 
-  const handleInstagram = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const msg = formatShareMessage(title, excerpt, url);
-    const fullUrl = getFullUrl();
-
-    if (navigator.share) {
+    // On mobile, if native share is supported, open native share dialog
+    if (isMobile() && navigator.share) {
       try {
         await navigator.share({
           title,
@@ -67,19 +62,57 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
         });
         return;
       } catch (err) {
-        // User cancelled native share dialog
+        // User closed native dialog, proceed with fallback
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(msg);
+      toast.success('संदेश कॉपी हो गया! Facebook पोस्ट में पेस्ट करें।', { duration: 3000 });
+    } catch {
+      // ignore
+    }
+
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}`, '_blank');
+  };
+
+  const handleInstagram = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const msg = formatShareMessage(title, excerpt, url);
+    const fullUrl = getFullUrl();
+
+    // On mobile devices, native share integrates with Instagram App directly
+    if (isMobile() && navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text: msg,
+          url: fullUrl
+        });
+        return;
+      } catch (err) {
+        // Cancelled share
       }
     }
 
     try {
       await navigator.clipboard.writeText(msg);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2500);
+      toast.success('संदेश कॉपी हो गया! Instagram स्टोरी या चैट में पेस्ट करें।', { duration: 3000 });
     } catch (err) {
       console.error('Failed to copy to clipboard', err);
     }
 
-    window.open('https://www.instagram.com', '_blank');
+    if (isMobile()) {
+      window.location.href = 'instagram://app';
+      setTimeout(() => {
+        window.open('https://www.instagram.com', '_blank');
+      }, 1000);
+    } else {
+      window.open('https://www.instagram.com', '_blank');
+    }
   };
 
   return (

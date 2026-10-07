@@ -170,9 +170,13 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
           >
             {/* Header - Height and padding matched precisely to Main Navbar */}
             <div className="flex items-center justify-between px-4 sm:px-6 h-16 sm:h-20 border-b border-orange-100 bg-white shrink-0">
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-1 shadow-xs shrink-0">
-                  <img src="/logo.png" alt="Aradhna Marg" className="w-full h-full object-cover rounded-md" />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-0.5 sm:p-1 shadow-xs shrink-0">
+                  <img
+                    src="/logo.png"
+                    alt="Aradhna Marg"
+                    className="w-full h-full object-cover rounded-md aspect-square"
+                  />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-extrabold text-sm sm:text-base tracking-wider text-slate-900 uppercase font-hindi-heading leading-tight">

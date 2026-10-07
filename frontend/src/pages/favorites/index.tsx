@@ -80,28 +80,30 @@ const FavoriteSectionRow: React.FC<FavoriteSectionRowProps> = ({ config, items, 
       className="space-y-3"
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2.5 border-b border-amber-200/80 gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-white border border-amber-200 shadow-xs flex items-center justify-center shrink-0">
+      <div className="flex items-center justify-between pb-2 sm:pb-2.5 border-b border-amber-200/80 gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white border border-amber-200 shadow-xs flex items-center justify-center shrink-0 [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5">
             {config.icon}
           </div>
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-hindi-heading leading-tight">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-900 font-hindi-heading leading-tight truncate">
               {isHi ? config.titleHi : config.titleEn}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 font-hindi-body mt-0.5">
+            <p className="text-[11px] sm:text-xs md:text-sm text-slate-500 font-hindi-body truncate mt-0.5">
               {isHi ? config.subtitleHi : config.subtitleEn}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-center">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Link
             to={config.exploreUrl}
-            className="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-saffron hover:text-orange-700 transition-colors font-hindi-heading group mr-2"
+            className="inline-flex items-center gap-1 px-1.5 py-1 sm:px-2.5 rounded-lg text-xs sm:text-sm font-bold text-saffron hover:text-orange-700 hover:bg-orange-50/80 transition-colors font-hindi-heading group"
+            title={isHi ? 'और देखें' : 'Explore More'}
+            aria-label={isHi ? 'और देखें' : 'Explore More'}
           >
-            <span>{isHi ? 'और देखें' : 'Explore More'}</span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <span className="hidden sm:inline">{isHi ? 'और देखें' : 'Explore More'}</span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
 
           {/* Carousel Next / Previous Navigation Buttons */}
@@ -109,28 +111,28 @@ const FavoriteSectionRow: React.FC<FavoriteSectionRowProps> = ({ config, items, 
             type="button"
             onClick={() => scroll('left')}
             disabled={!canScrollLeft}
-            className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border flex items-center justify-center transition-all ${
               canScrollLeft
                 ? 'bg-white hover:bg-saffron text-slate-700 hover:text-white border-amber-200/90 shadow-2xs cursor-pointer'
                 : 'bg-slate-100/60 text-slate-300 border-gray-200/50 cursor-not-allowed opacity-50'
             }`}
             title={isHi ? 'पिछला' : 'Previous'}
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
 
           <button
             type="button"
             onClick={() => scroll('right')}
             disabled={!canScrollRight}
-            className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border flex items-center justify-center transition-all ${
               canScrollRight
                 ? 'bg-white hover:bg-saffron text-slate-700 hover:text-white border-amber-200/90 shadow-2xs cursor-pointer'
                 : 'bg-slate-100/60 text-slate-300 border-gray-200/50 cursor-not-allowed opacity-50'
             }`}
             title={isHi ? 'अगला' : 'Next'}
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
@@ -146,7 +148,7 @@ const FavoriteSectionRow: React.FC<FavoriteSectionRowProps> = ({ config, items, 
           <Link
             key={item.id}
             to={item.url}
-            className="group relative flex flex-col justify-between bg-white hover:bg-amber-50/20 rounded-2xl border border-amber-200/70 hover:border-saffron/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden isolate min-w-[270px] w-[270px] sm:min-w-[300px] sm:w-[300px] lg:min-w-[320px] lg:w-[320px] shrink-0 snap-start cursor-pointer select-none"
+            className="group relative flex flex-col justify-between bg-white hover:bg-amber-50/20 rounded-lg border border-amber-200/70 hover:border-saffron/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden isolate min-w-[270px] w-[270px] sm:min-w-[300px] sm:w-[300px] lg:min-w-[320px] lg:w-[320px] shrink-0 snap-start cursor-pointer select-none"
           >
             {/* Card Thumbnail Area */}
             <div className="relative aspect-video w-full overflow-hidden bg-slate-900 border-b border-amber-100">
@@ -381,6 +383,7 @@ export const FavoritesPage: React.FC = () => {
           {/* Breadcrumb */}
           <div className="mb-4">
             <Breadcrumb
+              variant="dark"
               items={[
                 { label: isHi ? 'होम' : 'Home', to: '/' },
                 { label: isHi ? 'पसंदीदा संग्रह' : 'Saved Favorites' }
@@ -460,9 +463,9 @@ export const FavoritesPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="py-16 sm:py-24 px-6 text-center max-w-2xl mx-auto flex flex-col items-center bg-white rounded-3xl border border-amber-200/80 shadow-sm"
+            className="py-16 sm:py-24 px-6 text-center max-w-2xl mx-auto flex flex-col items-center bg-white rounded-xl border border-amber-200/80 shadow-sm"
           >
-            <div className="w-20 h-20 rounded-3xl bg-rose-50 border border-rose-200/70 flex items-center justify-center text-rose-500 mb-6 shadow-inner">
+            <div className="w-20 h-20 rounded-2xl bg-rose-50 border border-rose-200/70 flex items-center justify-center text-rose-500 mb-6 shadow-inner">
               <Heart className="w-10 h-10" />
             </div>
 
@@ -474,21 +477,21 @@ export const FavoritesPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl">
               <Link
                 to="/bhajans"
-                className="px-4 py-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
+                className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
               >
                 <Music className="w-4 h-4 text-saffron group-hover:scale-110 transition-transform shrink-0" />
                 <span className="whitespace-nowrap">{isHi ? 'भजन संग्रह' : 'Explore Bhajans'}</span>
               </Link>
               <Link
                 to="/puranas"
-                className="px-4 py-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
+                className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
               >
                 <BookOpen className="w-4 h-4 text-orange-600 group-hover:scale-110 transition-transform shrink-0" />
                 <span className="whitespace-nowrap">{isHi ? '18 महापुराण' : '18 Puranas'}</span>
               </Link>
               <Link
                 to="/festivals"
-                className="px-4 py-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
+                className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
               >
                 <Calendar className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform shrink-0" />
                 <span className="whitespace-nowrap">{isHi ? 'पर्व व त्यौहार' : 'Festivals'}</span>
@@ -497,7 +500,7 @@ export const FavoritesPage: React.FC = () => {
           </motion.div>
         ) : filteredFavorites.length === 0 ? (
           /* NO SEARCH MATCHES */
-          <div className="py-16 text-center max-w-md mx-auto bg-white rounded-3xl border border-amber-100 p-8 shadow-sm">
+          <div className="py-16 text-center max-w-md mx-auto bg-white rounded-xl border border-amber-100 p-8 shadow-sm">
             <Search className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="text-xl font-bold text-slate-800 font-hindi-heading mb-1">
               {isHi ? 'कोई मेल नहीं मिला' : 'No matching items found'}

@@ -59,7 +59,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
     <nav
       aria-label="Breadcrumb"
       className={`flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold font-hindi-heading leading-normal py-1 max-w-full min-w-0 overflow-hidden ${
-        isDark ? 'text-slate-200' : 'text-slate-600'
+        isDark ? 'text-white' : 'text-slate-600'
       } ${className}`}
     >
       {/* Red Circular Home Icon */}
@@ -77,12 +77,14 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
 
         return (
           <React.Fragment key={idx}>
-            <span className="inline-flex items-center justify-center shrink-0 icon-wrapper text-slate-300">
-              <ChevronRight className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white/40' : 'text-slate-300'}`} />
+            <span
+              className={`inline-flex items-center justify-center shrink-0 icon-wrapper ${isDark ? 'text-white/70' : 'text-slate-300'}`}
+            >
+              <ChevronRight className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDark ? 'text-white/70' : 'text-slate-300'}`} />
             </span>
             {isLast || !item.to ? (
               <span
-                className={`font-bold truncate min-w-0 flex-1 block ${isDark ? 'text-amber-400' : 'text-saffron'}`}
+                className={`font-bold truncate min-w-0 flex-1 block ${isDark ? 'text-saffron' : 'text-saffron'}`}
                 title={displayLabel}
               >
                 {displayLabel}
@@ -91,7 +93,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
               <Link
                 to={item.to}
                 className={`transition-colors font-medium shrink-0 hover:underline ${
-                  isDark ? 'text-slate-200 hover:text-white' : 'text-slate-600 hover:text-saffron'
+                  isDark ? 'text-white hover:text-amber-200' : 'text-slate-600 hover:text-saffron'
                 }`}
               >
                 {displayLabel}

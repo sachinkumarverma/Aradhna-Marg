@@ -128,11 +128,11 @@ router.get('/videos/:slug', async (req: Request, res: Response, next: NextFuncti
   try {
     const { slug } = req.params;
 
-    let query = `SELECT * FROM bhajans WHERE slug = $1 LIMIT 1`;
+    let query = `SELECT * FROM bhajans WHERE (slug = $1 OR id::text = $1 OR youtube_video_id = $1) AND deleted_at IS NULL LIMIT 1`;
     let result = await db.query(query, [slug]);
 
     if (result.rows.length === 0) {
-      query = `SELECT * FROM youtube_videos WHERE youtube_video_id = $1 LIMIT 1`;
+      query = `SELECT * FROM youtube_videos WHERE youtube_video_id = $1 OR id::text = $1 LIMIT 1`;
       result = await db.query(query, [slug]);
 
       if (result.rows.length > 0) {

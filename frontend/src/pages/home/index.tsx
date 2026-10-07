@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search,
@@ -29,6 +29,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { isShortVideo } from '@utils/videoUtils';
 import { useFavorites } from '@hooks/useFavorites';
+import { useAdaptivePlaceholder } from '@hooks/useAdaptivePlaceholder';
 import { useTranslation } from '../../i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
 import {
@@ -44,6 +45,9 @@ export const Home: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const fullSearchPlaceholder = t('common.searchPlaceholder');
+  const adaptivePlaceholder = useAdaptivePlaceholder(searchInputRef, fullSearchPlaceholder);
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
 
@@ -109,33 +113,35 @@ export const Home: React.FC = () => {
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-3xl">
             <motion.h1
               variants={fadeUpVariant}
-              className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.35] mb-4 md:mb-5 font-hindi-heading"
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.25] sm:leading-[1.35] mb-3 sm:mb-4 md:mb-5 font-hindi-heading"
             >
               {t('content.devotionalMusicDirectory')}
-              <span className="block mt-1.5 sm:mt-2 text-saffron font-extrabold">{t('content.divineVideos')}</span>
+              <span className="block mt-1 sm:mt-2 text-saffron font-extrabold">{t('content.divineVideos')}</span>
             </motion.h1>
 
             <motion.p
               variants={fadeUpVariant}
-              className="text-base sm:text-lg md:text-xl text-gray-200 mb-6 max-w-lg leading-relaxed font-normal font-hindi-body"
+              className="text-xs sm:text-base md:text-xl text-gray-200 mb-5 sm:mb-6 max-w-lg leading-relaxed font-normal font-hindi-body"
             >
               {t('content.devotionalMusicSubtitle')}
             </motion.p>
 
             {/* Master Search Bar */}
             <motion.form variants={fadeUpVariant} onSubmit={handleSearchSubmit} className="w-full max-w-2xl relative">
-              <div className="relative flex items-center bg-white rounded-full p-2 shadow-2xl">
-                <Search className="w-6 h-6 text-saffron absolute left-6 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="relative flex items-center bg-white rounded-full p-1.5 sm:p-2 shadow-2xl">
+                <Search className="w-5 h-5 sm:w-6 sm:h-6 text-saffron absolute left-3.5 sm:left-5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t('common.searchPlaceholder')}
-                  className="w-full h-12 md:h-14 bg-transparent pl-16 pr-4 outline-none text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading flex items-center leading-normal"
+                  placeholder={adaptivePlaceholder}
+                  aria-label={fullSearchPlaceholder}
+                  className="flex-1 min-w-0 h-11 sm:h-12 md:h-14 bg-transparent pl-10 sm:pl-14 pr-2 sm:pr-4 outline-none text-xs sm:text-base md:text-lg text-darkBrown placeholder:text-gray-400 font-medium font-hindi-heading flex items-center leading-normal"
                 />
                 <Button
                   type="submit"
-                  className="h-10 md:h-12 px-6 md:px-8 rounded-full bg-saffron hover:brightness-90 text-white font-semibold text-base md:text-lg shadow-md shrink-0 font-hindi-heading"
+                  className="h-9 sm:h-10 md:h-12 px-4 sm:px-6 md:px-8 rounded-full bg-saffron hover:brightness-90 text-white font-semibold text-xs sm:text-base md:text-lg shadow-md shrink-0 font-hindi-heading cursor-pointer"
                 >
                   {t('common.search')}
                 </Button>

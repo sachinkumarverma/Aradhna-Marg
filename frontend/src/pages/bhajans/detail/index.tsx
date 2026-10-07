@@ -25,6 +25,7 @@ export const BhajanDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const { copied, copyToClipboard } = useClipboard();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     const fetchBhajanData = async () => {
@@ -80,7 +81,6 @@ export const BhajanDetail: React.FC = () => {
   const formattedDate = dateSource
     ? new Date(dateSource).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
     : '';
-  const { isFavorite, toggleFavorite } = useFavorites();
   const cardId = String(bhajan?.id || bhajan?.slug || slug || '');
   const hearted = isFavorite(cardId);
   const isHi = language === 'hi';

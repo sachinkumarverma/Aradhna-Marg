@@ -67,19 +67,23 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
         <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3">
             {/* Left: Brand Logo */}
-            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-              <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-1 group-hover:scale-105 transition-transform shadow-xs">
-                <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover rounded-md" />
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
+              <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-0.5 sm:p-1 group-hover:scale-105 transition-transform shadow-xs shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="Aradhna Marg Logo"
+                  className="w-full h-full object-cover rounded-md aspect-square"
+                />
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col justify-center">
                 <span
-                  className="font-black text-xl sm:text-2xl lg:text-[26px] tracking-tight text-slate-900 leading-none uppercase"
+                  className="font-black text-[15px] sm:text-[21px] lg:text-[23px] tracking-tight text-slate-900 leading-none uppercase"
                   style={{ fontFamily: '"Rekord Antiqua", "Rekord Antiqua Semi Bold", "RekordAntiqua", Lora, serif' }}
                 >
                   ARADHNA <span className="text-saffron">MARG</span>
                 </span>
                 <span
-                  className="text-[8.5px] sm:text-[9.5px] font-extrabold text-slate-500 tracking-[0.35em] sm:tracking-[0.45em] uppercase mt-1 ml-0.5"
+                  className="text-[6.5px] sm:text-[8.5px] font-extrabold text-slate-500 tracking-[0.28em] sm:tracking-[0.4em] uppercase mt-0.5 sm:mt-0.5 ml-0.5"
                   style={{ fontFamily: '"Rekord Antiqua", "Rekord Antiqua Semi Bold", "RekordAntiqua", Lora, serif' }}
                 >
                   SANATAN DHARMA
@@ -111,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
             </div>
 
             {/* Right Action Icons */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3">
               {/* Language Switcher (Desktop / Tablet) */}
               <div className="hidden sm:block">
                 <LanguageSwitcher />
@@ -134,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
               {/* Favorites Heart Navigation Button */}
               <Link
                 to="/favourite"
-                className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-2xs cursor-pointer active:scale-95 group ${
+                className={`relative w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-2xs cursor-pointer active:scale-95 group shrink-0 ${
                   location.pathname === '/favourite' || location.pathname === '/favorites'
                     ? 'bg-rose-500 text-white border-rose-600 shadow-sm'
                     : 'bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border-gray-200/80'
@@ -143,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                 aria-label="Favorites"
               >
                 <Heart
-                  className={`w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:scale-110 ${
+                  className={`w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 transition-transform group-hover:scale-110 ${
                     location.pathname === '/favourite' || location.pathname === '/favorites'
                       ? 'fill-white text-white'
                       : favoritesCount > 0
@@ -153,7 +157,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                 />
                 {favoritesCount > 0 && (
                   <span
-                    className={`absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full font-bold text-[10px] flex items-center justify-center shadow-xs ${
+                    className={`absolute -top-1 -right-1 min-w-3.5 h-3.5 sm:min-w-4 sm:h-4 px-0.5 sm:px-1 rounded-full font-bold text-[8.5px] sm:text-[10px] flex items-center justify-center shadow-xs ${
                       location.pathname === '/favourite' || location.pathname === '/favorites'
                         ? 'bg-white text-rose-600'
                         : 'bg-rose-500 text-white'
@@ -168,21 +172,21 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
               <button
                 type="button"
                 onClick={() => setSearchOpen(true)}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-50 hover:bg-orange-50 hover:text-saffron text-slate-700 flex items-center justify-center transition-colors border border-gray-200/80 shadow-2xs cursor-pointer"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-50 hover:bg-orange-50 hover:text-saffron text-slate-700 flex items-center justify-center transition-colors border border-gray-200/80 shadow-2xs cursor-pointer shrink-0"
                 title={`${t('common.search')} (Ctrl+K)`}
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
 
               {/* Right Sidebar Menu Toggle Button (ONLY visible when space is constrained < xl) */}
               <button
                 type="button"
                 onClick={() => setDrawerOpen(true)}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#ff3b00] hover:bg-[#e03400] active:scale-95 text-white flex items-center justify-center shadow-sm hover:shadow-md transition-all cursor-pointer xl:hidden"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#ff3b00] hover:bg-[#e03400] active:scale-95 text-white flex items-center justify-center shadow-sm hover:shadow-md transition-all cursor-pointer xl:hidden shrink-0"
                 title={isHi ? 'मेनू खोलें' : 'Open Menu'}
                 aria-label="Navigation Menu"
               >
-                <Menu className="w-5 h-5 text-white" strokeWidth={2.5} />
+                <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2.5} />
               </button>
             </div>
           </div>

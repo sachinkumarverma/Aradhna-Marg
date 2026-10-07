@@ -200,14 +200,14 @@ export class PublicController {
         LEFT JOIN categories c ON b.category_id = c.id
         LEFT JOIN festivals f ON b.festival_id = f.id
         LEFT JOIN authors au ON b.author_id = au.id
-        WHERE (b.slug = $1 OR b.id::text = $1) AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
+        WHERE (b.slug = $1 OR b.id::text = $1 OR b.youtube_video_id = $1) AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
         LIMIT 1
       `;
       const { rows } = await db.query(query, [slug]);
 
       if (rows.length === 0) {
         // Fallback to youtube_videos if present
-        const ytQuery = `SELECT * FROM youtube_videos WHERE youtube_video_id = $1 LIMIT 1`;
+        const ytQuery = `SELECT * FROM youtube_videos WHERE youtube_video_id = $1 OR id::text = $1 LIMIT 1`;
         const ytRes = await db.query(ytQuery, [slug]);
 
         if (ytRes.rows.length > 0) {

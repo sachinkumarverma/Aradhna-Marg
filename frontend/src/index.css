@@ -34,6 +34,20 @@
   .icon-wrapper svg {
     display: block;
   }
+
+  /* Universal trailing ellipsis for overflowing placeholder text (including on focus) */
+  input::placeholder,
+  textarea::placeholder,
+  input:focus::placeholder,
+  textarea:focus::placeholder,
+  input::-webkit-input-placeholder,
+  textarea::-webkit-input-placeholder,
+  input:focus::-webkit-input-placeholder,
+  textarea:focus::-webkit-input-placeholder {
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
 }
 
 @layer utilities {

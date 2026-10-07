@@ -154,7 +154,7 @@ export const NavbarSearchOverlay: React.FC<NavbarSearchOverlayProps> = ({ isOpen
                   setSelectedIndex(-1);
                 }}
                 onKeyDown={onKeyDown}
-                placeholder={t('common.searchPlaceholder') || 'Search bhajans, aartis, or knowledge...'}
+                placeholder={t('common.searchPlaceholder') || 'Search bhajans, scriptures...'}
                 className="w-full h-14 sm:h-16 pl-14 pr-14 pt-1 sm:pt-1.5 bg-transparent outline-none text-darkBrown font-medium text-base sm:text-lg placeholder:text-gray-400 font-hindi-body leading-normal translate-y-[1px]"
               />
 
