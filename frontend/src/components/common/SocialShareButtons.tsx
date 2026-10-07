@@ -30,6 +30,26 @@ export const formatWhatsAppMessage = (title: string, excerpt?: string, url?: str
   );
 };
 
+export const formatWebShareText = (title: string, excerpt?: string) => {
+  const cleanTitle = (title || '').trim().replace(/\s+/g, ' ');
+  const cleanExcerpt = excerpt
+    ? excerpt
+        .trim()
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .slice(0, 140)
+        .trim() + '...'
+    : '';
+
+  return (
+    `🌸 ${cleanTitle} 🌸\n\n` +
+    `✨ आराधना मार्ग (Aradhna Marg) - सनातन धर्म एवं संस्कृति\n\n` +
+    (cleanExcerpt ? `📖 ${cleanExcerpt}\n\n` : '') +
+    `🙏 सनातन परंपरा, पावन भजन, पौराणिक कथाएँ एवं वैदिक ज्ञान।\n\n` +
+    `🚩 जय श्री राम | हर हर महादेव 🚩`
+  );
+};
+
 export const formatPlainShareMessage = (title: string, excerpt?: string, url?: string) => {
   const cleanTitle = (title || '').trim().replace(/\s+/g, ' ');
   const fullUrl = url ? (url.startsWith('http') ? url : `${window.location.origin}${url}`) : window.location.href;
@@ -92,7 +112,7 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
       try {
         await navigator.share({
           title,
-          text: msg,
+          text: formatWebShareText(title, excerpt),
           url: fullUrl
         });
         return;
@@ -103,7 +123,7 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
 
     toast.success('संदेश कॉपी हो गया! Facebook पोस्ट में पेस्ट (Paste) करें।', { duration: 3500 });
     window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}&quote=${encodeURIComponent(msg)}`,
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}`,
       '_blank',
       'noopener,noreferrer'
     );
@@ -128,7 +148,7 @@ export const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ title, e
       try {
         await navigator.share({
           title,
-          text: msg,
+          text: formatWebShareText(title, excerpt),
           url: fullUrl
         });
         return;
