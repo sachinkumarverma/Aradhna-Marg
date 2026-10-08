@@ -25,6 +25,7 @@ import { toast } from 'react-hot-toast';
 
 import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { Select } from '@components/ui/Select';
+import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
 import { YoutubeApi } from '@features/youtube/YoutubeApi';
 
@@ -495,30 +496,15 @@ export const AdminYoutube = () => {
                 <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isFetchingVideos ? 'animate-spin' : ''}`} />
               </button>
             </div>
-            <div className="relative w-full sm:w-80 max-w-none sm:max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 -mt-0.5 w-4 h-4 text-gray-400 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search by title or video ID..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full pl-9 pr-10 h-9 sm:h-10 bg-white border border-gray-200 rounded-md text-xs sm:text-sm focus:border-saffron focus:ring-1 focus:ring-saffron outline-none"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setPage(1);
-                  }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 -mt-0.5 text-gray-600 hover:text-gray-700 focus:outline-none"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+            <SearchInput
+              placeholder="Search by title or video ID..."
+              value={searchTerm}
+              onChange={(val) => {
+                setSearchTerm(val);
+                setPage(1);
+              }}
+              className="w-full sm:w-80 max-w-none sm:max-w-md"
+            />
           </div>
 
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100">
