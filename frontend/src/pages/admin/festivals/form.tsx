@@ -426,15 +426,15 @@ export const AdminFestivalForm = () => {
                           !!watch('shortDescription_en' as any) ||
                           !!watch('content_en' as any)
                         ) ? (
-                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 py-16 px-6 text-center shadow-sm">
-                            <div className="w-16 h-16 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-5">
-                              <Languages className="w-8 h-8" />
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 py-10 px-4 text-center shadow-sm">
+                            <div className="w-14 h-14 bg-[#F5F7FF] text-[#5542F6] rounded-full flex items-center justify-center mx-auto mb-3">
+                              <Languages className="w-7 h-7" />
                             </div>
-                            <h3 className="text-lg font-bold text-[#1a1a2e] mb-2">English Translation</h3>
-                            <p className="text-gray-500 text-[14px] max-w-sm mx-auto leading-relaxed">
-                              No English translation has been generated yet.
+                            <h3 className="text-base font-bold text-[#1a1a2e] mb-1.5">English Translation</h3>
+                            <p className="text-gray-500 text-xs sm:text-sm max-w-xs mx-auto leading-normal">
+                              No translation yet.
                               <br />
-                              Click "Generate English Translation" above to start.
+                              Click generate above to start.
                             </p>
                           </div>
                         ) : (

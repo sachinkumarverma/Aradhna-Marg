@@ -61,15 +61,15 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
 
   if (!hasTranslation) {
     return (
-      <div className="flex flex-col sm:flex-row items-center gap-8 bg-[#FAFAFE] border border-[#F0F0F8] rounded-md p-4 sm:px-5 sm:py-3.5 mb-6 w-fit shadow-sm">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 bg-[#FAFAFE] border border-[#F0F0F8] rounded-md p-4 sm:px-5 sm:py-3.5 mb-6 w-full sm:w-fit shadow-sm">
+        <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
           <div className="w-10 h-10 rounded-full border border-indigo-200 border-dashed flex items-center justify-center bg-white shrink-0">
             <Sparkles className="w-4 h-4 text-indigo-600" />
           </div>
           <div>
-            <div className="font-bold text-[#1a1a2e] text-sm">Translation not generated</div>
-            <div className="text-[13px] text-gray-500 mt-0.5 leading-tight">
-              Generate English translation from the Hindi content.
+            <div className="font-bold text-[#1a1a2e] text-sm">No Translation Yet</div>
+            <div className="text-[12px] sm:text-[13px] text-gray-500 mt-0.5 leading-tight">
+              Auto-generate English from Hindi content.
             </div>
           </div>
         </div>
@@ -78,14 +78,10 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           type="button"
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="flex items-center justify-center gap-2.5 bg-[#5542F6] hover:bg-[#4a39d4] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#5542F6] hover:bg-[#4a39d4] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
         >
           {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-          <span className="text-left leading-tight text-[13px]">
-            Generate
-            <br />
-            Translation
-          </span>
+          <span>Generate</span>
         </button>
       </div>
     );
