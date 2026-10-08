@@ -101,10 +101,10 @@ export function ImageUploadWithCrop({
                     window.open(value, '_blank');
                   }
                 }}
-                className="p-2.5 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100 cursor-pointer pointer-events-auto transform hover:scale-105 transition-transform"
+                className="w-10 h-10 flex items-center justify-center shrink-0 aspect-square bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100 cursor-pointer pointer-events-auto transform hover:scale-105 transition-all"
                 title="Preview"
               >
-                <Eye className="w-5 h-5" />
+                <Eye className="w-5 h-5 shrink-0" />
               </button>
               {onRemove && (
                 <button
@@ -114,10 +114,10 @@ export function ImageUploadWithCrop({
                     e.stopPropagation();
                     onRemove();
                   }}
-                  className="p-2.5 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100 cursor-pointer pointer-events-auto transform hover:scale-105 transition-transform"
+                  className="w-10 h-10 flex items-center justify-center shrink-0 aspect-square bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100 cursor-pointer pointer-events-auto transform hover:scale-105 transition-all"
                   title="Discard"
                 >
-                  <X className="w-5 h-5" strokeWidth={2.5} />
+                  <X className="w-5 h-5 shrink-0" strokeWidth={2.5} />
                 </button>
               )}
             </div>

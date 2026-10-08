@@ -506,14 +506,14 @@ export const AdminPuranForm = () => {
                         <span className="text-sm font-medium text-red-700 px-4 text-center truncate w-full">
                           {pdfFile ? pdfFile.name : 'PDF Uploaded'}
                         </span>
-                        <div className="absolute top-2 right-2 flex gap-1">
+                        <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                           <button
                             type="button"
                             onClick={handlePreviewPdf}
-                            className="p-1.5 bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100"
+                            className="w-8 h-8 flex items-center justify-center shrink-0 aspect-square bg-white text-blue-500 rounded-full hover:bg-blue-50 shadow-md border border-gray-100 transition-all active:scale-95"
                             title="Preview"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-4 h-4 shrink-0" />
                           </button>
                           <button
                             type="button"
@@ -521,10 +521,10 @@ export const AdminPuranForm = () => {
                               setPdfFile(null);
                               setValue('pdf_file', '');
                             }}
-                            className="p-1.5 bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100"
+                            className="w-8 h-8 flex items-center justify-center shrink-0 aspect-square bg-white text-red-500 rounded-full hover:bg-red-50 shadow-md border border-gray-100 transition-all active:scale-95"
                             title="Discard"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-4 h-4 shrink-0" />
                           </button>
                         </div>
                       </div>
