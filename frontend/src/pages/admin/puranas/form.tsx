@@ -259,7 +259,7 @@ export const AdminPuranForm = () => {
                         : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    English (Translation)
+                    English
                   </button>
                 </div>
 

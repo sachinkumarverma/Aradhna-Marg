@@ -81,7 +81,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#5542F6] hover:bg-[#4a39d4] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
         >
           {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-          <span>Generate</span>
+          <span>Generate Translation</span>
         </button>
       </div>
     );
