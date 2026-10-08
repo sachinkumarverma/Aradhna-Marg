@@ -25,20 +25,20 @@ export const StatCard: React.FC<StatCardProps> = ({
   borderClassName = 'border-blue-100'
 }) => {
   return (
-    <div className={cn('rounded-md border p-5 shadow-sm', bgClassName, borderClassName)}>
+    <div className={cn('rounded-md border p-4 sm:p-5 shadow-sm', bgClassName, borderClassName)}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
-          <h4 className="text-2xl font-bold text-gray-900">{value}</h4>
+          <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">{title}</p>
+          <h4 className="text-[22px] sm:text-2xl font-bold text-gray-900 tracking-tight">{value}</h4>
         </div>
-        <div className={cn('p-2 rounded-md', colorClassName || 'bg-gray-100 text-gray-600')}>
-          <Icon className="w-5 h-5" />
+        <div className={cn('p-2 rounded-md shrink-0', colorClassName || 'bg-gray-100 text-gray-600')}>
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
       </div>
 
       {trend && (
-        <div className="mt-4 flex items-center text-sm">
-          <span className={cn('font-medium', trend.isPositive ? 'text-green-600' : 'text-red-600')}>
+        <div className="mt-3 sm:mt-4 flex items-center text-xs sm:text-sm">
+          <span className={cn('font-semibold', trend.isPositive ? 'text-green-600' : 'text-red-600')}>
             {trend.isPositive ? '+' : '-'}
             {trend.value}%
           </span>

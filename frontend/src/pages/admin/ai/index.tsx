@@ -199,8 +199,8 @@ export function AdminAI() {
       {/* Header & Stats Overview */}
       <div className="space-y-6">
         <div>
-          <h1 className="text-sm sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-1.5 sm:gap-2 uppercase truncate">
-            <BrainCircuit className="w-4 h-4 sm:w-6 sm:h-6 text-saffron shrink-0" />
+          <h1 className="text-lg sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase truncate">
+            <BrainCircuit className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
             <span className="truncate">AI PROCESSING PIPELINE</span>
           </h1>
           <p className="hidden sm:block text-sm text-gray-500 mt-1">
