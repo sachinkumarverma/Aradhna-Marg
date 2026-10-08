@@ -145,8 +145,7 @@ export const AdminBhajans: React.FC = () => {
       </div>
 
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
-        <SearchInput placeholder="Search by title, slug, lyrics..." value={search} onChange={setSearch} />
-        <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full sm:w-auto">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
           <Select
             value={statusFilter}
             onChange={(val) => setStatusFilter(val)}
@@ -172,6 +171,7 @@ export const AdminBhajans: React.FC = () => {
             searchable={false}
           />
         </div>
+        <SearchInput placeholder="Search by title, slug, lyrics..." value={search} onChange={setSearch} />
       </div>
 
       <div className="flex-1 min-h-0 relative">

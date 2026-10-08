@@ -31,7 +31,12 @@ export const StatCard: React.FC<StatCardProps> = ({
           <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">{title}</p>
           <h4 className="text-[22px] sm:text-2xl font-bold text-gray-900 tracking-tight">{value}</h4>
         </div>
-        <div className={cn('p-2 rounded-md shrink-0', colorClassName || 'bg-gray-100 text-gray-600')}>
+        <div
+          className={cn(
+            'w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0',
+            colorClassName || 'bg-gray-100 text-gray-600'
+          )}
+        >
           <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
       </div>

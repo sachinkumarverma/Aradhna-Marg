@@ -41,7 +41,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-9 pr-10 py-2 bg-white border border-gray-200 rounded-md outline-none focus:border-saffron focus:ring-1 focus:ring-saffron text-sm transition-all"
+        className="w-full pl-9 pr-10 h-9 sm:h-10 bg-white border border-gray-200 rounded-md outline-none focus:border-saffron focus:ring-1 focus:ring-saffron text-xs sm:text-sm transition-all"
       />
       {localValue && (
         <button

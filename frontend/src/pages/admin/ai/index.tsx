@@ -210,48 +210,48 @@ export function AdminAI() {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-br from-blue-50 to-white p-5 rounded-md shadow-sm border border-blue-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+          <div className="bg-gradient-to-br from-blue-50 to-white p-3.5 sm:p-5 rounded-md shadow-sm border border-blue-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Today's Jobs</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.today || 0}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Today's Jobs</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.today || 0}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                <Bot className="w-5 h-5 text-blue-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-orange-50 to-white p-5 rounded-md shadow-sm border border-orange-100">
+          <div className="bg-gradient-to-br from-orange-50 to-white p-3.5 sm:p-5 rounded-md shadow-sm border border-orange-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Pending Queue</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.pending || 0}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Pending Queue</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.pending || 0}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-orange-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-green-50 to-white p-5 rounded-md shadow-sm border border-green-100">
+          <div className="bg-gradient-to-br from-green-50 to-white p-3.5 sm:p-5 rounded-md shadow-sm border border-green-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Completed Jobs</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.completed || 0}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Completed Jobs</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.completed || 0}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-red-50 to-white p-5 rounded-md shadow-sm border border-red-100">
+          <div className="bg-gradient-to-br from-red-50 to-white p-3.5 sm:p-5 rounded-md shadow-sm border border-red-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Failed Jobs</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.failed || 0}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Failed Jobs</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.failed || 0}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-red-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
               </div>
             </div>
           </div>
@@ -286,22 +286,22 @@ export function AdminAI() {
       <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm flex flex-col ">
         {/* Content Assistant Tab */}
         {activeTab === 'assistant' && (
-          <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900">Content Assistant</h2>
-            <p className="text-sm text-gray-500 mt-1 mb-6">
+          <div className="p-3.5 sm:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Content Assistant</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
               Select an AI action for individual content types. The system will queue a job to process the requested
               enhancements.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
               {assistantCards.map((card) => (
                 <div
                   key={card.title}
-                  className="border border-gray-100 rounded-md p-5 hover:border-saffron/30 hover:shadow-md transition-all"
+                  className="border border-indigo-100/80 bg-white/90 rounded-md p-3.5 sm:p-5 hover:border-saffron/30 hover:shadow-md transition-all shadow-xs"
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gray-50 rounded-md">{card.icon}</div>
-                    <h3 className="font-semibold text-gray-900">{card.title}</h3>
+                  <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
+                    <div className="p-1.5 sm:p-2 bg-gray-50 rounded-md">{card.icon}</div>
+                    <h3 className="font-semibold text-sm sm:text-base text-gray-900">{card.title}</h3>
                   </div>
                   <div className="space-y-2">
                     {card.actions.map((action) => (
@@ -309,14 +309,14 @@ export function AdminAI() {
                         key={action.name}
                         disabled={action.disabled || queueMutation.isPending}
                         onClick={() => handleQueueJob(`${action.name} for ${card.title}`, card.title, action.type, 1)}
-                        className={`w-full flex items-center justify-between px-4 py-2 text-sm rounded-md border transition-colors ${
+                        className={`w-full flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-md border transition-colors ${
                           action.disabled
                             ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
                             : 'bg-white text-gray-700 border-gray-200 hover:border-saffron hover:text-saffron hover:bg-orange-50'
                         }`}
                       >
                         <span>{action.name}</span>
-                        <Play className={`w-4 h-4 ${action.disabled ? 'text-gray-300' : ''}`} />
+                        <Play className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${action.disabled ? 'text-gray-300' : ''}`} />
                       </button>
                     ))}
                   </div>
@@ -328,14 +328,14 @@ export function AdminAI() {
 
         {/* Bulk Processing Tab */}
         {activeTab === 'bulk' && (
-          <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900">Bulk Processing Tools</h2>
-            <p className="text-sm text-gray-500 mt-1 mb-6">
+          <div className="p-3.5 sm:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Bulk Processing Tools</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
               Run AI operations across multiple records. The system will only process records where the target fields
               are currently empty (it will never overwrite manual content).
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6">
               {[
                 {
                   name: 'Generate SEO Meta Descriptions',
@@ -359,15 +359,18 @@ export function AdminAI() {
                   items: 12
                 }
               ].map((tool) => (
-                <div key={tool.name} className="flex flex-col border border-gray-200 rounded-md p-5 bg-gray-50/50">
+                <div
+                  key={tool.name}
+                  className="flex flex-col border border-gray-200 rounded-md p-3.5 sm:p-5 bg-white/90 shadow-xs"
+                >
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{tool.name}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{tool.desc}</p>
-                    <div className="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    <h3 className="font-semibold text-sm sm:text-base text-gray-900">{tool.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">{tool.desc}</p>
+                    <div className="mt-2.5 sm:mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                       ~{tool.items} records detected
                     </div>
                   </div>
-                  <div className="mt-5 pt-4 border-t border-gray-200">
+                  <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-200">
                     <AdminButton
                       onClick={() => handleQueueJob(tool.name, tool.content, tool.type, tool.items)}
                       disabled={queueMutation.isPending}

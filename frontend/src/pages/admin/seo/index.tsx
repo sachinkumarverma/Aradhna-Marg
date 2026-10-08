@@ -134,63 +134,67 @@ export const AdminSEO = () => {
 
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-blue-50 to-white p-5 rounded-md border border-blue-100 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-500">Total Bhajans</h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+            <div className="bg-gradient-to-br from-blue-50 to-white p-3.5 sm:p-5 rounded-md border border-blue-100 shadow-sm">
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-500">Total Bhajans</h3>
               {isLoadingOverview ? (
                 <JumpingDots />
               ) : (
-                <p className="text-3xl font-bold mt-2">{overview?.totalBhajans || 0}</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{overview?.totalBhajans || 0}</p>
               )}
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-white p-5 rounded-md border border-green-100 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-500">Total Articles</h3>
+            <div className="bg-gradient-to-br from-green-50 to-white p-3.5 sm:p-5 rounded-md border border-green-100 shadow-sm">
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-500">Total Articles</h3>
               {isLoadingOverview ? (
                 <JumpingDots />
               ) : (
-                <p className="text-3xl font-bold mt-2">{overview?.totalArticles || 0}</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{overview?.totalArticles || 0}</p>
               )}
             </div>
-            <div className="bg-gradient-to-br from-orange-50 to-white p-5 rounded-md border border-orange-100 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-500">Total Festivals</h3>
+            <div className="bg-gradient-to-br from-orange-50 to-white p-3.5 sm:p-5 rounded-md border border-orange-100 shadow-sm">
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-500">Total Festivals</h3>
               {isLoadingOverview ? (
                 <JumpingDots />
               ) : (
-                <p className="text-3xl font-bold mt-2">{overview?.totalFestivals || 0}</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{overview?.totalFestivals || 0}</p>
               )}
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-white p-5 rounded-md border border-purple-100 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-500">Total Puranas</h3>
+            <div className="bg-gradient-to-br from-purple-50 to-white p-3.5 sm:p-5 rounded-md border border-purple-100 shadow-sm">
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-500">Total Puranas</h3>
               {isLoadingOverview ? (
                 <JumpingDots />
               ) : (
-                <p className="text-3xl font-bold mt-2">{overview?.totalPuranas || 0}</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{overview?.totalPuranas || 0}</p>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-gradient-to-br from-red-50 to-white p-5 rounded-md border border-red-200 shadow-sm flex items-center justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+            <div className="bg-gradient-to-br from-red-50 to-white p-4 sm:p-5 rounded-md border border-red-200 shadow-sm flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-red-600">Missing SEO Titles</h3>
+                <h3 className="text-xs sm:text-sm font-semibold text-red-600">Missing SEO Titles</h3>
                 {isLoadingOverview ? (
                   <JumpingDots colorClass="text-red-400" />
                 ) : (
-                  <p className="text-3xl font-bold text-red-700 mt-2">{overview?.missingTitles || 0}</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-red-700 mt-1 sm:mt-2">
+                    {overview?.missingTitles || 0}
+                  </p>
                 )}
               </div>
-              <AlertTriangle className="w-10 h-10 text-red-200" />
+              <AlertTriangle className="w-8 h-8 sm:w-10 sm:h-10 text-red-200 shrink-0" />
             </div>
-            <div className="bg-gradient-to-br from-orange-50 to-white p-5 rounded-md border border-orange-200 shadow-sm flex items-center justify-between">
+            <div className="bg-gradient-to-br from-orange-50 to-white p-4 sm:p-5 rounded-md border border-orange-200 shadow-sm flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-orange-600">Duplicate Meta Descriptions</h3>
+                <h3 className="text-xs sm:text-sm font-semibold text-orange-600">Duplicate Meta Descriptions</h3>
                 {isLoadingOverview ? (
                   <JumpingDots colorClass="text-orange-400" />
                 ) : (
-                  <p className="text-3xl font-bold text-orange-700 mt-2">{overview?.duplicateDescriptions || 0}</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-orange-700 mt-1 sm:mt-2">
+                    {overview?.duplicateDescriptions || 0}
+                  </p>
                 )}
               </div>
-              <FileText className="w-10 h-10 text-orange-200" />
+              <FileText className="w-8 h-8 sm:w-10 sm:h-10 text-orange-200 shrink-0" />
             </div>
           </div>
 

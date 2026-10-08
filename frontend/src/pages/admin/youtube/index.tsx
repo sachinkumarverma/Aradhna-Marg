@@ -9,7 +9,6 @@ import {
   RefreshCw,
   CheckCircle2,
   XCircle,
-  Filter,
   Search,
   Link as LinkIcon,
   ExternalLink,
@@ -239,7 +238,7 @@ export const AdminYoutube = () => {
         <div className="min-w-0 flex-1">
           <h1 className="text-lg sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase truncate">
             <PlaySquare className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 shrink-0" />
-            <span className="truncate">YOUTUBE SYNCING</span>
+            <span className="truncate">YOUTUBE SYNC</span>
           </h1>
           <p className="hidden sm:block text-sm text-gray-500 mt-1">
             Import, review, and link YouTube videos directly to your platform.
@@ -447,34 +446,9 @@ export const AdminYoutube = () => {
       {/* Videos Tab */}
       {activeTab === 'videos' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100">
-            <div className="relative flex-1 w-full max-w-none sm:max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search by title or video ID..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full pl-9 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setPage(1);
-                  }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-700 focus:outline-none"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 justify-between items-center bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100">
+            <div className="flex items-center gap-2 w-full sm:w-auto flex-1">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial min-w-0">
-                <Filter className="w-4 h-4 text-gray-400 shrink-0" />
                 <Select
                   value={statusFilter}
                   onChange={(val) => {
@@ -514,12 +488,36 @@ export const AdminYoutube = () => {
                   queryClient.invalidateQueries({ queryKey: ['youtube-history'] });
                 }}
                 disabled={isFetchingVideos}
-                className="w-10 h-10 p-0 rounded-md text-white bg-saffron hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-md text-white bg-saffron hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 title="Refresh Data"
                 aria-label="Refresh Data"
               >
                 <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${isFetchingVideos ? 'animate-spin' : ''}`} />
               </button>
+            </div>
+            <div className="relative w-full sm:w-80 max-w-none sm:max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 -mt-0.5 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by title or video ID..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full pl-9 pr-10 h-9 sm:h-10 bg-white border border-gray-200 rounded-md text-xs sm:text-sm focus:border-saffron focus:ring-1 focus:ring-saffron outline-none"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setPage(1);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 -mt-0.5 text-gray-600 hover:text-gray-700 focus:outline-none"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
 

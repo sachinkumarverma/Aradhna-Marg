@@ -161,7 +161,6 @@ export const AdminPuranas: React.FC = () => {
       </div>
 
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
-        <SearchInput placeholder="Search by title or description..." value={search} onChange={setSearch} />
         <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full sm:w-auto">
           <Select
             value={statusFilter}
@@ -172,7 +171,7 @@ export const AdminPuranas: React.FC = () => {
               { label: 'Draft', value: 'DRAFT' },
               { label: 'Archived', value: 'ARCHIVED' }
             ]}
-            className="w-full sm:w-40"
+            className="w-full sm:w-36"
             searchable={false}
           />
           <Select
@@ -185,7 +184,7 @@ export const AdminPuranas: React.FC = () => {
               { label: 'Sanskrit', value: 'Sanskrit' },
               { label: 'Gujarati', value: 'Gujarati' }
             ]}
-            className="w-full sm:w-40"
+            className="w-full sm:w-36"
             searchable={false}
           />
           <Select
@@ -198,10 +197,11 @@ export const AdminPuranas: React.FC = () => {
               { label: 'Most Viewed', value: 'views' },
               { label: 'Alphabetical', value: 'alphabetical' }
             ]}
-            className="w-full sm:w-40"
+            className="w-full sm:w-36"
             searchable={false}
           />
         </div>
+        <SearchInput placeholder="Search by title or description..." value={search} onChange={setSearch} />
       </div>
 
       <div className="flex-1  relative">

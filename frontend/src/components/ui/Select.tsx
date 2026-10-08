@@ -57,7 +57,7 @@ export const Select: React.FC<SelectProps> = ({
     <div className={cn('relative w-full text-sm font-hindi-heading', className)} ref={wrapperRef}>
       <div
         className={cn(
-          'flex items-center justify-between w-full px-4 py-3 bg-white border rounded-xl cursor-pointer transition-colors text-sm',
+          'flex items-center justify-between w-full px-3.5 sm:px-4 h-9 sm:h-10 bg-white border rounded-md cursor-pointer transition-colors text-xs sm:text-sm',
           isOpen ? 'border-saffron ring-2 ring-saffron/20' : 'border-gray-200 hover:border-gray-300',
           error && 'border-red-500 ring-2 ring-red-500/20',
           triggerClassName
@@ -68,9 +68,14 @@ export const Select: React.FC<SelectProps> = ({
           {selectedOption?.icon && (
             <span className="w-4 h-4 flex items-center justify-center min-w-4">{selectedOption.icon}</span>
           )}
-          <span className="truncate pt-0.5">{selectedOption ? selectedOption.label : placeholder}</span>
+          <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         </span>
-        <ChevronDown className={cn('w-4 h-4 text-gray-400 transition-transform', isOpen && 'rotate-180')} />
+        <ChevronDown
+          className={cn(
+            'w-4 h-4 text-gray-400 transition-transform shrink-0 translate-y-[1px]',
+            isOpen && 'rotate-180'
+          )}
+        />
       </div>
 
       {isOpen && (
