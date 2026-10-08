@@ -31,7 +31,11 @@ export const AdminLayout: React.FC = () => {
   };
 
   if (isLoading) {
-    return <CustomLoader fullScreen size="lg" text="Verifying Access..." />;
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
+        <CustomLoader fullScreen={false} size="lg" text="Verifying Access..." />
+      </div>
+    );
   }
 
   return (

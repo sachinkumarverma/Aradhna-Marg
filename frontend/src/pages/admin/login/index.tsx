@@ -43,7 +43,7 @@ export const AdminLogin: React.FC = () => {
   if (checkingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <CustomLoader fullScreen text="Checking access..." />
+        <CustomLoader fullScreen={false} text="Checking access..." />
       </div>
     );
   }
