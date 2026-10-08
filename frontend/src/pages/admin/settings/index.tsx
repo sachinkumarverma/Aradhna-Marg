@@ -9,6 +9,7 @@ import { Settings, Save, AlertCircle, RefreshCw, UploadCloud, X, Pencil } from '
 import { uploadFile } from '@api/upload';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
 import { AutoResizeTextarea } from '@components/ui/AutoResizeTextarea';
+import { CustomLoader } from '@components/common/CustomLoader';
 
 const TABS = [
   'General',
@@ -528,33 +529,6 @@ export const AdminSettings: React.FC = () => {
     }
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] flex-1">
-        <RefreshCw className="w-8 h-8 text-saffron animate-spin mb-4" />
-        <p className="text-gray-500 font-medium">Loading settings...</p>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="bg-red-50 p-6 rounded-md border border-red-100 flex items-start gap-4">
-        <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
-        <div>
-          <h3 className="text-red-800 font-semibold mb-1">Error Loading Settings</h3>
-          <p className="text-red-600 text-sm mb-4">Could not retrieve settings from the server.</p>
-          <button
-            onClick={() => refetch()}
-            className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-md text-sm font-medium hover:bg-red-50"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   const sectionMap: Record<string, React.ReactNode> = {
     General: <GeneralSection defaults={data} />,
     Contact: <ContactSection defaults={data} />,
@@ -578,9 +552,27 @@ export const AdminSettings: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm flex flex-col md:flex-row overflow-hidden">
-        {/* Sidebar Tabs */}
-        <div className="md:w-64 border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/50 p-4 shrink-0 flex flex-row md:flex-col overflow-x-auto">
+      {/* Mobile Underline Tabs (YouTube style) */}
+      <div className="md:hidden flex border-b border-gray-200 overflow-x-auto scrollbar-hide w-full max-w-full min-w-0 touch-pan-x overscroll-x-contain gap-1">
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className={`px-3.5 py-2.5 text-xs font-bold uppercase border-b-2 transition-colors shrink-0 whitespace-nowrap ${
+              activeTab === tab
+                ? 'border-saffron text-saffron'
+                : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm flex flex-col md:flex-row overflow-hidden min-h-[380px]">
+        {/* Desktop Sidebar Tabs */}
+        <div className="hidden md:flex md:w-64 border-r border-gray-100 bg-gray-50/50 p-4 shrink-0 flex-col space-y-1">
           {TABS.map((tab) => (
             <button
               key={tab}
@@ -595,8 +587,35 @@ export const AdminSettings: React.FC = () => {
           ))}
         </div>
 
-        {/* Content Area — each section is its own independent form */}
-        <div className="flex-1 p-6 lg:p-8 overflow-y-auto">{sectionMap[activeTab]}</div>
+        {/* Content Area */}
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <CustomLoader
+                fullScreen={false}
+                size="lg"
+                text="Loading settings..."
+                subtext="Please wait while we load your site configuration."
+              />
+            </div>
+          ) : isError ? (
+            <div className="bg-red-50 p-6 rounded-md border border-red-100 flex items-start gap-4">
+              <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
+              <div>
+                <h3 className="text-red-800 font-semibold mb-1">Error Loading Settings</h3>
+                <p className="text-red-600 text-sm mb-4">Could not retrieve settings from the server.</p>
+                <button
+                  onClick={() => refetch()}
+                  className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-md text-sm font-medium hover:bg-red-50"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          ) : (
+            sectionMap[activeTab]
+          )}
+        </div>
       </div>
     </div>
   );

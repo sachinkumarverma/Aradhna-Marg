@@ -22,6 +22,7 @@ import {
   BrainCircuit
 } from 'lucide-react';
 import { AdminButton } from '@components/admin/AdminButton';
+import { CustomLoader } from '@components/common/CustomLoader';
 
 export function AdminAI() {
   const queryClient = useQueryClient();
@@ -194,7 +195,7 @@ export function AdminAI() {
   ];
 
   return (
-    <div className="space-y-6 flex flex-col flex-1 pb-8">
+    <div className="space-y-6 flex flex-col flex-1 pb-8 w-full max-w-full min-w-0">
       {/* Header & Stats Overview */}
       <div className="space-y-6">
         <div>
@@ -258,7 +259,7 @@ export function AdminAI() {
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 border-b border-gray-200">
+      <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide w-full max-w-full min-w-0 touch-pan-x overscroll-x-contain gap-1 sm:gap-2">
         {[
           { id: 'assistant', label: 'Content Assistant' },
           { id: 'bulk', label: 'Bulk Processing' },
@@ -268,11 +269,12 @@ export function AdminAI() {
         ].map((tab) => (
           <button
             key={tab.id}
+            type="button"
             onClick={() => setActiveTab(tab.id as any)}
-            className={`px-4 py-2.5 text-sm font-bold uppercase border-b-2 transition-colors ${
+            className={`px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 whitespace-nowrap ${
               activeTab === tab.id
                 ? 'border-saffron text-saffron'
-                : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'
+                : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
             }`}
           >
             {tab.label}
@@ -385,8 +387,8 @@ export function AdminAI() {
         {['queue', 'history', 'failed'].includes(activeTab) && (
           <div className="flex-1 overflow-x-auto">
             {jobsLoading ? (
-              <div className="flex items-center justify-center h-64 text-gray-400">
-                <RefreshCw className="w-6 h-6 animate-spin" />
+              <div className="flex items-center justify-center h-64">
+                <CustomLoader fullScreen={false} size="md" text="Loading AI jobs..." />
               </div>
             ) : jobs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-gray-400">

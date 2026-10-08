@@ -17,7 +17,8 @@ import {
   ShieldCheck,
   AlertCircle,
   X,
-  ArrowUpDown
+  ArrowUpDown,
+  History
 } from 'lucide-react';
 import { apiClient } from '@api/client';
 import { format } from 'date-fns';
@@ -298,24 +299,39 @@ export const AdminYoutube = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide">
+      <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide gap-2 sm:gap-4">
         <button
+          type="button"
           onClick={() => setActiveTab('videos')}
-          className={`whitespace-nowrap px-4 sm:px-6 py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${activeTab === 'videos' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
+          className={`whitespace-nowrap px-3 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${
+            activeTab === 'videos'
+              ? 'border-saffron text-saffron'
+              : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
+          }`}
         >
-          Imported Videos
+          Imported
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('history')}
-          className={`whitespace-nowrap px-4 sm:px-6 py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${activeTab === 'history' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
+          className={`whitespace-nowrap px-3 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${
+            activeTab === 'history'
+              ? 'border-saffron text-saffron'
+              : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
+          }`}
         >
           Sync History
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('settings')}
-          className={`whitespace-nowrap px-4 sm:px-6 py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${activeTab === 'settings' ? 'border-saffron text-saffron' : 'border-transparent text-gray-900 hover:text-black hover:border-gray-300'}`}
+          className={`whitespace-nowrap px-3 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${
+            activeTab === 'settings'
+              ? 'border-saffron text-saffron'
+              : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
+          }`}
         >
-          Configuration
+          Config
         </button>
       </div>
 
