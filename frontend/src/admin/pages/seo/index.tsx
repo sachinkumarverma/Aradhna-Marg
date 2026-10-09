@@ -12,7 +12,7 @@ import {
   ShieldAlert,
   ShieldCheck
 } from 'lucide-react';
-import { SeoApi } from '@features/seo/SeoApi';
+import { SeoApi } from '@admin/features/seo/SeoApi';
 import { apiClient } from '@api/client';
 import { cn } from '@utils/cn';
 import { toast } from 'react-hot-toast';

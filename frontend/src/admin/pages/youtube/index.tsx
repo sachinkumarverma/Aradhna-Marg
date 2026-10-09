@@ -28,7 +28,7 @@ import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { Select } from '@components/ui/Select';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
-import { YoutubeApi } from '@features/youtube/YoutubeApi';
+import { YoutubeApi } from '@admin/features/youtube/YoutubeApi';
 
 export const AdminYoutube = () => {
   const queryClient = useQueryClient();

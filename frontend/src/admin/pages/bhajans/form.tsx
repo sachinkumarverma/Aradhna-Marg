@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FormLoader } from '@components/admin/FormLoader';
+import { FormLoader } from '@admin/components/FormLoader';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Loader2, Send } from 'lucide-react';
-import { BhajanApi } from '@features/bhajans/BhajanApi';
+import { BhajanApi } from '@admin/features/bhajans/BhajanApi';
 import { apiClient } from '@api/client';
 import toast from 'react-hot-toast';
 import { Select } from '@components/ui/Select';

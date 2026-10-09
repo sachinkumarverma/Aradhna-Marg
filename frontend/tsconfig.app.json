@@ -13,7 +13,7 @@
       "@hooks/*": ["./src/hooks/*"],
       "@constants/*": ["./src/constants/*"],
       "@api/*": ["./src/api/*"],
-      "@features/*": ["./src/features/*"],
+      "@features/*": ["./src/admin/features/*"],
       "@utils/*": ["./src/utils/*"],
       "@lib/*": ["./src/lib/*"],
       "@common/*": ["./src/common/*"],

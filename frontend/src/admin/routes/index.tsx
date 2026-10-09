@@ -17,7 +17,6 @@ const AdminFestivalForm = lazy(() =>
   import('@admin/pages/festivals/form').then((m) => ({ default: m.AdminFestivalForm }))
 );
 const AdminSEO = lazy(() => import('@admin/pages/seo').then((m) => ({ default: m.AdminSEO })));
-const AdminMedia = lazy(() => import('@admin/pages/media').then((m) => ({ default: m.AdminMedia })));
 const AdminSettings = lazy(() => import('@admin/pages/settings').then((m) => ({ default: m.AdminSettings })));
 const AdminArticles = lazy(() => import('@admin/pages/articles').then((m) => ({ default: m.AdminArticles })));
 const AdminArticleForm = lazy(() =>
@@ -127,10 +126,6 @@ const adminChildRoutes: RouteObject[] = [
   {
     path: 'seo',
     element: <AdminSEO />
-  },
-  {
-    path: 'media',
-    element: <AdminMedia />
   },
   {
     path: 'advertisements',

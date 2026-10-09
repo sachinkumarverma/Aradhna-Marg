@@ -9,7 +9,7 @@ import { apiClient } from '@api/client';
 import toast from 'react-hot-toast';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '@components/ui/Select';
-import { AdminButton } from '@components/admin/AdminButton';
+import { AdminButton } from '@admin/components/AdminButton';
 import {
   Users,
   Plus,

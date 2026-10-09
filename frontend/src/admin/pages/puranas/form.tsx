@@ -1,11 +1,11 @@
 import { AutoResizeTextarea } from '@components/ui/AutoResizeTextarea';
 import React, { useState, useEffect } from 'react';
-import { FormLoader } from '@components/admin/FormLoader';
+import { FormLoader } from '@admin/components/FormLoader';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Languages, ArrowLeft, Save, Loader2, Upload, Eye, Send, X, FileText } from 'lucide-react';
-import { TranslationPanel } from '@features/translations/TranslationPanel';
+import { TranslationPanel } from '@admin/features/translations/TranslationPanel';
 import { apiClient } from '@api/client';
 import { uploadFile, uploadPuranPdf } from '@api/upload';
 import toast from 'react-hot-toast';

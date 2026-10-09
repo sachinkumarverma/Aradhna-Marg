@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Languages, ArrowLeft, Save, Loader2, Eye, Send, X } from 'lucide-react';
-import { TranslationPanel } from '@features/translations/TranslationPanel';
+import { TranslationPanel } from '@admin/features/translations/TranslationPanel';
 import { apiClient } from '@api/client';
 import { uploadMediaFile } from '@api/upload';
 import toast from 'react-hot-toast';
@@ -18,7 +18,7 @@ import { createPortal } from 'react-dom';
 import { RichTextEditor } from '@components/ui/RichTextEditor';
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
-import { FormLoader } from '@components/admin/FormLoader';
+import { FormLoader } from '@admin/components/FormLoader';
 import { getAdminPath } from '@utils/host';
 
 export const AdminArticleForm = () => {

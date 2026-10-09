@@ -5,11 +5,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
-import { DeityApi } from '@features/deities/DeityApi';
+import { DeityApi } from '@admin/features/deities/DeityApi';
 import toast from 'react-hot-toast';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '@components/ui/Select';
-import { AdminButton } from '@components/admin/AdminButton';
+import { AdminButton } from '@admin/components/AdminButton';
 import {
   Plus,
   Edit2,

@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Languages, ArrowLeft, Save, Loader2, Upload, Eye, X, Send, XCircle } from 'lucide-react';
-import { TranslationPanel } from '@features/translations/TranslationPanel';
+import { TranslationPanel } from '@admin/features/translations/TranslationPanel';
 import { apiClient } from '@api/client';
 import { uploadFile } from '@api/upload';
 import toast from 'react-hot-toast';
@@ -15,7 +15,7 @@ import { createPortal } from 'react-dom';
 import { RichTextEditor } from '@components/ui/RichTextEditor';
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
-import { FormLoader } from '@components/admin/FormLoader';
+import { FormLoader } from '@admin/components/FormLoader';
 
 import { generateSlug } from '@utils/slugify';
 import { getAdminPath } from '@utils/host';

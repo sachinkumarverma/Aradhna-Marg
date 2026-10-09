@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Bell, Search, LogOut } from 'lucide-react';
-import { AdminSidebar } from '@components/admin/AdminSidebar';
-import { SessionManager } from '@components/admin/SessionManager';
+import { AdminSidebar } from '@admin/components/AdminSidebar';
+import { SessionManager } from '@admin/components/SessionManager';
 import { logout, verifySession } from '@api/auth';
 import { SEOHead } from '@components/seo';
 import { CustomLoader } from '@components/common/CustomLoader';

@@ -11,7 +11,7 @@ import {
   CheckCircle2,
   XCircle
 } from 'lucide-react';
-import { StatCard } from '@components/admin/StatCard';
+import { StatCard } from '@admin/components/StatCard';
 import { apiClient } from '@api/client';
 import { getAdminPath } from '@utils/host';
 

@@ -21,7 +21,7 @@ import {
   RefreshCw,
   BrainCircuit
 } from 'lucide-react';
-import { AdminButton } from '@components/admin/AdminButton';
+import { AdminButton } from '@admin/components/AdminButton';
 import { CustomLoader } from '@components/common/CustomLoader';
 
 export function AdminAI() {

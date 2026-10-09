@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login, isAuthenticated } from '@api/auth';
-import { AdminButton } from '@components/admin/AdminButton';
+import { AdminButton } from '@admin/components/AdminButton';
 import { Loader2, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { SEOHead } from '@components/seo';

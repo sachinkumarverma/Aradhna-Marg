@@ -4,12 +4,12 @@ import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
-import { CategoryApi } from '@features/categories/CategoryApi';
+import { CategoryApi } from '@admin/features/categories/CategoryApi';
 import toast from 'react-hot-toast';
 import { isFormActuallyDirty } from '@utils/isFormActuallyDirty';
 import { useForm, Controller } from 'react-hook-form';
 import { Select } from '@components/ui/Select';
-import { AdminButton } from '@components/admin/AdminButton';
+import { AdminButton } from '@admin/components/AdminButton';
 import {
   FolderTree,
   Plus,
