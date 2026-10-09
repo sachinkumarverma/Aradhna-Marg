@@ -2,7 +2,8 @@
  * Hostname and Application Mode Detection Utilities
  *
  * Provides centralized host and environment-based application detection for separating
- * the Public website (aradhnamarg.com) and the Admin application (admin.aradhnamarg.com).
+ * the Public website (aradhnamarg.com / aradhna-marg.vercel.app) and the
+ * Admin application (admin.aradhnamarg.com / aradhna-marg-admin.vercel.app).
  */
 
 export function getHostname(): string {
@@ -59,7 +60,8 @@ export function isLocalDev(): boolean {
  *    - 'public' -> false (Public app)
  * 2. Hostname & URL rules (fallback when VITE_APP_MODE is not set):
  *    - Production Admin domain: admin.aradhnamarg.com
- *    - Subdomains: admin.* (e.g., admin.localhost, admin.local, admin-preview.vercel.app)
+ *    - Vercel Admin deployment: aradhna-marg-admin.vercel.app
+ *    - Subdomains: admin.* or *-admin.* (e.g., admin.localhost, admin.local, admin-preview.vercel.app)
  *    - Development/testing URL parameter override: ?app=admin or ?mode=admin
  */
 export function isAdminHost(): boolean {
@@ -82,8 +84,13 @@ export function isAdminHost(): boolean {
     return true;
   }
 
-  // Staging / preview / local subdomains (e.g. admin.localhost, admin-preview.vercel.app)
-  if (hostname.startsWith('admin.') || hostname.startsWith('admin-')) {
+  // Staging / preview / vercel / local subdomains
+  if (
+    hostname.startsWith('admin.') ||
+    hostname.startsWith('admin-') ||
+    hostname.includes('-admin.') ||
+    hostname.endsWith('-admin.vercel.app')
+  ) {
     return true;
   }
 
@@ -118,9 +125,41 @@ export function getAppMode(): AppMode {
 }
 
 /**
+ * Determines the target Admin base origin corresponding to the current host.
+ *
+ * Examples:
+ *   aradhna-marg.vercel.app -> https://aradhna-marg-admin.vercel.app
+ *   aradhnamarg.com         -> https://admin.aradhnamarg.com
+ */
+export function getAdminOrigin(): string {
+  if (typeof window === 'undefined') {
+    return 'https://admin.aradhnamarg.com';
+  }
+
+  const hostname = getHostname();
+
+  // Vercel deployment: route to equivalent Admin Vercel domain
+  if (hostname.endsWith('.vercel.app')) {
+    if (hostname === 'aradhna-marg.vercel.app') {
+      return 'https://aradhna-marg-admin.vercel.app';
+    }
+    if (!hostname.includes('admin')) {
+      const adminVercelHost = hostname.replace('aradhna-marg', 'aradhna-marg-admin');
+      if (adminVercelHost !== hostname) {
+        return `https://${adminVercelHost}`;
+      }
+      return 'https://aradhna-marg-admin.vercel.app';
+    }
+  }
+
+  // Production custom domain
+  return 'https://admin.aradhnamarg.com';
+}
+
+/**
  * Computes an admin path or URL appropriate for the current host environment.
  *
- * In standalone Admin mode (admin.aradhnamarg.com or VITE_APP_MODE=admin):
+ * In standalone Admin mode (admin.aradhnamarg.com / aradhna-marg-admin.vercel.app / VITE_APP_MODE=admin):
  *   getAdminPath('/bhajans') -> '/bhajans'
  *   getAdminPath('/login')   -> '/login'
  *   getAdminPath('')         -> '/dashboard'
@@ -132,10 +171,10 @@ export function getAppMode(): AppMode {
  *   getAdminPath('')         -> '/admin'
  *   getAdminPath('/')        -> '/admin'
  *
- * In Public production mode (aradhnamarg.com):
- *   getAdminPath('/bhajans') -> 'https://admin.aradhnamarg.com/bhajans'
- *   getAdminPath('/login')   -> 'https://admin.aradhnamarg.com/login'
- *   getAdminPath('')         -> 'https://admin.aradhnamarg.com/'
+ * In Public production mode (aradhnamarg.com / aradhna-marg.vercel.app):
+ *   getAdminPath('/bhajans') -> '<adminOrigin>/bhajans'
+ *   getAdminPath('/login')   -> '<adminOrigin>/login'
+ *   getAdminPath('')         -> '<adminOrigin>/'
  */
 export function getAdminPath(path = ''): string {
   const cleanPath = path ? (path.startsWith('/') ? path : `/${path}`) : '';
@@ -154,25 +193,35 @@ export function getAdminPath(path = ''): string {
     return `/admin${cleanPath}`;
   }
 
-  // Public Production: Link to standalone Admin subdomain
+  // Public Production / Public Vercel: Link to respective standalone Admin origin
+  const adminOrigin = getAdminOrigin();
   const targetSubPath = !cleanPath || cleanPath === '/' ? '' : cleanPath;
-  return `https://admin.aradhnamarg.com${targetSubPath}`;
+  return `${adminOrigin}${targetSubPath}`;
 }
 
 /**
  * Computes the Admin subdomain redirect target from a legacy /admin/* path.
  *
  * Examples:
- *   /admin             -> https://admin.aradhnamarg.com/
- *   /admin/login       -> https://admin.aradhnamarg.com/login
- *   /admin/dashboard   -> https://admin.aradhnamarg.com/dashboard
- *   /admin/bhajans?q=1 -> https://admin.aradhnamarg.com/bhajans?q=1
+ *   PUBLIC VERCEL:
+ *     https://aradhna-marg.vercel.app/admin           -> https://aradhna-marg-admin.vercel.app/login
+ *     https://aradhna-marg.vercel.app/admin/login     -> https://aradhna-marg-admin.vercel.app/login
+ *     https://aradhna-marg.vercel.app/admin/dashboard -> https://aradhna-marg-admin.vercel.app/dashboard
+ *     https://aradhna-marg.vercel.app/admin/bhajans   -> https://aradhna-marg-admin.vercel.app/bhajans
+ *
+ *   PUBLIC PRODUCTION:
+ *     https://aradhnamarg.com/admin           -> https://admin.aradhnamarg.com/login
+ *     https://aradhnamarg.com/admin/login     -> https://admin.aradhnamarg.com/login
+ *     https://aradhnamarg.com/admin/dashboard -> https://admin.aradhnamarg.com/dashboard
+ *     https://aradhnamarg.com/admin/bhajans   -> https://admin.aradhnamarg.com/bhajans
  */
 export function getAdminSubdomainRedirectUrl(pathname = '', search = '', hash = ''): string {
-  const cleanPath = pathname.replace(/^\/admin/, '') || '/';
+  const adminOrigin = getAdminOrigin();
+  const rawSubPath = pathname.replace(/^\/admin/, '');
+  const cleanSubPath = rawSubPath === '' || rawSubPath === '/' ? '/login' : rawSubPath;
   const query = search || '';
   const fragment = hash || '';
-  return `https://admin.aradhnamarg.com${cleanPath}${query}${fragment}`;
+  return `${adminOrigin}${cleanSubPath}${query}${fragment}`;
 }
 
 /**
@@ -186,6 +235,11 @@ export function getPublicHomeUrl(): string {
     if (isLocalhost()) {
       const port = window.location.port ? `:${window.location.port}` : '';
       return `${window.location.protocol}//localhost${port}/`;
+    }
+    // If on admin vercel (e.g. aradhna-marg-admin.vercel.app), point back to public vercel
+    const hostname = getHostname();
+    if (hostname.endsWith('.vercel.app')) {
+      return 'https://aradhna-marg.vercel.app/';
     }
     // Production admin domain links back to public production domain
     return 'https://aradhnamarg.com/';
