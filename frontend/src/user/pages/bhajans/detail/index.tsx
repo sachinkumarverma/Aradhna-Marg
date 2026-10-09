@@ -223,7 +223,7 @@ export const BhajanDetail: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative aspect-video sm:aspect-[21/9] w-full rounded-2xl overflow-hidden shadow-md border border-amber-200/80 bg-stone-900"
+                className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-md border border-amber-200/80 bg-stone-900"
               >
                 <img
                   src={

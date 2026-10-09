@@ -15,8 +15,9 @@ interface SearchBarProps {
   className?: string;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ scope = 'ALL', placeholder, autoFocus = false, className }) => {
-  const { t } = useTranslation();
+export const SearchBar: React.FC<SearchBarProps> = ({ scope, placeholder, autoFocus, className }) => {
+  const { t, language } = useTranslation();
+  const isHi = language === 'hi';
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -28,6 +29,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope = 'ALL', placeholder
   const { data: suggestions = [], isFetching } = useSearchSuggestions(debouncedQuery, scope);
   const { data: trending = [] } = useTrendingSearches();
   const { recentSearches, addSearch, removeSearch } = useRecentSearches();
+
+  const typeBadgeLabels: Record<string, { hi: string; en: string }> = {
+    PURAN: { hi: 'पुराण', en: 'Purana' },
+    PURANA: { hi: 'पुराण', en: 'Purana' },
+    BHAJAN: { hi: 'भजन', en: 'Bhajan' },
+    ARTICLE: { hi: 'लेख', en: 'Article' },
+    FESTIVAL: { hi: 'त्यौहार', en: 'Festival' },
+    VIDEO: { hi: 'वीडियो', en: 'Video' },
+    DEITY: { hi: 'देवी-देवता', en: 'Deity' },
+    GOD: { hi: 'देवी-देवता', en: 'Deity' },
+    CATEGORY: { hi: 'श्रेणी', en: 'Category' }
+  };
 
   // Handle click outside to close
   useEffect(() => {
@@ -102,14 +115,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope = 'ALL', placeholder
     }
   };
 
+  const hasSuggestions = query.trim().length >= 2;
+  const hasRecent = recentSearches.length > 0;
+  const hasTrending = trending.length > 0;
+  const shouldShowDropdown = isOpen && (hasSuggestions || hasRecent || hasTrending);
+
   return (
     <div className={cn('relative w-full max-w-3xl mx-auto z-40', className)} ref={wrapperRef}>
       <div
         className={cn(
           'relative flex items-center bg-white rounded-2xl border transition-all duration-200',
           isOpen
-            ? 'shadow-2xl border-saffron ring-2 ring-saffron/30 rounded-b-none'
-            : 'border-gray-200/80 shadow-sm hover:border-saffron/40 hover:shadow-md'
+            ? 'shadow-lg border-saffron ring-2 ring-saffron/25'
+            : 'border-orange-200/70 shadow-xs hover:border-saffron/40 hover:shadow-sm'
         )}
       >
         <Search className="w-5 h-5 text-saffron absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -144,13 +162,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope = 'ALL', placeholder
 
       {/* Live Suggestions Dropdown */}
       <AnimatePresence>
-        {isOpen && (
+        {shouldShowDropdown && (
           <motion.div
-            initial={{ opacity: 0, y: -6 }}
+            initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
+            exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 bg-white border-x border-b border-gray-200 rounded-b-2xl shadow-2xl overflow-hidden z-50"
+            className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden z-50"
           >
             <div className="p-2 max-h-[65vh] overflow-y-auto">
               {/* Typeahead Suggestions */}
@@ -163,15 +181,27 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope = 'ALL', placeholder
                     </div>
                   ) : suggestions.length > 0 ? (
                     <div>
-                      <div className="px-3 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                        उपलब्ध परिणाम / Suggestions
+                      <div className="px-3 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider font-hindi-heading">
+                        {isHi ? 'सुझाव / परिणाम' : 'Suggestions'}
                       </div>
                       <div className="flex flex-col gap-1">
                         {suggestions.map((item: any, i: number) => {
                           const isObj = typeof item === 'object' && item !== null;
-                          const title = isObj ? item.title : item;
-                          const titleEn = isObj ? item.title_en : null;
-                          const typeLabel = isObj ? item.type_label || item.type : '';
+                          const displayTitle = isObj ? (isHi ? item.title : item.title_en || item.title) : item;
+                          const secondaryTitle = isObj
+                            ? isHi
+                              ? item.title_en
+                              : item.title !== item.title_en
+                                ? item.title
+                                : null
+                            : null;
+                          const rawType = (isObj ? item.type || item.type_label || '' : '').toUpperCase();
+                          const matchedKey = Object.keys(typeBadgeLabels).find((k) => rawType.includes(k));
+                          const badgeText = matchedKey
+                            ? typeBadgeLabels[matchedKey][isHi ? 'hi' : 'en']
+                            : (isObj ? item.type_label || item.type : '')
+                                ?.replace(/\p{Extended_Pictographic}|\p{Emoji_Presentation}|\uFE0F/gu, '')
+                                .trim();
                           const isSelected = i === selectedIndex;
 
                           return (
@@ -189,31 +219,33 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope = 'ALL', placeholder
                               <div className="flex items-center gap-3 min-w-0 flex-1">
                                 {isObj && item.image ? (
                                   <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-black/5 shadow-xs">
-                                    <img src={item.image} alt={title} className="w-full h-full object-cover" />
+                                    <img src={item.image} alt={displayTitle} className="w-full h-full object-cover" />
                                   </div>
                                 ) : (
                                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-saffron shrink-0 font-bold text-sm">
-                                    {typeLabel?.includes('पुराण')
+                                    {rawType?.includes('PURAN')
                                       ? '📜'
-                                      : typeLabel?.includes('भजन')
+                                      : rawType?.includes('BHAJAN')
                                         ? '🪔'
-                                        : typeLabel?.includes('वीडियो')
+                                        : rawType?.includes('VIDEO')
                                           ? '▶'
                                           : '📖'}
                                   </div>
                                 )}
                                 <div className="min-w-0 flex-1">
                                   <div className="font-bold text-sm truncate font-hindi-heading text-darkBrown group-hover:text-saffron transition-colors">
-                                    {title}
+                                    {displayTitle}
                                   </div>
                                   <div className="flex items-center gap-2 mt-0.5">
-                                    {typeLabel && (
+                                    {badgeText && (
                                       <span className="text-[10px] font-bold text-saffron bg-saffron/10 px-1.5 py-0.5 rounded-md">
-                                        {typeLabel}
+                                        {badgeText}
                                       </span>
                                     )}
-                                    {titleEn && titleEn !== title && (
-                                      <span className="text-[11px] text-slate-400 font-medium truncate">{titleEn}</span>
+                                    {secondaryTitle && (
+                                      <span className="text-[11px] text-slate-400 font-medium truncate">
+                                        {secondaryTitle}
+                                      </span>
                                     )}
                                   </div>
                                 </div>
@@ -230,13 +262,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope = 'ALL', placeholder
                         onClick={() => handleSearch(query)}
                         className="w-full mt-2 p-2.5 bg-saffron/10 hover:bg-saffron/20 text-saffron font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors font-hindi-heading cursor-pointer"
                       >
-                        <span>"{query}" के सभी परिणाम देखें</span>
+                        <span>{isHi ? `"${query}" के सभी परिणाम देखें` : `See all results for "${query}"`}</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
                     <div className="py-6 text-center text-gray-500 text-sm font-hindi-body">
-                      "{query}" के लिए कोई परिणाम नहीं मिला। Enter दबाकर संपूर्ण खोज करें।
+                      {isHi
+                        ? `"${query}" के लिए कोई सुझाव नहीं मिला। Enter दबाकर संपूर्ण खोज करें।`
+                        : `No direct suggestions for "${query}". Press Enter to search all.`}
                     </div>
                   )}
                 </div>

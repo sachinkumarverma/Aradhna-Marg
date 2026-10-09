@@ -123,9 +123,11 @@ export const SearchPage: React.FC = () => {
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Search Hero */}
-        <div className="relative overflow-hidden bg-gradient-to-b from-amber-50/90 via-orange-50/40 to-transparent rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-xs mb-8">
-          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 rounded-full bg-saffron/5 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-64 h-64 rounded-full bg-amber-500/5 blur-3xl pointer-events-none" />
+        <div className="relative overflow-visible bg-gradient-to-b from-amber-50/90 via-orange-50/40 to-transparent rounded-3xl p-6 sm:p-10 border border-orange-100/80 shadow-xs mb-8 z-30">
+          <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+            <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 rounded-full bg-saffron/5 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-64 h-64 rounded-full bg-amber-500/5 blur-3xl pointer-events-none" />
+          </div>
 
           <div className="max-w-3xl mx-auto text-center mb-6 relative z-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-saffron/10 text-saffron text-xs font-bold font-hindi-heading mb-3">
