@@ -11,14 +11,42 @@ export function getHostname(): string {
 }
 
 /**
- * Determines whether the current hostname corresponds to the Admin application.
+ * Returns explicit mode if configured via VITE_APP_MODE ('admin' | 'public'), or undefined.
+ */
+export function getEnvAppMode(): 'admin' | 'public' | undefined {
+  const envMode = import.meta.env.VITE_APP_MODE;
+  if (typeof envMode === 'string') {
+    const normalized = envMode.trim().toLowerCase();
+    if (normalized === 'admin' || normalized === 'public') {
+      return normalized;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Determines whether the current hostname / environment corresponds to the Admin application.
  *
- * Recognized Admin hosts:
- * - Production: admin.aradhnamarg.com
- * - Subdomains: admin.* (e.g., admin.localhost, admin.local, admin.example.com)
- * - Development/testing override: URL parameter ?app=admin or ?mode=admin
+ * Precedence:
+ * 1. Environment variable VITE_APP_MODE:
+ *    - 'admin'  -> true
+ *    - 'public' -> false
+ * 2. Hostname & URL rules (fallback when VITE_APP_MODE is not set):
+ *    - Production: admin.aradhnamarg.com
+ *    - Subdomains: admin.* (e.g., admin.localhost, admin.local, admin-preview.vercel.app)
+ *    - Development/testing override: URL parameter ?app=admin or ?mode=admin
  */
 export function isAdminHost(): boolean {
+  // 1. Explicit environment variable mode takes precedence
+  const envMode = getEnvAppMode();
+  if (envMode === 'admin') {
+    return true;
+  }
+  if (envMode === 'public') {
+    return false;
+  }
+
+  // 2. Fall back to hostname / URL detection in browser
   if (typeof window === 'undefined') return false;
 
   const hostname = getHostname();
