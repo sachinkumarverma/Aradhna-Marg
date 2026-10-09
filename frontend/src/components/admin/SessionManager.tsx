@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '@api/auth';
+import { getAdminPath } from '@utils/host';
 import toast from 'react-hot-toast';
 
 // Configurable session timings
@@ -15,7 +16,7 @@ export const SessionManager: React.FC = () => {
     async (message: string) => {
       await logout();
       toast.error(message, { duration: 5000, id: 'session-toast' });
-      navigate('/admin/login', { replace: true });
+      navigate(getAdminPath('/login'), { replace: true });
     },
     [navigate]
   );

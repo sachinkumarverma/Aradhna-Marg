@@ -5,7 +5,7 @@ import React from 'react';
  */
 export const VideoCardSkeleton: React.FC = () => (
   <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-xs flex flex-col md:flex-row gap-5 items-stretch animate-pulse">
-    <div className="aspect-video w-full md:w-60 lg:w-64 rounded-lg bg-gray-200 shrink-0" />
+    <div className="aspect-video w-full md:w-72 lg:w-80 rounded-lg bg-gray-200 shrink-0 self-start md:self-center" />
     <div className="flex-1 flex flex-col justify-between py-1 gap-3 min-w-0">
       <div>
         <div className="h-5 bg-gray-200 rounded-md w-3/4 mb-2.5" />

@@ -6,7 +6,7 @@ import { useDebounce } from '@hooks/useDebounce';
 import { useSearchSuggestions, useTrendingSearches } from '@hooks/useSearch';
 import { useRecentSearches } from '@hooks/useRecentSearches';
 import { cn } from '@utils/cn';
-import { useTranslation } from '../../i18n/LanguageContext';
+import { useTranslation } from '@i18n/LanguageContext';
 
 interface SearchBarProps {
   scope?: string;

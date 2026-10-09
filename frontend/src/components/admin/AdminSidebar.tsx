@@ -18,33 +18,7 @@ import {
   Languages
 } from 'lucide-react';
 import { cn } from '@utils/cn';
-
-const DASHBOARD_NAV = [{ name: 'DASHBOARD', path: '/admin', icon: LayoutDashboard }];
-
-const CONTENT_NAV = [
-  { name: 'BHAJANS', path: '/admin/bhajans', icon: Music2 },
-  { name: 'ARTICLES', path: '/admin/articles', icon: FileText },
-  { name: 'PURANAS', path: '/admin/puranas', icon: BookOpen },
-  { name: 'FESTIVALS', path: '/admin/festivals', icon: CalendarDays }
-];
-
-const ORGANIZE_NAV = [
-  { name: 'CATEGORIES', path: '/admin/categories', icon: FolderTree },
-  { name: 'DEITIES', path: '/admin/deities', icon: Sparkles },
-  { name: 'AUTHORS', path: '/admin/authors', icon: Users },
-  { name: 'TAGS', path: '/admin/tags', icon: Tags }
-];
-
-const AUTOMATION_NAV = [
-  { name: 'YOUTUBE SYNC', path: '/admin/youtube', icon: PlaySquare },
-  { name: 'AI PROCESSING', path: '/admin/ai', icon: BrainCircuit },
-  { name: 'SEO ENGINE', path: '/admin/seo', icon: Search }
-];
-
-const SYSTEM_NAV = [
-  { name: 'SETTINGS', path: '/admin/settings', icon: Settings },
-  { name: 'SYSTEM HEALTH', path: '/admin/system-health', icon: Activity }
-];
+import { getAdminPath } from '@utils/host';
 
 interface AdminSidebarProps {
   isMobileOpen: boolean;
@@ -52,13 +26,40 @@ interface AdminSidebarProps {
 }
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClose }) => {
-  const renderLinks = (links: typeof DASHBOARD_NAV) => (
+  const DASHBOARD_NAV = [{ name: 'DASHBOARD', path: getAdminPath('/dashboard'), end: true, icon: LayoutDashboard }];
+
+  const CONTENT_NAV = [
+    { name: 'BHAJANS', path: getAdminPath('/bhajans'), icon: Music2 },
+    { name: 'ARTICLES', path: getAdminPath('/articles'), icon: FileText },
+    { name: 'PURANAS', path: getAdminPath('/puranas'), icon: BookOpen },
+    { name: 'FESTIVALS', path: getAdminPath('/festivals'), icon: CalendarDays }
+  ];
+
+  const ORGANIZE_NAV = [
+    { name: 'CATEGORIES', path: getAdminPath('/categories'), icon: FolderTree },
+    { name: 'DEITIES', path: getAdminPath('/deities'), icon: Sparkles },
+    { name: 'AUTHORS', path: getAdminPath('/authors'), icon: Users },
+    { name: 'TAGS', path: getAdminPath('/tags'), icon: Tags }
+  ];
+
+  const AUTOMATION_NAV = [
+    { name: 'YOUTUBE SYNC', path: getAdminPath('/youtube'), icon: PlaySquare },
+    { name: 'AI PROCESSING', path: getAdminPath('/ai'), icon: BrainCircuit },
+    { name: 'SEO ENGINE', path: getAdminPath('/seo'), icon: Search }
+  ];
+
+  const SYSTEM_NAV = [
+    { name: 'SETTINGS', path: getAdminPath('/settings'), icon: Settings },
+    { name: 'SYSTEM HEALTH', path: getAdminPath('/system-health'), icon: Activity }
+  ];
+
+  const renderLinks = (links: { name: string; path: string; icon: any; end?: boolean }[]) => (
     <ul className="space-y-0.5">
       {links.map((link) => (
         <li key={link.name}>
           <NavLink
             to={link.path}
-            end={link.path === '/admin'}
+            end={link.end}
             onClick={onClose}
             className={({ isActive }) =>
               cn(
