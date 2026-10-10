@@ -83,10 +83,9 @@ export const AdminDashboard: React.FC = () => {
       {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         <StatCard
-          title="Total Views (Today)"
-          value={new Intl.NumberFormat('en-IN').format(stats?.todayViews || 0)}
+          title="Total Content Views"
+          value={new Intl.NumberFormat('en-IN').format(stats?.totalViews ?? stats?.todayViews ?? 0)}
           icon={Activity}
-          trend={{ value: 12, isPositive: true }}
           colorClassName="bg-blue-100 text-blue-600"
           bgClassName="bg-gradient-to-br from-blue-50 to-white"
           borderClassName="border-blue-100"

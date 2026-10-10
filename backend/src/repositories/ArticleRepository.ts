@@ -44,7 +44,16 @@ export class ArticleRepository extends BaseRepository<any> {
 
     if (search) {
       queryParams.push(`%${search}%`);
-      whereClauses.push(`(a.title ILIKE $${queryParams.length} OR a.content ILIKE $${queryParams.length})`);
+      whereClauses.push(
+        `(a.title ILIKE $${queryParams.length} OR a.title_en ILIKE $${queryParams.length} OR a.content ILIKE $${queryParams.length} OR a.content_en ILIKE $${queryParams.length} OR EXISTS (
+          SELECT 1 FROM festivals f
+          WHERE (f.name ILIKE $${queryParams.length} OR f.name_en ILIKE $${queryParams.length})
+            AND (
+              EXISTS (SELECT 1 FROM article_festivals af WHERE af.article_id = a.id AND af.festival_id = f.id)
+              OR EXISTS (SELECT 1 FROM festival_articles fa WHERE fa.article_id = a.id AND fa.festival_id = f.id)
+            )
+        ))`
+      );
     }
 
     const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';

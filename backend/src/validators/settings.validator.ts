@@ -33,6 +33,13 @@ export const updateSettingsSchema = z.object({
   seoRobots: z.string().nullish(),
   seoCanonicalDomain: z.string().url().nullish().or(z.literal('').nullish()),
   seoOgImage: z.string().url().nullish().or(z.literal('').nullish()),
+  schemaOrganization: z.boolean().nullish(),
+  schemaWebsite: z.boolean().nullish(),
+  schemaBreadcrumb: z.boolean().nullish(),
+  schemaArticle: z.boolean().nullish(),
+  schemaSearchAction: z.boolean().nullish(),
+  sitemapLastGenerated: z.string().nullish(),
+  sitemapUrlsCount: z.number().nullish(),
   googleAnalyticsId: z.string().nullish(),
   googleSearchConsole: z.string().nullish(),
   microsoftClarity: z.string().nullish(),
@@ -92,7 +99,14 @@ export const seoSettingsSchema = z.object({
   seoMetaKeywords: z.string().nullish(),
   seoRobots: z.string().nullish(),
   seoCanonicalDomain: z.string().url().nullish().or(z.literal('').nullish()),
-  seoOgImage: z.string().url().nullish().or(z.literal('').nullish())
+  seoOgImage: z.string().url().nullish().or(z.literal('').nullish()),
+  schemaOrganization: z.boolean().nullish(),
+  schemaWebsite: z.boolean().nullish(),
+  schemaBreadcrumb: z.boolean().nullish(),
+  schemaArticle: z.boolean().nullish(),
+  schemaSearchAction: z.boolean().nullish(),
+  sitemapLastGenerated: z.string().nullish(),
+  sitemapUrlsCount: z.number().nullish()
 });
 
 export const analyticsSettingsSchema = z.object({

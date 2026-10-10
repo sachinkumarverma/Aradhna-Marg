@@ -229,7 +229,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope, placeholder, autoFo
                                         ? '🪔'
                                         : rawType?.includes('VIDEO')
                                           ? '▶'
-                                          : '📖'}
+                                          : rawType?.includes('FESTIVAL')
+                                            ? '🌸'
+                                            : '📖'}
                                   </div>
                                 )}
                                 <div className="min-w-0 flex-1">

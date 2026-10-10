@@ -88,6 +88,7 @@ router.use('/media', mediaRoutes);
 // AI Processing Pipeline
 router.get('/ai/jobs', adminAiController.list);
 router.get('/ai/stats', adminAiController.getStats);
+router.get('/ai/bulk-counts', adminAiController.getBulkCounts);
 router.post('/ai/queue', adminAiController.queueJob);
 router.post('/ai/jobs/:id/retry', adminAiController.retryJob);
 router.post('/ai/jobs/:id/cancel', adminAiController.cancelJob);

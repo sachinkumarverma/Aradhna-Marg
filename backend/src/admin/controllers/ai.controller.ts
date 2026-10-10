@@ -31,6 +31,15 @@ class AdminAiController {
     }
   };
 
+  public getBulkCounts = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const counts = await this.service.getBulkCounts();
+      sendSuccess(res, 'AI bulk counts retrieved successfully', counts);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public queueJob = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const job = await this.service.queueJob(req.body);

@@ -332,7 +332,7 @@ export const AdminCategories = () => {
                       <Save className="w-4 h-4" />
                     )}
                   </span>
-                  <span className="hidden sm:inline leading-none translate-y-[1px]">
+                  <span className="hidden sm:inline leading-none -translate-y-[0.5px]">
                     {saveMutation.isPending ? 'Saving...' : 'Save'}
                   </span>
                 </button>

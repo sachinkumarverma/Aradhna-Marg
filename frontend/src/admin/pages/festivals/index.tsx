@@ -63,8 +63,17 @@ export const AdminFestivals: React.FC = () => {
       header: 'Festival',
       accessor: (row: any) => (
         <div>
-          <p className="font-bold text-gray-900 flex items-center gap-2">{row.name}</p>
-          <p className="text-xs text-gray-500 truncate max-w-[200px]">{row.description}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-bold text-gray-900">{row.name}</span>
+            {row.name_en && (
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                {row.name_en}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 truncate max-w-[220px] mt-0.5">
+            {row.shortDescription || row.description}
+          </p>
         </div>
       )
     },

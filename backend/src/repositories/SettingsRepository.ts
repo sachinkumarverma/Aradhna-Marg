@@ -38,6 +38,13 @@ export class SettingsRepository {
       seoRobots: row.seo_robots,
       seoCanonicalDomain: row.seo_canonical_domain,
       seoOgImage: row.seo_og_image,
+      schemaOrganization: row.schema_organization ?? false,
+      schemaWebsite: row.schema_website ?? false,
+      schemaBreadcrumb: row.schema_breadcrumb ?? false,
+      schemaArticle: row.schema_article ?? false,
+      schemaSearchAction: row.schema_search_action ?? false,
+      sitemapLastGenerated: row.sitemap_last_generated,
+      sitemapUrlsCount: row.sitemap_urls_count ?? 0,
       googleAnalyticsId: row.google_analytics_id,
       googleSearchConsole: row.google_search_console,
       microsoftClarity: row.microsoft_clarity,
@@ -90,6 +97,13 @@ export class SettingsRepository {
     if (dto.seoRobots !== undefined) dbData.seo_robots = dto.seoRobots;
     if (dto.seoCanonicalDomain !== undefined) dbData.seo_canonical_domain = dto.seoCanonicalDomain;
     if (dto.seoOgImage !== undefined) dbData.seo_og_image = dto.seoOgImage;
+    if (dto.schemaOrganization !== undefined) dbData.schema_organization = dto.schemaOrganization;
+    if (dto.schemaWebsite !== undefined) dbData.schema_website = dto.schemaWebsite;
+    if (dto.schemaBreadcrumb !== undefined) dbData.schema_breadcrumb = dto.schemaBreadcrumb;
+    if (dto.schemaArticle !== undefined) dbData.schema_article = dto.schemaArticle;
+    if (dto.schemaSearchAction !== undefined) dbData.schema_search_action = dto.schemaSearchAction;
+    if (dto.sitemapLastGenerated !== undefined) dbData.sitemap_last_generated = dto.sitemapLastGenerated;
+    if (dto.sitemapUrlsCount !== undefined) dbData.sitemap_urls_count = dto.sitemapUrlsCount;
     if (dto.googleAnalyticsId !== undefined) dbData.google_analytics_id = dto.googleAnalyticsId;
     if (dto.googleSearchConsole !== undefined) dbData.google_search_console = dto.googleSearchConsole;
     if (dto.microsoftClarity !== undefined) dbData.microsoft_clarity = dto.microsoftClarity;

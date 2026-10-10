@@ -1,5 +1,6 @@
 import { AiJobRepository } from '@admin/repositories/AiJobRepository';
 import { CreateAiJobDTO, AiJob } from '@models/AiJob';
+import { aiWorker } from './ai/AiWorker';
 
 export class AiJobService {
   private repository: AiJobRepository;
@@ -20,20 +21,28 @@ export class AiJobService {
     return await this.repository.getStats();
   }
 
+  async getBulkCounts(): Promise<{ bulkSeo: number; bulkExcerpt: number; bulkFestival: number }> {
+    return await this.repository.getBulkCounts();
+  }
+
   async queueJob(dto: CreateAiJobDTO): Promise<AiJob> {
-    // In a real application, you would also enqueue this job to a message broker (e.g. RabbitMQ, Redis BullMQ, or Azure Service Bus)
-    // The actual AI processor would pick it up and update the status in the DB as it progresses.
-    return await this.repository.create(dto);
+    const job = await this.repository.create(dto);
+    // Trigger worker asynchronously to start processing immediately
+    setImmediate(() => {
+      aiWorker.triggerWorker().catch(() => {});
+    });
+    return job;
   }
 
   async retryJob(id: string): Promise<AiJob> {
-    // Update status back to pending to be picked up by the worker
-    return await this.repository.updateStatus(id, 'PENDING', undefined);
+    const job = await this.repository.resetForRetry(id);
+    setImmediate(() => {
+      aiWorker.triggerWorker().catch(() => {});
+    });
+    return job;
   }
 
   async cancelJob(id: string): Promise<AiJob> {
-    // Note: If the job is already PROCESSING, cancellation might require signaling the worker.
-    // For now, we just update the status to FAILED or CANCELLED in DB.
     return await this.repository.updateStatus(id, 'FAILED', 'Cancelled by user');
   }
 
@@ -41,3 +50,5 @@ export class AiJobService {
     await this.repository.delete(id);
   }
 }
+
+export const aiJobService = new AiJobService();

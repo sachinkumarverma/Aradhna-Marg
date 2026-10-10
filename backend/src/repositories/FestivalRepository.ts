@@ -69,7 +69,9 @@ export class FestivalRepository {
 
     if (search) {
       queryParams.push(`%${search}%`);
-      whereClauses.push(`(name ILIKE $${queryParams.length} OR slug ILIKE $${queryParams.length})`);
+      whereClauses.push(
+        `(f.name ILIKE $${queryParams.length} OR f.name_en ILIKE $${queryParams.length} OR f.slug ILIKE $${queryParams.length})`
+      );
     }
 
     const whereStr = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';

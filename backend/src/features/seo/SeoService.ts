@@ -1,4 +1,11 @@
 import { seoRepository } from './SeoRepository';
+import { sitemapGenerator } from '@/seo/generators/SitemapGenerator';
+import { robotsGenerator } from '@/seo/generators/RobotsGenerator';
+import { settingsService } from '@services/SettingsService';
+import { AiJobService } from '@admin/services/AiJobService';
+import { db } from '@common/database/DatabaseClient';
+
+const aiJobService = new AiJobService();
 
 export class SeoService {
   async getOverview() {
@@ -59,15 +66,54 @@ export class SeoService {
   }
 
   async generateSitemap() {
-    return { status: 'Generated', url: '/sitemap.xml', count: 1250, lastGenerated: new Date().toISOString() };
+    const { count } = await sitemapGenerator.generateFullSitemapWithStats();
+    const nowIso = new Date().toISOString();
+
+    await settingsService
+      .updateSettings({
+        sitemapLastGenerated: nowIso,
+        sitemapUrlsCount: count
+      })
+      .catch(() => {});
+
+    return {
+      status: 'Generated',
+      url: '/sitemap.xml',
+      count,
+      lastGenerated: nowIso
+    };
   }
 
   async generateRobots() {
-    return { status: 'Generated', url: '/robots.txt', lastGenerated: new Date().toISOString() };
+    robotsGenerator.generate();
+    return {
+      status: 'Generated',
+      url: '/robots.txt',
+      lastGenerated: new Date().toISOString()
+    };
   }
 
   async generateBulkSEO(data: any) {
-    return { status: 'Queued', jobId: 'job_' + Date.now() };
+    // Count actual eligible records
+    const [bhajanSeo, articleSeo] = await Promise.all([
+      db.query(`SELECT COUNT(*) FROM bhajans WHERE seo_description IS NULL OR trim(seo_description) = ''`),
+      db.query(`SELECT COUNT(*) FROM articles WHERE seo_description IS NULL OR trim(seo_description) = ''`)
+    ]);
+
+    const totalEligible = parseInt(bhajanSeo.rows[0].count, 10) + parseInt(articleSeo.rows[0].count, 10);
+
+    const job = await aiJobService.queueJob({
+      job_name: 'Bulk SEO Meta Generation',
+      content_type: 'Global',
+      action_type: 'BULK_SEO',
+      total_items: totalEligible || 1
+    });
+
+    return {
+      status: 'Queued',
+      jobId: job.id,
+      totalItems: totalEligible
+    };
   }
 }
 

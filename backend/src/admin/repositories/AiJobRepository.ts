@@ -77,11 +77,19 @@ export class AiJobRepository {
 
   async create(dto: CreateAiJobDTO): Promise<AiJob> {
     const query = `
-      INSERT INTO ${this.tableName} (job_name, content_type, action_type, total_items, status)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO ${this.tableName} (job_name, content_type, action_type, total_items, status, content_id, metadata)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
     `;
-    const params = [dto.job_name, dto.content_type, dto.action_type, dto.total_items || 1, 'PENDING'];
+    const params = [
+      dto.job_name,
+      dto.content_type,
+      dto.action_type,
+      dto.total_items || 1,
+      'PENDING',
+      dto.content_id || null,
+      JSON.stringify(dto.metadata || {})
+    ];
 
     const { rows } = await db.query(query, params);
     return rows[0] as AiJob;
@@ -118,6 +126,45 @@ export class AiJobRepository {
     const { rows } = await db.query(query, params);
     if (rows.length === 0) throw new NotFoundError('AI Job not found');
     return rows[0] as AiJob;
+  }
+
+  async resetForRetry(id: string): Promise<AiJob> {
+    const query = `
+      UPDATE ${this.tableName}
+      SET status = 'PENDING',
+          error_message = NULL,
+          started_at = NULL,
+          completed_at = NULL,
+          processed_items = 0,
+          progress = 0,
+          updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `;
+    const { rows } = await db.query(query, [id]);
+    if (rows.length === 0) throw new NotFoundError('AI Job not found');
+    return rows[0] as AiJob;
+  }
+
+  async getBulkCounts(): Promise<{ bulkSeo: number; bulkExcerpt: number; bulkFestival: number }> {
+    const [bhajanSeo, articleSeo, festivalSeo, puranSeo, articleExcerpt, festivalDesc] = await Promise.all([
+      db.query(`SELECT COUNT(*) FROM bhajans WHERE seo_description IS NULL OR trim(seo_description) = ''`),
+      db.query(`SELECT COUNT(*) FROM articles WHERE seo_description IS NULL OR trim(seo_description) = ''`),
+      db.query(`SELECT COUNT(*) FROM festivals WHERE seo_description IS NULL OR trim(seo_description) = ''`),
+      db.query(`SELECT COUNT(*) FROM puranas WHERE seo_description IS NULL OR trim(seo_description) = ''`),
+      db.query(`SELECT COUNT(*) FROM articles WHERE (excerpt IS NULL OR trim(excerpt) = '') AND content IS NOT NULL`),
+      db.query(`SELECT COUNT(*) FROM festivals WHERE short_description IS NULL OR trim(short_description) = ''`)
+    ]);
+
+    const bulkSeo =
+      parseInt(bhajanSeo.rows[0].count, 10) +
+      parseInt(articleSeo.rows[0].count, 10) +
+      parseInt(festivalSeo.rows[0].count, 10) +
+      parseInt(puranSeo.rows[0].count, 10);
+    const bulkExcerpt = parseInt(articleExcerpt.rows[0].count, 10);
+    const bulkFestival = parseInt(festivalDesc.rows[0].count, 10);
+
+    return { bulkSeo, bulkExcerpt, bulkFestival };
   }
 
   async delete(id: string): Promise<void> {

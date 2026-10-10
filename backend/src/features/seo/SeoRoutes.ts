@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import { seoController } from './SeoController';
+import { requireAdmin } from '@middlewares/auth';
 
 const router = Router();
+
+router.use(requireAdmin);
 
 router.get('/overview', seoController.getOverview.bind(seoController));
 router.get('/issues', seoController.getIssues.bind(seoController));

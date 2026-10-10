@@ -1,13 +1,24 @@
+import fs from 'fs';
+import path from 'path';
 import { db } from '@common/database/DatabaseClient';
 import { logger } from '@utils/logger';
 
 export class SitemapGenerator {
   private readonly baseUrl = 'https://aradhnamarg.com';
 
+  private escapeXml(unsafe: string): string {
+    return unsafe
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
   /**
-   * Generates the Master Single Sitemap with all public URLs or Sitemap Index.
+   * Generates the Master Single Sitemap with all public URLs and returns XML and total URL count.
    */
-  public async generateFullSitemap(): Promise<string> {
+  public async generateFullSitemapWithStats(): Promise<{ xml: string; count: number }> {
     const today = new Date().toISOString().split('T')[0];
     const staticRoutes = [
       { loc: `${this.baseUrl}/`, priority: '1.0', changefreq: 'daily' },
@@ -30,7 +41,7 @@ export class SitemapGenerator {
     let entries = staticRoutes
       .map(
         (r) => `  <url>
-    <loc>${r.loc}</loc>
+    <loc>${this.escapeXml(r.loc)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${r.changefreq}</changefreq>
     <priority>${r.priority}</priority>
@@ -38,22 +49,38 @@ export class SitemapGenerator {
       )
       .join('\n');
 
+    let dynamicCount = 0;
+
     try {
       const [bhajans, articles, festivals, puranas, categories, deities] = await Promise.all([
-        db.query(`SELECT slug, updated_at FROM bhajans WHERE status = 'PUBLISHED'`).catch(() => ({ rows: [] })),
-        db.query(`SELECT slug, updated_at FROM articles WHERE status = 'PUBLISHED'`).catch(() => ({ rows: [] })),
-        db.query(`SELECT slug, id, updated_at FROM festivals WHERE status = 'PUBLISHED'`).catch(() => ({ rows: [] })),
-        db.query(`SELECT slug, updated_at FROM puranas WHERE status = 'PUBLISHED'`).catch(() => ({ rows: [] })),
-        db.query(`SELECT slug, id, updated_at FROM categories`).catch(() => ({ rows: [] })),
-        db.query(`SELECT slug, id, updated_at FROM deities`).catch(() => ({ rows: [] }))
+        db
+          .query(`SELECT slug, updated_at FROM bhajans WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL`)
+          .catch(() => ({ rows: [] })),
+        db
+          .query(`SELECT slug, updated_at FROM articles WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL`)
+          .catch(() => ({ rows: [] })),
+        db
+          .query(`SELECT slug, id, updated_at FROM festivals WHERE UPPER(status::text) = 'PUBLISHED'`)
+          .catch(() => ({ rows: [] })),
+        db
+          .query(`SELECT slug, updated_at FROM puranas WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL`)
+          .catch(() => ({ rows: [] })),
+        db
+          .query(`SELECT slug, id, updated_at FROM categories WHERE UPPER(status::text) = 'PUBLISHED'`)
+          .catch(() => ({ rows: [] })),
+        db
+          .query(`SELECT slug, id, updated_at FROM deities WHERE UPPER(status::text) = 'ACTIVE' AND deleted_at IS NULL`)
+          .catch(() => ({ rows: [] }))
       ]);
 
       const appendRows = (rows: any[], pathPrefix: string, priority: string, changefreq: string) => {
         for (const r of rows) {
           const identifier = r.slug || r.id;
           if (!identifier) continue;
+          dynamicCount++;
           const date = (r.updated_at ? new Date(r.updated_at) : new Date()).toISOString().split('T')[0];
-          entries += `\n  <url>\n    <loc>${this.baseUrl}/${pathPrefix}/${identifier}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+          const rawUrl = `${this.baseUrl}/${pathPrefix}/${identifier}`;
+          entries += `\n  <url>\n    <loc>${this.escapeXml(rawUrl)}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
         }
       };
 
@@ -67,29 +94,33 @@ export class SitemapGenerator {
       logger.error({ error }, 'Failed to query dynamic sitemap rows from DB');
     }
 
-    return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>`;
+    const totalCount = staticRoutes.length + dynamicCount;
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>`;
+
+    // Persist to disk if paths exist
+    this.saveToFiles(xml);
+
+    return { xml, count: totalCount };
   }
 
-  /**
-   * Generates the Master Sitemap Index referencing split sitemaps.
-   */
-  public generateIndex(): string {
-    const today = new Date().toISOString().split('T')[0];
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>${this.baseUrl}/sitemaps/bhajans.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${this.baseUrl}/sitemaps/categories.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${this.baseUrl}/sitemaps/gods.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-</sitemapindex>`;
+  public async generateFullSitemap(): Promise<string> {
+    const { xml } = await this.generateFullSitemapWithStats();
+    return xml;
+  }
+
+  private saveToFiles(xml: string): void {
+    const targetDirs = [path.join(process.cwd(), 'public'), path.join(process.cwd(), '..', 'frontend', 'public')];
+
+    for (const dir of targetDirs) {
+      try {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(path.join(dir, 'sitemap.xml'), xml, 'utf8');
+      } catch (err: any) {
+        logger.warn({ dir, error: err.message }, 'Could not save sitemap.xml to disk');
+      }
+    }
   }
 
   /**
@@ -97,13 +128,15 @@ export class SitemapGenerator {
    */
   public async generateBhajansSitemap(): Promise<string> {
     try {
-      const { rows: bhajans } = await db.query(`SELECT slug, updated_at FROM bhajans WHERE status = 'PUBLISHED'`);
+      const { rows: bhajans } = await db.query(
+        `SELECT slug, updated_at FROM bhajans WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL`
+      );
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
       for (const bhajan of bhajans) {
         const date = (bhajan.updated_at ? new Date(bhajan.updated_at) : new Date()).toISOString().split('T')[0];
-        xml += `  <url>\n    <loc>${this.baseUrl}/bhajans/${bhajan.slug}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${this.escapeXml(`${this.baseUrl}/bhajans/${bhajan.slug}`)}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
       }
 
       xml += `</urlset>`;

@@ -39,6 +39,17 @@ export function AdminAI() {
     refetchInterval: 10000 // poll every 10 seconds
   });
 
+  // Fetch real Bulk Counts from Database
+  const { data: bulkCounts, isLoading: isLoadingBulkCounts } = useQuery({
+    queryKey: ['admin-ai-bulk-counts'],
+    queryFn: async () => {
+      const res = await apiClient.get('/admin/ai/bulk-counts');
+      return res.data?.data || { bulkSeo: 0, bulkExcerpt: 0, bulkFestival: 0 };
+    },
+    enabled: activeTab === 'bulk',
+    refetchInterval: activeTab === 'bulk' ? 5000 : false
+  });
+
   // Fetch Jobs based on active tab
   const { data: jobsData, isLoading: jobsLoading } = useQuery({
     queryKey: ['admin-ai-jobs', activeTab],
@@ -73,6 +84,7 @@ export function AdminAI() {
       toast.success('AI Job added to queue');
       queryClient.invalidateQueries({ queryKey: ['admin-ai-stats'] });
       queryClient.invalidateQueries({ queryKey: ['admin-ai-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-ai-bulk-counts'] });
       setActiveTab('queue');
     },
     onError: (err: any) => {
@@ -342,21 +354,21 @@ export function AdminAI() {
                   desc: 'Generates missing SEO descriptions for all Bhajans and Articles',
                   type: 'BULK_SEO',
                   content: 'Global',
-                  items: 150
+                  items: bulkCounts?.bulkSeo ?? 0
                 },
                 {
                   name: 'Generate Article Excerpts',
                   desc: 'Creates short summaries for articles missing an excerpt',
                   type: 'BULK_EXCERPT',
                   content: 'Articles',
-                  items: 45
+                  items: bulkCounts?.bulkExcerpt ?? 0
                 },
                 {
                   name: 'Generate Festival Summaries',
                   desc: 'Fills missing descriptions for upcoming festivals',
                   type: 'BULK_FESTIVAL',
                   content: 'Festivals',
-                  items: 12
+                  items: bulkCounts?.bulkFestival ?? 0
                 }
               ].map((tool) => (
                 <div
@@ -367,17 +379,19 @@ export function AdminAI() {
                     <h3 className="font-semibold text-sm sm:text-base text-gray-900">{tool.name}</h3>
                     <p className="text-xs sm:text-sm text-gray-500 mt-1">{tool.desc}</p>
                     <div className="mt-2.5 sm:mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      ~{tool.items} records detected
+                      {isLoadingBulkCounts
+                        ? 'Auditing database...'
+                        : `${tool.items} eligible record${tool.items === 1 ? '' : 's'} detected`}
                     </div>
                   </div>
                   <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-200">
                     <AdminButton
                       onClick={() => handleQueueJob(tool.name, tool.content, tool.type, tool.items)}
-                      disabled={queueMutation.isPending}
+                      disabled={queueMutation.isPending || tool.items === 0}
                       className="w-full justify-center"
                       leftIcon={<Zap className="w-4 h-4" />}
                     >
-                      Run Bulk Job
+                      {tool.items === 0 ? 'No Eligible Records' : 'Run Bulk Job'}
                     </AdminButton>
                   </div>
                 </div>

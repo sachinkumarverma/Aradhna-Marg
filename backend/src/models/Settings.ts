@@ -40,6 +40,13 @@ export interface Settings {
   seoRobots?: string;
   seoCanonicalDomain?: string;
   seoOgImage?: string;
+  schemaOrganization?: boolean;
+  schemaWebsite?: boolean;
+  schemaBreadcrumb?: boolean;
+  schemaArticle?: boolean;
+  schemaSearchAction?: boolean;
+  sitemapLastGenerated?: string;
+  sitemapUrlsCount?: number;
 
   // Analytics
   googleAnalyticsId?: string;

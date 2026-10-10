@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Activity,
   AlertTriangle,
@@ -10,7 +10,12 @@ import {
   Search,
   Settings,
   ShieldAlert,
-  ShieldCheck
+  ShieldCheck,
+  CheckCircle2,
+  Clock,
+  Zap,
+  XCircle,
+  ExternalLink
 } from 'lucide-react';
 import { SeoApi } from '@admin/features/seo/SeoApi';
 import { apiClient } from '@api/client';
@@ -29,7 +34,28 @@ const JumpingDots = ({ colorClass = 'text-gray-400' }: { colorClass?: string }) 
 
 export const AdminSEO = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Form states for Default SEO
+  const [siteTitle, setSiteTitle] = useState('');
+  const [metaDescription, setMetaDescription] = useState('');
+  const [isSavingSeo, setIsSavingSeo] = useState(false);
+
+  // Form states for Schema toggles
+  const [schemas, setSchemas] = useState({
+    schemaOrganization: false,
+    schemaWebsite: false,
+    schemaBreadcrumb: false,
+    schemaArticle: false,
+    schemaSearchAction: false
+  });
+  const [isSavingSchema, setIsSavingSchema] = useState(false);
+
+  // Loading states for Tools
+  const [isGeneratingSitemap, setIsGeneratingSitemap] = useState(false);
+  const [isGeneratingRobots, setIsGeneratingRobots] = useState(false);
+  const [isStartingBulk, setIsStartingBulk] = useState(false);
 
   const { data: overview, isLoading: isLoadingOverview } = useQuery({
     queryKey: ['seo-overview'],
@@ -55,39 +81,100 @@ export const AdminSEO = () => {
     }
   });
 
-  const handleSaveSettings = async (updates: any) => {
+  // Query recent bulk SEO jobs
+  const { data: bulkJobs } = useQuery({
+    queryKey: ['admin-seo-bulk-jobs'],
+    queryFn: async () => {
+      const res = await apiClient.get('/admin/ai/jobs', { params: { limit: 10 } });
+      const allJobs = res.data?.data?.data || [];
+      return allJobs.filter((j: any) => j.action_type === 'BULK_SEO' || (j.job_name && j.job_name.includes('SEO')));
+    },
+    enabled: activeTab === 'generator',
+    refetchInterval: activeTab === 'generator' ? 4000 : false
+  });
+
+  // Sync settings into controlled local state
+  useEffect(() => {
+    if (settings) {
+      setSiteTitle(settings.seoSiteTitle || '');
+      setMetaDescription(settings.seoMetaDescription || '');
+      setSchemas({
+        schemaOrganization: !!settings.schemaOrganization,
+        schemaWebsite: !!settings.schemaWebsite,
+        schemaBreadcrumb: !!settings.schemaBreadcrumb,
+        schemaArticle: !!settings.schemaArticle,
+        schemaSearchAction: !!settings.schemaSearchAction
+      });
+    }
+  }, [settings]);
+
+  const handleSaveDefaultSeo = async () => {
+    setIsSavingSeo(true);
     try {
-      await apiClient.put('/v1/settings', updates);
-      toast.success('SEO settings saved successfully');
-    } catch (error) {
-      toast.error('Failed to save settings');
+      await apiClient.put('/v1/settings', {
+        seoSiteTitle: siteTitle,
+        seoMetaDescription: metaDescription
+      });
+      await queryClient.invalidateQueries({ queryKey: ['settings'] });
+      toast.success('Default SEO fallbacks saved successfully');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to save SEO settings');
+    } finally {
+      setIsSavingSeo(false);
+    }
+  };
+
+  const handleSaveSchemaSettings = async () => {
+    setIsSavingSchema(true);
+    try {
+      await apiClient.put('/v1/settings', schemas);
+      await queryClient.invalidateQueries({ queryKey: ['settings'] });
+      toast.success('Schema settings saved successfully');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to save schema settings');
+    } finally {
+      setIsSavingSchema(false);
     }
   };
 
   const handleGenerateSitemap = async () => {
+    setIsGeneratingSitemap(true);
     try {
-      await SeoApi.generateSitemap();
-      toast.success('Sitemap generated successfully');
-    } catch (error) {
-      toast.error('Failed to generate sitemap');
+      const res = await SeoApi.generateSitemap();
+      await queryClient.invalidateQueries({ queryKey: ['settings'] });
+      const count = res.data?.count ?? 0;
+      toast.success(`XML Sitemap generated successfully (${count} URLs)`);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to generate sitemap');
+    } finally {
+      setIsGeneratingSitemap(false);
     }
   };
 
   const handleGenerateRobots = async () => {
+    setIsGeneratingRobots(true);
     try {
       await SeoApi.generateRobots();
       toast.success('robots.txt generated successfully');
-    } catch (error) {
-      toast.error('Failed to generate robots.txt');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to generate robots.txt');
+    } finally {
+      setIsGeneratingRobots(false);
     }
   };
 
   const handleGenerateBulk = async () => {
+    setIsStartingBulk(true);
     try {
-      await SeoApi.generateBulk();
-      toast.success('Bulk generation job queued successfully in the background');
-    } catch (error) {
-      toast.error('Bulk generation failed to start');
+      const res = await SeoApi.generateBulk();
+      queryClient.invalidateQueries({ queryKey: ['admin-seo-bulk-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['seo-overview'] });
+      const total = res.data?.totalItems ?? 0;
+      toast.success(`Bulk SEO job queued (${total} records to evaluate)`);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Bulk generation failed to start');
+    } finally {
+      setIsStartingBulk(false);
     }
   };
 
@@ -318,7 +405,9 @@ export const AdminSEO = () => {
               <label className="text-sm font-semibold text-gray-700">Default Site Title</label>
               <input
                 type="text"
-                defaultValue={settings?.seoSiteTitle}
+                value={siteTitle}
+                onChange={(e) => setSiteTitle(e.target.value)}
+                placeholder="e.g. Aradhna Marg | Devotional Bhajans, Puranas & Festivals"
                 className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
               />
             </div>
@@ -326,12 +415,18 @@ export const AdminSEO = () => {
               <label className="text-sm font-semibold text-gray-700">Default Meta Description</label>
               <textarea
                 rows={4}
-                defaultValue={settings?.seoMetaDescription}
+                value={metaDescription}
+                onChange={(e) => setMetaDescription(e.target.value)}
+                placeholder="e.g. Discover authentic devotional bhajans, sacred puranas, and festival wisdom on Aradhna Marg."
                 className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron resize-y"
               />
             </div>
-            <button className="px-4 py-2 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 w-full mt-2">
-              Save Default SEO
+            <button
+              onClick={handleSaveDefaultSeo}
+              disabled={isSavingSeo}
+              className="px-4 py-2 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 disabled:opacity-60 w-full mt-2 transition-colors flex items-center justify-center gap-2"
+            >
+              {isSavingSeo ? 'Saving Fallbacks...' : 'Save Default SEO'}
             </button>
           </div>
 
@@ -353,14 +448,28 @@ export const AdminSEO = () => {
                 <label key={schema.key} className="flex items-center justify-between cursor-pointer">
                   <span className="text-sm font-medium text-gray-700">{schema.label}</span>
                   <div className="relative">
-                    <input type="checkbox" defaultChecked={settings?.[schema.key]} className="sr-only peer" />
+                    <input
+                      type="checkbox"
+                      checked={schemas[schema.key as keyof typeof schemas] || false}
+                      onChange={(e) =>
+                        setSchemas((prev) => ({
+                          ...prev,
+                          [schema.key]: e.target.checked
+                        }))
+                      }
+                      className="sr-only peer"
+                    />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-saffron"></div>
                   </div>
                 </label>
               ))}
             </div>
-            <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 w-full mt-2">
-              Save Schema Settings
+            <button
+              onClick={handleSaveSchemaSettings}
+              disabled={isSavingSchema}
+              className="px-4 py-2 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 disabled:opacity-60 w-full mt-2 transition-colors flex items-center justify-center gap-2"
+            >
+              {isSavingSchema ? 'Saving Schemas...' : 'Save Schema Settings'}
             </button>
           </div>
         </div>
@@ -378,7 +487,13 @@ export const AdminSEO = () => {
               Last generated:{' '}
               <strong>
                 {settings?.sitemapLastGenerated
-                  ? new Date(settings.sitemapLastGenerated).toLocaleDateString()
+                  ? new Date(settings.sitemapLastGenerated).toLocaleString('en-IN', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })
                   : 'Never'}
               </strong>{' '}
               <br />
@@ -388,16 +503,18 @@ export const AdminSEO = () => {
             <div className="flex gap-3 w-full">
               <button
                 onClick={handleGenerateSitemap}
-                className="flex-1 px-4 py-2 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90"
+                disabled={isGeneratingSitemap}
+                className="flex-1 px-4 py-2 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 disabled:opacity-60 transition-colors"
               >
-                Generate
+                {isGeneratingSitemap ? 'Generating...' : 'Generate'}
               </button>
               <a
                 href="/sitemap.xml"
-                download
-                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 block text-center"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 block text-center transition-colors"
               >
-                Download
+                View Sitemap
               </a>
             </div>
           </div>
@@ -410,12 +527,23 @@ export const AdminSEO = () => {
             <p className="text-sm text-gray-500 mb-6">
               Automatically generate a standard robots.txt file to guide search engine crawlers properly.
             </p>
-            <button
-              onClick={handleGenerateRobots}
-              className="w-full px-4 py-2 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 mt-auto"
-            >
-              Generate robots.txt
-            </button>
+            <div className="flex gap-3 w-full mt-auto">
+              <button
+                onClick={handleGenerateRobots}
+                disabled={isGeneratingRobots}
+                className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 disabled:opacity-60 transition-colors"
+              >
+                {isGeneratingRobots ? 'Generating...' : 'Generate robots.txt'}
+              </button>
+              <a
+                href="/robots.txt"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 block text-center transition-colors"
+              >
+                View robots.txt
+              </a>
+            </div>
           </div>
         </div>
       )}
@@ -434,37 +562,82 @@ export const AdminSEO = () => {
             </p>
 
             <div className="bg-gray-50 p-4 rounded-md border border-gray-200 text-left space-y-4 mb-8">
-              <h4 className="font-semibold text-gray-900">Select content to generate:</h4>
+              <h4 className="font-semibold text-gray-900">Supported content types:</h4>
               <div className="grid grid-cols-2 gap-3">
                 {['Bhajans', 'Articles', 'Festivals', 'Puranas', 'Categories'].map((item) => (
-                  <label key={item} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="text-saffron rounded border-gray-300 focus:ring-saffron"
-                    />
+                  <div key={item} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600" />
                     <span className="text-sm font-medium text-gray-700">{item}</span>
-                  </label>
+                  </div>
                 ))}
               </div>
             </div>
 
             <button
               onClick={handleGenerateBulk}
-              className="px-6 py-3 bg-saffron text-white rounded-md font-bold hover:bg-saffron/90 w-full shadow-sm text-lg flex items-center justify-center gap-2 transition-colors"
+              disabled={isStartingBulk}
+              className="px-6 py-3 bg-saffron text-white rounded-md font-bold hover:bg-saffron/90 disabled:opacity-60 w-full shadow-sm text-lg flex items-center justify-center gap-2 transition-colors"
             >
-              Start Bulk Generation Job
+              <Zap className="w-5 h-5" />
+              {isStartingBulk ? 'Queueing Bulk Job...' : 'Start Bulk Generation Job'}
             </button>
           </div>
 
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6">
-            <h3 className="font-bold text-gray-900 mb-4">Background Job Status</h3>
-            <div className="bg-gray-50 border border-gray-200 rounded-md divide-y divide-gray-100 text-center">
-              <div className="p-8 text-gray-500">
-                <Search className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-sm">No SEO generation jobs have been executed yet.</p>
-              </div>
-              {/* Future statuses: Queued, Running, Completed, Failed */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900">Background Job Status</h3>
+              <Link
+                to={getAdminPath('/ai')}
+                className="text-xs text-saffron hover:underline flex items-center gap-1 font-medium"
+              >
+                Queue <ExternalLink className="w-3 h-3" />
+              </Link>
+            </div>
+            <div className="bg-gray-50 border border-gray-200 rounded-md divide-y divide-gray-100">
+              {bulkJobs && bulkJobs.length > 0 ? (
+                bulkJobs.slice(0, 4).map((job: any) => (
+                  <div key={job.id} className="p-3 text-left space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-gray-800 truncate max-w-[150px]">{job.job_name}</span>
+                      <span
+                        className={cn(
+                          'text-[10px] font-bold px-2 py-0.5 rounded-full uppercase',
+                          job.status === 'COMPLETED'
+                            ? 'bg-green-100 text-green-800'
+                            : job.status === 'PROCESSING'
+                              ? 'bg-blue-100 text-blue-800 animate-pulse'
+                              : job.status === 'FAILED'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-700'
+                        )}
+                      >
+                        {job.status}
+                      </span>
+                    </div>
+                    {job.status === 'PROCESSING' && (
+                      <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                          style={{ width: `${job.progress || 10}%` }}
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between text-[11px] text-gray-500">
+                      <span>
+                        {job.processed_items || 0} / {job.total_items || 0} items
+                      </span>
+                      <span>
+                        {new Date(job.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 text-gray-500 text-center">
+                  <Search className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm">No SEO generation jobs have been executed yet.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

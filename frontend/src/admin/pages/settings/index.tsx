@@ -101,7 +101,7 @@ const SaveButton = ({ isPending }: { isPending: boolean }) => (
       <span className="shrink-0">
         {isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
       </span>
-      <span className="leading-none translate-y-[1px]">{isPending ? 'Saving...' : 'Save Changes'}</span>
+      <span className="leading-none -translate-y-[0.5px]">{isPending ? 'Saving...' : 'Save Changes'}</span>
     </button>
   </div>
 );

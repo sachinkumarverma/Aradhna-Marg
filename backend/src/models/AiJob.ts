@@ -7,6 +7,8 @@ export interface AiJob {
   progress: number;
   total_items: number;
   processed_items: number;
+  content_id?: string;
+  metadata?: any;
   started_at?: string;
   completed_at?: string;
   error_message?: string;
@@ -19,4 +21,6 @@ export interface CreateAiJobDTO {
   content_type: string;
   action_type: string;
   total_items?: number;
+  content_id?: string;
+  metadata?: any;
 }

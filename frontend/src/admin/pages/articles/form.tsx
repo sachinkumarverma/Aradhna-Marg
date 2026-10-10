@@ -143,6 +143,12 @@ export const AdminArticleForm = () => {
   const mapOpts = (arr: any[], idKey = 'id', labelKey = 'name') =>
     (arr || []).map((a) => ({ value: a[idKey], label: a[labelKey] || a.title }));
 
+  const mapFestivalOpts = (arr: any[]) =>
+    (arr || []).map((f) => ({
+      value: f.id,
+      label: f.name_en || f.name
+    }));
+
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const payload = { ...data };
@@ -227,7 +233,7 @@ export const AdminArticleForm = () => {
                   className="inline-flex items-center justify-center gap-2 p-2 sm:px-4 sm:py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm cursor-pointer shrink-0"
                 >
                   <Eye className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline leading-none translate-y-[1px]">Live Preview</span>
+                  <span className="hidden sm:inline leading-none -translate-y-[0.5px]">Live Preview</span>
                 </button>
                 <button
                   type="button"
@@ -241,7 +247,7 @@ export const AdminArticleForm = () => {
                   className="inline-flex items-center justify-center gap-2 p-2 sm:px-4 sm:py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
                 >
                   <Save className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline leading-none translate-y-[1px]">Save as Draft</span>
+                  <span className="hidden sm:inline leading-none -translate-y-[0.5px]">Save as Draft</span>
                 </button>
                 <button
                   onClick={() => {
@@ -258,7 +264,7 @@ export const AdminArticleForm = () => {
                   ) : (
                     <Send className="w-4 h-4 shrink-0" />
                   )}
-                  <span className="hidden sm:inline leading-none translate-y-[1px]">
+                  <span className="hidden sm:inline leading-none -translate-y-[0.5px]">
                     {saveMutation.isPending || isUploading ? 'Publishing...' : 'Publish'}
                   </span>
                 </button>
@@ -583,7 +589,7 @@ export const AdminArticleForm = () => {
                           control={control}
                           render={({ field }) => (
                             <MultiSelect
-                              options={mapOpts(festivalsData)}
+                              options={mapFestivalOpts(festivalsData)}
                               values={field.value}
                               onChange={field.onChange}
                               placeholder="Select festivals..."

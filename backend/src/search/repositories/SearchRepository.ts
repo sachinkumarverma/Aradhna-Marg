@@ -29,7 +29,16 @@ class SearchRepository {
           '🪔 भजन' as type_label
         FROM bhajans b
         WHERE (b.status = 'PUBLISHED' OR b.status IS NULL) AND b.deleted_at IS NULL
-          AND ($1 = '%' OR b.title ILIKE $1 OR b.hindi_title ILIKE $1 OR b.english_title ILIKE $1 OR b.title_en ILIKE $1 OR b.description ILIKE $1 OR b.lyrics ILIKE $1 OR b.lyrics_english ILIKE $1 OR b.slug ILIKE $1)
+          AND ($1 = '%' OR b.title ILIKE $1 OR b.hindi_title ILIKE $1 OR b.english_title ILIKE $1 OR b.title_en ILIKE $1 OR b.description ILIKE $1 OR b.lyrics ILIKE $1 OR b.lyrics_english ILIKE $1 OR b.slug ILIKE $1
+               OR EXISTS (
+                 SELECT 1 FROM festivals f
+                 WHERE (f.name ILIKE $1 OR f.name_en ILIKE $1)
+                   AND (
+                     b.festival_id = f.id
+                     OR EXISTS (SELECT 1 FROM festival_bhajans fb WHERE fb.bhajan_id = b.id AND fb.festival_id = f.id)
+                   )
+               )
+          )
 
         UNION ALL
 
@@ -67,7 +76,16 @@ class SearchRepository {
         FROM articles a
         LEFT JOIN media_files m ON a.featured_image_id = m.id
         WHERE (a.status = 'PUBLISHED' OR a.status IS NULL) AND a.deleted_at IS NULL
-          AND ($1 = '%' OR a.title ILIKE $1 OR a.title_en ILIKE $1 OR a.content ILIKE $1 OR a.content_en ILIKE $1 OR a.excerpt ILIKE $1 OR a.excerpt_en ILIKE $1 OR a.slug ILIKE $1)
+          AND ($1 = '%' OR a.title ILIKE $1 OR a.title_en ILIKE $1 OR a.content ILIKE $1 OR a.content_en ILIKE $1 OR a.excerpt ILIKE $1 OR a.excerpt_en ILIKE $1 OR a.slug ILIKE $1
+               OR EXISTS (
+                 SELECT 1 FROM festivals f
+                 WHERE (f.name ILIKE $1 OR f.name_en ILIKE $1)
+                   AND (
+                     EXISTS (SELECT 1 FROM article_festivals af WHERE af.article_id = a.id AND af.festival_id = f.id)
+                     OR EXISTS (SELECT 1 FROM festival_articles fa WHERE fa.article_id = a.id AND fa.festival_id = f.id)
+                   )
+               )
+          )
 
         UNION ALL
 
@@ -167,11 +185,11 @@ class SearchRepository {
 
     const countQuery = `
       SELECT COUNT(*) as total FROM (
-        SELECT b.id, 'BHAJAN' as type FROM bhajans b WHERE (b.status = 'PUBLISHED' OR b.status IS NULL) AND b.deleted_at IS NULL AND ($1 = '%' OR b.title ILIKE $1 OR b.hindi_title ILIKE $1 OR b.english_title ILIKE $1 OR b.title_en ILIKE $1 OR b.description ILIKE $1 OR b.lyrics ILIKE $1 OR b.lyrics_english ILIKE $1 OR b.slug ILIKE $1)
+        SELECT b.id, 'BHAJAN' as type FROM bhajans b WHERE (b.status = 'PUBLISHED' OR b.status IS NULL) AND b.deleted_at IS NULL AND ($1 = '%' OR b.title ILIKE $1 OR b.hindi_title ILIKE $1 OR b.english_title ILIKE $1 OR b.title_en ILIKE $1 OR b.description ILIKE $1 OR b.lyrics ILIKE $1 OR b.lyrics_english ILIKE $1 OR b.slug ILIKE $1 OR EXISTS (SELECT 1 FROM festivals f WHERE (f.name ILIKE $1 OR f.name_en ILIKE $1) AND (b.festival_id = f.id OR EXISTS (SELECT 1 FROM festival_bhajans fb WHERE fb.bhajan_id = b.id AND fb.festival_id = f.id))))
         UNION ALL
         SELECT y.id, 'VIDEO' as type FROM youtube_videos y WHERE ($1 = '%' OR y.title ILIKE $1 OR y.description ILIKE $1 OR y.channel_name ILIKE $1 OR y.youtube_video_id ILIKE $1)
         UNION ALL
-        SELECT a.id, 'ARTICLE' as type FROM articles a WHERE (a.status = 'PUBLISHED' OR a.status IS NULL) AND a.deleted_at IS NULL AND ($1 = '%' OR a.title ILIKE $1 OR a.title_en ILIKE $1 OR a.content ILIKE $1 OR a.content_en ILIKE $1 OR a.excerpt ILIKE $1 OR a.excerpt_en ILIKE $1 OR a.slug ILIKE $1)
+        SELECT a.id, 'ARTICLE' as type FROM articles a WHERE (a.status = 'PUBLISHED' OR a.status IS NULL) AND a.deleted_at IS NULL AND ($1 = '%' OR a.title ILIKE $1 OR a.title_en ILIKE $1 OR a.content ILIKE $1 OR a.content_en ILIKE $1 OR a.excerpt ILIKE $1 OR a.excerpt_en ILIKE $1 OR a.slug ILIKE $1 OR EXISTS (SELECT 1 FROM festivals f WHERE (f.name ILIKE $1 OR f.name_en ILIKE $1) AND (EXISTS (SELECT 1 FROM article_festivals af WHERE af.article_id = a.id AND af.festival_id = f.id) OR EXISTS (SELECT 1 FROM festival_articles fa WHERE fa.article_id = a.id AND fa.festival_id = f.id))))
         UNION ALL
         SELECT f.id, 'FESTIVAL' as type FROM festivals f WHERE (f.status ILIKE 'published' OR f.status IS NULL) AND ($1 = '%' OR f.name ILIKE $1 OR f.name_en ILIKE $1 OR f.content ILIKE $1 OR f.content_en ILIKE $1 OR f.short_description ILIKE $1 OR f.short_description_en ILIKE $1 OR f.slug ILIKE $1)
         UNION ALL

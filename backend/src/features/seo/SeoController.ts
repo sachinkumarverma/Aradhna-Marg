@@ -23,8 +23,8 @@ export class SeoController {
 
   async generateSitemap(req: Request, res: Response, next: NextFunction) {
     try {
-      await seoService.generateSitemap();
-      return sendSuccess(res, 'Sitemap generation triggered');
+      const data = await seoService.generateSitemap();
+      return sendSuccess(res, 'Sitemap generated successfully', data);
     } catch (error) {
       next(error);
     }
@@ -32,8 +32,8 @@ export class SeoController {
 
   async generateRobots(req: Request, res: Response, next: NextFunction) {
     try {
-      await seoService.generateRobots();
-      return sendSuccess(res, 'robots.txt generation triggered');
+      const data = await seoService.generateRobots();
+      return sendSuccess(res, 'robots.txt generated successfully', data);
     } catch (error) {
       next(error);
     }
@@ -41,8 +41,8 @@ export class SeoController {
 
   async generateBulkSEO(req: Request, res: Response, next: NextFunction) {
     try {
-      await seoService.generateBulkSEO(req.body);
-      return sendSuccess(res, 'Bulk SEO generation started');
+      const data = await seoService.generateBulkSEO(req.body);
+      return sendSuccess(res, 'Bulk SEO generation started', data);
     } catch (error) {
       next(error);
     }

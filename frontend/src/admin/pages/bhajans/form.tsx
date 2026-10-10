@@ -181,7 +181,7 @@ export const AdminBhajanForm = () => {
               className="inline-flex items-center justify-center gap-2 p-2 sm:px-4 sm:py-2 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
             >
               <Save className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline leading-none translate-y-[1px]">Save as Draft</span>
+              <span className="hidden sm:inline leading-none -translate-y-[0.5px]">Save as Draft</span>
             </button>
             <button
               onClick={() => {
@@ -198,7 +198,7 @@ export const AdminBhajanForm = () => {
               ) : (
                 <Send className="w-4 h-4 shrink-0" />
               )}
-              <span className="hidden sm:inline leading-none translate-y-[1px]">
+              <span className="hidden sm:inline leading-none -translate-y-[0.5px]">
                 {saveMutation.isPending ? 'Publishing...' : 'Publish'}
               </span>
             </button>

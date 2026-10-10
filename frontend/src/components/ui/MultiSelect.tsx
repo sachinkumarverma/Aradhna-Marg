@@ -132,15 +132,15 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                   >
                     <div
                       className={cn(
-                        'w-4 h-4 border rounded mr-3 flex items-center justify-center transition-colors',
+                        'w-4 h-4 border rounded mr-3 flex items-center justify-center transition-colors shrink-0',
                         isSelected ? 'bg-saffron border-saffron' : 'border-gray-300'
                       )}
                     >
-                      {isSelected && <Check className="w-3 h-3 text-white" />}
+                      {isSelected && <Check className="w-3 h-3 text-white" strokeWidth={2.5} />}
                     </div>
                     <span
                       className={cn(
-                        'whitespace-nowrap pr-4',
+                        'flex-1 min-w-0 truncate text-sm',
                         isSelected ? 'font-medium text-saffron' : 'text-gray-700'
                       )}
                     >

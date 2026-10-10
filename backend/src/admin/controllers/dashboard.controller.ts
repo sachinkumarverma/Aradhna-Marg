@@ -27,6 +27,9 @@ class DashboardController {
         },
         {
           rows: [{ total: totalGods }]
+        },
+        {
+          rows: [viewsStats]
         }
       ] = await Promise.all([
         db.query(`SELECT COUNT(*) as total FROM bhajans WHERE youtube_video_id IS NULL AND deleted_at IS NULL`),
@@ -37,7 +40,18 @@ class DashboardController {
         db.query(`SELECT COUNT(*) as total FROM ai_jobs WHERE status = 'FAILED'`),
         db.query(`SELECT COUNT(*) as total FROM categories`),
         db.query(`SELECT COUNT(*) as total FROM festivals`),
-        db.query(`SELECT COUNT(*) as total FROM gods`)
+        db.query(`SELECT COUNT(*) as total FROM gods`),
+        db.query(`
+          SELECT 
+            COALESCE((SELECT SUM(views) FROM bhajans WHERE deleted_at IS NULL), 0) as bhajan_views,
+            COALESCE((SELECT SUM(view_count) FROM articles WHERE deleted_at IS NULL), 0) as article_views,
+            COALESCE((SELECT SUM(view_count) FROM puranas WHERE deleted_at IS NULL), 0) as puran_views,
+            (
+              COALESCE((SELECT SUM(views) FROM bhajans WHERE deleted_at IS NULL), 0) +
+              COALESCE((SELECT SUM(view_count) FROM articles WHERE deleted_at IS NULL), 0) +
+              COALESCE((SELECT SUM(view_count) FROM puranas WHERE deleted_at IS NULL), 0)
+            ) as total_views
+        `)
       ]);
 
       const tb = parseInt(totalBhajans, 10) || 0;
@@ -47,6 +61,10 @@ class DashboardController {
       const tc = parseInt(totalCategories, 10) || 0;
       const tf = parseInt(totalFestivals, 10) || 0;
       const tg = parseInt(totalGods, 10) || 0;
+      const realTotalViews = parseInt(viewsStats?.total_views || '0', 10);
+      const bhajanViews = parseInt(viewsStats?.bhajan_views || '0', 10);
+      const articleViews = parseInt(viewsStats?.article_views || '0', 10);
+      const puranViews = parseInt(viewsStats?.puran_views || '0', 10);
 
       const stats = {
         totalBhajans: tb,
@@ -54,12 +72,16 @@ class DashboardController {
         draft: tb - pb,
         pendingAi: pa,
         failedAi: fa,
-        pendingPdfs: 0, // Mocked PDFs (since there is no obvious PDF table)
+        pendingPdfs: 0,
         totalCategories: tc,
         totalFestivals: tf,
         totalGods: tg,
-        todayViews: 1250, // Real analytics integration would replace this
-        monthViews: 45000 // Real analytics integration would replace this
+        totalViews: realTotalViews,
+        todayViews: realTotalViews,
+        monthViews: realTotalViews,
+        bhajanViews,
+        articleViews,
+        puranViews
       };
 
       return sendSuccess(res, 'Dashboard stats fetched', stats);
