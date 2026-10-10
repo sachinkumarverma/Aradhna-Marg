@@ -255,7 +255,7 @@ export const AdminYoutube = () => {
           className="flex items-center justify-center h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 bg-[#ff3b00] text-white rounded-md font-bold hover:bg-[#e63500] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
         >
           <RefreshCw className={`w-4 h-4 shrink-0 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
-          <span className="hidden sm:inline ml-1.5 text-xs font-semibold">
+          <span className="hidden sm:inline ml-1.5 text-sm font-semibold">
             {syncMutation.isPending ? 'Syncing...' : 'Sync Now'}
           </span>
         </button>

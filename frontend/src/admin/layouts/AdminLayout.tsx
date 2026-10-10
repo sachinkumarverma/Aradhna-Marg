@@ -27,6 +27,15 @@ export const AdminLayout: React.FC = () => {
     checkAuth();
   }, [navigate, location]);
 
+  useEffect(() => {
+    document.documentElement.classList.add('admin-html');
+    document.body.classList.add('admin-body');
+    return () => {
+      document.documentElement.classList.remove('admin-html');
+      document.body.classList.remove('admin-body');
+    };
+  }, []);
+
   const handleLogout = async () => {
     await logout();
     navigate(getAdminPath('/login'), { replace: true });
@@ -41,7 +50,7 @@ export const AdminLayout: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50 font-sans">
+    <div className="fixed inset-0 flex overflow-hidden bg-gray-50 font-sans">
       <SEOHead title="Admin Dashboard" noIndex={true} />
       <SessionManager />
 
@@ -49,9 +58,9 @@ export const AdminLayout: React.FC = () => {
       <AdminSidebar isMobileOpen={isMobileOpen} onClose={() => setIsMobileOpen(false)} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col w-full min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 bg-[#ff3b00] flex items-center justify-between px-4 sm:px-6 z-10 shadow-md">
+        <header className="h-16 shrink-0 bg-[#ff3b00] flex items-center justify-between px-4 sm:px-6 z-10 shadow-md">
           <div className="flex items-center gap-4">
             <button
               className="lg:hidden p-2 -ml-2 text-white/90 hover:text-white hover:bg-white/10 rounded-md transition-colors"

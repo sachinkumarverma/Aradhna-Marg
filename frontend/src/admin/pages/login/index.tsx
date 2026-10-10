@@ -44,14 +44,14 @@ export const AdminLogin: React.FC = () => {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
         <CustomLoader fullScreen={false} text="Checking access..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-6 sm:py-12">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4 py-6 sm:py-12">
       <SEOHead title="Admin Portal Login" canonicalPath={getAdminPath('/login')} noIndex={true} />
 
       <div className="max-w-[320px] sm:max-w-md w-full bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-gray-100">

@@ -63,14 +63,7 @@ export const AdminFestivals: React.FC = () => {
       header: 'Festival',
       accessor: (row: any) => (
         <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-gray-900">{row.name}</span>
-            {row.name_en && (
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
-                {row.name_en}
-              </span>
-            )}
-          </div>
+          <p className="font-bold text-gray-900">{row.name}</p>
           <p className="text-xs text-gray-500 truncate max-w-[220px] mt-0.5">
             {row.shortDescription || row.description}
           </p>
@@ -170,8 +163,8 @@ export const AdminFestivals: React.FC = () => {
             aria-label="Add Festival"
             className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 gap-0 shrink-0"
           >
-            <Plus className="w-4 h-4 shrink-0" />
-            <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Add Festival</span>
+            <Plus className="w-4 h-4 shrink-0 stroke-[2.8]" strokeWidth={2.8} />
+            <span className="hidden sm:inline ml-1.5 text-sm font-semibold">Add Festival</span>
           </AdminButton>
         </div>
       </div>

@@ -83,7 +83,7 @@ export const AdminSystemHealth: React.FC = () => {
           className="flex items-center justify-center h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 bg-saffron text-white rounded-md hover:bg-saffron/90 transition-colors font-medium shadow-sm disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
         >
           <RefreshCw className={`w-4 h-4 shrink-0 ${isFetching ? 'animate-spin' : ''}`} />
-          <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Refresh</span>
+          <span className="hidden sm:inline ml-1.5 text-sm font-semibold">Refresh</span>
         </button>
       </div>
 

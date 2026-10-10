@@ -18,8 +18,8 @@ export function AdminAdvertisements() {
           aria-label="Create Ad"
           className="flex items-center justify-center h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 bg-saffron text-white rounded-md hover:bg-golden transition-colors shrink-0"
         >
-          <Plus className="w-4 h-4 shrink-0" />
-          <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Create Ad</span>
+          <Plus className="w-4 h-4 shrink-0 stroke-[2.8]" strokeWidth={2.8} />
+          <span className="hidden sm:inline ml-1.5 text-sm font-semibold">Create Ad</span>
         </button>
       </div>
 

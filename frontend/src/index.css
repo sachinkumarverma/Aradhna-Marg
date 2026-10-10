@@ -344,3 +344,13 @@ header *::-webkit-scrollbar {
 .ql-toolbar {
   @apply bg-white;
 }
+
+/* Admin Pages Base Styling */
+html.admin-html {
+  font-size: 15px; /* ~94% scale for crisp, sleek density matching user preference */
+}
+
+body.admin-body {
+  overflow: hidden;
+  height: 100%;
+}

@@ -79,7 +79,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
   );
 
   const sidebarClasses = cn(
-    'fixed inset-y-0 left-0 z-50 w-64 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
+    'fixed inset-y-0 left-0 z-50 w-64 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-full lg:flex-shrink-0',
     isMobileOpen ? 'translate-x-0' : '-translate-x-full'
   );
 
@@ -89,7 +89,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
       {isMobileOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onClose} />}
 
       <aside className={sidebarClasses}>
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col overflow-hidden">
           {/* Header */}
           <div className="px-6 h-16 border-b border-[#e63500] flex-shrink-0 flex items-center bg-[#ff3b00] shadow-sm relative z-20 -mr-[1px]">
             <div className="flex items-center gap-3">

@@ -147,8 +147,8 @@ export const AdminArticles: React.FC = () => {
             aria-label="Create Article"
             className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3.5 gap-0 shrink-0"
           >
-            <Plus className="w-4 h-4 shrink-0" />
-            <span className="hidden sm:inline ml-1.5 text-xs font-semibold">Create Article</span>
+            <Plus className="w-4 h-4 shrink-0 stroke-[2.8]" strokeWidth={2.8} />
+            <span className="hidden sm:inline ml-1.5 text-sm font-semibold">Create Article</span>
           </AdminButton>
         </div>
       </div>

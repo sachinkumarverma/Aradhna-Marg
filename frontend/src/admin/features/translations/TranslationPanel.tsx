@@ -80,8 +80,12 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           disabled={isGenerating}
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#5542F6] hover:bg-[#4a39d4] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
         >
-          {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-          <span>Generate Translation</span>
+          {isGenerating ? (
+            <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+          ) : (
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+          )}
+          <span className="relative -top-[1px] leading-none">Generate Translation</span>
         </button>
       </div>
     );
@@ -113,7 +117,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           ) : (
             <RefreshCw className="w-3.5 h-3.5 text-white shrink-0" />
           )}
-          <span>Regenerate</span>
+          <span className="relative -top-[1px] leading-none">Regenerate</span>
         </button>
 
         <button
@@ -131,7 +135,7 @@ export const TranslationPanel: React.FC<TranslationPanelProps> = ({
           className="inline-flex items-center justify-center gap-1.5 bg-[#2E9E5B] text-white hover:bg-[#25824b] px-3.5 py-2 rounded-md text-xs sm:text-[13px] font-medium transition-colors shadow-sm cursor-pointer"
         >
           <Edit3 className="w-3.5 h-3.5 shrink-0" />
-          <span>Edit</span>
+          <span className="relative -top-[1px] leading-none">Edit</span>
         </button>
       </div>
 

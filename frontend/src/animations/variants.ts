@@ -48,6 +48,6 @@ export const cardHoverVariant = {
 };
 
 export const buttonTapVariant = {
-  tap: { scale: 0.95 },
-  hover: { scale: 1.03 }
+  tap: { scale: 0.97 },
+  hover: { scale: 1 }
 };
