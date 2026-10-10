@@ -10,6 +10,8 @@ import { uploadMediaFile } from '@api/upload';
 import toast from 'react-hot-toast';
 import { Select } from '@components/ui/Select';
 import { MultiSelect } from '@components/ui/MultiSelect';
+import { TagSelector } from '@admin/components/TagSelector';
+import { EntityBadgeSelector } from '@admin/components/EntityBadgeSelector';
 
 // Simple client-side slugify
 import { generateSlug } from '@utils/slugify';
@@ -94,7 +96,10 @@ export const AdminArticleForm = () => {
         ...data,
         deities: data.article_gods?.map((g: any) => g.god_id) || [],
         festivals: data.article_festivals?.map((f: any) => f.festival_id) || [],
-        tags: data.article_tags?.map((t: any) => t.tag_id) || [],
+        tags: [
+          ...(data.article_tags?.map((t: any) => t.tag_id) || []),
+          ...(Array.isArray(data.custom_tags) ? data.custom_tags : [])
+        ],
         bhajans: data.article_bhajans?.map((b: any) => b.bhajan_id) || [],
         related_articles: data.related_articles?.map((r: any) => r.related_id) || []
       });
@@ -202,7 +207,7 @@ export const AdminArticleForm = () => {
       {createPortal(
         <div className="fixed inset-0 z-[100] flex justify-end">
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={handleClose} />
-          <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="relative w-full max-w-5xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Header */}
             <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 bg-orange-100 border-b border-orange-200 gap-2">
               <div className="flex items-center gap-2 sm:gap-4 min-w-0">
@@ -275,9 +280,9 @@ export const AdminArticleForm = () => {
               <FormLoader />
             ) : (
               <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                   {/* LEFT COLUMN: Main Content */}
-                  <div className="lg:col-span-2 space-y-6">
+                  <div className="lg:col-span-7 space-y-6">
                     {/* Language Switcher Tabs */}
                     <div className="flex space-x-1 bg-gray-100/50 p-1 rounded-lg border border-gray-200">
                       <button
@@ -506,7 +511,7 @@ export const AdminArticleForm = () => {
                     )}
                   </div>
                   {/* RIGHT COLUMN: Settings & Metadata */}
-                  <div className="space-y-6">
+                  <div className="lg:col-span-5 space-y-6">
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                       <h3 className="font-bold text-gray-900 border-b pb-3">Taxonomy & Relations</h3>
 
@@ -548,56 +553,55 @@ export const AdminArticleForm = () => {
                           )}
                         />
                       </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-700">Tags</label>
-                        <Controller
-                          name="tags"
-                          control={control}
-                          render={({ field }) => (
-                            <MultiSelect
-                              options={mapOpts(tagsData)}
-                              values={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select tags..."
-                              isLoading={isTagsLoading}
-                            />
-                          )}
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-700">Deities</label>
-                        <Controller
-                          name="deities"
-                          control={control}
-                          render={({ field }) => (
-                            <MultiSelect
-                              options={mapOpts(deitiesData)}
-                              values={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select deities..."
-                            />
-                          )}
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-700">Festivals</label>
-                        <Controller
-                          name="festivals"
-                          control={control}
-                          render={({ field }) => (
-                            <MultiSelect
-                              options={mapFestivalOpts(festivalsData)}
-                              values={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select festivals..."
-                            />
-                          )}
-                        />
-                      </div>
                     </div>
+
+                    {/* Dedicated Deities Card */}
+                    <Controller
+                      name="deities"
+                      control={control}
+                      render={({ field }) => (
+                        <EntityBadgeSelector
+                          title="Deities"
+                          entityName="deity"
+                          pluralName="deities"
+                          options={mapOpts(deitiesData)}
+                          values={field.value}
+                          onChange={field.onChange}
+                          isLoading={isDeitiesLoading}
+                        />
+                      )}
+                    />
+
+                    {/* Dedicated Festivals Card */}
+                    <Controller
+                      name="festivals"
+                      control={control}
+                      render={({ field }) => (
+                        <EntityBadgeSelector
+                          title="Festivals"
+                          entityName="festival"
+                          pluralName="festivals"
+                          options={mapFestivalOpts(festivalsData)}
+                          values={field.value}
+                          onChange={field.onChange}
+                          isLoading={isFestivalsLoading}
+                        />
+                      )}
+                    />
+
+                    {/* Dedicated Tags Card */}
+                    <Controller
+                      name="tags"
+                      control={control}
+                      render={({ field }) => (
+                        <TagSelector
+                          options={mapOpts(tagsData)}
+                          values={field.value}
+                          onChange={field.onChange}
+                          isLoading={isTagsLoading}
+                        />
+                      )}
+                    />
 
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                       <h3 className="font-bold text-gray-900 border-b pb-3">Publishing</h3>

@@ -302,7 +302,7 @@ export const AdminCategories = () => {
         createPortal(
           <div className="fixed inset-0 z-[100] flex justify-end">
             <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeDrawer} />
-            <div className="relative w-full max-w-4xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="relative w-full max-w-5xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
               {/* Header */}
               <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 bg-orange-100 border-b border-orange-200 gap-2">
                 <div className="flex items-center gap-2 sm:gap-4 min-w-0">
@@ -340,9 +340,9 @@ export const AdminCategories = () => {
 
               <div className="flex-1 overflow-y-auto p-6">
                 <form id="category-form" onSubmit={handleSubmit(onSubmit)} className="h-full">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
                     {/* LEFT COLUMN: Main Content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-7 space-y-6">
                       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                         <div className="space-y-2">
                           <label className="text-sm font-semibold text-gray-800 block">Banner Image</label>
@@ -417,7 +417,7 @@ export const AdminCategories = () => {
                     </div>
 
                     {/* RIGHT COLUMN: Settings & Metadata */}
-                    <div className="space-y-6">
+                    <div className="lg:col-span-5 space-y-6">
                       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
                         <h3 className="font-bold text-gray-900 border-b pb-3">Visibility</h3>
 

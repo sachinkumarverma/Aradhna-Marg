@@ -313,7 +313,7 @@ export function AdminTags() {
         createPortal(
           <div className="fixed inset-0 z-[100] flex justify-end">
             <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeDrawer} />
-            <div className="relative w-full max-w-md bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="relative w-full max-w-5xl bg-gray-50 h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
               {/* Header */}
               <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 bg-orange-100 border-b border-orange-200 gap-2">
                 <div className="flex items-center gap-2 sm:gap-4 min-w-0">
@@ -351,77 +351,147 @@ export function AdminTags() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6">
-                <form id="tag-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-semibold text-gray-800">Tag Name *</label>
-                      <input
-                        {...register('name', {
-                          required: 'Tag Name is required',
-                          validate: (value) => {
-                            const isDuplicate = data?.data?.some(
-                              (t: any) => t.name.toLowerCase() === value.trim().toLowerCase() && t.id !== editingId
-                            );
-                            return isDuplicate ? 'This tag name already exists.' : true;
-                          }
-                        })}
-                        className={`w-full px-4 py-2.5 bg-white border rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all ${errors.name ? 'border-red-500' : 'border-blue-100'}`}
-                        placeholder="e.g. Featured"
-                      />
-                      {errors.name && (
-                        <p className="text-red-500 text-xs font-medium mt-1.5 flex items-center gap-1">
-                          <XCircle className="w-3.5 h-3.5" />
-                          {errors.name.message as string}
-                        </p>
-                      )}
-                    </div>
+              <div className="flex-1 overflow-y-auto p-6 pb-12">
+                <form id="tag-form" onSubmit={handleSubmit(onSubmit)}>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* LEFT COLUMN: Main Information */}
+                    <div className="lg:col-span-7 space-y-6">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                        <h3 className="font-bold text-gray-900 border-b pb-3">Tag Information</h3>
 
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-semibold text-gray-800">Description</label>
-                      <textarea
-                        {...register('description')}
-                        rows={3}
-                        className="w-full px-4 py-3 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm leading-relaxed"
-                        placeholder="Write a short description..."
-                      />
-                    </div>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-800">Tag Name *</label>
+                          <input
+                            {...register('name', {
+                              required: 'Tag Name is required',
+                              validate: (value) => {
+                                const isDuplicate = data?.data?.some(
+                                  (t: any) => t.name.toLowerCase() === value.trim().toLowerCase() && t.id !== editingId
+                                );
+                                return isDuplicate ? 'This tag name already exists.' : true;
+                              }
+                            })}
+                            className={`w-full px-4 py-2.5 bg-white border rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all ${errors.name ? 'border-red-500' : 'border-blue-100'}`}
+                            placeholder="e.g. Featured"
+                          />
+                          {errors.name && (
+                            <p className="text-red-500 text-xs font-medium mt-1.5 flex items-center gap-1">
+                              <XCircle className="w-3.5 h-3.5" />
+                              {errors.name.message as string}
+                            </p>
+                          )}
+                        </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-semibold text-gray-800">Color</label>
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-10 h-10 border border-gray-200 rounded-md flex-shrink-0"
-                          style={{ backgroundColor: previewColor }}
-                        />
-                        <input
-                          type="text"
-                          {...register('color')}
-                          placeholder="#HEX or Color Name"
-                          className="w-full px-4 py-2 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all"
-                        />
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-800">Description</label>
+                          <textarea
+                            {...register('description')}
+                            rows={4}
+                            className="w-full px-4 py-3 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all text-sm leading-relaxed"
+                            placeholder="Write a short description..."
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-semibold text-gray-700">Status</label>
-                      <Controller
-                        name="status"
-                        control={control}
-                        defaultValue="ACTIVE"
-                        render={({ field }) => (
-                          <Select
-                            value={field.value}
-                            onChange={field.onChange}
-                            options={[
-                              { label: 'Active', value: 'ACTIVE' },
-                              { label: 'Inactive', value: 'INACTIVE' }
-                            ]}
-                            searchable={false}
+                    {/* RIGHT COLUMN: Appearance & Settings */}
+                    <div className="lg:col-span-5 space-y-6">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                        <h3 className="font-bold text-gray-900 border-b pb-3">Appearance & Preview</h3>
+
+                        {/* Live Tag Badge Preview */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-semibold text-gray-700">Live Badge Preview</label>
+                          <div className="p-4 bg-white rounded-xl border border-gray-200/80 flex items-center justify-center min-h-[64px]">
+                            <div
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-semibold border shadow-2xs transition-all"
+                              style={{
+                                backgroundColor: `${previewColor}18`,
+                                borderColor: `${previewColor}55`,
+                                color: previewColor
+                              }}
+                            >
+                              <TagIcon className="w-3.5 h-3.5" />
+                              <span>{watch('name') || 'Sample Tag'}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-800">Color</label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="color"
+                              value={
+                                previewColor.startsWith('#') && previewColor.length === 7 ? previewColor : '#4f46e5'
+                              }
+                              onChange={(e) =>
+                                setValue('color', e.target.value, { shouldDirty: true, shouldValidate: true })
+                              }
+                              className="w-10 h-10 border border-gray-200 rounded-lg cursor-pointer p-0.5 bg-white"
+                            />
+                            <input
+                              type="text"
+                              {...register('color')}
+                              placeholder="#HEX (e.g. #4F46E5)"
+                              className="w-full px-4 py-2 bg-white border border-blue-100 rounded-md focus:ring-2 focus:ring-saffron/20 focus:border-saffron outline-none transition-all font-mono text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Preset color swatches */}
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-medium text-gray-500">Preset Colors</label>
+                          <div className="flex flex-wrap gap-2">
+                            {[
+                              '#EF4444',
+                              '#F97316',
+                              '#F59E0B',
+                              '#10B981',
+                              '#06B6D4',
+                              '#3B82F6',
+                              '#6366F1',
+                              '#8B5CF6',
+                              '#EC4899'
+                            ].map((hex) => (
+                              <button
+                                key={hex}
+                                type="button"
+                                onClick={() => setValue('color', hex, { shouldDirty: true, shouldValidate: true })}
+                                className="w-6 h-6 rounded-md border border-gray-200 hover:scale-110 transition-transform cursor-pointer"
+                                style={{ backgroundColor: hex }}
+                                title={hex}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md shadow-sm border border-blue-100 p-6 space-y-5">
+                        <h3 className="font-bold text-gray-900 border-b pb-3">Visibility</h3>
+
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-semibold text-gray-700">Status</label>
+                          <Controller
+                            name="status"
+                            control={control}
+                            defaultValue="ACTIVE"
+                            render={({ field }) => (
+                              <Select
+                                value={field.value}
+                                onChange={field.onChange}
+                                options={[
+                                  { label: 'Active', value: 'ACTIVE' },
+                                  { label: 'Inactive', value: 'INACTIVE' }
+                                ]}
+                                searchable={false}
+                              />
+                            )}
                           />
-                        )}
-                      />
+                        </div>
+                      </div>
                     </div>
+                    <div className="h-4 col-span-1 lg:col-span-12"></div>
                   </div>
                 </form>
               </div>
@@ -429,6 +499,19 @@ export function AdminTags() {
           </div>,
           document.body
         )}
+      <ConfirmDialog
+        isOpen={!!deleteConfirmId}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this item? This action cannot be undone."
+        confirmText="Delete"
+        isDestructive={true}
+        onCancel={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            deleteMutation.mutate(deleteConfirmId);
+          }
+        }}
+      />
     </div>
   );
 }

@@ -20,6 +20,27 @@ export class ArticleService {
     return articleRepository.getByIdWithRelations(id);
   }
 
+  private parseTags(tags: any, customTagsExisting: any) {
+    const isUUID = (val: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
+
+    const globalTagIds: string[] = [];
+    const customTagNames: string[] = Array.isArray(customTagsExisting) ? [...customTagsExisting] : [];
+
+    if (Array.isArray(tags)) {
+      for (const t of tags) {
+        if (typeof t === 'string' && isUUID(t)) {
+          globalTagIds.push(t);
+        } else if (typeof t === 'string' && t.trim()) {
+          if (!customTagNames.includes(t.trim())) {
+            customTagNames.push(t.trim());
+          }
+        }
+      }
+    }
+
+    return { globalTagIds, customTagNames };
+  }
+
   public async create(data: any) {
     const {
       deities,
@@ -38,6 +59,9 @@ export class ArticleService {
       ...articleData
     } = data;
 
+    const { globalTagIds, customTagNames } = this.parseTags(tags, articleData.custom_tags);
+    articleData.custom_tags = customTagNames;
+
     if (!articleData.slug && articleData.title) {
       articleData.slug = randomUUID();
     }
@@ -49,7 +73,7 @@ export class ArticleService {
 
     const created = await articleRepository.create(articleData);
 
-    await this.updateRelations(created.id, deities, festivals, tags, bhajans, related_articles);
+    await this.updateRelations(created.id, deities, festivals, globalTagIds, bhajans, related_articles);
     return created;
   }
 
@@ -71,6 +95,9 @@ export class ArticleService {
       ...articleData
     } = data;
 
+    const { globalTagIds, customTagNames } = this.parseTags(tags, articleData.custom_tags);
+    articleData.custom_tags = customTagNames;
+
     const existing = await articleRepository.findById(id);
     if (articleData.status === 'PUBLISHED' && !existing?.publish_date) {
       articleData.publish_date = new Date().toISOString();
@@ -81,7 +108,7 @@ export class ArticleService {
     }
     const updated = await articleRepository.update(id, articleData);
 
-    await this.updateRelations(id, deities, festivals, tags, bhajans, related_articles);
+    await this.updateRelations(id, deities, festivals, globalTagIds, bhajans, related_articles);
     return updated;
   }
 
