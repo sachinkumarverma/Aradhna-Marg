@@ -1,5 +1,5 @@
 import { agentProposalRepository } from '../repositories/AgentProposalRepository';
-import { agentToolCallRepository } from '../repositories/AgentToolCallRepository';
+import { toolGateway } from '../gateway/ToolGateway';
 import { AgentProposal } from '@models/AgentProposal';
 import { bhajanService } from '@features/bhajans/BhajanService';
 import { NotFoundError, AppError } from '@/errors/appError';
@@ -88,7 +88,7 @@ export class AgentProposalService {
     if (proposal.status === 'REJECTED') {
       throw new AppError('Cannot approve a rejected proposal', 400);
     }
-    if (proposal.status === 'COMPLETED' || proposal.status === 'APPLIED') {
+    if (proposal.status === 'COMPLETED') {
       throw new AppError('Cannot approve an already completed proposal', 400);
     }
     if (proposal.status !== 'PENDING') {
@@ -115,7 +115,7 @@ export class AgentProposalService {
     if (proposal.status === 'REJECTED') {
       throw new AppError('Proposal is already rejected', 400);
     }
-    if (proposal.status === 'COMPLETED' || proposal.status === 'APPLIED') {
+    if (proposal.status === 'COMPLETED') {
       throw new AppError('Cannot reject an already completed proposal', 400);
     }
     if (proposal.status !== 'PENDING' && proposal.status !== 'APPROVED') {
@@ -141,8 +141,8 @@ export class AgentProposalService {
    * 1. Only APPROVED proposals can execute.
    * 2. Atomic state transition prevents concurrent execution / double clicks.
    * 3. Stale proposal protection verifies baseline content hasn't changed.
-   * 4. Domain service layer strictly enforced (no direct repo or db access).
-   * 5. Sacred content firewall: only devotional meaning is mutated.
+   * 4. Central execution boundary: Routes strictly through ToolGateway -> typed execution tool -> Domain Service.
+   * 5. Sacred content firewall: strictly enforces devotional meaning only (lyrics and titles immutable).
    */
   async executeProposal(id: string, executedBy: string): Promise<AgentProposal> {
     const proposal = await agentProposalRepository.findById(id);
@@ -154,7 +154,7 @@ export class AgentProposalService {
     if (proposal.status === 'REJECTED') {
       throw new AppError('Cannot execute a rejected proposal', 400);
     }
-    if (proposal.status === 'COMPLETED' || proposal.status === 'APPLIED') {
+    if (proposal.status === 'COMPLETED') {
       throw new AppError('Proposal has already been executed and completed', 400);
     }
     if (proposal.status === 'EXECUTING') {
@@ -174,9 +174,9 @@ export class AgentProposalService {
     const startTime = Date.now();
 
     try {
-      const { entityType, entityId, targetField, proposedValue, currentValue } = executing;
+      const { entityType, entityId, currentValue } = executing;
 
-      // 2. Stale Content Protection & Domain Execution
+      // 2. Stale Content Protection
       if (entityType === 'bhajan') {
         const currentBhajan = await bhajanService.getById(entityId);
         if (!currentBhajan) {
@@ -193,38 +193,20 @@ export class AgentProposalService {
           logger.warn({ proposalId: id, entityId }, staleMsg);
           throw new AppError(staleMsg, 409);
         }
-
-        // Apply mutation ONLY to the devotional meaning field via domain service
-        if (targetField === 'meaning' || targetField === 'short_description') {
-          await bhajanService.updateMeaning(entityId, proposedValue);
-        } else {
-          throw new AppError(`Unsupported target field for bhajan proposal: ${targetField}`, 400);
-        }
       } else {
         throw new AppError(`Execution for entity type '${entityType}' is not supported in Phase 4A`, 400);
       }
 
-      // 3. Record audit trail in agent_tool_calls
-      const durationMs = Date.now() - startTime;
-      if (executing.runId) {
-        await agentToolCallRepository
-          .create({
-            runId: executing.runId,
-            toolName: 'execute_approved_proposal',
-            permissionTier: 'TIER_5_PUBLISH_OVERWRITE',
-            inputPayload: { proposalId: id, executedBy, entityType, entityId, targetField },
-            outputPayload: { status: 'COMPLETED', durationMs },
-            durationMs,
-            status: 'SUCCESS'
-          })
-          .catch((err) => logger.warn({ err }, 'Failed to log tool call for proposal execution'));
-      }
+      // 3. Central ToolGateway Execution Boundary
+      // Routes through ToolGateway -> typed ApplyBhajanMeaningTool -> BhajanService -> BhajanRepository
+      await toolGateway.executeApprovedProposal(executing, executedBy);
 
       // 4. Mark proposal as COMPLETED
+      const durationMs = Date.now() - startTime;
       const completed = await agentProposalRepository.updateStatus(id, 'COMPLETED', executedBy);
       logger.info(
         { proposalId: id, executedBy, durationMs },
-        'Approved agent proposal executed and completed successfully'
+        'Approved agent proposal executed and completed successfully via ToolGateway'
       );
       return completed;
     } catch (err: any) {

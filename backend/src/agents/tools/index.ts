@@ -5,6 +5,7 @@ import { getSeoAuditTool } from './seo/GetSeoAuditTool';
 import { getSeoContentBatchTool } from './seo/GetSeoContentBatchTool';
 import { proposeSeoMetadataTool } from './seo/ProposeSeoMetadataTool';
 import { proposeBhajanMeaningTool } from './bhajan/ProposeBhajanMeaningTool';
+import { applyBhajanMeaningTool } from './bhajan/ApplyBhajanMeaningTool';
 import { getSystemHealthTool } from './ops/GetSystemHealthTool';
 import { retryFailedJobTool } from './ops/RetryFailedJobTool';
 
@@ -15,6 +16,7 @@ export function registerDefaultTools(): void {
   toolRegistry.register(getSeoContentBatchTool);
   toolRegistry.register(proposeSeoMetadataTool);
   toolRegistry.register(proposeBhajanMeaningTool);
+  toolRegistry.register(applyBhajanMeaningTool);
   toolRegistry.register(getSystemHealthTool);
   toolRegistry.register(retryFailedJobTool);
 }
@@ -29,6 +31,7 @@ export {
   getSeoContentBatchTool,
   proposeSeoMetadataTool,
   proposeBhajanMeaningTool,
+  applyBhajanMeaningTool,
   getSystemHealthTool,
   retryFailedJobTool
 };

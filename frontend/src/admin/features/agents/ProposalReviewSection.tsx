@@ -107,7 +107,6 @@ export function ProposalReviewSection() {
           </span>
         );
       case 'COMPLETED':
-      case 'APPLIED':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
             <FileCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" /> Successfully Applied

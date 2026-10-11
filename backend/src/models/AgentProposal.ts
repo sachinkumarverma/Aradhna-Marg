@@ -1,5 +1,4 @@
-export type AgentProposalStatus =
-  'PENDING' | 'APPROVED' | 'REJECTED' | 'EXECUTING' | 'COMPLETED' | 'FAILED' | 'APPLIED';
+export type AgentProposalStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXECUTING' | 'COMPLETED' | 'FAILED';
 export type AgentProposalEntityType = 'bhajan' | 'article' | 'festival' | 'puran' | 'category';
 
 export interface AgentProposal {

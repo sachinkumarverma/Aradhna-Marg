@@ -105,14 +105,19 @@ export class ToolGateway {
       const proposalPayload = validatedInput as any;
       const entityType = proposalPayload.entityType || (toolName.includes('bhajan') ? 'bhajan' : 'article');
       const targetField = proposalPayload.targetField || (toolName.includes('meaning') ? 'meaning' : 'content');
+      const entityId =
+        proposalPayload.entityId || proposalPayload.bhajanId || proposalPayload.articleId || proposalPayload.id;
       const proposedValue =
-        proposalPayload.proposedValue || proposalPayload.proposedMeaning || JSON.stringify(proposalPayload);
+        proposalPayload.proposedValue ||
+        proposalPayload.proposedMeaning ||
+        proposalPayload.meaning ||
+        JSON.stringify(proposalPayload);
 
       const proposal = await agentProposalRepository.create({
         runId: context.runId,
         agentName: context.agentName,
         entityType,
-        entityId: proposalPayload.entityId,
+        entityId,
         targetField,
         currentValue: proposalPayload.currentValue,
         proposedValue,
@@ -188,6 +193,164 @@ export class ToolGateway {
         success: false,
         error: error.message || 'Unknown tool execution error'
       };
+    }
+  }
+
+  /**
+   * Safe, typed execution boundary for executing approved human-reviewed proposals.
+   * Required architecture:
+   *   Admin Execute Request -> AgentProposalService -> ToolGateway -> typed execution tool -> DomainService -> Repository -> Database
+   *
+   * Enforces:
+   * 1. Sacred Content Firewall: strictly forbids mutating lyrics, shlokas, titles, deities, or categories.
+   * 2. Target Field Semantics: only targetField === 'meaning' is permitted for Bhajans in Phase 4A.
+   * 3. Tool registry lookup: dispatches to registered typed execution tools (apply_bhajan_meaning).
+   * 4. Schema validation on the immutable proposal payload.
+   * 5. Audit logging to agent_tool_calls under TIER_5_PUBLISH_OVERWRITE.
+   */
+  public async executeApprovedProposal(
+    proposal: {
+      id: string;
+      runId?: string;
+      agentName: string;
+      entityType: string;
+      entityId: string;
+      targetField: string;
+      proposedValue: string;
+    },
+    executedBy: string
+  ): Promise<AgentToolResult<any>> {
+    const startTime = Date.now();
+    const runId = proposal.runId || '00000000-0000-0000-0000-000000000000';
+
+    // 1. Sacred Content Firewall: Verify entityType and targetField
+    if (proposal.entityType !== 'bhajan') {
+      throw new AgentSecurityError(`Execution for entity type '${proposal.entityType}' is not supported in Phase 4A`);
+    }
+
+    if (proposal.targetField !== 'meaning') {
+      const durationMs = Date.now() - startTime;
+      if (proposal.runId) {
+        await agentToolCallRepository
+          .create({
+            runId: proposal.runId,
+            toolName: 'execute_approved_proposal',
+            permissionTier: AgentPermissionTier.TIER_5_PUBLISH_OVERWRITE,
+            inputPayload: { proposalId: proposal.id, targetField: proposal.targetField },
+            durationMs,
+            status: 'BLOCKED',
+            errorMessage: `Sacred Content Firewall: Attempted execution targeting non-meaning field '${proposal.targetField}'.`
+          })
+          .catch(() => {});
+      }
+      logger.warn(
+        { proposalId: proposal.id, targetField: proposal.targetField },
+        'Security alert: Sacred Content Firewall blocked execution on non-meaning target field'
+      );
+      throw new AgentSecurityError(
+        `Sacred Content Firewall: Target field '${proposal.targetField}' is forbidden. Only 'meaning' can be executed.`
+      );
+    }
+
+    // 2. Sacred Content Firewall: Check proposed content for forbidden lyrics leakage
+    const rawProposed =
+      typeof proposal.proposedValue === 'string' ? proposal.proposedValue : JSON.stringify(proposal.proposedValue);
+    if (rawProposed.includes('"lyrics"') || rawProposed.includes('"clean_lyrics"')) {
+      throw new AgentSecurityError('Sacred Content Firewall: Proposal content contains forbidden lyrics references.');
+    }
+
+    // 3. Resolve registered execution tool
+    const toolName = 'apply_bhajan_meaning';
+    const tool = toolRegistry.get(toolName);
+    if (!tool) {
+      throw new ToolNotFoundError(toolName);
+    }
+
+    // 4. Construct typed input strictly from immutable proposal data
+    const rawInput = {
+      proposalId: proposal.id,
+      bhajanId: proposal.entityId,
+      meaning: proposal.proposedValue,
+      targetField: 'meaning'
+    };
+
+    // 5. Schema validation via tool input schema
+    const parseResult = tool.inputSchema.safeParse(rawInput);
+    if (!parseResult.success) {
+      const durationMs = Date.now() - startTime;
+      const validationErrors = parseResult.error.format();
+      if (proposal.runId) {
+        await agentToolCallRepository
+          .create({
+            runId: proposal.runId,
+            toolName,
+            permissionTier: tool.permission,
+            inputPayload: rawInput,
+            durationMs,
+            status: 'FAILED',
+            errorMessage: 'Input schema validation failed on proposal execution'
+          })
+          .catch(() => {});
+      }
+      throw new ToolValidationError(`Validation failed for tool '${toolName}'`, validationErrors);
+    }
+
+    const validatedInput = parseResult.data;
+
+    // 6. Execute through the registered tool handler -> Domain Service (BhajanService)
+    try {
+      const output = await tool.handler(validatedInput, {
+        runId,
+        agentName: 'ProposalExecutionEngine',
+        actor: { type: 'ADMIN', id: executedBy },
+        currentIteration: 1,
+        maxIterations: 5,
+        tokensUsed: 0,
+        tokenBudget: 100000
+      });
+
+      const durationMs = Date.now() - startTime;
+
+      if (proposal.runId) {
+        await agentToolCallRepository
+          .create({
+            runId: proposal.runId,
+            toolName,
+            permissionTier: tool.permission,
+            inputPayload: validatedInput,
+            outputPayload: (output as any) || {},
+            durationMs,
+            status: 'SUCCESS'
+          })
+          .catch(() => {});
+      }
+
+      logger.info(
+        { toolName, proposalId: proposal.id, executedBy, durationMs },
+        'Approved proposal executed successfully through ToolGateway'
+      );
+
+      return {
+        success: true,
+        data: output
+      };
+    } catch (error: any) {
+      const durationMs = Date.now() - startTime;
+      if (proposal.runId) {
+        await agentToolCallRepository
+          .create({
+            runId: proposal.runId,
+            toolName,
+            permissionTier: tool.permission,
+            inputPayload: validatedInput,
+            durationMs,
+            status: 'FAILED',
+            errorMessage: error.message || 'Execution error'
+          })
+          .catch(() => {});
+      }
+      logger.error({ toolName, proposalId: proposal.id, error: error.message }, 'Error executing approved proposal');
+      throw error;
     }
   }
 }

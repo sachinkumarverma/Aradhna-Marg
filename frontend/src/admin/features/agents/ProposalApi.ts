@@ -11,7 +11,7 @@ export interface AgentProposalItem {
   currentValue?: string;
   proposedValue: string;
   reasoning?: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXECUTING' | 'COMPLETED' | 'FAILED' | 'APPLIED';
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXECUTING' | 'COMPLETED' | 'FAILED';
   reviewedBy?: string;
   reviewedAt?: string;
   rejectionReason?: string;
