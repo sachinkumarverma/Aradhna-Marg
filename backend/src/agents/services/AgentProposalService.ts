@@ -2,10 +2,43 @@ import { agentProposalRepository } from '../repositories/AgentProposalRepository
 import { toolGateway } from '../gateway/ToolGateway';
 import { AgentProposal } from '@models/AgentProposal';
 import { bhajanService } from '@features/bhajans/BhajanService';
+import { articleService } from '@services/ArticleService';
+import { festivalService } from '@services/FestivalService';
+import { puranService } from '@services/PuranService';
+import { categoryService } from '@features/categories/CategoryService';
 import { NotFoundError, AppError } from '@/errors/appError';
 import { logger } from '@utils/logger';
 
 export class AgentProposalService {
+  private async getEntity(entityType: string, entityId: string): Promise<any> {
+    try {
+      switch (entityType) {
+        case 'bhajan':
+          return await bhajanService.getById(entityId);
+        case 'article':
+          return await articleService.getById(entityId);
+        case 'festival':
+          return await festivalService.getById(entityId);
+        case 'puran':
+          return await puranService.getById(entityId);
+        case 'category':
+          return await categoryService.getById(entityId);
+        default:
+          return null;
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  private getEntityTitle(entityType: string, entity: any): string {
+    if (!entity) return 'Unknown';
+    if (entityType === 'festival' || entityType === 'category') {
+      return entity.name || 'Untitled';
+    }
+    return entity.title || 'Untitled';
+  }
+
   async getProposals(options: {
     page?: number;
     limit?: number;
@@ -23,11 +56,11 @@ export class AgentProposalService {
     const enriched = await Promise.all(
       result.data.map(async (proposal) => {
         try {
-          if (proposal.entityType === 'bhajan') {
-            const bhajan = await bhajanService.getById(proposal.entityId);
+          const entity = await this.getEntity(proposal.entityType, proposal.entityId);
+          if (entity) {
             return {
               ...proposal,
-              targetTitle: bhajan?.title || 'Unknown Bhajan'
+              targetTitle: this.getEntityTitle(proposal.entityType, entity)
             };
           }
         } catch {
@@ -52,16 +85,16 @@ export class AgentProposalService {
 
     let targetEntity: any = null;
     try {
-      if (proposal.entityType === 'bhajan') {
-        const bhajan = await bhajanService.getById(proposal.entityId);
-        if (bhajan) {
-          targetEntity = {
-            id: bhajan.id,
-            title: bhajan.title,
-            slug: bhajan.slug,
-            currentMeaning: bhajan.short_description || bhajan.description || null
-          };
-        }
+      const entity = await this.getEntity(proposal.entityType, proposal.entityId);
+      if (entity) {
+        targetEntity = {
+          id: entity.id,
+          title: this.getEntityTitle(proposal.entityType, entity),
+          slug: entity.slug,
+          currentMeaning: entity.short_description || entity.description || null,
+          seo_title: entity.seo_title || null,
+          seo_description: entity.seo_description || null
+        };
       }
     } catch (err: any) {
       logger.warn({ proposalId: id, error: err.message }, 'Failed to load target entity details for proposal');
@@ -174,17 +207,20 @@ export class AgentProposalService {
     const startTime = Date.now();
 
     try {
-      const { entityType, entityId, currentValue } = executing;
+      const { entityType, entityId, targetField, currentValue } = executing;
 
-      // 2. Stale Content Protection
-      if (entityType === 'bhajan') {
-        const currentBhajan = await bhajanService.getById(entityId);
-        if (!currentBhajan) {
-          throw new AppError('Target Bhajan record no longer exists or has been deleted', 404);
+      // 2. Resolve live entity
+      const liveEntity = await this.getEntity(entityType, entityId);
+      if (!liveEntity) {
+        throw new AppError(`Target ${entityType} record no longer exists or has been deleted`, 404);
+      }
+
+      // 3. Stale Content Protection
+      if (targetField === 'meaning') {
+        if (entityType !== 'bhajan') {
+          throw new AppError(`Target field 'meaning' is only supported for entity type 'bhajan'`, 400);
         }
-
-        // Check whether underlying Bhajan meaning has changed since proposal was staged
-        const liveMeaning = (currentBhajan.short_description || currentBhajan.description || '').trim();
+        const liveMeaning = (liveEntity.short_description || liveEntity.description || '').trim();
         const expectedMeaning = (currentValue || '').trim();
 
         if (expectedMeaning !== '' && liveMeaning !== expectedMeaning) {
@@ -193,12 +229,54 @@ export class AgentProposalService {
           logger.warn({ proposalId: id, entityId }, staleMsg);
           throw new AppError(staleMsg, 409);
         }
-      } else {
-        throw new AppError(`Execution for entity type '${entityType}' is not supported in Phase 4A`, 400);
+      } else if (targetField === 'seo_title') {
+        const liveTitle = (liveEntity.seo_title || liveEntity.seoTitle || '').trim();
+        const expectedTitle = (currentValue || '').trim();
+
+        if (expectedTitle !== '' && liveTitle !== expectedTitle) {
+          const staleMsg = `Stale proposal detected: ${entityType} seo_title was modified externally after proposal creation (original: "${expectedTitle.slice(0, 50)}...", current: "${liveTitle.slice(0, 50)}..."). Overwrite prevented.`;
+          await agentProposalRepository.updateStatus(id, 'FAILED', executedBy, staleMsg);
+          logger.warn({ proposalId: id, entityId }, staleMsg);
+          throw new AppError(staleMsg, 409);
+        }
+      } else if (targetField === 'seo_description') {
+        const liveDesc = (liveEntity.seo_description || liveEntity.seoDescription || '').trim();
+        const expectedDesc = (currentValue || '').trim();
+
+        if (expectedDesc !== '' && liveDesc !== expectedDesc) {
+          const staleMsg = `Stale proposal detected: ${entityType} seo_description was modified externally after proposal creation (original: "${expectedDesc.slice(0, 50)}...", current: "${liveDesc.slice(0, 50)}..."). Overwrite prevented.`;
+          await agentProposalRepository.updateStatus(id, 'FAILED', executedBy, staleMsg);
+          logger.warn({ proposalId: id, entityId }, staleMsg);
+          throw new AppError(staleMsg, 409);
+        }
+      } else if (targetField === 'seo_metadata') {
+        let expectedTitle: string | undefined;
+        let expectedDesc: string | undefined;
+
+        try {
+          const parsed = JSON.parse(currentValue || '{}');
+          if (parsed.seoTitle !== undefined) expectedTitle = parsed.seoTitle.trim();
+          if (parsed.seoDescription !== undefined) expectedDesc = parsed.seoDescription.trim();
+        } catch {
+          // not JSON, ignore
+        }
+
+        const liveTitle = (liveEntity.seo_title || liveEntity.seoTitle || '').trim();
+        const liveDesc = (liveEntity.seo_description || liveEntity.seoDescription || '').trim();
+
+        const titleMismatch = expectedTitle !== undefined && expectedTitle !== '' && liveTitle !== expectedTitle;
+        const descMismatch = expectedDesc !== undefined && expectedDesc !== '' && liveDesc !== expectedDesc;
+
+        if (titleMismatch || descMismatch) {
+          const staleMsg = `Stale proposal detected: ${entityType} SEO metadata was modified externally after proposal creation. Overwrite prevented.`;
+          await agentProposalRepository.updateStatus(id, 'FAILED', executedBy, staleMsg);
+          logger.warn({ proposalId: id, entityId }, staleMsg);
+          throw new AppError(staleMsg, 409);
+        }
       }
 
-      // 3. Central ToolGateway Execution Boundary
-      // Routes through ToolGateway -> typed ApplyBhajanMeaningTool -> BhajanService -> BhajanRepository
+      // 4. Central ToolGateway Execution Boundary
+      // Routes through ToolGateway -> typed execution tool -> Domain Service -> Repository
       await toolGateway.executeApprovedProposal(executing, executedBy);
 
       // 4. Mark proposal as COMPLETED

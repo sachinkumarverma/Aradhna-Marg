@@ -4,6 +4,7 @@ import { agentExecutionService } from '@/agents/services/AgentExecutionService';
 import { agentProposalService } from '@/agents/services/AgentProposalService';
 import { toolRegistry } from '@/agents/registry/ToolRegistry';
 import { seoAuditAgent } from '@/agents/seo/SeoAuditAgent';
+import { seoImprovementAgent } from '@/agents/seo/SeoImprovementAgent';
 import { bhajanMeaningAgent } from '@/agents/bhajan/BhajanMeaningAgent';
 
 class AgentController {
@@ -125,6 +126,38 @@ class AgentController {
       const result = await bhajanMeaningAgent.execute(run.id, { bhajanId, proposedMeaning, reasoning });
 
       sendSuccess(res, 'Bhajan meaning proposal generated and staged for review', result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public generateSeoProposal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const triggeredBy = (req as any).user?.username || 'admin';
+      const { entityType, entityId, targetField, proposedTitle, proposedDescription, reasoning, auditIssue } = req.body;
+
+      if (!entityType || !entityId) {
+        return res.status(400).json({ success: false, message: 'entityType and entityId are required' });
+      }
+
+      const run = await agentExecutionService.startRun({
+        agentName: 'SeoImprovementAgent',
+        triggerType: 'MANUAL',
+        triggeredBy,
+        state: { entityType, entityId, targetField, auditIssue }
+      });
+
+      const result = await seoImprovementAgent.execute(run.id, {
+        entityType,
+        entityId,
+        targetField,
+        proposedTitle,
+        proposedDescription,
+        reasoning,
+        auditIssue
+      });
+
+      sendSuccess(res, 'SEO improvement proposal generated and staged for review', result);
     } catch (error) {
       next(error);
     }

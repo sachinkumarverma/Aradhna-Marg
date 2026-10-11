@@ -89,6 +89,7 @@ export const AdminDashboard: React.FC = () => {
           colorClassName="bg-blue-100 text-blue-600"
           bgClassName="bg-gradient-to-br from-blue-50 to-white"
           borderClassName="border-blue-100"
+          onClick={() => navigate(getAdminPath('/bhajans?sort=views'))}
         />
         <StatCard
           title="Published Bhajans"
@@ -97,6 +98,7 @@ export const AdminDashboard: React.FC = () => {
           colorClassName="bg-saffron/20 text-saffron"
           bgClassName="bg-gradient-to-br from-orange-50 to-white"
           borderClassName="border-orange-100"
+          onClick={() => navigate(getAdminPath('/bhajans?status=PUBLISHED'))}
         />
         <StatCard
           title="Draft Bhajans"
@@ -105,6 +107,7 @@ export const AdminDashboard: React.FC = () => {
           colorClassName="bg-yellow-100 text-yellow-600"
           bgClassName="bg-gradient-to-br from-amber-50 to-white"
           borderClassName="border-amber-100"
+          onClick={() => navigate(getAdminPath('/bhajans?status=DRAFT'))}
         />
         <StatCard
           title="Pending AI Processing"
@@ -113,6 +116,7 @@ export const AdminDashboard: React.FC = () => {
           colorClassName="bg-purple-100 text-purple-600"
           bgClassName="bg-gradient-to-br from-purple-50 to-white"
           borderClassName="border-purple-100"
+          onClick={() => navigate(getAdminPath('/ai'))}
         />
       </div>
 

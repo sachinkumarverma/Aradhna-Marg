@@ -13,7 +13,12 @@ import {
   Play,
   RotateCcw,
   Music,
-  FileCheck
+  FileCheck,
+  FileText,
+  Calendar,
+  BookOpen,
+  Tag,
+  Globe
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { CustomLoader } from '@components/common/CustomLoader';
@@ -75,7 +80,7 @@ export function ProposalReviewSection() {
       return await ProposalApi.executeProposal(id);
     },
     onSuccess: () => {
-      toast.success('Proposal executed! Bhajan meaning has been safely updated.');
+      toast.success('Proposal executed! Changes applied successfully through ToolGateway.');
       setExecutingProposalId(null);
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
     },
@@ -85,6 +90,26 @@ export function ProposalReviewSection() {
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
     }
   });
+
+  const getEntityIcon = (entityType: string, targetField: string) => {
+    if (targetField.startsWith('seo')) {
+      return <Globe className="w-4 h-4 text-emerald-600" />;
+    }
+    switch (entityType) {
+      case 'bhajan':
+        return <Music className="w-4 h-4" />;
+      case 'article':
+        return <FileText className="w-4 h-4" />;
+      case 'festival':
+        return <Calendar className="w-4 h-4" />;
+      case 'puran':
+        return <BookOpen className="w-4 h-4" />;
+      case 'category':
+        return <Tag className="w-4 h-4" />;
+      default:
+        return <Sparkles className="w-4 h-4" />;
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -149,11 +174,11 @@ export function ProposalReviewSection() {
       <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 text-amber-950 flex items-start gap-3 shadow-xs">
         <ShieldAlert className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
         <div className="text-xs sm:text-sm">
-          <p className="font-semibold text-amber-900">Human Approval Architecture (Phase 4A)</p>
+          <p className="font-semibold text-amber-900">Human Approval Architecture (Phase 4A & 4B)</p>
           <p className="mt-0.5 text-amber-800">
-            AI-generated content is strictly a staged proposal and <strong>has not changed any content</strong>. An
-            administrator must explicitly approve the proposal, and then execute it in a separate step. Devotional
-            lyrics remain protected and immutable.
+            AI-generated content is strictly a staged proposal and <strong>has not changed any live content</strong>. An
+            administrator must explicitly approve the proposal, and then execute it in a separate step. Sacred verses,
+            lyrics, and titles remain protected and immutable.
           </p>
         </div>
       </div>
@@ -211,6 +236,19 @@ export function ProposalReviewSection() {
             const isApproved = proposal.status === 'APPROVED';
             const isExecuting = proposal.status === 'EXECUTING' || executingProposalId === proposal.id;
 
+            // Helper to parse JSON values safely
+            const parseJsonValue = (val?: string) => {
+              if (!val) return null;
+              try {
+                return JSON.parse(val);
+              } catch {
+                return null;
+              }
+            };
+
+            const currentParsed = parseJsonValue(proposal.currentValue);
+            const proposedParsed = parseJsonValue(proposal.proposedValue);
+
             return (
               <div
                 key={proposal.id}
@@ -220,7 +258,7 @@ export function ProposalReviewSection() {
                 <div className="flex items-start justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-2">
                     <span className="p-1.5 bg-saffron/10 text-saffron rounded-md">
-                      <Music className="w-4 h-4" />
+                      {getEntityIcon(proposal.entityType, proposal.targetField)}
                     </span>
                     <div>
                       <div className="flex items-center gap-2">
@@ -243,31 +281,75 @@ export function ProposalReviewSection() {
                 </div>
 
                 {/* Content Comparison: CURRENT vs PROPOSED */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 bg-gray-50/60 p-3.5 rounded-lg border border-gray-100">
-                  {/* Current Baseline Value */}
-                  <div className="space-y-1.5">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-gray-400"></span> Current Meaning
-                    </span>
-                    <div className="text-xs sm:text-sm text-gray-700 bg-white p-3 rounded-md border border-gray-200 max-h-48 overflow-y-auto leading-relaxed">
-                      {proposal.currentValue && proposal.currentValue.trim() !== '' ? (
-                        proposal.currentValue
-                      ) : (
-                        <span className="text-gray-400 italic">None (Empty meaning field)</span>
-                      )}
+                {proposal.targetField === 'seo_metadata' && (currentParsed || proposedParsed) ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 bg-gray-50/60 p-3.5 rounded-lg border border-gray-100">
+                    {/* Current SEO Baseline */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-gray-400"></span> Current SEO Metadata
+                      </span>
+                      <div className="space-y-2 text-xs sm:text-sm text-gray-700 bg-white p-3 rounded-md border border-gray-200">
+                        <div>
+                          <span className="text-xs font-semibold text-gray-500 block">SEO Title:</span>
+                          <p className="mt-0.5">
+                            {currentParsed?.seoTitle || <span className="text-gray-400 italic">None</span>}
+                          </p>
+                        </div>
+                        <div className="pt-2 border-t border-gray-100">
+                          <span className="text-xs font-semibold text-gray-500 block">Meta Description:</span>
+                          <p className="mt-0.5">
+                            {currentParsed?.seoDescription || <span className="text-gray-400 italic">None</span>}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Proposed New Value */}
-                  <div className="space-y-1.5">
-                    <span className="text-xs font-bold uppercase tracking-wider text-saffron flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-saffron"></span> Proposed Meaning (AI)
-                    </span>
-                    <div className="text-xs sm:text-sm text-gray-900 bg-amber-50/50 p-3 rounded-md border border-amber-200 max-h-48 overflow-y-auto leading-relaxed font-serif">
-                      {proposal.proposedValue}
+                    {/* Proposed SEO Improvement */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-saffron flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-saffron"></span> Proposed SEO Metadata (AI)
+                      </span>
+                      <div className="space-y-2 text-xs sm:text-sm text-gray-900 bg-amber-50/50 p-3 rounded-md border border-amber-200">
+                        <div>
+                          <span className="text-xs font-semibold text-amber-800 block">SEO Title:</span>
+                          <p className="mt-0.5 font-medium">{proposedParsed?.seoTitle || proposal.proposedValue}</p>
+                        </div>
+                        <div className="pt-2 border-t border-amber-200/60">
+                          <span className="text-xs font-semibold text-amber-800 block">Meta Description:</span>
+                          <p className="mt-0.5">{proposedParsed?.seoDescription || '-'}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 bg-gray-50/60 p-3.5 rounded-lg border border-gray-100">
+                    {/* Current Baseline Value */}
+                    <div className="space-y-1.5">
+                      <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-gray-400"></span> Current{' '}
+                        {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField}
+                      </span>
+                      <div className="text-xs sm:text-sm text-gray-700 bg-white p-3 rounded-md border border-gray-200 max-h-48 overflow-y-auto leading-relaxed">
+                        {proposal.currentValue && proposal.currentValue.trim() !== '' ? (
+                          proposal.currentValue
+                        ) : (
+                          <span className="text-gray-400 italic">None (Empty field)</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Proposed New Value */}
+                    <div className="space-y-1.5">
+                      <span className="text-xs font-bold uppercase tracking-wider text-saffron flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-saffron"></span> Proposed{' '}
+                        {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField} (AI)
+                      </span>
+                      <div className="text-xs sm:text-sm text-gray-900 bg-amber-50/50 p-3 rounded-md border border-amber-200 max-h-48 overflow-y-auto leading-relaxed font-serif">
+                        {proposal.proposedValue}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* AI Reasoning */}
                 {proposal.reasoning && (

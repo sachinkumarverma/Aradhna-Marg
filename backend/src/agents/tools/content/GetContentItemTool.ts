@@ -5,9 +5,10 @@ import { bhajanService } from '@features/bhajans/BhajanService';
 import { articleService } from '@services/ArticleService';
 import { festivalService } from '@services/FestivalService';
 import { puranService } from '@services/PuranService';
+import { categoryService } from '@features/categories/CategoryService';
 
 const InputSchema = z.object({
-  entityType: z.enum(['bhajan', 'article', 'festival', 'puran']),
+  entityType: z.enum(['bhajan', 'article', 'festival', 'puran', 'category']),
   id: z.string().uuid()
 });
 
@@ -38,6 +39,8 @@ export const getContentItemTool: AgentToolDefinition<z.infer<typeof InputSchema>
       item = await festivalService.getById(input.id);
     } else if (input.entityType === 'puran') {
       item = await puranService.getById(input.id);
+    } else if (input.entityType === 'category') {
+      item = await categoryService.getById(input.id);
     }
 
     if (!item) {

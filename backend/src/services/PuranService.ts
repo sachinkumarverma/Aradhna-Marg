@@ -103,6 +103,10 @@ export class PuranService {
     const downloadFilename = isDownload ? `${puran.title || 'Purana'}.pdf` : undefined;
     return backblazeStorageService.getSignedUrl(puran.pdf_file, 3600, downloadFilename);
   }
+
+  public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    return puranRepository.updateSeo(id, seoTitle, seoDescription);
+  }
 }
 
 export const puranService = new PuranService();

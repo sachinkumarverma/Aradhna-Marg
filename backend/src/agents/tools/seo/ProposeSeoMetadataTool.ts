@@ -5,8 +5,10 @@ import { AgentPermissionTier } from '../../types/AgentPermissionTier';
 const InputSchema = z.object({
   entityType: z.enum(['bhajan', 'article', 'festival', 'puran', 'category']),
   entityId: z.string().uuid(),
-  seoTitle: z.string().min(10).max(100),
-  seoDescription: z.string().min(20).max(250),
+  targetField: z.enum(['seo_title', 'seo_description', 'seo_metadata']).default('seo_metadata'),
+  seoTitle: z.string().min(5).max(120).optional(),
+  seoDescription: z.string().min(10).max(300).optional(),
+  proposedValue: z.string().optional(),
   currentValue: z.string().optional(),
   reasoning: z.string().min(5).max(500)
 });

@@ -104,14 +104,28 @@ export class ToolGateway {
       const durationMs = Date.now() - startTime;
       const proposalPayload = validatedInput as any;
       const entityType = proposalPayload.entityType || (toolName.includes('bhajan') ? 'bhajan' : 'article');
-      const targetField = proposalPayload.targetField || (toolName.includes('meaning') ? 'meaning' : 'content');
+      const targetField =
+        proposalPayload.targetField ||
+        (toolName.includes('seo') ? 'seo_metadata' : toolName.includes('meaning') ? 'meaning' : 'content');
       const entityId =
         proposalPayload.entityId || proposalPayload.bhajanId || proposalPayload.articleId || proposalPayload.id;
-      const proposedValue =
-        proposalPayload.proposedValue ||
-        proposalPayload.proposedMeaning ||
-        proposalPayload.meaning ||
-        JSON.stringify(proposalPayload);
+
+      let proposedValue = proposalPayload.proposedValue || proposalPayload.proposedMeaning || proposalPayload.meaning;
+
+      if (!proposedValue) {
+        if (targetField === 'seo_title' && proposalPayload.seoTitle) {
+          proposedValue = proposalPayload.seoTitle;
+        } else if (targetField === 'seo_description' && proposalPayload.seoDescription) {
+          proposedValue = proposalPayload.seoDescription;
+        } else if (targetField === 'seo_metadata' && (proposalPayload.seoTitle || proposalPayload.seoDescription)) {
+          proposedValue = JSON.stringify({
+            seoTitle: proposalPayload.seoTitle || '',
+            seoDescription: proposalPayload.seoDescription || ''
+          });
+        } else {
+          proposedValue = JSON.stringify(proposalPayload);
+        }
+      }
 
       const proposal = await agentProposalRepository.create({
         runId: context.runId,
@@ -223,12 +237,9 @@ export class ToolGateway {
     const startTime = Date.now();
     const runId = proposal.runId || '00000000-0000-0000-0000-000000000000';
 
-    // 1. Sacred Content Firewall: Verify entityType and targetField
-    if (proposal.entityType !== 'bhajan') {
-      throw new AgentSecurityError(`Execution for entity type '${proposal.entityType}' is not supported in Phase 4A`);
-    }
-
-    if (proposal.targetField !== 'meaning') {
+    // 1. Sacred Content Firewall: Check target field allowlist
+    const ALLOWED_TARGET_FIELDS = ['meaning', 'seo_title', 'seo_description', 'seo_metadata'];
+    if (!ALLOWED_TARGET_FIELDS.includes(proposal.targetField)) {
       const durationMs = Date.now() - startTime;
       if (proposal.runId) {
         await agentToolCallRepository
@@ -239,45 +250,103 @@ export class ToolGateway {
             inputPayload: { proposalId: proposal.id, targetField: proposal.targetField },
             durationMs,
             status: 'BLOCKED',
-            errorMessage: `Sacred Content Firewall: Attempted execution targeting non-meaning field '${proposal.targetField}'.`
+            errorMessage: `Sacred Content Firewall: Target field '${proposal.targetField}' is outside approved allowlist.`
           })
           .catch(() => {});
       }
       logger.warn(
         { proposalId: proposal.id, targetField: proposal.targetField },
-        'Security alert: Sacred Content Firewall blocked execution on non-meaning target field'
+        'Security alert: Sacred Content Firewall blocked execution on unauthorized target field'
       );
       throw new AgentSecurityError(
-        `Sacred Content Firewall: Target field '${proposal.targetField}' is forbidden. Only 'meaning' can be executed.`
+        `Sacred Content Firewall: Target field '${proposal.targetField}' is forbidden. Target field is outside the approved allowlist.`
       );
     }
 
-    // 2. Sacred Content Firewall: Check proposed content for forbidden lyrics leakage
+    // 2. Validate entityType
+    const ALLOWED_ENTITY_TYPES = ['bhajan', 'article', 'festival', 'puran', 'category'];
+    if (!ALLOWED_ENTITY_TYPES.includes(proposal.entityType)) {
+      throw new AgentSecurityError(`Execution for entity type '${proposal.entityType}' is not supported`);
+    }
+
+    // Target field 'meaning' is strictly permitted for 'bhajan' only
+    if (proposal.targetField === 'meaning' && proposal.entityType !== 'bhajan') {
+      throw new AgentSecurityError(
+        `Sacred Content Firewall: Target field 'meaning' is only supported for entity type 'bhajan'`
+      );
+    }
+
+    // 3. Sacred Content Firewall: Check proposed content for forbidden lyrics leakage
     const rawProposed =
       typeof proposal.proposedValue === 'string' ? proposal.proposedValue : JSON.stringify(proposal.proposedValue);
     if (rawProposed.includes('"lyrics"') || rawProposed.includes('"clean_lyrics"')) {
       throw new AgentSecurityError('Sacred Content Firewall: Proposal content contains forbidden lyrics references.');
     }
 
-    // 3. Resolve registered execution tool
-    const toolName = 'apply_bhajan_meaning';
+    // 4. Resolve registered execution tool and construct typed input
+    let toolName: string;
+    let rawInput: any;
+
+    if (proposal.targetField === 'meaning') {
+      toolName = 'apply_bhajan_meaning';
+      rawInput = {
+        proposalId: proposal.id,
+        bhajanId: proposal.entityId,
+        meaning: proposal.proposedValue,
+        targetField: 'meaning'
+      };
+    } else {
+      // SEO Metadata tools
+      const toolMap: Record<string, string> = {
+        bhajan: 'apply_bhajan_seo_metadata',
+        article: 'apply_article_seo_metadata',
+        festival: 'apply_festival_seo_metadata',
+        puran: 'apply_puran_seo_metadata',
+        category: 'apply_category_seo_metadata'
+      };
+
+      toolName = toolMap[proposal.entityType];
+      if (!toolName) {
+        throw new AgentSecurityError(`No execution tool registered for entity type '${proposal.entityType}'`);
+      }
+
+      let seoTitle: string | undefined;
+      let seoDescription: string | undefined;
+
+      if (proposal.targetField === 'seo_title') {
+        seoTitle = typeof proposal.proposedValue === 'string' ? proposal.proposedValue : undefined;
+      } else if (proposal.targetField === 'seo_description') {
+        seoDescription = typeof proposal.proposedValue === 'string' ? proposal.proposedValue : undefined;
+      } else if (proposal.targetField === 'seo_metadata') {
+        try {
+          const parsed =
+            typeof proposal.proposedValue === 'string' ? JSON.parse(proposal.proposedValue) : proposal.proposedValue;
+          seoTitle = parsed.seoTitle;
+          seoDescription = parsed.seoDescription;
+        } catch {
+          // Fallback if not valid JSON
+        }
+      }
+
+      rawInput = {
+        proposalId: proposal.id,
+        entityId: proposal.entityId,
+        seoTitle,
+        seoDescription,
+        targetField: proposal.targetField
+      };
+    }
+
     const tool = toolRegistry.get(toolName);
     if (!tool) {
       throw new ToolNotFoundError(toolName);
     }
 
-    // 4. Construct typed input strictly from immutable proposal data
-    const rawInput = {
-      proposalId: proposal.id,
-      bhajanId: proposal.entityId,
-      meaning: proposal.proposedValue,
-      targetField: 'meaning'
-    };
-
     // 5. Schema validation via tool input schema
     const parseResult = tool.inputSchema.safeParse(rawInput);
     if (!parseResult.success) {
       const durationMs = Date.now() - startTime;
+
       const validationErrors = parseResult.error.format();
       if (proposal.runId) {
         await agentToolCallRepository

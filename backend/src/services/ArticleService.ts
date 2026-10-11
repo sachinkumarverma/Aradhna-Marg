@@ -135,6 +135,10 @@ export class ArticleService {
   public async bulkAction(ids: string[], action: string) {
     return articleRepository.bulkAction(ids, action);
   }
+
+  public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    return articleRepository.updateSeo(id, seoTitle, seoDescription);
+  }
 }
 
 export const articleService = new ArticleService();

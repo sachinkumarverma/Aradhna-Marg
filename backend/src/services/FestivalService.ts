@@ -48,6 +48,10 @@ export class FestivalService {
   async bulkAction(ids: string[], action: 'publish' | 'draft' | 'delete'): Promise<void> {
     await festivalRepository.bulkAction(ids, action);
   }
+
+  async updateSeo(id: string, seoTitle: string, seoDescription: string): Promise<void> {
+    await festivalRepository.updateSeo(id, seoTitle, seoDescription);
+  }
 }
 
 export const festivalService = new FestivalService();

@@ -48,5 +48,18 @@ export const ProposalApi = {
   generateBhajanMeaning: async (bhajanId: string) => {
     const res = await apiClient.post('/admin/agents/bhajan-meaning/propose', { bhajanId });
     return res.data?.data;
+  },
+
+  generateSeoProposal: async (data: {
+    entityType: string;
+    entityId: string;
+    targetField?: string;
+    proposedTitle?: string;
+    proposedDescription?: string;
+    reasoning?: string;
+    auditIssue?: string;
+  }) => {
+    const res = await apiClient.post('/admin/agents/seo/propose', data);
+    return res.data?.data;
   }
 };

@@ -86,6 +86,10 @@ export class BhajanService {
   public async updateMeaning(id: string, meaning: string) {
     return bhajanRepository.updateAiMeaning(id, meaning);
   }
+
+  public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    return bhajanRepository.updateSeo(id, seoTitle, seoDescription);
+  }
 }
 
 export const bhajanService = new BhajanService();

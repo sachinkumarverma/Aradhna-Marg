@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Music2, CheckCircle2, XCircle } from 'lucide-react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useNavigate, useSearchParams, Outlet } from 'react-router-dom';
 import { DataTable } from '@admin/components/DataTable';
 import { AdminButton } from '@admin/components/AdminButton';
 import { Select } from '@components/ui/Select';
@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 export const AdminBhajans: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean; action: string; ids: string[] }>({
     isOpen: false,
@@ -24,8 +25,19 @@ export const AdminBhajans: React.FC = () => {
   });
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [sort, setSort] = useState('newest');
+  const [statusFilter, setStatusFilter] = useState(() => searchParams.get('status') || '');
+  const [sort, setSort] = useState(() => searchParams.get('sort') || 'newest');
+
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    if (statusParam !== null) {
+      setStatusFilter(statusParam);
+    }
+    const sortParam = searchParams.get('sort');
+    if (sortParam !== null) {
+      setSort(sortParam);
+    }
+  }, [searchParams]);
 
   // Fetch bhajans
   const { data, isLoading } = useQuery({
