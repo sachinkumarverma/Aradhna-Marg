@@ -1,5 +1,5 @@
 export type AgentRunStatus = 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
-export type AgentTriggerType = 'MANUAL' | 'CRON' | 'EVENT' | 'WORKFLOW';
+export type AgentTriggerType = 'MANUAL' | 'SCHEDULED' | 'CRON' | 'EVENT' | 'WORKFLOW';
 
 export interface AgentRun {
   id: string;

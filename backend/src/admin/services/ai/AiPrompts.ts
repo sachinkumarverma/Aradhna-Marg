@@ -55,25 +55,28 @@ Instructions:
   }
 
   /**
-   * Improves grammar and readability of article content while strictly preserving meaning and terminology.
+   * Improves grammar and readability of article content while strictly preserving meaning, length, and terminology.
    */
   static articleGrammar(article: { title: string; content: string }): PromptPayload {
+    const rawContent = article.content || '';
+    const tokenLimit = Math.min(8192, Math.max(3000, Math.ceil(rawContent.length / 2.5)));
+
     return {
       systemPrompt:
-        'You are a senior proofreader and copy editor specializing in Sanatan Dharma and philosophical literature. Improve grammar, spelling, punctuation, and flow while strictly preserving authentic devotional terminology, scriptural names, and original theological meaning.',
-      prompt: `Please proofread and improve the grammar and readability of the following article excerpt/content:
+        'You are a senior proofreader and copy editor specializing in Sanatan Dharma, Vedic philosophy, and spiritual literature. Your role is strictly to polish grammar, spelling, punctuation, and sentence flow. YOU MUST NEVER summarize, shorten, condense, or omit sections of the original text.',
+      prompt: `Please proofread and improve the grammar and readability of the following full article while preserving its complete length and substance:
 
 Title: "${article.title}"
 
-Content:
-${article.content.slice(0, 3000)}
+Full Content:
+${rawContent.slice(0, 50000)}
 
-Instructions:
-1. Fix any spelling or grammatical errors.
-2. Smooth out awkward sentences while strictly maintaining the spiritual tone and terms.
-3. If HTML tags are present (like <p>, <strong>), preserve them cleanly.
-4. Output ONLY the polished content directly.`,
-      maxTokens: 1500
+MANDATORY EDITORIAL PRESERVATION RULES:
+1. FULL SUBSTANCE PRESERVATION: Do NOT summarize, condense, or shorten this article. Maintain the full informational depth, every section, and all sacred explanations.
+2. PRESERVE STRUCTURE & HEADINGS: Keep all HTML headings (<h2>, <h3>), paragraphs (<p>), emphasis (<strong>, <em>), and lists (<ul>, <li>) intact.
+3. GRAMMAR & FLOW ONLY: Polish syntax, fix typos and grammatical imperfections, and enhance readability while keeping authentic Sanskrit and devotional terminology.
+4. Output ONLY the polished full content directly without introductory remarks or conclusion labels.`,
+      maxTokens: tokenLimit
     };
   }
 
@@ -153,9 +156,11 @@ Requirements:
   /**
    * Improves content quality, grammar, flow, and devotional eloquence for supported website content.
    * Safety rules:
-   * 1. Strictly preserves sacred scriptural terminology, mantras, and traditional reverence.
-   * 2. Preserves HTML structure and tags (<p>, <strong>, <em>, etc.) if present in the source text.
-   * 3. NEVER modifies sacred verses or lyrics.
+   * 1. Long-form content (article.content, festival.content) is protected against summarization or truncation.
+   * 2. Short-form fields (excerpts, short_descriptions) are generated to match their concise semantic purpose.
+   * 3. Strictly preserves sacred scriptural terminology, mantras, and traditional reverence.
+   * 4. Preserves HTML structure and tags (<p>, <strong>, <h3>, <ul>, etc.) cleanly.
+   * 5. NEVER modifies sacred verses or lyrics.
    */
   static contentQualityImprovement(item: {
     entityType: string;
@@ -165,43 +170,92 @@ Requirements:
   }): PromptPayload {
     const rawContent = item.currentContent || '';
     const isEnglish = item.field.endsWith('_en');
+    const normType = (item.entityType || '').toLowerCase();
+    const normField = (item.field || '').toLowerCase();
+    const isLongForm =
+      (normType === 'article' || normType === 'festival') && (normField === 'content' || normField === 'content_en');
 
+    // 1. Long-Form Content Improvement (Articles & Festivals)
+    if (isLongForm) {
+      const tokenLimit = Math.min(8192, Math.max(3000, Math.ceil(rawContent.length / 2.5)));
+
+      if (isEnglish) {
+        return {
+          systemPrompt:
+            'You are a senior proofreader and copy editor specializing in Sanatan Dharma, spiritual literature, and sacred philosophy in English. Your sole responsibility is to polish grammar, flow, clarity, and punctuation while preserving authentic Sanskrit terminology, deity names, and traditional theological reverence. YOU MUST NEVER summarize, shorten, condense, or omit sections.',
+          prompt: `Please improve the quality, grammar, and readability of this full ${item.entityType} ${item.field} while preserving its complete length and substance:
+
+Title: "${item.title}"
+
+Full Current Content:
+${rawContent.slice(0, 50000)}
+
+MANDATORY EDITORIAL PRESERVATION RULES:
+1. FULL SUBSTANCE PRESERVATION: Do NOT summarize, condense, or shorten this long-form content. Retain every section, fact, narrative detail, and sacred explanation.
+2. PRESERVE STRUCTURE & HEADINGS: Keep all HTML headings (<h2>, <h3>), paragraphs (<p>), bold emphasis (<strong>), and lists (<ul>, <li>) intact.
+3. GRAMMAR & CLARITY ONLY: Refine sentence structure, correct spelling/grammar, and improve devotional flow without discarding facts or explanations.
+4. DO NOT OMIT SECTIONS: The polished output must match the approximate scope, depth, and length of the original text.
+5. Output ONLY the polished full content directly without meta comments or introductory labels.`,
+          maxTokens: tokenLimit
+        };
+      }
+
+      return {
+        systemPrompt:
+          'आप सनातन धर्म, वैदिक वांग्मय और आध्यात्मिक साहित्य के वरिष्ठ संपादक व शोधार्थी हैं। आपका एकमात्र उद्देश्य सामग्री की व्याकरणिक शुद्धता, भाषा-प्रवाह और भक्तिमय गरिमा को परिष्कृत करना है। आपको आलेख को संक्षेप (summarize) करने, छोटा करने या किसी भी खंड को हटाने की सख्त मनाही है।',
+        prompt: `कृपया निम्नलिखित ${item.entityType} के "${item.field}" की गुणवत्ता, व्याकरण और भक्तिमय भाषा-प्रवाह को पूर्ण विस्तार के साथ परिष्कृत कीजिए:
+
+शीर्षक: "${item.title}"
+
+वर्तमान संपूर्ण सामग्री (Full Substance):
+${rawContent.slice(0, 50000)}
+
+अनिवार्य संपादकीय व संरक्षण नियम (Mandatory Editorial Preservation Rules):
+1. पूर्ण विस्तार व विषय-वस्तु का संरक्षण: यह एक विस्तृत एवं संपूर्ण आलेख है। इसे संक्षेप (summarize) न करें, छोटा (condense) न करें और न ही कुछ वाक्यों का सार बनाएं।
+2. संरचना व उप-शीर्षकों का संरक्षण: आलेख के समस्त उप-शीर्षक (Headings जैसे <h2>, <h3>), अनुभाग, बिंदु और पौराणिक/धार्मिक संदर्भों को ज्यों का त्यों बनाए रखें।
+3. केवल भाषा व प्रवाह सुधारें: वर्तनी (spelling), व्याकरण, विराम-चिह्न और वाक्य-विन्यास की त्रुटियों को दूर कर भाषा को सरल, शुद्ध, गरिमापूर्ण और प्रवाहपूर्ण बनाएं।
+4. HTML संरचना: यदि मूल पाठ में HTML टैग्स (जैसे <p>, <h3>, <strong>, <ul>, <li> आदि) विद्यमान हैं, तो उन्हें यथावत सुरक्षित रखें। पूरे आलेख को एक पैराग्राफ में न बदलें।
+5. सामग्री विलोपन निषेध: मूल आलेख की लंबाई और गहराई के पूर्णतः अनुरूप ही परिष्कृत आलेख प्रस्तुत करें।
+6. उत्तर में केवल परिष्कृत आलेख ही दें, कोई अतिरिक्त भूमिका, शीर्षक या टिप्पणी न जोड़ें।`,
+        maxTokens: tokenLimit
+      };
+    }
+
+    // 2. Short-Form Content Improvement (Excerpts, Short Descriptions, Bhajan Descriptions)
     if (isEnglish) {
       return {
         systemPrompt:
-          'You are a senior proofreader and copy editor specializing in Sanatan Dharma, spiritual literature, and sacred philosophy in English. Improve grammar, punctuation, flow, and clarity while preserving authentic Sanskrit terminology, deity names, and traditional theological reverence.',
-        prompt: `Please improve the quality, grammar, and readability of this ${item.entityType} ${item.field}:
+          'You are a senior proofreader and devotional copy editor specializing in Sanatan Dharma literature in English. Craft concise, reverent, and informative summaries and descriptions without altering sacred names or philosophical truths.',
+        prompt: `Please improve the quality, conciseness, and readability of this ${item.entityType} ${item.field}:
 
 Title: "${item.title}"
 
 Current Content:
-${rawContent.slice(0, 3500)}
+${rawContent.slice(0, 4000)}
 
 Instructions:
-1. Fix any spelling, punctuation, or grammatical errors.
-2. Enhance sentence flow and readability while maintaining authentic devotional tone.
-3. If HTML tags (such as <p>, <strong>, <h3>, <ul>, <li>) are present in the text, preserve them cleanly.
-4. Output ONLY the polished content directly without meta comments or intro labels.`,
-        maxTokens: 1500
+1. Provide a clear, engaging, and devotional ${item.field.includes('excerpt') ? 'excerpt summary (2-3 sentences)' : 'concise description'}.
+2. Ensure authentic devotional tone and grammatical precision.
+3. Output ONLY the polished text directly without labels or quotes.`,
+        maxTokens: 500
       };
     }
 
     return {
       systemPrompt:
-        'आप सनातन धर्म, वैदिक साहित्य और आध्यात्मिक दर्शन के वरिष्ठ संपादक व शोधार्थी हैं। आपका कार्य सामग्री की व्याकरणिक शुद्धता, भाषा प्रवाह, और भक्तिमय गरिमा को निखारना है। पारंपरिक देव-नाम, श्लोक व आध्यात्मिक पारिभाषिक शब्दों की पवित्रता को अक्षुण्ण रखें।',
-      prompt: `कृपया निम्नलिखित ${item.entityType} के "${item.field}" की गुणवत्ता, व्याकरण और भक्तिमय भाषा-प्रवाह को परिष्कृत कीजिए:
+        'आप सनातन धर्म, वैदिक साहित्य और भक्ति साहित्य के वरिष्ठ संपादक हैं। आपका कार्य दिए गए विवरण या सारांश (Summary/Excerpt) को संक्षिप्त, ओजस्वी, और भक्तिमय गरिमा से परिपूर्ण बनाना है।',
+      prompt: `कृपया निम्नलिखित ${item.entityType} के "${item.field}" को परिष्कृत एवं प्रभावशाली बनाइए:
 
 शीर्षक: "${item.title}"
 
-वर्तमान सामग्री:
-${rawContent.slice(0, 3500)}
+वर्तमान विवरण:
+${rawContent.slice(0, 4000)}
 
 आवश्यक निर्देश:
-1. वर्तनी (spelling), व्याकरण और विराम-चिह्नों की त्रुटियाँ सुधारें।
-2. भाषा को सरल, शुद्ध, गरिमापूर्ण और भक्तिमय बनाएं।
-3. यदि मूल पाठ में HTML टैग्स (जैसे <p>, <strong>, <h3> आदि) विद्यमान हैं, तो उन्हें यथावत सुरक्षित रखें।
-4. उत्तर में केवल परिष्कृत सामग्री ही प्रस्तुत करें, कोई अतिरिक्त भूमिका या टिप्पणी न जोड़ें।`,
-      maxTokens: 1500
+1. ${item.field.includes('excerpt') ? 'आलेख का सारगर्भित एवं आकर्षक संक्षेप (2-3 वाक्य, लगभग 40-70 शब्द)' : 'पावन, तथ्यपरक एवं गरिमापूर्ण विवरण'} तैयार करें।
+2. भाषा शुद्ध, व्याकरणसम्मत और भक्तिमय होनी चाहिए।
+3. उत्तर में केवल परिष्कृत पाठ ही प्रस्तुत करें, कोई अतिरिक्त भूमिका न जोड़ें।`,
+      maxTokens: 500
     };
   }
 }

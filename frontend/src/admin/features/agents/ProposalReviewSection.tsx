@@ -26,6 +26,7 @@ import {
 import toast from 'react-hot-toast';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { AdminButton } from '@admin/components/AdminButton';
+import { FormattedContentPreview } from '@admin/components/FormattedContentPreview';
 
 export function ProposalReviewSection() {
   const queryClient = useQueryClient();
@@ -47,7 +48,7 @@ export function ProposalReviewSection() {
   };
 
   // Fetch proposals
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['admin-agent-proposals', statusFilter],
     queryFn: async () => {
       const statusParam = statusFilter === 'ALL' ? undefined : statusFilter;
@@ -55,6 +56,19 @@ export function ProposalReviewSection() {
     },
     refetchInterval: 8000
   });
+
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsManualRefreshing(true);
+    try {
+      await Promise.all([queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] }), refetch()]);
+    } catch {
+      // Silent refresh without toaster
+    } finally {
+      setIsManualRefreshing(false);
+    }
+  };
 
   const proposals: AgentProposalItem[] = data?.data || [];
 
@@ -130,43 +144,43 @@ export function ProposalReviewSection() {
     switch (status) {
       case 'PENDING':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-200">
+          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-amber-100 text-amber-900">
             <Clock className="w-3.5 h-3.5 mr-1 text-amber-600" /> Pending Approval
           </span>
         );
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-900 border border-blue-200">
+          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-900">
             <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-blue-600" /> Approved (Ready)
           </span>
         );
       case 'EXECUTING':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-900 border border-indigo-200 animate-pulse">
+          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-indigo-100 text-indigo-900 animate-pulse">
             <Zap className="w-3.5 h-3.5 mr-1 text-indigo-600" /> Executing Mutation...
           </span>
         );
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
+          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-800">
             <FileCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" /> Successfully Applied
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-900 border border-rose-200">
+          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-rose-100 text-rose-800">
             <AlertCircle className="w-3.5 h-3.5 mr-1 text-rose-600" /> Execution Failed
           </span>
         );
       case 'REJECTED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-300">
+          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700">
             <XCircle className="w-3.5 h-3.5 mr-1 text-gray-500" /> Rejected
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-800">
             {status}
           </span>
         );
@@ -224,10 +238,18 @@ export function ProposalReviewSection() {
         </div>
 
         <button
-          onClick={() => refetch()}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+          type="button"
+          onClick={handleRefresh}
+          disabled={isManualRefreshing || isFetching}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-60 cursor-pointer shadow-2xs"
+          title="Refresh proposals list"
         >
-          <RotateCcw className="w-3.5 h-3.5" /> Refresh
+          <RotateCcw
+            className={`w-3.5 h-3.5 transition-transform ${
+              isManualRefreshing || isFetching ? 'animate-spin text-saffron' : 'text-gray-500'
+            }`}
+          />
+          <span>{isManualRefreshing || isFetching ? 'Refreshing...' : 'Refresh'}</span>
         </button>
       </div>
 
@@ -271,10 +293,10 @@ export function ProposalReviewSection() {
               >
                 {/* Proposal Header */}
                 <div className="flex items-start justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1.5 bg-saffron/10 text-saffron rounded-md">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-md bg-saffron/10 text-saffron flex items-center justify-center shrink-0">
                       {getEntityIcon(proposal.entityType, proposal.targetField)}
-                    </span>
+                    </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -398,16 +420,12 @@ export function ProposalReviewSection() {
                               <span className="w-2 h-2 rounded-full bg-gray-400"></span> Current{' '}
                               {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField}
                             </span>
-                            <div
-                              className={`text-xs sm:text-sm text-gray-700 bg-white p-3 rounded-md border border-gray-200 overflow-y-auto leading-relaxed whitespace-pre-wrap font-sans transition-all ${
-                                isExpanded ? 'max-h-[650px]' : 'max-h-48'
-                              }`}
-                            >
-                              {proposal.currentValue && proposal.currentValue.trim() !== '' ? (
-                                proposal.currentValue
-                              ) : (
-                                <span className="text-gray-400 italic">None (Empty field)</span>
-                              )}
+                            <div className="bg-white p-3 rounded-md border border-gray-200 shadow-2xs">
+                              <FormattedContentPreview
+                                content={proposal.currentValue}
+                                field={proposal.targetField}
+                                maxHeightClass={isExpanded ? 'max-h-[650px]' : 'max-h-48'}
+                              />
                             </div>
                           </div>
 
@@ -417,12 +435,13 @@ export function ProposalReviewSection() {
                               <span className="w-2 h-2 rounded-full bg-saffron"></span> Proposed{' '}
                               {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField} (AI)
                             </span>
-                            <div
-                              className={`text-xs sm:text-sm text-gray-900 bg-amber-50/50 p-3 rounded-md border border-amber-200 overflow-y-auto leading-relaxed whitespace-pre-wrap transition-all ${
-                                proposal.targetField === 'meaning' ? 'font-serif' : 'font-sans'
-                              } ${isExpanded ? 'max-h-[650px]' : 'max-h-48'}`}
-                            >
-                              {proposal.proposedValue}
+                            <div className="bg-amber-50/50 p-3 rounded-md border border-amber-200 shadow-2xs">
+                              <FormattedContentPreview
+                                content={proposal.proposedValue}
+                                field={proposal.targetField}
+                                isProposed
+                                maxHeightClass={isExpanded ? 'max-h-[650px]' : 'max-h-48'}
+                              />
                             </div>
                           </div>
                         </div>

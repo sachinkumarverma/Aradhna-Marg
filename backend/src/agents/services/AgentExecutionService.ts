@@ -35,7 +35,12 @@ export class AgentExecutionService {
     return await agentRunRepository.updateStatus(id, 'CANCELLED', 'Cancelled by administrator');
   }
 
-  async completeRun(id: string): Promise<AgentRun> {
+  async completeRun(id: string, result?: any): Promise<AgentRun> {
+    if (result !== undefined) {
+      const current = await agentRunRepository.findById(id);
+      const updatedState = { ...(current?.state || {}), result };
+      await agentRunRepository.updateState(id, updatedState);
+    }
     return await agentRunRepository.updateStatus(id, 'COMPLETED');
   }
 

@@ -95,6 +95,12 @@ router.post('/ai/jobs/:id/cancel', adminAiController.cancelJob);
 router.delete('/ai/jobs/:id', adminAiController.deleteJob);
 
 // Agentic AI Gateway & Proposals Pipeline
+router.get('/agents/definitions', agentController.listAgents);
+router.get('/agents/definitions/:id', agentController.getAgentDefinition);
+router.post('/agents/:id/run', agentController.startAgentRun);
+router.get('/agents/schedules', agentController.listSchedules);
+router.put('/agents/schedules/:id', agentController.updateSchedule);
+router.post('/agents/schedules/:id/run', agentController.runScheduledAgentNow);
 router.get('/agents/tools', agentController.listTools);
 router.get('/agents/runs', agentController.listRuns);
 router.get('/agents/runs/:id', agentController.getRunDetails);

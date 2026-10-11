@@ -25,12 +25,13 @@ import {
 import { AdminButton } from '@admin/components/AdminButton';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { ProposalReviewSection } from '@admin/features/agents/ProposalReviewSection';
+import { AgentRunsSection } from '@admin/features/agents/AgentRunsSection';
 
 export function AdminAI() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<'assistant' | 'proposals' | 'bulk' | 'queue' | 'history' | 'failed'>(
-    'assistant'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'assistant' | 'proposals' | 'agent-runs' | 'bulk' | 'queue' | 'history' | 'failed'
+  >('assistant');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Fetch Stats
@@ -279,6 +280,7 @@ export function AdminAI() {
         {[
           { id: 'assistant', label: 'Content Assistant' },
           { id: 'proposals', label: 'AI Proposals' },
+          { id: 'agent-runs', label: 'Agent Runs' },
           { id: 'bulk', label: 'Bulk Processing' },
           { id: 'queue', label: 'Processing Queue' },
           { id: 'history', label: 'History' },
@@ -345,6 +347,9 @@ export function AdminAI() {
 
         {/* AI Proposals Tab (Phase 4A) */}
         {activeTab === 'proposals' && <ProposalReviewSection />}
+
+        {/* Agent Runs Tab (Phase 5A) */}
+        {activeTab === 'agent-runs' && <AgentRunsSection />}
 
         {/* Bulk Processing Tab */}
         {activeTab === 'bulk' && (

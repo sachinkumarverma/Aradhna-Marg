@@ -1,4 +1,5 @@
 import { toolRegistry } from '../registry/ToolRegistry';
+import { agentRegistry } from '../registry/AgentRegistry';
 import { AgentContext } from '../types/AgentContext';
 import { AgentToolResult } from '../types/ToolContract';
 import { AgentPermissionTier, isForbiddenAutonomously } from '../types/AgentPermissionTier';
@@ -6,9 +7,26 @@ import { ToolNotFoundError, ToolValidationError, AgentSecurityError, AgentIterat
 import { agentToolCallRepository } from '../repositories/AgentToolCallRepository';
 import { agentProposalRepository } from '../repositories/AgentProposalRepository';
 import { agentRunRepository } from '../repositories/AgentRunRepository';
+import { ContentSafetyValidator } from '../utils/ContentSafetyValidator';
 import { logger } from '@utils/logger';
 
 export class ToolGateway {
+  private redactSecrets(obj: any): any {
+    if (!obj || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map((item) => this.redactSecrets(item));
+    const redacted: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (/password|secret|token|apiKey|api_key|auth|cookie|jwt/i.test(key)) {
+        redacted[key] = '[REDACTED]';
+      } else if (typeof value === 'object' && value !== null) {
+        redacted[key] = this.redactSecrets(value);
+      } else {
+        redacted[key] = value;
+      }
+    }
+    return redacted;
+  }
+
   /**
    * Safe, typed, audited execution boundary for any agent tool invocation.
    */
@@ -31,6 +49,54 @@ export class ToolGateway {
       throw new ToolNotFoundError(toolName);
     }
 
+    // 2.5 Agent Policy Check (Phase 5A Autonomous Boundary)
+    const agentDef = agentRegistry.getDefinition(context.agentName);
+    if (agentDef) {
+      if (!agentDef.allowedTools.includes(toolName)) {
+        const durationMs = Date.now() - startTime;
+        await agentToolCallRepository.create({
+          runId: context.runId,
+          toolName,
+          permissionTier: tool.permission,
+          inputPayload: this.redactSecrets((rawInput as any) || {}),
+          durationMs,
+          status: 'BLOCKED',
+          errorMessage: `Blocked: Tool '${toolName}' is not in allowedTools policy for agent '${context.agentName}'.`
+        });
+        logger.warn(
+          { toolName, agentName: context.agentName, runId: context.runId },
+          'Security alert: Agent attempted tool not in its allowedTools policy'
+        );
+        throw new AgentSecurityError(
+          `Execution of tool '${toolName}' is prohibited by policy for agent '${context.agentName}'.`
+        );
+      }
+
+      if (
+        agentDef.dryRunOnly &&
+        tool.permission !== AgentPermissionTier.TIER_1_READ &&
+        tool.permission !== AgentPermissionTier.TIER_2_ANALYZE
+      ) {
+        const durationMs = Date.now() - startTime;
+        await agentToolCallRepository.create({
+          runId: context.runId,
+          toolName,
+          permissionTier: tool.permission,
+          inputPayload: this.redactSecrets((rawInput as any) || {}),
+          durationMs,
+          status: 'BLOCKED',
+          errorMessage: `Blocked: Mutation tool '${toolName}' forbidden for dryRunOnly agent '${context.agentName}'.`
+        });
+        logger.warn(
+          { toolName, agentName: context.agentName, runId: context.runId },
+          'Security alert: Dry-run agent attempted mutation tool'
+        );
+        throw new AgentSecurityError(
+          `Agent '${context.agentName}' is configured as dryRunOnly and cannot invoke mutation tool '${toolName}'.`
+        );
+      }
+    }
+
     // 3. Security Boundary: Tier 6 Destructive checks
     if (isForbiddenAutonomously(tool.permission)) {
       const durationMs = Date.now() - startTime;
@@ -38,7 +104,7 @@ export class ToolGateway {
         runId: context.runId,
         toolName,
         permissionTier: tool.permission,
-        inputPayload: (rawInput as any) || {},
+        inputPayload: this.redactSecrets((rawInput as any) || {}),
         durationMs,
         status: 'BLOCKED',
         errorMessage: 'Blocked: Tier 6 destructive operation is forbidden autonomously.'
@@ -141,6 +207,34 @@ export class ToolGateway {
         }
       }
 
+      // Content Safety Boundary: Prevent staging proposals with catastrophic content reduction
+      if (toolName.includes('content_improvement') || toolName.includes('description_improvement')) {
+        const safetyCheck = ContentSafetyValidator.validateContentImprovement({
+          entityType,
+          targetField,
+          originalContent: proposalPayload.currentValue || '',
+          proposedContent: proposedValue || ''
+        });
+
+        if (!safetyCheck.isValid) {
+          const durationMs = Date.now() - startTime;
+          await agentToolCallRepository.create({
+            runId: context.runId,
+            toolName,
+            permissionTier: tool.permission,
+            inputPayload: this.redactSecrets((rawInput as any) || {}),
+            durationMs,
+            status: 'BLOCKED',
+            errorMessage: `Blocked by ContentSafetyValidator: ${safetyCheck.reason}`
+          });
+          logger.warn(
+            { toolName, agentName: context.agentName, reason: safetyCheck.reason },
+            'Content safety violation prevented proposal staging'
+          );
+          throw new AgentSecurityError(`Content safety violation: ${safetyCheck.reason}`);
+        }
+      }
+
       const proposal = await agentProposalRepository.create({
         runId: context.runId,
         agentName: context.agentName,
@@ -156,7 +250,7 @@ export class ToolGateway {
         runId: context.runId,
         toolName,
         permissionTier: tool.permission,
-        inputPayload: validatedInput,
+        inputPayload: this.redactSecrets((rawInput as any) || {}),
         outputPayload: { proposalId: proposal.id, status: 'PROPOSAL_STAGED' },
         durationMs,
         status: 'PROPOSAL_STAGED'
@@ -191,7 +285,7 @@ export class ToolGateway {
         runId: context.runId,
         toolName,
         permissionTier: tool.permission,
-        inputPayload: validatedInput,
+        inputPayload: this.redactSecrets((rawInput as any) || {}),
         outputPayload: (finalOutput as any) || {},
         durationMs,
         status: 'SUCCESS'
@@ -210,7 +304,7 @@ export class ToolGateway {
         runId: context.runId,
         toolName,
         permissionTier: tool.permission,
-        inputPayload: validatedInput,
+        inputPayload: this.redactSecrets((rawInput as any) || {}),
         durationMs,
         status: 'FAILED',
         errorMessage: error.message || 'Execution error'

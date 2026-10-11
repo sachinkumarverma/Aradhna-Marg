@@ -5,6 +5,7 @@ import { AgentContext } from '../types/AgentContext';
 import { agentRunRepository } from '../repositories/AgentRunRepository';
 import { getAiProvider } from '@admin/services/ai/AiProvider';
 import { AiPrompts } from '@admin/services/ai/AiPrompts';
+import { ContentSafetyValidator } from '../utils/ContentSafetyValidator';
 import { logger } from '@utils/logger';
 
 export interface ContentImprovementAgentOptions {
@@ -93,34 +94,37 @@ export class ContentImprovementAgent {
       // 3. Generate content quality improvement via AI provider or use override
       let generatedContent = options.proposedContent;
       if (!generatedContent) {
-        try {
-          const provider = getAiProvider();
-          const promptPayload = AiPrompts.contentQualityImprovement({
-            entityType: normalizedType,
-            field: options.targetField,
-            title,
-            currentContent: currentFieldValue
-          });
-          generatedContent = await provider.generateCompletion(promptPayload);
-        } catch (providerError: any) {
-          logger.warn(
-            { error: providerError.message },
-            'AI provider completion failed, generating fallback structured content improvement'
-          );
-          if (options.targetField.endsWith('_en')) {
-            generatedContent = currentFieldValue
-              ? `${currentFieldValue} This holy text guides the seeker towards spiritual awakening and inner devotion.`
-              : `Authentic devotional treatise exploring the glory of ${title}.`;
-          } else {
-            generatedContent = currentFieldValue
-              ? `${currentFieldValue} यह पावन प्रसंग साधक के हृदय में प्रभु के प्रति अनन्य अनुराग और भक्ति भाव जागृत करता है।`
-              : `यह पावन आलेख/विवरण ${title} की महिमा और आध्यात्मिक सार को श्रद्धापूर्वक प्रस्तुत करता है।`;
-          }
-        }
+        const provider = getAiProvider();
+        const promptPayload = AiPrompts.contentQualityImprovement({
+          entityType: normalizedType,
+          field: options.targetField,
+          title,
+          currentContent: currentFieldValue
+        });
+        generatedContent = await provider.generateCompletion(promptPayload);
       }
 
-      if (!generatedContent || generatedContent.trim().length < 10) {
-        throw new Error('Generated content improvement failed minimum length requirement (10 characters).');
+      // 4. Output Validation: Enforce substantive preservation and retention thresholds
+      const validation = ContentSafetyValidator.validateContentImprovement({
+        entityType: normalizedType,
+        targetField: options.targetField,
+        originalContent: currentFieldValue,
+        proposedContent: generatedContent
+      });
+
+      if (!validation.isValid) {
+        logger.warn(
+          {
+            runId,
+            entityType: normalizedType,
+            targetField: options.targetField,
+            reason: validation.reason,
+            originalMetrics: validation.originalMetrics,
+            proposedMetrics: validation.proposedMetrics
+          },
+          'Content improvement rejected by safety validator'
+        );
+        throw new Error(`Content improvement safety validation failed: ${validation.reason}`);
       }
 
       const reasoning =

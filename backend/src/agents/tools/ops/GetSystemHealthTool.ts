@@ -1,33 +1,54 @@
 import { z } from 'zod';
 import { AgentToolDefinition } from '../../types/ToolContract';
 import { AgentPermissionTier } from '../../types/AgentPermissionTier';
-import { aiJobService } from '@admin/services/AiJobService';
+import { systemHealthService } from '@services/SystemHealthService';
 
-const InputSchema = z.object({});
+const InputSchema = z
+  .object({
+    includeRecentRuns: z.boolean().optional()
+  })
+  .passthrough();
 
 const OutputSchema = z.object({
   pendingJobs: z.number(),
   processingJobs: z.number(),
   completedJobs: z.number(),
   failedJobs: z.number(),
-  todayJobs: z.number()
+  todayJobs: z.number(),
+  databaseStatus: z.string(),
+  databaseLatencyMs: z.number(),
+  aiQueueStatus: z.string(),
+  agentRunsTotal: z.number(),
+  recentFailedAgentRuns: z.number(),
+  uptimeSeconds: z.number(),
+  memoryUsageMb: z.number(),
+  environment: z.string()
 });
 
 export const getSystemHealthTool: AgentToolDefinition<z.infer<typeof InputSchema>, z.infer<typeof OutputSchema>> = {
   name: 'get_system_health',
-  description: 'Inspects AI job queue health, failed jobs count, and today throughput.',
+  description:
+    'Grounded, read-only inspection of database connectivity, AI job queues, agent run health, and process status.',
   inputSchema: InputSchema,
   outputSchema: OutputSchema,
   permission: AgentPermissionTier.TIER_1_READ,
   requiresApproval: false,
   handler: async () => {
-    const stats = await aiJobService.getStats();
+    const overview = await systemHealthService.getHealthOverview();
     return {
-      pendingJobs: stats.pending,
-      processingJobs: stats.processing,
-      completedJobs: stats.completed,
-      failedJobs: stats.failed,
-      todayJobs: stats.today
+      pendingJobs: overview.aiQueue.pending,
+      processingJobs: overview.aiQueue.processing,
+      completedJobs: overview.aiQueue.completed,
+      failedJobs: overview.aiQueue.failed,
+      todayJobs: overview.aiQueue.today,
+      databaseStatus: overview.database.status,
+      databaseLatencyMs: overview.database.latencyMs,
+      aiQueueStatus: overview.aiQueue.status,
+      agentRunsTotal: overview.agentExecution.totalRuns,
+      recentFailedAgentRuns: overview.agentExecution.recentFailedRuns,
+      uptimeSeconds: overview.process.uptimeSeconds,
+      memoryUsageMb: overview.process.memoryUsageMb,
+      environment: overview.process.environment
     };
   }
 };

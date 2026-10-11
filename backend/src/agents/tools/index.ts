@@ -24,6 +24,9 @@ import { applyFestivalContentFieldTool } from './content/ApplyFestivalContentFie
 import { applyPuranDescriptionTool } from './content/ApplyPuranDescriptionTool';
 import { applyBhajanDescriptionTool } from './content/ApplyBhajanDescriptionTool';
 
+// Phase 5A: Read-Only Content Quality Batch Tool
+import { getContentQualityBatchTool } from './content/GetContentQualityBatchTool';
+
 export function registerDefaultTools(): void {
   toolRegistry.register(getContentItemTool);
   toolRegistry.register(searchContentTool);
@@ -49,6 +52,9 @@ export function registerDefaultTools(): void {
   toolRegistry.register(applyFestivalContentFieldTool);
   toolRegistry.register(applyPuranDescriptionTool);
   toolRegistry.register(applyBhajanDescriptionTool);
+
+  // Phase 5A Tools
+  toolRegistry.register(getContentQualityBatchTool);
 }
 
 // Automatically register defaults upon module load
@@ -77,5 +83,7 @@ export {
   applyArticleContentFieldTool,
   applyFestivalContentFieldTool,
   applyPuranDescriptionTool,
-  applyBhajanDescriptionTool
+  applyBhajanDescriptionTool,
+  // Phase 5A Exports
+  getContentQualityBatchTool
 };

@@ -27,6 +27,7 @@ Before suggesting code, running commands, or modifying files:
    - [ADR 004: Backblaze B2 S3-Compatible Storage](docs/architecture/004-backblaze-b2-object-storage.md)
    - [ADR 005: SEO Scope (Website vs YouTube)](docs/architecture/005-seo-scope-website-vs-youtube.md)
    - [ADR 006: Future Agentic AI Permission Boundaries](docs/architecture/006-future-agentic-ai-permission-boundaries.md)
+   - [ADR 007: Autonomous Read/Analyze Agent Infrastructure](docs/architecture/007-autonomous-read-analyze-agent-infrastructure.md)
 4. **Inspect the Real Files First:** Never make assumptions about folder paths, database columns, or endpoints. Always use file inspection tools to verify actual code before proposing changes.
 5. **Check Working Tree Status:** Verify clean state (`git status`) before starting any modifications.
 

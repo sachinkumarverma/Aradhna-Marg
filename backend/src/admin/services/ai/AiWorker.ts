@@ -7,6 +7,7 @@ import { articleRepository } from '@repositories/ArticleRepository';
 import { festivalRepository } from '@repositories/FestivalRepository';
 import { puranRepository } from '@repositories/PuranRepository';
 import { categoryRepository } from '@features/categories/CategoryRepository';
+import { ContentSafetyValidator } from '@/agents/utils/ContentSafetyValidator';
 
 export class AiWorker {
   private isProcessing = false;
@@ -161,6 +162,18 @@ export class AiWorker {
 
     const promptPayload = AiPrompts.articleGrammar(article);
     const polishedContent = await provider.generateCompletion(promptPayload);
+
+    // Validate that long-form content was not condensed or stripped
+    const validation = ContentSafetyValidator.validateContentImprovement({
+      entityType: 'article',
+      targetField: 'content',
+      originalContent: article.content,
+      proposedContent: polishedContent
+    });
+
+    if (!validation.isValid) {
+      throw new Error(`Article grammar improvement safety rejected: ${validation.reason}`);
+    }
 
     await articleRepository.updateContent(article.id, polishedContent);
     await aiJobRepository.updateProgress(job.id, 1, 100);

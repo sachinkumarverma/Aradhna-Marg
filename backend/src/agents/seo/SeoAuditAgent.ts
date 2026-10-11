@@ -2,6 +2,7 @@ import { toolGateway } from '../gateway/ToolGateway';
 import '../tools';
 import { AgentPermissionTier } from '../types/AgentPermissionTier';
 import { AgentContext } from '../types/AgentContext';
+import { AgentDefinition, AutonomousAgent } from '../types/AgentDefinition';
 import { agentRunRepository } from '../repositories/AgentRunRepository';
 import { logger } from '@utils/logger';
 
@@ -43,7 +44,21 @@ export interface SeoAuditOptions {
   maxItemsPerType?: number;
 }
 
-export class SeoAuditAgent {
+export class SeoAuditAgent implements AutonomousAgent {
+  public readonly definition: AgentDefinition = {
+    id: 'seo_audit_agent',
+    name: 'SEO Audit Agent',
+    description:
+      'Audits website content (Bhajans, Articles, Festivals, Puranas, Categories) for SEO issues and generates structured findings without mutating content.',
+    permissionTier: AgentPermissionTier.TIER_2_ANALYZE,
+    allowedTools: ['get_seo_audit', 'get_seo_content_batch'],
+    allowedEntityTypes: ['bhajan', 'article', 'festival', 'puran', 'category'],
+    maxIterations: 100,
+    maxToolCalls: 50,
+    timeoutMs: 60000,
+    dryRunOnly: true
+  };
+
   public readonly agentName = 'SeoAuditAgent';
   public readonly permission = AgentPermissionTier.TIER_2_ANALYZE;
 
@@ -56,10 +71,8 @@ export class SeoAuditAgent {
   /**
    * Executes a read-only SEO audit run through the ToolGateway with multi-page pagination.
    */
-  public async execute(
-    runId: string,
-    options?: SeoAuditOptions
-  ): Promise<{ runId: string; summary: SeoAuditSummary; findings: SeoFinding[] }> {
+  public async execute(runId: string, options?: SeoAuditOptions): Promise<any> {
+    const startTime = Date.now();
     logger.info({ runId, options }, 'Starting SEO Audit Agent execution');
 
     const context: AgentContext = {
@@ -237,10 +250,26 @@ export class SeoAuditAgent {
         'SEO Audit Agent completed successfully'
       );
 
+      const durationMs = Date.now() - startTime;
+      const status = (
+        summary.bySeverity.CRITICAL > 0 ? 'CRITICAL' : summary.bySeverity.HIGH > 0 ? 'WARNING' : 'HEALTHY'
+      ) as any;
+
       return {
         runId,
-        summary,
-        findings
+        summary: {
+          status,
+          overview: `SEO Audit evaluated ${totalAudited} item(s). Found ${findings.length} issue(s).`,
+          totalFindings: findings.length,
+          bySeverity: {
+            ...summary.bySeverity,
+            INFO: 0
+          },
+          metrics: summary
+        },
+        findings,
+        durationMs,
+        dryRun: true
       };
     } catch (err: any) {
       logger.error({ runId, error: err.message }, 'SEO Audit Agent encountered failure');
@@ -436,8 +465,15 @@ export class SeoAuditAgent {
     }
   }
 
-  private addFinding(findings: SeoFinding[], byIssueType: Record<string, number>, finding: SeoFinding): void {
-    findings.push(finding);
+  private addFinding(findings: any[], byIssueType: Record<string, number>, finding: any): void {
+    const normalized = {
+      ...finding,
+      type: finding.issueType,
+      entityType: finding.contentType,
+      entityId: finding.contentId,
+      title: finding.contentTitle
+    };
+    findings.push(normalized);
     byIssueType[finding.issueType] = (byIssueType[finding.issueType] || 0) + 1;
   }
 }

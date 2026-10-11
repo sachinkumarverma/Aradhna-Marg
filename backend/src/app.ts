@@ -14,6 +14,7 @@ import { logger } from './utils/logger';
 
 // Register cron jobs
 import './features/youtube/jobs/youtube.cron';
+import './agents/scheduler/agent.cron';
 
 const app: Application = express();
 

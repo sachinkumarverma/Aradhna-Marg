@@ -3,10 +3,13 @@ import { sendSuccess } from '@/responses/apiResponse';
 import { agentExecutionService } from '@/agents/services/AgentExecutionService';
 import { agentProposalService } from '@/agents/services/AgentProposalService';
 import { toolRegistry } from '@/agents/registry/ToolRegistry';
+import { agentRegistry } from '@/agents/registry/AgentRegistry';
+import { agentRunner } from '@/agents/services/AgentRunner';
 import { seoAuditAgent } from '@/agents/seo/SeoAuditAgent';
 import { seoImprovementAgent } from '@/agents/seo/SeoImprovementAgent';
 import { bhajanMeaningAgent } from '@/agents/bhajan/BhajanMeaningAgent';
 import { contentImprovementAgent } from '@/agents/content/ContentImprovementAgent';
+import { agentSchedulerService } from '@/agents/services/AgentSchedulerService';
 
 class AgentController {
   public listTools = async (_req: Request, res: Response, next: NextFunction) => {
@@ -230,6 +233,81 @@ class AgentController {
       });
 
       sendSuccess(res, 'Content improvement proposal generated and staged for review', result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public listAgents = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const definitions = agentRegistry.getAllDefinitions();
+      sendSuccess(res, 'Registered autonomous agents retrieved successfully', definitions);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAgentDefinition = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id as string;
+      const def = agentRegistry.getDefinition(id);
+      if (!def) {
+        return res.status(404).json({ success: false, message: `Agent '${id}' not found` });
+      }
+      sendSuccess(res, 'Agent definition retrieved successfully', def);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public startAgentRun = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const agentId = (req.params.id || req.body.agentId) as string;
+      const triggeredBy = (req as any).user?.username || 'admin';
+      const inputParams = req.body?.inputParams || req.body?.options || {};
+
+      const result = await agentRunner.run(agentId, {
+        actor: { type: 'ADMIN', id: triggeredBy },
+        triggerType: 'MANUAL',
+        inputParams
+      });
+
+      sendSuccess(res, `Autonomous agent '${agentId}' completed execution`, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public listSchedules = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const schedules = await agentSchedulerService.getSchedules();
+      sendSuccess(res, 'Agent schedules retrieved successfully', schedules);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public updateSchedule = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const agentId = req.params.id as string;
+      const { enabled, scheduleInterval, cronExpression } = req.body;
+      const updated = await agentSchedulerService.updateSchedule(agentId, {
+        enabled,
+        scheduleInterval,
+        cronExpression
+      });
+      sendSuccess(res, `Schedule for agent '${agentId}' updated successfully`, updated);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public runScheduledAgentNow = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const agentId = req.params.id as string;
+      const triggeredBy = (req as any).user?.username || 'admin';
+      const result = await agentSchedulerService.executeManualRun(agentId, triggeredBy);
+      sendSuccess(res, `Agent '${agentId}' executed successfully via manual trigger`, result);
     } catch (error) {
       next(error);
     }
