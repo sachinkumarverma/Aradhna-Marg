@@ -106,6 +106,7 @@ router.get('/agents/runs', agentController.listRuns);
 router.get('/agents/runs/:id', agentController.getRunDetails);
 router.post('/agents/runs/:id/cancel', agentController.cancelRun);
 router.get('/agents/proposals', agentController.listProposals);
+router.get('/agents/proposals/stats', agentController.getProposalStats);
 router.get('/agents/proposals/:id', agentController.getProposalDetails);
 router.post('/agents/proposals/:id/approve', agentController.approveProposal);
 router.post('/agents/proposals/:id/reject', agentController.rejectProposal);

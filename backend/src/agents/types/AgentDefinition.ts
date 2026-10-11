@@ -48,5 +48,5 @@ export interface AgentDefinition {
 
 export interface AutonomousAgent {
   readonly definition: AgentDefinition;
-  execute(runId: string, options?: Record<string, any>): Promise<AgentRunState>;
+  execute(runId: string, options?: Record<string, any>): Promise<any>;
 }

@@ -21,12 +21,17 @@ import {
   Globe,
   Maximize2,
   Minimize2,
-  FileDiff
+  FileDiff,
+  ExternalLink,
+  Eye
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { AdminButton } from '@admin/components/AdminButton';
 import { FormattedContentPreview } from '@admin/components/FormattedContentPreview';
+import { ProposalDetailModal } from './ProposalDetailModal';
+import { getAdminPath } from '@utils/host';
 
 export function ProposalReviewSection() {
   const queryClient = useQueryClient();
@@ -35,6 +40,7 @@ export function ProposalReviewSection() {
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [executingProposalId, setExecutingProposalId] = useState<string | null>(null);
   const [expandedProposals, setExpandedProposals] = useState<Record<string, boolean>>({});
+  const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
     setExpandedProposals((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -203,7 +209,7 @@ export function ProposalReviewSection() {
       <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 text-amber-950 flex items-start gap-3 shadow-xs">
         <ShieldAlert className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
         <div className="text-xs sm:text-sm">
-          <p className="font-semibold text-amber-900">Human Approval Architecture (Phase 4A & 4B)</p>
+          <p className="font-semibold text-amber-900">Human Approval Architecture (Phase 5C Controlled AI Actions)</p>
           <p className="mt-0.5 text-amber-800">
             AI-generated content is strictly a staged proposal and <strong>has not changed any live content</strong>. An
             administrator must explicitly approve the proposal, and then execute it in a separate step. Sacred verses,
@@ -237,20 +243,30 @@ export function ProposalReviewSection() {
           ))}
         </div>
 
-        <button
-          type="button"
-          onClick={handleRefresh}
-          disabled={isManualRefreshing || isFetching}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-60 cursor-pointer shadow-2xs"
-          title="Refresh proposals list"
-        >
-          <RotateCcw
-            className={`w-3.5 h-3.5 transition-transform ${
-              isManualRefreshing || isFetching ? 'animate-spin text-saffron' : 'text-gray-500'
-            }`}
-          />
-          <span>{isManualRefreshing || isFetching ? 'Refreshing...' : 'Refresh'}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            to={getAdminPath('/ai-proposals')}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-darkBrown bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-md transition-colors shadow-2xs"
+          >
+            <span>Full Proposals Manager</span>
+            <ExternalLink className="w-3.5 h-3.5 text-amber-800" />
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleRefresh}
+            disabled={isManualRefreshing || isFetching}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-60 cursor-pointer shadow-2xs"
+            title="Refresh proposals list"
+          >
+            <RotateCcw
+              className={`w-3.5 h-3.5 transition-transform ${
+                isManualRefreshing || isFetching ? 'animate-spin text-saffron' : 'text-gray-500'
+              }`}
+            />
+            <span>{isManualRefreshing || isFetching ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Proposals List */}
@@ -478,6 +494,15 @@ export function ProposalReviewSection() {
 
                   {/* Action Buttons */}
                   <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedDetailId(proposal.id)}
+                      className="px-2.5 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Inspect Full Details & Diff"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Details & Diff</span>
+                    </button>
                     {/* PENDING State: Approve or Reject */}
                     {isPending && (
                       <>
@@ -557,6 +582,17 @@ export function ProposalReviewSection() {
             );
           })}
         </div>
+      )}
+
+      {selectedDetailId && (
+        <ProposalDetailModal
+          proposalId={selectedDetailId}
+          onClose={() => setSelectedDetailId(null)}
+          onStatusChanged={() => {
+            queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
+            refetch();
+          }}
+        />
       )}
     </div>
   );

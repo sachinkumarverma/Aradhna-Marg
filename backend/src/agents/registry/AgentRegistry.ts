@@ -13,13 +13,14 @@ export class AgentRegistry {
     if (!def.id) {
       throw new Error('Agent definition must have a unique id');
     }
-    // Enforce Phase 5A safety boundary: Must be READ or ANALYZE only
+    // Enforce autonomous safety boundary: Must be READ, ANALYZE, or PROPOSE only
     if (
       def.permissionTier !== AgentPermissionTier.TIER_1_READ &&
-      def.permissionTier !== AgentPermissionTier.TIER_2_ANALYZE
+      def.permissionTier !== AgentPermissionTier.TIER_2_ANALYZE &&
+      def.permissionTier !== AgentPermissionTier.TIER_3_PROPOSE
     ) {
       throw new AgentSecurityError(
-        `Agent '${def.id}' exceeds Phase 5A autonomous safety boundary. Only TIER_1_READ and TIER_2_ANALYZE permitted.`
+        `Agent '${def.id}' exceeds autonomous safety boundary (${def.permissionTier}). Only TIER_1_READ, TIER_2_ANALYZE, and TIER_3_PROPOSE permitted.`
       );
     }
     this.agents.set(def.id, agent);

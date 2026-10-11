@@ -1,6 +1,7 @@
 import { toolGateway } from '../gateway/ToolGateway';
 import '../tools';
 import { AgentPermissionTier } from '../types/AgentPermissionTier';
+import { AgentDefinition, AutonomousAgent } from '../types/AgentDefinition';
 import { AgentContext } from '../types/AgentContext';
 import { agentRunRepository } from '../repositories/AgentRunRepository';
 import { getAiProvider } from '@admin/services/ai/AiProvider';
@@ -16,9 +17,29 @@ export interface ContentImprovementAgentOptions {
   reasoning?: string;
 }
 
-export class ContentImprovementAgent {
+export class ContentImprovementAgent implements AutonomousAgent {
   public readonly agentName = 'ContentImprovementAgent';
   public readonly permission = AgentPermissionTier.TIER_3_PROPOSE;
+
+  public readonly definition: AgentDefinition = {
+    id: 'content_improvement_agent',
+    name: 'Content Improvement Agent',
+    description:
+      'Generates content quality and readability improvement proposals preserving substantive text, structure, and devotional sanctity.',
+    permissionTier: AgentPermissionTier.TIER_3_PROPOSE,
+    allowedTools: [
+      'get_content_item',
+      'propose_article_content_improvement',
+      'propose_festival_content_improvement',
+      'propose_puran_description_improvement',
+      'propose_bhajan_description_improvement'
+    ],
+    allowedEntityTypes: ['article', 'festival', 'puran', 'bhajan'],
+    maxIterations: 10,
+    maxToolCalls: 10,
+    timeoutMs: 45000,
+    dryRunOnly: false
+  };
 
   /**
    * Generates a content quality improvement proposal for supported website entities.

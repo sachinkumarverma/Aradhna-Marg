@@ -26,6 +26,11 @@ export * from './services/AgentProposalService';
 export * from './services/AgentRunner';
 export * from './services/AgentSchedulerService';
 
+// Orchestration (Phase 6)
+export * from './orchestration/AgentMemoryManager';
+export * from './orchestration/StepEvaluator';
+export * from './orchestration/MultiStepOrchestrator';
+
 // Agents
 export * from './seo/SeoAuditAgent';
 export * from './seo/SeoImprovementAgent';

@@ -48,6 +48,10 @@ export class AgentExecutionService {
     return await agentRunRepository.updateStatus(id, 'FAILED', errorMessage);
   }
 
+  async timeoutRun(id: string, errorMessage: string): Promise<AgentRun> {
+    return await agentRunRepository.updateStatus(id, 'TIMEOUT', errorMessage);
+  }
+
   /**
    * Dispatches a tool execution on behalf of a run through the ToolGateway.
    */

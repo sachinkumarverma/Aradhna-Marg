@@ -1,4 +1,6 @@
 import { agentProposalRepository } from '../repositories/AgentProposalRepository';
+import { agentRunRepository } from '../repositories/AgentRunRepository';
+import { agentToolCallRepository } from '../repositories/AgentToolCallRepository';
 import { toolGateway } from '../gateway/ToolGateway';
 import { AgentProposal } from '@models/AgentProposal';
 import { bhajanService } from '@features/bhajans/BhajanService';
@@ -44,13 +46,19 @@ export class AgentProposalService {
     limit?: number;
     status?: string;
     entityType?: string;
+    agentName?: string;
+    targetField?: string;
+    search?: string;
   }): Promise<{ data: (AgentProposal & { targetTitle?: string })[]; count: number }> {
-    const result = await agentProposalRepository.list(
-      options.page || 1,
-      options.limit || 10,
-      options.status,
-      options.entityType
-    );
+    const result = await agentProposalRepository.list({
+      page: options.page || 1,
+      limit: options.limit || 10,
+      status: options.status,
+      entityType: options.entityType,
+      agentName: options.agentName,
+      targetField: options.targetField,
+      search: options.search
+    });
 
     // Enrich proposals with target entity title if available
     const enriched = await Promise.all(
@@ -79,7 +87,19 @@ export class AgentProposalService {
     };
   }
 
-  async getProposalById(id: string): Promise<AgentProposal & { targetEntity?: any }> {
+  async getStats(): Promise<{
+    pending: number;
+    approved: number;
+    rejected: number;
+    executing: number;
+    completed: number;
+    failed: number;
+    total: number;
+  }> {
+    return await agentProposalRepository.getStats();
+  }
+
+  async getProposalById(id: string): Promise<AgentProposal & { targetEntity?: any; run?: any; toolCalls?: any[] }> {
     const proposal = await agentProposalRepository.findById(id);
     if (!proposal) throw new NotFoundError('Agent proposal not found');
 
@@ -107,9 +127,43 @@ export class AgentProposalService {
       logger.warn({ proposalId: id, error: err.message }, 'Failed to load target entity details for proposal');
     }
 
+    let run: any = null;
+    let toolCalls: any[] = [];
+    if (proposal.runId) {
+      try {
+        const foundRun = await agentRunRepository.findById(proposal.runId);
+        if (foundRun) {
+          run = {
+            id: foundRun.id,
+            agentName: foundRun.agentName,
+            triggerType: foundRun.triggerType,
+            triggeredBy: foundRun.triggeredBy,
+            status: foundRun.status,
+            startedAt: foundRun.startedAt,
+            completedAt: foundRun.completedAt,
+            errorMessage: foundRun.errorMessage
+          };
+        }
+        const calls = await agentToolCallRepository.findByRunId(proposal.runId);
+        toolCalls = calls.map((tc) => ({
+          id: tc.id,
+          toolName: tc.toolName,
+          status: tc.status,
+          permissionTier: tc.permissionTier,
+          durationMs: tc.durationMs,
+          errorMessage: tc.errorMessage,
+          createdAt: tc.createdAt
+        }));
+      } catch (err: any) {
+        logger.warn({ proposalId: id, runId: proposal.runId, error: err.message }, 'Failed to load audit run data');
+      }
+    }
+
     return {
       ...proposal,
-      targetEntity
+      targetEntity,
+      run,
+      toolCalls
     };
   }
 
@@ -230,7 +284,7 @@ export class AgentProposalService {
         const liveMeaning = (liveEntity.short_description || liveEntity.description || '').trim();
         const expectedMeaning = (currentValue || '').trim();
 
-        if (expectedMeaning !== '' && liveMeaning !== expectedMeaning) {
+        if (liveMeaning !== expectedMeaning && (expectedMeaning !== '' || liveMeaning !== '')) {
           const staleMsg = `Stale proposal detected: Bhajan meaning was modified externally after proposal creation (original: "${expectedMeaning.slice(0, 50)}...", current: "${liveMeaning.slice(0, 50)}..."). Overwrite prevented.`;
           await agentProposalRepository.updateStatus(id, 'FAILED', executedBy, staleMsg);
           logger.warn({ proposalId: id, entityId }, staleMsg);
@@ -240,7 +294,7 @@ export class AgentProposalService {
         const liveTitle = (liveEntity.seo_title || liveEntity.seoTitle || '').trim();
         const expectedTitle = (currentValue || '').trim();
 
-        if (expectedTitle !== '' && liveTitle !== expectedTitle) {
+        if (liveTitle !== expectedTitle && (expectedTitle !== '' || liveTitle !== '')) {
           const staleMsg = `Stale proposal detected: ${entityType} seo_title was modified externally after proposal creation (original: "${expectedTitle.slice(0, 50)}...", current: "${liveTitle.slice(0, 50)}..."). Overwrite prevented.`;
           await agentProposalRepository.updateStatus(id, 'FAILED', executedBy, staleMsg);
           logger.warn({ proposalId: id, entityId }, staleMsg);
@@ -250,7 +304,7 @@ export class AgentProposalService {
         const liveDesc = (liveEntity.seo_description || liveEntity.seoDescription || '').trim();
         const expectedDesc = (currentValue || '').trim();
 
-        if (expectedDesc !== '' && liveDesc !== expectedDesc) {
+        if (liveDesc !== expectedDesc && (expectedDesc !== '' || liveDesc !== '')) {
           const staleMsg = `Stale proposal detected: ${entityType} seo_description was modified externally after proposal creation (original: "${expectedDesc.slice(0, 50)}...", current: "${liveDesc.slice(0, 50)}..."). Overwrite prevented.`;
           await agentProposalRepository.updateStatus(id, 'FAILED', executedBy, staleMsg);
           logger.warn({ proposalId: id, entityId }, staleMsg);
@@ -271,8 +325,10 @@ export class AgentProposalService {
         const liveTitle = (liveEntity.seo_title || liveEntity.seoTitle || '').trim();
         const liveDesc = (liveEntity.seo_description || liveEntity.seoDescription || '').trim();
 
-        const titleMismatch = expectedTitle !== undefined && expectedTitle !== '' && liveTitle !== expectedTitle;
-        const descMismatch = expectedDesc !== undefined && expectedDesc !== '' && liveDesc !== expectedDesc;
+        const titleMismatch =
+          expectedTitle !== undefined && liveTitle !== expectedTitle && (expectedTitle !== '' || liveTitle !== '');
+        const descMismatch =
+          expectedDesc !== undefined && liveDesc !== expectedDesc && (expectedDesc !== '' || liveDesc !== '');
 
         if (titleMismatch || descMismatch) {
           const staleMsg = `Stale proposal detected: ${entityType} SEO metadata was modified externally after proposal creation. Overwrite prevented.`;
@@ -287,6 +343,7 @@ export class AgentProposalService {
           'content_en',
           'excerpt_en',
           'short_description',
+          'short_description_en',
           'description',
           'description_en'
         ].includes(targetField)

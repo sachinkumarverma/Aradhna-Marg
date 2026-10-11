@@ -29,3 +29,36 @@ export class AgentIterationLimitError extends AppError {
     super(`Agent '${agentName}' reached maximum iteration limit (${maxIterations})`, 429);
   }
 }
+
+export class AgentToolLimitError extends AppError {
+  constructor(agentName: string, maxToolCalls: number) {
+    super(`Agent '${agentName}' reached maximum tool calls budget (${maxToolCalls})`, 429);
+  }
+}
+
+export class AgentTimeoutError extends AppError {
+  constructor(agentName: string, timeoutMs: number) {
+    super(`Agent execution exceeded maximum allowed timeout of ${timeoutMs}ms (Agent: ${agentName})`, 504);
+  }
+}
+
+export class AgentLoopDetectedError extends AppError {
+  constructor(agentName: string, patternDescription: string) {
+    super(`Agent '${agentName}' execution blocked: Loop detected (${patternDescription})`, 429);
+  }
+}
+
+export class AgentRecursionError extends AppError {
+  constructor(agentName: string, details?: string) {
+    super(
+      `Agent '${agentName}' recursive invocation blocked by orchestrator firewall${details ? `: ${details}` : ''}`,
+      403
+    );
+  }
+}
+
+export class AgentEvaluationError extends AppError {
+  constructor(message: string, errors?: any) {
+    super(message, 422, errors);
+  }
+}

@@ -1,5 +1,36 @@
 import { apiClient } from '@api/client';
 
+export interface ProposalStats {
+  pending: number;
+  approved: number;
+  rejected: number;
+  executing: number;
+  completed: number;
+  failed: number;
+  total: number;
+}
+
+export interface ProposalAuditRun {
+  id: string;
+  agentName: string;
+  triggerType: string;
+  triggeredBy?: string;
+  status: string;
+  startedAt?: string;
+  completedAt?: string;
+  errorMessage?: string;
+}
+
+export interface ProposalToolCall {
+  id: string;
+  toolName: string;
+  status: string;
+  permissionTier: string;
+  durationMs: number;
+  errorMessage?: string;
+  createdAt: string;
+}
+
 export interface AgentProposalItem {
   id: string;
   runId?: string;
@@ -19,13 +50,42 @@ export interface AgentProposalItem {
   updatedAt: string;
 }
 
+export interface AgentProposalDetail extends AgentProposalItem {
+  targetEntity?: any;
+  run?: ProposalAuditRun | null;
+  toolCalls?: ProposalToolCall[];
+}
+
 export const ProposalApi = {
-  getProposals: async (params?: { page?: number; limit?: number; status?: string; entityType?: string }) => {
+  getStats: async (): Promise<ProposalStats> => {
+    const res = await apiClient.get('/admin/agents/proposals/stats');
+    return (
+      res.data?.data || {
+        pending: 0,
+        approved: 0,
+        rejected: 0,
+        executing: 0,
+        completed: 0,
+        failed: 0,
+        total: 0
+      }
+    );
+  },
+
+  getProposals: async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    entityType?: string;
+    agentName?: string;
+    targetField?: string;
+    search?: string;
+  }): Promise<{ data: AgentProposalItem[]; count: number }> => {
     const res = await apiClient.get('/admin/agents/proposals', { params });
     return res.data?.data || { data: [], count: 0 };
   },
 
-  getProposalById: async (id: string) => {
+  getProposalById: async (id: string): Promise<AgentProposalDetail> => {
     const res = await apiClient.get(`/admin/agents/proposals/${id}`);
     return res.data?.data;
   },

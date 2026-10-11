@@ -15,7 +15,8 @@ import {
   Tags,
   Search,
   Activity,
-  Languages
+  Languages,
+  FileCheck2
 } from 'lucide-react';
 import { cn } from '@utils/cn';
 import { getAdminPath } from '@utils/host';
@@ -43,9 +44,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
   ];
 
   const AUTOMATION_NAV = [
-    { name: 'YOUTUBE SYNC', path: getAdminPath('/youtube'), icon: PlaySquare },
+    { name: 'AI PROPOSALS', path: getAdminPath('/ai-proposals'), icon: FileCheck2 },
     { name: 'AI PROCESSING', path: getAdminPath('/ai'), icon: BrainCircuit },
-    { name: 'SEO ENGINE', path: getAdminPath('/seo'), icon: Search }
+    { name: 'SEO ENGINE', path: getAdminPath('/seo'), icon: Search },
+    { name: 'YOUTUBE SYNC', path: getAdminPath('/youtube'), icon: PlaySquare }
   ];
 
   const SYSTEM_NAV = [

@@ -1,6 +1,7 @@
 import { toolGateway } from '../gateway/ToolGateway';
 import '../tools';
 import { AgentPermissionTier } from '../types/AgentPermissionTier';
+import { AgentDefinition, AutonomousAgent } from '../types/AgentDefinition';
 import { AgentContext } from '../types/AgentContext';
 import { agentRunRepository } from '../repositories/AgentRunRepository';
 import { getAiProvider } from '@admin/services/ai/AiProvider';
@@ -17,9 +18,22 @@ export interface SeoImprovementAgentOptions {
   auditIssue?: string;
 }
 
-export class SeoImprovementAgent {
+export class SeoImprovementAgent implements AutonomousAgent {
   public readonly agentName = 'SeoImprovementAgent';
   public readonly permission = AgentPermissionTier.TIER_3_PROPOSE;
+
+  public readonly definition: AgentDefinition = {
+    id: 'seo_improvement_agent',
+    name: 'SEO Improvement Agent',
+    description: 'Generates optimized SEO metadata proposals for public website entities requiring SEO enhancement.',
+    permissionTier: AgentPermissionTier.TIER_3_PROPOSE,
+    allowedTools: ['get_content_item', 'propose_seo_metadata'],
+    allowedEntityTypes: ['bhajan', 'article', 'festival', 'puran', 'category'],
+    maxIterations: 10,
+    maxToolCalls: 10,
+    timeoutMs: 45000,
+    dryRunOnly: false
+  };
 
   public readonly eligibleContentTypes = ['bhajan', 'article', 'festival', 'puran', 'category'] as const;
 

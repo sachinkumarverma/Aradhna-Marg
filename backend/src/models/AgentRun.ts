@@ -1,4 +1,4 @@
-export type AgentRunStatus = 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
+export type AgentRunStatus = 'CREATED' | 'RUNNING' | 'WAITING' | 'COMPLETED' | 'FAILED' | 'CANCELLED' | 'TIMEOUT';
 export type AgentTriggerType = 'MANUAL' | 'SCHEDULED' | 'CRON' | 'EVENT' | 'WORKFLOW';
 
 export interface AgentRun {

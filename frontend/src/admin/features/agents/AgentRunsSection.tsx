@@ -15,7 +15,8 @@ import {
   Layers,
   Wrench,
   FileText,
-  Calendar
+  Calendar,
+  Sparkles
 } from 'lucide-react';
 import {
   AgentApi,
@@ -177,6 +178,12 @@ export const AgentRunsSection: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700">
             Cancelled
+          </span>
+        );
+      case 'TIMEOUT':
+        return (
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-amber-100 text-amber-900">
+            <Clock className="w-3.5 h-3.5" /> Timeout
           </span>
         );
       default:
@@ -409,7 +416,7 @@ export const AgentRunsSection: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-md border border-gray-200 shadow-2xs">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-gray-500 uppercase">Status:</span>
-          {['ALL', 'COMPLETED', 'RUNNING', 'FAILED'].map((st) => (
+          {['ALL', 'COMPLETED', 'RUNNING', 'FAILED', 'TIMEOUT'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
@@ -569,6 +576,58 @@ export const AgentRunsSection: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">{getStatusBadge(selectedDetails.run.status)}</div>
                   </div>
+
+                  {/* Multi-Step Orchestration Metrics Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
+                      <span className="text-[10px] uppercase font-bold text-gray-500">Iterations</span>
+                      <p className="text-sm font-bold text-slate-900 mt-0.5">
+                        {selectedDetails.run.iterationCount || 1}
+                      </p>
+                    </div>
+                    <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
+                      <span className="text-[10px] uppercase font-bold text-gray-500">Tool Calls</span>
+                      <p className="text-sm font-bold text-slate-900 mt-0.5">
+                        {selectedDetails.toolCalls?.length || 0}
+                      </p>
+                    </div>
+                    <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
+                      <span className="text-[10px] uppercase font-bold text-gray-500">Tokens</span>
+                      <p className="text-sm font-bold text-slate-900 mt-0.5">
+                        {selectedDetails.run.totalTokensUsed || 0}
+                      </p>
+                    </div>
+                    <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
+                      <span className="text-[10px] uppercase font-bold text-gray-500">Trigger</span>
+                      <p className="text-sm font-bold text-slate-900 mt-0.5">{selectedDetails.run.triggerType}</p>
+                    </div>
+                  </div>
+
+                  {/* Error / Failure Banner */}
+                  {selectedDetails.run.errorMessage && (
+                    <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3 rounded text-xs space-y-1">
+                      <strong className="font-bold flex items-center gap-1">
+                        <XCircle className="w-4 h-4 text-rose-600" /> Execution Issue:
+                      </strong>
+                      <p className="text-rose-700">{selectedDetails.run.errorMessage}</p>
+                    </div>
+                  )}
+
+                  {/* Staged Proposals Link */}
+                  {(selectedDetails.run.state?.proposalIds?.length > 0 || selectedDetails.run.state?.proposalId) && (
+                    <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded text-xs font-medium flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-saffron" />
+                        Proposal Staged for Human Review
+                      </span>
+                      <a
+                        href="/admin/ai-proposals"
+                        className="text-saffron-dark font-bold hover:underline inline-flex items-center gap-1"
+                      >
+                        View in Proposal Review <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  )}
 
                   {/* Findings Section */}
                   <div>

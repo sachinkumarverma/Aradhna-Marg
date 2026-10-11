@@ -51,7 +51,7 @@ export class AgentRunRepository {
       paramIndex++;
     }
 
-    if (status === 'COMPLETED' || status === 'FAILED' || status === 'CANCELLED') {
+    if (status === 'COMPLETED' || status === 'FAILED' || status === 'CANCELLED' || status === 'TIMEOUT') {
       updateClause += `, completed_at = NOW()`;
     }
 

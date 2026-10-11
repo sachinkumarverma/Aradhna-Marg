@@ -5,7 +5,8 @@ import { AgentActor } from '../types/AgentContext';
 import { AgentRun, AgentTriggerType } from '@models/AgentRun';
 import { AgentRunState } from '../types/AgentDefinition';
 import { AgentPermissionTier } from '../types/AgentPermissionTier';
-import { AgentSecurityError } from '../types/errors';
+import { AgentSecurityError, AgentTimeoutError } from '../types/errors';
+import { MultiStepOrchestrator } from '../orchestration/MultiStepOrchestrator';
 import { NotFoundError } from '@/errors/appError';
 import { logger } from '@utils/logger';
 
@@ -36,13 +37,14 @@ export class AgentRunner {
 
     const definition = agent.definition;
 
-    // 2. Policy Check: Autonomous Read/Analyze boundary (Phase 5A)
+    // 2. Policy Check: Autonomous Read/Analyze/Propose boundary
     if (
       definition.permissionTier !== AgentPermissionTier.TIER_1_READ &&
-      definition.permissionTier !== AgentPermissionTier.TIER_2_ANALYZE
+      definition.permissionTier !== AgentPermissionTier.TIER_2_ANALYZE &&
+      definition.permissionTier !== AgentPermissionTier.TIER_3_PROPOSE
     ) {
       throw new AgentSecurityError(
-        `Agent '${agentId}' exceeds Phase 5A autonomous safety boundary (${definition.permissionTier}). Only read/analyze agents permitted.`
+        `Agent '${agentId}' exceeds autonomous safety boundary (${definition.permissionTier}). Only read, analyze, and propose agents are permitted.`
       );
     }
 
@@ -65,15 +67,14 @@ export class AgentRunner {
       'Autonomous agent execution initiated by runner'
     );
 
-    // 4. Execute with timeout guard
+    // 4. Multi-Step Orchestrator Execution Guard (Recursion Protection)
+    MultiStepOrchestrator.enterExecution(run.id, definition.id);
+
+    // 5. Execute with timeout guard
     let timeoutHandle: NodeJS.Timeout | undefined;
     const timeoutPromise = new Promise<never>((_, reject) => {
       timeoutHandle = setTimeout(() => {
-        reject(
-          new Error(
-            `Agent execution exceeded maximum allowed timeout of ${definition.timeoutMs}ms (Agent: ${definition.id})`
-          )
-        );
+        reject(new AgentTimeoutError(definition.id, definition.timeoutMs));
       }, definition.timeoutMs);
     });
 
@@ -82,7 +83,7 @@ export class AgentRunner {
       const state = await Promise.race([executionPromise, timeoutPromise]);
       if (timeoutHandle) clearTimeout(timeoutHandle);
 
-      // 5. Ensure completed state is saved
+      // 6. Ensure completed state is saved
       const updatedRun = await agentRunRepository.findById(run.id);
 
       logger.info(
@@ -104,10 +105,19 @@ export class AgentRunner {
       const errorMessage = err.message || 'Agent execution failed';
       logger.error({ runId: run.id, agentId: definition.id, err: errorMessage }, 'Agent run failed');
 
-      await agentExecutionService.failRun(run.id, errorMessage);
-      const failedRun = await agentRunRepository.findById(run.id);
+      if (
+        err instanceof AgentTimeoutError ||
+        errorMessage.includes('exceeded maximum execution timeout') ||
+        errorMessage.includes('timeout')
+      ) {
+        await agentExecutionService.timeoutRun(run.id, errorMessage);
+      } else {
+        await agentExecutionService.failRun(run.id, errorMessage);
+      }
 
       throw err;
+    } finally {
+      MultiStepOrchestrator.exitExecution(run.id, definition.id);
     }
   }
 }

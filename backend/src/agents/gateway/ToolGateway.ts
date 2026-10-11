@@ -3,7 +3,14 @@ import { agentRegistry } from '../registry/AgentRegistry';
 import { AgentContext } from '../types/AgentContext';
 import { AgentToolResult } from '../types/ToolContract';
 import { AgentPermissionTier, isForbiddenAutonomously } from '../types/AgentPermissionTier';
-import { ToolNotFoundError, ToolValidationError, AgentSecurityError, AgentIterationLimitError } from '../types/errors';
+import {
+  ToolNotFoundError,
+  ToolValidationError,
+  AgentSecurityError,
+  AgentIterationLimitError,
+  AgentToolLimitError,
+  AgentTimeoutError
+} from '../types/errors';
 import { agentToolCallRepository } from '../repositories/AgentToolCallRepository';
 import { agentProposalRepository } from '../repositories/AgentProposalRepository';
 import { agentRunRepository } from '../repositories/AgentRunRepository';
@@ -37,9 +44,19 @@ export class ToolGateway {
   ): Promise<AgentToolResult<TOutput>> {
     const startTime = Date.now();
 
-    // 1. Loop iteration limit guardrail
+    // 1. Loop iteration & resource limit guardrails
     if (context.currentIteration >= context.maxIterations) {
       throw new AgentIterationLimitError(context.agentName, context.maxIterations);
+    }
+
+    if (context.maxToolCalls !== undefined && (context.toolCallsCount ?? 0) >= context.maxToolCalls) {
+      throw new AgentToolLimitError(context.agentName, context.maxToolCalls);
+    }
+
+    if (context.timeoutMs !== undefined && context.startTime !== undefined) {
+      if (Date.now() - context.startTime > context.timeoutMs) {
+        throw new AgentTimeoutError(context.agentName, context.timeoutMs);
+      }
     }
 
     // 2. Tool discovery
@@ -118,12 +135,34 @@ export class ToolGateway {
       );
     }
 
+    // 3.5 Autonomous Execution Firewall: Tier 5 Publish/Overwrite tools can NEVER be invoked autonomously by agents.
+    // They may only be invoked via ToolGateway.executeApprovedProposal after explicit human approval and execution.
+    if (tool.permission === AgentPermissionTier.TIER_5_PUBLISH_OVERWRITE) {
+      const durationMs = Date.now() - startTime;
+      await agentToolCallRepository.create({
+        runId: context.runId,
+        toolName,
+        permissionTier: tool.permission,
+        inputPayload: this.redactSecrets((rawInput as any) || {}),
+        durationMs,
+        status: 'BLOCKED',
+        errorMessage: `Blocked: Autonomous invocation of Tier-5 tool '${toolName}' is forbidden. Tier-5 operations require explicit human approval and execution through executeApprovedProposal.`
+      });
+      logger.warn(
+        { toolName, agentName: context.agentName, runId: context.runId },
+        'Security alert: Agent attempted autonomous invocation of Tier-5 tool'
+      );
+      throw new AgentSecurityError(
+        `Execution of tool '${toolName}' is forbidden autonomously. Tier-5 operations can only be invoked through approved proposal execution.`
+      );
+    }
+
     // 4. Sacred Content Guardrail: Bhajan lyrics / Shlokas can NEVER be altered or translated by AI
     const rawString = JSON.stringify(rawInput || {});
     if (
       (toolName.includes('lyrics') && !toolName.startsWith('get_')) ||
-      rawString.includes('"lyrics"') ||
-      rawString.includes('"clean_lyrics"')
+      rawString.includes('lyrics') ||
+      rawString.includes('clean_lyrics')
     ) {
       const durationMs = Date.now() - startTime;
       await agentToolCallRepository.create({
@@ -165,8 +204,8 @@ export class ToolGateway {
     const validatedInput = parseResult.data;
 
     // 6. Human Approval & Proposal Staging Boundary
-    // If the tool requires approval or generates proposals (Tier 3 / Tier 5), stage into agent_proposals
-    if (tool.requiresApproval || tool.permission === AgentPermissionTier.TIER_5_PUBLISH_OVERWRITE) {
+    // If the tool generates proposals (Tier 3) or requires approval, stage into agent_proposals
+    if (tool.requiresApproval || tool.permission === AgentPermissionTier.TIER_3_PROPOSE) {
       const durationMs = Date.now() - startTime;
       const proposalPayload = validatedInput as any;
       const entityType =
@@ -356,6 +395,7 @@ export class ToolGateway {
       'content_en',
       'excerpt_en',
       'short_description',
+      'short_description_en',
       'description',
       'description_en'
     ];

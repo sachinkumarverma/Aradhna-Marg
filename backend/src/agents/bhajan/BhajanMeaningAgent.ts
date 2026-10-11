@@ -1,6 +1,7 @@
 import { toolGateway } from '../gateway/ToolGateway';
 import '../tools';
 import { AgentPermissionTier } from '../types/AgentPermissionTier';
+import { AgentDefinition, AutonomousAgent } from '../types/AgentDefinition';
 import { AgentContext } from '../types/AgentContext';
 import { agentRunRepository } from '../repositories/AgentRunRepository';
 import { getAiProvider } from '@admin/services/ai/AiProvider';
@@ -13,9 +14,23 @@ export interface BhajanMeaningAgentOptions {
   reasoning?: string;
 }
 
-export class BhajanMeaningAgent {
+export class BhajanMeaningAgent implements AutonomousAgent {
   public readonly agentName = 'BhajanMeaningAgent';
   public readonly permission = AgentPermissionTier.TIER_3_PROPOSE;
+
+  public readonly definition: AgentDefinition = {
+    id: 'bhajan_meaning_agent',
+    name: 'Bhajan Meaning Agent',
+    description:
+      'Proposes reverent devotional Hindi meanings for Bhajans based on sacred verses without altering lyrics.',
+    permissionTier: AgentPermissionTier.TIER_3_PROPOSE,
+    allowedTools: ['get_content_item', 'propose_bhajan_meaning'],
+    allowedEntityTypes: ['bhajan'],
+    maxIterations: 10,
+    maxToolCalls: 10,
+    timeoutMs: 45000,
+    dryRunOnly: false
+  };
 
   /**
    * Generates a devotional Hindi meaning proposal for a target Bhajan.

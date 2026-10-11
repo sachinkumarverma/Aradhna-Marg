@@ -64,9 +64,29 @@ class AgentController {
       const limit = parseInt(req.query.limit as string) || 10;
       const status = req.query.status as string | undefined;
       const entityType = req.query.entityType as string | undefined;
+      const agentName = req.query.agentName as string | undefined;
+      const targetField = req.query.targetField as string | undefined;
+      const search = req.query.search as string | undefined;
 
-      const result = await agentProposalService.getProposals({ page, limit, status, entityType });
+      const result = await agentProposalService.getProposals({
+        page,
+        limit,
+        status,
+        entityType,
+        agentName,
+        targetField,
+        search
+      });
       sendSuccess(res, 'Agent proposals retrieved successfully', result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getProposalStats = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const stats = await agentProposalService.getStats();
+      sendSuccess(res, 'Agent proposal statistics retrieved successfully', stats);
     } catch (error) {
       next(error);
     }
