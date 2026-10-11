@@ -103,5 +103,9 @@ router.get('/agents/proposals', agentController.listProposals);
 router.get('/agents/proposals/:id', agentController.getProposalDetails);
 router.post('/agents/proposals/:id/approve', agentController.approveProposal);
 router.post('/agents/proposals/:id/reject', agentController.rejectProposal);
+router.post('/agents/proposals/:id/execute', agentController.executeProposal);
+router.post('/agents/bhajan-meaning/propose', agentController.generateBhajanMeaningProposal);
+router.post('/agents/seo-audit/run', agentController.runSeoAudit);
+router.get('/agents/seo-audit/latest', agentController.getLatestSeoAudit);
 
 export default router;

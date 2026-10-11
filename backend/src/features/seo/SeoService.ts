@@ -5,9 +5,15 @@ import { settingsService } from '@services/SettingsService';
 import { AiJobService } from '@admin/services/AiJobService';
 import { db } from '@common/database/DatabaseClient';
 
+import { agentRunRepository } from '@/agents/repositories/AgentRunRepository';
+
 const aiJobService = new AiJobService();
 
 export class SeoService {
+  async getLatestAgentAudit() {
+    const { data } = await agentRunRepository.list(1, 1, 'SeoAuditAgent', 'COMPLETED');
+    return data[0] || null;
+  }
   async getOverview() {
     const tables = ['bhajans', 'articles', 'festivals', 'puranas', 'categories'];
     const overview = {

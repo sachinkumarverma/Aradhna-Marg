@@ -19,3 +19,7 @@ export * from './repositories/AgentProposalRepository';
 // Services
 export * from './services/AgentExecutionService';
 export * from './services/AgentProposalService';
+
+// Agents
+export * from './seo/SeoAuditAgent';
+export * from './bhajan/BhajanMeaningAgent';

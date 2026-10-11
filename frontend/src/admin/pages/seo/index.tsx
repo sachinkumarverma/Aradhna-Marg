@@ -56,6 +56,7 @@ export const AdminSEO = () => {
   const [isGeneratingSitemap, setIsGeneratingSitemap] = useState(false);
   const [isGeneratingRobots, setIsGeneratingRobots] = useState(false);
   const [isStartingBulk, setIsStartingBulk] = useState(false);
+  const [isRunningAgentAudit, setIsRunningAgentAudit] = useState(false);
 
   const { data: overview, isLoading: isLoadingOverview } = useQuery({
     queryKey: ['seo-overview'],
@@ -70,6 +71,14 @@ export const AdminSEO = () => {
     queryFn: async () => {
       const data = await SeoApi.getIssues();
       return data.data;
+    }
+  });
+
+  const { data: latestAgentAudit, isLoading: isLoadingAgentAudit } = useQuery({
+    queryKey: ['seo-agent-audit-latest'],
+    queryFn: async () => {
+      const res = await SeoApi.getLatestAgentAudit();
+      return res.data;
     }
   });
 
@@ -178,6 +187,22 @@ export const AdminSEO = () => {
     }
   };
 
+  const handleRunAgentAudit = async () => {
+    setIsRunningAgentAudit(true);
+    try {
+      const res = await SeoApi.runAgentAudit();
+      await queryClient.invalidateQueries({ queryKey: ['seo-agent-audit-latest'] });
+      await queryClient.invalidateQueries({ queryKey: ['seo-overview'] });
+      await queryClient.invalidateQueries({ queryKey: ['seo-issues'] });
+      const issuesCount = res.data?.findingsCount ?? 0;
+      toast.success(`SEO Audit Agent finished. Identified ${issuesCount} issues.`);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'SEO Audit Agent run failed');
+    } finally {
+      setIsRunningAgentAudit(false);
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Overview & Audit', icon: LayoutDashboard },
     { id: 'issues', label: 'SEO Issues', icon: ShieldAlert },
@@ -199,6 +224,14 @@ export const AdminSEO = () => {
               Monitor, audit, and manage global search engine optimization.
             </p>
           </div>
+          <button
+            onClick={handleRunAgentAudit}
+            disabled={isRunningAgentAudit}
+            className="flex items-center gap-2 px-3.5 py-2 bg-saffron hover:bg-orange-600 text-white rounded-md text-xs sm:text-sm font-semibold transition-all shadow-sm shrink-0 disabled:opacity-50 cursor-pointer"
+          >
+            <Zap className={cn('w-4 h-4', isRunningAgentAudit && 'animate-spin')} />
+            <span>{isRunningAgentAudit ? 'Auditing Website...' : 'Run SEO Audit Agent'}</span>
+          </button>
         </div>
 
         <div className="flex overflow-x-auto scrollbar-hide">
@@ -343,53 +376,88 @@ export const AdminSEO = () => {
       )}
 
       {activeTab === 'issues' && (
-        <div className="bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
-                <th className="px-6 py-3">Content Type</th>
-                <th className="px-6 py-3 font-semibold">Title</th>
-                <th className="px-6 py-3 font-semibold">Issue</th>
-                <th className="px-6 py-3 font-semibold text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {isLoadingIssues ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12">
-                    <div className="flex flex-col items-center justify-center space-y-4">
-                      <Search className="w-8 h-8 text-gray-300 animate-bounce" />
-                      <span className="text-gray-400 font-medium animate-pulse">Fetching SEO issues...</span>
-                    </div>
-                  </td>
+        <div className="space-y-6">
+          {latestAgentAudit?.state?.summary && (
+            <div className="bg-gradient-to-br from-orange-50/60 to-white p-4 sm:p-5 rounded-md border border-orange-200 shadow-sm space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-orange-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="w-5 h-5 text-saffron shrink-0" />
+                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">AI SEO Audit Agent Findings</h3>
+                  <span className="text-xs bg-orange-100 text-orange-800 font-semibold px-2 py-0.5 rounded-full">
+                    Latest Run
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Audited {latestAgentAudit.state.summary.totalAudited || 0} items • Found{' '}
+                  <strong className="text-red-600">{latestAgentAudit.state.summary.totalIssues || 0}</strong> issues
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="font-semibold text-gray-600">Severity Breakdown:</span>
+                <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">
+                  Critical: {latestAgentAudit.state.summary.bySeverity?.CRITICAL || 0}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-bold">
+                  High: {latestAgentAudit.state.summary.bySeverity?.HIGH || 0}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-bold">
+                  Medium: {latestAgentAudit.state.summary.bySeverity?.MEDIUM || 0}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-bold">
+                  Low: {latestAgentAudit.state.summary.bySeverity?.LOW || 0}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
+                  <th className="px-6 py-3">Content Type</th>
+                  <th className="px-6 py-3 font-semibold">Title</th>
+                  <th className="px-6 py-3 font-semibold">Issue</th>
+                  <th className="px-6 py-3 font-semibold text-right">Action</th>
                 </tr>
-              ) : issues?.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                    <ShieldCheck className="w-12 h-12 text-green-400 mx-auto mb-3" strokeWidth={2.5} />
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Excellent!</h3>
-                    <p>All content is currently optimized. No SEO issues found.</p>
-                  </td>
-                </tr>
-              ) : (
-                issues?.map((issue: any, i: number) => (
-                  <tr key={i} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-900 capitalize">{issue.type}</td>
-                    <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">{issue.title}</td>
-                    <td className="px-6 py-4 text-red-500 font-medium">{issue.issue}</td>
-                    <td className="px-6 py-4 text-right">
-                      <Link
-                        to={getAdminPath(`/${issue.type}/${issue.id}/edit`)}
-                        className="text-saffron hover:underline font-medium"
-                      >
-                        Fix Issue
-                      </Link>
+              </thead>
+              <tbody className="text-sm">
+                {isLoadingIssues ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12">
+                      <div className="flex flex-col items-center justify-center space-y-4">
+                        <Search className="w-8 h-8 text-gray-300 animate-bounce" />
+                        <span className="text-gray-400 font-medium animate-pulse">Fetching SEO issues...</span>
+                      </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : issues?.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                      <ShieldCheck className="w-12 h-12 text-green-400 mx-auto mb-3" strokeWidth={2.5} />
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">Excellent!</h3>
+                      <p>All content is currently optimized. No SEO issues found.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  issues?.map((issue: any, i: number) => (
+                    <tr key={i} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                      <td className="px-6 py-4 font-medium text-gray-900 capitalize">{issue.type}</td>
+                      <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">{issue.title}</td>
+                      <td className="px-6 py-4 text-red-500 font-medium">{issue.issue}</td>
+                      <td className="px-6 py-4 text-right">
+                        <Link
+                          to={getAdminPath(`/${issue.type}/${issue.id}/edit`)}
+                          className="text-saffron hover:underline font-medium"
+                        >
+                          Fix Issue
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

@@ -51,7 +51,7 @@ export class BhajanRepository {
     `;
 
     const dataQuery = `
-      SELECT b.id, b.title, b.slug, b.status, b.views, b.created_at, b.category_id, b.god_id,
+      SELECT b.id, b.title, b.slug, b.status, b.views, b.created_at, b.category_id, b.god_id, b.seo_title, b.seo_description,
              c.name as "categoryName", g.name as "deityName"
       FROM ${this.tableName} b
       LEFT JOIN categories c ON b.category_id = c.id

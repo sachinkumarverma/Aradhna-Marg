@@ -103,15 +103,19 @@ export class ToolGateway {
     if (tool.requiresApproval || tool.permission === AgentPermissionTier.TIER_5_PUBLISH_OVERWRITE) {
       const durationMs = Date.now() - startTime;
       const proposalPayload = validatedInput as any;
+      const entityType = proposalPayload.entityType || (toolName.includes('bhajan') ? 'bhajan' : 'article');
+      const targetField = proposalPayload.targetField || (toolName.includes('meaning') ? 'meaning' : 'content');
+      const proposedValue =
+        proposalPayload.proposedValue || proposalPayload.proposedMeaning || JSON.stringify(proposalPayload);
 
       const proposal = await agentProposalRepository.create({
         runId: context.runId,
         agentName: context.agentName,
-        entityType: proposalPayload.entityType || 'article',
+        entityType,
         entityId: proposalPayload.entityId,
-        targetField: proposalPayload.targetField || 'content',
+        targetField,
         currentValue: proposalPayload.currentValue,
-        proposedValue: proposalPayload.proposedValue || JSON.stringify(proposalPayload),
+        proposedValue,
         reasoning: proposalPayload.reasoning || 'Automated agent proposal'
       });
 

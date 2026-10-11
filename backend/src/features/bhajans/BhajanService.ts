@@ -82,6 +82,10 @@ export class BhajanService {
   public async bulkAction(ids: string[], action: 'PUBLISH' | 'DRAFT' | 'ARCHIVE' | 'DELETE') {
     return bhajanRepository.bulkAction(ids, action);
   }
+
+  public async updateMeaning(id: string, meaning: string) {
+    return bhajanRepository.updateAiMeaning(id, meaning);
+  }
 }
 
 export const bhajanService = new BhajanService();

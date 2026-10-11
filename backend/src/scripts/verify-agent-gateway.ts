@@ -136,6 +136,7 @@ async function runVerification() {
   console.log('✓ Test 6 Passed\n');
 
   console.log('=== ALL AGENT GATEWAY & TOOL CONTRACT TESTS PASSED! ===');
+  process.exit(0);
 }
 
 runVerification().catch((err) => {

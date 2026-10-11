@@ -66,6 +66,17 @@ export class AgentRunRepository {
     return this.mapToModel(rows[0]);
   }
 
+  async updateState(id: string, state: Record<string, any>): Promise<AgentRun> {
+    const query = `
+      UPDATE ${this.tableName}
+      SET state = $1, updated_at = NOW()
+      WHERE id = $2
+      RETURNING *
+    `;
+    const { rows } = await db.query(query, [JSON.stringify(state), id]);
+    return this.mapToModel(rows[0]);
+  }
+
   async incrementIteration(id: string, tokensDelta = 0): Promise<void> {
     const query = `
       UPDATE ${this.tableName}

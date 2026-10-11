@@ -3,6 +3,8 @@ import { sendSuccess } from '@/responses/apiResponse';
 import { agentExecutionService } from '@/agents/services/AgentExecutionService';
 import { agentProposalService } from '@/agents/services/AgentProposalService';
 import { toolRegistry } from '@/agents/registry/ToolRegistry';
+import { seoAuditAgent } from '@/agents/seo/SeoAuditAgent';
+import { bhajanMeaningAgent } from '@/agents/bhajan/BhajanMeaningAgent';
 
 class AgentController {
   public listTools = async (_req: Request, res: Response, next: NextFunction) => {
@@ -78,7 +80,7 @@ class AgentController {
     try {
       const reviewedBy = (req as any).user?.username || 'admin';
       const proposal = await agentProposalService.approveProposal(req.params.id as string, reviewedBy);
-      sendSuccess(res, 'Agent proposal approved and applied successfully', proposal);
+      sendSuccess(res, 'Agent proposal approved successfully', proposal);
     } catch (error) {
       next(error);
     }
@@ -90,6 +92,80 @@ class AgentController {
       const rejectionReason = req.body.rejectionReason as string | undefined;
       const proposal = await agentProposalService.rejectProposal(req.params.id as string, reviewedBy, rejectionReason);
       sendSuccess(res, 'Agent proposal rejected successfully', proposal);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public executeProposal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const executedBy = (req as any).user?.username || 'admin';
+      const proposal = await agentProposalService.executeProposal(req.params.id as string, executedBy);
+      sendSuccess(res, 'Agent proposal executed and applied successfully', proposal);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public generateBhajanMeaningProposal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const triggeredBy = (req as any).user?.username || 'admin';
+      const { bhajanId, proposedMeaning, reasoning } = req.body;
+      if (!bhajanId) {
+        return res.status(400).json({ success: false, message: 'bhajanId is required' });
+      }
+
+      const run = await agentExecutionService.startRun({
+        agentName: 'BhajanMeaningAgent',
+        triggerType: 'MANUAL',
+        triggeredBy,
+        state: { bhajanId }
+      });
+
+      const result = await bhajanMeaningAgent.execute(run.id, { bhajanId, proposedMeaning, reasoning });
+
+      sendSuccess(res, 'Bhajan meaning proposal generated and staged for review', result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public runSeoAudit = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const triggeredBy = (req as any).user?.username || 'admin';
+      const scope = req.body?.scope as string[] | undefined;
+      const batchSize = req.body?.batchSize ? parseInt(req.body.batchSize, 10) : undefined;
+      const maxItemsPerType = req.body?.maxItemsPerType ? parseInt(req.body.maxItemsPerType, 10) : undefined;
+
+      const run = await agentExecutionService.startRun({
+        agentName: 'SeoAuditAgent',
+        triggerType: 'MANUAL',
+        triggeredBy,
+        state: { scope: scope || 'ALL_WEBSITE_CONTENT' }
+      });
+
+      const auditResult = await seoAuditAgent.execute(run.id, { scope, batchSize, maxItemsPerType });
+
+      sendSuccess(res, 'SEO Audit Agent completed successfully', {
+        runId: run.id,
+        summary: auditResult.summary,
+        findingsCount: auditResult.findings.length,
+        findings: auditResult.findings
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getLatestSeoAudit = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const runs = await agentExecutionService.listRuns({
+        page: 1,
+        limit: 1,
+        agentName: 'SeoAuditAgent',
+        status: 'COMPLETED'
+      });
+      sendSuccess(res, 'Latest SEO audit run retrieved', runs.data[0] || null);
     } catch (error) {
       next(error);
     }

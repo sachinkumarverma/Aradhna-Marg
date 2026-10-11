@@ -54,6 +54,38 @@ export class AgentProposalRepository {
     return this.mapToModel(rows[0]);
   }
 
+  async transitionStatus(
+    id: string,
+    fromStatuses: AgentProposalStatus[],
+    toStatus: AgentProposalStatus,
+    extraUpdates?: {
+      reviewedBy?: string;
+      rejectionReason?: string;
+    }
+  ): Promise<AgentProposal | null> {
+    const query = `
+      UPDATE ${this.tableName}
+      SET status = $1::varchar,
+          reviewed_by = COALESCE($2, reviewed_by),
+          reviewed_at = CASE WHEN $1::varchar IN ('APPROVED', 'REJECTED') THEN NOW() ELSE reviewed_at END,
+          rejection_reason = COALESCE($3, rejection_reason),
+          updated_at = NOW()
+      WHERE id = $4
+        AND status = ANY($5::varchar[])
+      RETURNING *
+    `;
+    const params = [
+      toStatus,
+      extraUpdates?.reviewedBy || null,
+      extraUpdates?.rejectionReason || null,
+      id,
+      fromStatuses
+    ];
+    const { rows } = await db.query(query, params);
+    if (rows.length === 0) return null;
+    return this.mapToModel(rows[0]);
+  }
+
   async updateStatus(
     id: string,
     status: AgentProposalStatus,
@@ -62,10 +94,10 @@ export class AgentProposalRepository {
   ): Promise<AgentProposal> {
     const query = `
       UPDATE ${this.tableName}
-      SET status = $1,
-          reviewed_by = $2,
-          reviewed_at = NOW(),
-          rejection_reason = $3,
+      SET status = $1::varchar,
+          reviewed_by = COALESCE($2, reviewed_by),
+          reviewed_at = CASE WHEN $1::varchar IN ('APPROVED', 'REJECTED') THEN NOW() ELSE reviewed_at END,
+          rejection_reason = COALESCE($3, rejection_reason),
           updated_at = NOW()
       WHERE id = $4
       RETURNING *

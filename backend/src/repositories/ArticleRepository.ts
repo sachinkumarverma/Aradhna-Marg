@@ -64,7 +64,7 @@ export class ArticleRepository extends BaseRepository<any> {
 
     const dataQuery = `
       SELECT 
-        a.id, a.title, a.slug, a.status, a.featured, a.view_count, a.created_at, a.publish_date, a.category_id, a.author_id, a.featured_image_id,
+        a.id, a.title, a.slug, a.status, a.featured, a.view_count, a.created_at, a.publish_date, a.category_id, a.author_id, a.featured_image_id, a.seo_title, a.seo_description, a.excerpt,
         json_build_object('name', c.name) as categories,
         json_build_object('name', au.name) as authors,
         json_build_object('url', m.url) as media_files
