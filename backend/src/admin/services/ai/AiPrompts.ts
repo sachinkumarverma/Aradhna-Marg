@@ -149,4 +149,59 @@ Requirements:
       responseFormatJson: true
     };
   }
+
+  /**
+   * Improves content quality, grammar, flow, and devotional eloquence for supported website content.
+   * Safety rules:
+   * 1. Strictly preserves sacred scriptural terminology, mantras, and traditional reverence.
+   * 2. Preserves HTML structure and tags (<p>, <strong>, <em>, etc.) if present in the source text.
+   * 3. NEVER modifies sacred verses or lyrics.
+   */
+  static contentQualityImprovement(item: {
+    entityType: string;
+    field: string;
+    title: string;
+    currentContent?: string;
+  }): PromptPayload {
+    const rawContent = item.currentContent || '';
+    const isEnglish = item.field.endsWith('_en');
+
+    if (isEnglish) {
+      return {
+        systemPrompt:
+          'You are a senior proofreader and copy editor specializing in Sanatan Dharma, spiritual literature, and sacred philosophy in English. Improve grammar, punctuation, flow, and clarity while preserving authentic Sanskrit terminology, deity names, and traditional theological reverence.',
+        prompt: `Please improve the quality, grammar, and readability of this ${item.entityType} ${item.field}:
+
+Title: "${item.title}"
+
+Current Content:
+${rawContent.slice(0, 3500)}
+
+Instructions:
+1. Fix any spelling, punctuation, or grammatical errors.
+2. Enhance sentence flow and readability while maintaining authentic devotional tone.
+3. If HTML tags (such as <p>, <strong>, <h3>, <ul>, <li>) are present in the text, preserve them cleanly.
+4. Output ONLY the polished content directly without meta comments or intro labels.`,
+        maxTokens: 1500
+      };
+    }
+
+    return {
+      systemPrompt:
+        'आप सनातन धर्म, वैदिक साहित्य और आध्यात्मिक दर्शन के वरिष्ठ संपादक व शोधार्थी हैं। आपका कार्य सामग्री की व्याकरणिक शुद्धता, भाषा प्रवाह, और भक्तिमय गरिमा को निखारना है। पारंपरिक देव-नाम, श्लोक व आध्यात्मिक पारिभाषिक शब्दों की पवित्रता को अक्षुण्ण रखें।',
+      prompt: `कृपया निम्नलिखित ${item.entityType} के "${item.field}" की गुणवत्ता, व्याकरण और भक्तिमय भाषा-प्रवाह को परिष्कृत कीजिए:
+
+शीर्षक: "${item.title}"
+
+वर्तमान सामग्री:
+${rawContent.slice(0, 3500)}
+
+आवश्यक निर्देश:
+1. वर्तनी (spelling), व्याकरण और विराम-चिह्नों की त्रुटियाँ सुधारें।
+2. भाषा को सरल, शुद्ध, गरिमापूर्ण और भक्तिमय बनाएं।
+3. यदि मूल पाठ में HTML टैग्स (जैसे <p>, <strong>, <h3> आदि) विद्यमान हैं, तो उन्हें यथावत सुरक्षित रखें।
+4. उत्तर में केवल परिष्कृत सामग्री ही प्रस्तुत करें, कोई अतिरिक्त भूमिका या टिप्पणी न जोड़ें।`,
+      maxTokens: 1500
+    };
+  }
 }

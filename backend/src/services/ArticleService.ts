@@ -139,6 +139,10 @@ export class ArticleService {
   public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
     return articleRepository.updateSeo(id, seoTitle, seoDescription);
   }
+
+  public async updateContentField(id: string, field: string, value: string) {
+    return articleRepository.updateContentField(id, field, value);
+  }
 }
 
 export const articleService = new ArticleService();

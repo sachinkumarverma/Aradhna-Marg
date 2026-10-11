@@ -107,6 +107,10 @@ export class PuranService {
   public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
     return puranRepository.updateSeo(id, seoTitle, seoDescription);
   }
+
+  public async updateDescription(id: string, field: string, value: string): Promise<void> {
+    return puranRepository.updateDescription(id, field, value);
+  }
 }
 
 export const puranService = new PuranService();

@@ -90,6 +90,10 @@ export class BhajanService {
   public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
     return bhajanRepository.updateSeo(id, seoTitle, seoDescription);
   }
+
+  public async updateDescription(id: string, field: string, value: string): Promise<void> {
+    return bhajanRepository.updateDescription(id, field, value);
+  }
 }
 
 export const bhajanService = new BhajanService();

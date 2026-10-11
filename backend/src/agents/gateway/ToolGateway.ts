@@ -103,14 +103,28 @@ export class ToolGateway {
     if (tool.requiresApproval || tool.permission === AgentPermissionTier.TIER_5_PUBLISH_OVERWRITE) {
       const durationMs = Date.now() - startTime;
       const proposalPayload = validatedInput as any;
-      const entityType = proposalPayload.entityType || (toolName.includes('bhajan') ? 'bhajan' : 'article');
+      const entityType =
+        proposalPayload.entityType ||
+        (toolName.includes('bhajan')
+          ? 'bhajan'
+          : toolName.includes('festival')
+            ? 'festival'
+            : toolName.includes('puran')
+              ? 'puran'
+              : toolName.includes('category')
+                ? 'category'
+                : 'article');
       const targetField =
         proposalPayload.targetField ||
         (toolName.includes('seo') ? 'seo_metadata' : toolName.includes('meaning') ? 'meaning' : 'content');
       const entityId =
         proposalPayload.entityId || proposalPayload.bhajanId || proposalPayload.articleId || proposalPayload.id;
 
-      let proposedValue = proposalPayload.proposedValue || proposalPayload.proposedMeaning || proposalPayload.meaning;
+      let proposedValue =
+        proposalPayload.proposedValue ||
+        proposalPayload.proposedContent ||
+        proposalPayload.proposedMeaning ||
+        proposalPayload.meaning;
 
       if (!proposedValue) {
         if (targetField === 'seo_title' && proposalPayload.seoTitle) {
@@ -238,7 +252,19 @@ export class ToolGateway {
     const runId = proposal.runId || '00000000-0000-0000-0000-000000000000';
 
     // 1. Sacred Content Firewall: Check target field allowlist
-    const ALLOWED_TARGET_FIELDS = ['meaning', 'seo_title', 'seo_description', 'seo_metadata'];
+    const ALLOWED_TARGET_FIELDS = [
+      'meaning',
+      'seo_title',
+      'seo_description',
+      'seo_metadata',
+      'content',
+      'excerpt',
+      'content_en',
+      'excerpt_en',
+      'short_description',
+      'description',
+      'description_en'
+    ];
     if (!ALLOWED_TARGET_FIELDS.includes(proposal.targetField)) {
       const durationMs = Date.now() - startTime;
       if (proposal.runId) {
@@ -269,10 +295,41 @@ export class ToolGateway {
       throw new AgentSecurityError(`Execution for entity type '${proposal.entityType}' is not supported`);
     }
 
-    // Target field 'meaning' is strictly permitted for 'bhajan' only
+    // Specific field permissions per entity type
     if (proposal.targetField === 'meaning' && proposal.entityType !== 'bhajan') {
       throw new AgentSecurityError(
         `Sacred Content Firewall: Target field 'meaning' is only supported for entity type 'bhajan'`
+      );
+    }
+    if (
+      ['content', 'content_en'].includes(proposal.targetField) &&
+      !['article', 'festival'].includes(proposal.entityType)
+    ) {
+      throw new AgentSecurityError(
+        `Sacred Content Firewall: Target field '${proposal.targetField}' is only supported for 'article' and 'festival'`
+      );
+    }
+    if (['excerpt', 'excerpt_en'].includes(proposal.targetField) && proposal.entityType !== 'article') {
+      throw new AgentSecurityError(
+        `Sacred Content Firewall: Target field '${proposal.targetField}' is only supported for entity type 'article'`
+      );
+    }
+    if (proposal.targetField === 'description' && proposal.entityType !== 'bhajan') {
+      throw new AgentSecurityError(
+        `Sacred Content Firewall: Target field 'description' is only supported for entity type 'bhajan'`
+      );
+    }
+    if (proposal.targetField === 'description_en' && proposal.entityType !== 'puran') {
+      throw new AgentSecurityError(
+        `Sacred Content Firewall: Target field 'description_en' is only supported for entity type 'puran'`
+      );
+    }
+    if (
+      proposal.targetField === 'short_description' &&
+      !['festival', 'puran', 'bhajan'].includes(proposal.entityType)
+    ) {
+      throw new AgentSecurityError(
+        `Sacred Content Firewall: Target field 'short_description' is only supported for 'festival', 'puran', and 'bhajan'`
       );
     }
 
@@ -295,7 +352,7 @@ export class ToolGateway {
         meaning: proposal.proposedValue,
         targetField: 'meaning'
       };
-    } else {
+    } else if (['seo_title', 'seo_description', 'seo_metadata'].includes(proposal.targetField)) {
       // SEO Metadata tools
       const toolMap: Record<string, string> = {
         bhajan: 'apply_bhajan_seo_metadata',
@@ -335,6 +392,54 @@ export class ToolGateway {
         seoDescription,
         targetField: proposal.targetField
       };
+    } else if (
+      ['content', 'excerpt', 'content_en', 'excerpt_en'].includes(proposal.targetField) &&
+      proposal.entityType === 'article'
+    ) {
+      toolName = 'apply_article_content_field';
+      rawInput = {
+        proposalId: proposal.id,
+        entityId: proposal.entityId,
+        targetField: proposal.targetField,
+        content: proposal.proposedValue
+      };
+    } else if (
+      ['content', 'short_description', 'content_en', 'short_description_en'].includes(proposal.targetField) &&
+      proposal.entityType === 'festival'
+    ) {
+      toolName = 'apply_festival_content_field';
+      rawInput = {
+        proposalId: proposal.id,
+        entityId: proposal.entityId,
+        targetField: proposal.targetField,
+        content: proposal.proposedValue
+      };
+    } else if (
+      ['short_description', 'description_en'].includes(proposal.targetField) &&
+      proposal.entityType === 'puran'
+    ) {
+      toolName = 'apply_puran_description';
+      rawInput = {
+        proposalId: proposal.id,
+        entityId: proposal.entityId,
+        targetField: proposal.targetField,
+        content: proposal.proposedValue
+      };
+    } else if (
+      ['description', 'short_description'].includes(proposal.targetField) &&
+      proposal.entityType === 'bhajan'
+    ) {
+      toolName = 'apply_bhajan_description';
+      rawInput = {
+        proposalId: proposal.id,
+        entityId: proposal.entityId,
+        targetField: proposal.targetField,
+        content: proposal.proposedValue
+      };
+    } else {
+      throw new AgentSecurityError(
+        `No execution tool registered for entity type '${proposal.entityType}' and target field '${proposal.targetField}'`
+      );
     }
 
     const tool = toolRegistry.get(toolName);

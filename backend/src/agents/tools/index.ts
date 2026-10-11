@@ -14,6 +14,16 @@ import { applyBhajanMeaningTool } from './bhajan/ApplyBhajanMeaningTool';
 import { getSystemHealthTool } from './ops/GetSystemHealthTool';
 import { retryFailedJobTool } from './ops/RetryFailedJobTool';
 
+// Phase 4C: Content Quality & Improvement Tools
+import { proposeArticleContentImprovementTool } from './content/ProposeArticleContentImprovementTool';
+import { proposeFestivalContentImprovementTool } from './content/ProposeFestivalContentImprovementTool';
+import { proposePuranDescriptionImprovementTool } from './content/ProposePuranDescriptionImprovementTool';
+import { proposeBhajanDescriptionImprovementTool } from './content/ProposeBhajanDescriptionImprovementTool';
+import { applyArticleContentFieldTool } from './content/ApplyArticleContentFieldTool';
+import { applyFestivalContentFieldTool } from './content/ApplyFestivalContentFieldTool';
+import { applyPuranDescriptionTool } from './content/ApplyPuranDescriptionTool';
+import { applyBhajanDescriptionTool } from './content/ApplyBhajanDescriptionTool';
+
 export function registerDefaultTools(): void {
   toolRegistry.register(getContentItemTool);
   toolRegistry.register(searchContentTool);
@@ -29,6 +39,16 @@ export function registerDefaultTools(): void {
   toolRegistry.register(applyBhajanMeaningTool);
   toolRegistry.register(getSystemHealthTool);
   toolRegistry.register(retryFailedJobTool);
+
+  // Phase 4C Tools
+  toolRegistry.register(proposeArticleContentImprovementTool);
+  toolRegistry.register(proposeFestivalContentImprovementTool);
+  toolRegistry.register(proposePuranDescriptionImprovementTool);
+  toolRegistry.register(proposeBhajanDescriptionImprovementTool);
+  toolRegistry.register(applyArticleContentFieldTool);
+  toolRegistry.register(applyFestivalContentFieldTool);
+  toolRegistry.register(applyPuranDescriptionTool);
+  toolRegistry.register(applyBhajanDescriptionTool);
 }
 
 // Automatically register defaults upon module load
@@ -48,5 +68,14 @@ export {
   proposeBhajanMeaningTool,
   applyBhajanMeaningTool,
   getSystemHealthTool,
-  retryFailedJobTool
+  retryFailedJobTool,
+  // Phase 4C Exports
+  proposeArticleContentImprovementTool,
+  proposeFestivalContentImprovementTool,
+  proposePuranDescriptionImprovementTool,
+  proposeBhajanDescriptionImprovementTool,
+  applyArticleContentFieldTool,
+  applyFestivalContentFieldTool,
+  applyPuranDescriptionTool,
+  applyBhajanDescriptionTool
 };

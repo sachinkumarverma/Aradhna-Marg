@@ -22,4 +22,6 @@ export * from './services/AgentProposalService';
 
 // Agents
 export * from './seo/SeoAuditAgent';
+export * from './seo/SeoImprovementAgent';
 export * from './bhajan/BhajanMeaningAgent';
+export * from './content/ContentImprovementAgent';

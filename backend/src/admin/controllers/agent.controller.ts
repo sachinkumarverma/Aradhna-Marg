@@ -6,6 +6,7 @@ import { toolRegistry } from '@/agents/registry/ToolRegistry';
 import { seoAuditAgent } from '@/agents/seo/SeoAuditAgent';
 import { seoImprovementAgent } from '@/agents/seo/SeoImprovementAgent';
 import { bhajanMeaningAgent } from '@/agents/bhajan/BhajanMeaningAgent';
+import { contentImprovementAgent } from '@/agents/content/ContentImprovementAgent';
 
 class AgentController {
   public listTools = async (_req: Request, res: Response, next: NextFunction) => {
@@ -199,6 +200,36 @@ class AgentController {
         status: 'COMPLETED'
       });
       sendSuccess(res, 'Latest SEO audit run retrieved', runs.data[0] || null);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public generateContentImprovementProposal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const triggeredBy = (req as any).user?.username || 'admin';
+      const { entityType, entityId, targetField, proposedContent, reasoning } = req.body;
+
+      if (!entityType || !entityId || !targetField) {
+        return res.status(400).json({ success: false, message: 'entityType, entityId, and targetField are required' });
+      }
+
+      const run = await agentExecutionService.startRun({
+        agentName: 'ContentImprovementAgent',
+        triggerType: 'MANUAL',
+        triggeredBy,
+        state: { entityType, entityId, targetField }
+      });
+
+      const result = await contentImprovementAgent.execute(run.id, {
+        entityType,
+        entityId,
+        targetField,
+        proposedContent,
+        reasoning
+      });
+
+      sendSuccess(res, 'Content improvement proposal generated and staged for review', result);
     } catch (error) {
       next(error);
     }

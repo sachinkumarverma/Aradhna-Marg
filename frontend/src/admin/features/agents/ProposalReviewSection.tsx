@@ -18,7 +18,10 @@ import {
   Calendar,
   BookOpen,
   Tag,
-  Globe
+  Globe,
+  Maximize2,
+  Minimize2,
+  FileDiff
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { CustomLoader } from '@components/common/CustomLoader';
@@ -30,6 +33,18 @@ export function ProposalReviewSection() {
   const [rejectingProposalId, setRejectingProposalId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [executingProposalId, setExecutingProposalId] = useState<string | null>(null);
+  const [expandedProposals, setExpandedProposals] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (id: string) => {
+    setExpandedProposals((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const getTextStats = (text?: string) => {
+    if (!text) return { chars: 0, words: 0 };
+    const clean = text.replace(/<[^>]*>/g, ' ').trim();
+    const words = clean ? clean.split(/\s+/).filter(Boolean).length : 0;
+    return { chars: text.length, words };
+  };
 
   // Fetch proposals
   const { data, isLoading, refetch } = useQuery({
@@ -322,33 +337,98 @@ export function ProposalReviewSection() {
                     </div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 bg-gray-50/60 p-3.5 rounded-lg border border-gray-100">
-                    {/* Current Baseline Value */}
-                    <div className="space-y-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-gray-400"></span> Current{' '}
-                        {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField}
-                      </span>
-                      <div className="text-xs sm:text-sm text-gray-700 bg-white p-3 rounded-md border border-gray-200 max-h-48 overflow-y-auto leading-relaxed">
-                        {proposal.currentValue && proposal.currentValue.trim() !== '' ? (
-                          proposal.currentValue
-                        ) : (
-                          <span className="text-gray-400 italic">None (Empty field)</span>
-                        )}
-                      </div>
-                    </div>
+                  (() => {
+                    const isContentField = [
+                      'content',
+                      'excerpt',
+                      'content_en',
+                      'excerpt_en',
+                      'short_description',
+                      'description',
+                      'description_en'
+                    ].includes(proposal.targetField);
+                    const isExpanded = expandedProposals[proposal.id];
+                    const currentStats = getTextStats(proposal.currentValue);
+                    const proposedStats = getTextStats(proposal.proposedValue);
+                    const charDelta = proposedStats.chars - currentStats.chars;
 
-                    {/* Proposed New Value */}
-                    <div className="space-y-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-saffron flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-saffron"></span> Proposed{' '}
-                        {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField} (AI)
-                      </span>
-                      <div className="text-xs sm:text-sm text-gray-900 bg-amber-50/50 p-3 rounded-md border border-amber-200 max-h-48 overflow-y-auto leading-relaxed font-serif">
-                        {proposal.proposedValue}
+                    return (
+                      <div className="space-y-2">
+                        {isContentField && (
+                          <div className="flex items-center justify-between flex-wrap gap-2 px-1 text-xs text-gray-500">
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 font-semibold text-saffron bg-saffron/10 px-2 py-0.5 rounded text-[11px]">
+                                <FileDiff className="w-3 h-3" /> Content Improvement Diff
+                              </span>
+                              <span>
+                                Current: {currentStats.chars} chars ({currentStats.words} words)
+                              </span>
+                              <span>&bull;</span>
+                              <span className="font-medium text-gray-700">
+                                Proposed: {proposedStats.chars} chars ({proposedStats.words} words) (
+                                <span className={charDelta >= 0 ? 'text-emerald-600' : 'text-rose-600'}>
+                                  {charDelta >= 0 ? `+${charDelta}` : charDelta} chars
+                                </span>
+                                )
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => toggleExpand(proposal.id)}
+                              className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
+                            >
+                              {isExpanded ? (
+                                <>
+                                  <Minimize2 className="w-3 h-3" /> Collapse
+                                </>
+                              ) : (
+                                <>
+                                  <Maximize2 className="w-3 h-3" /> Expand Full View
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 bg-gray-50/60 p-3.5 rounded-lg border border-gray-100">
+                          {/* Current Baseline Value */}
+                          <div className="space-y-1.5">
+                            <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-gray-400"></span> Current{' '}
+                              {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField}
+                            </span>
+                            <div
+                              className={`text-xs sm:text-sm text-gray-700 bg-white p-3 rounded-md border border-gray-200 overflow-y-auto leading-relaxed whitespace-pre-wrap font-sans transition-all ${
+                                isExpanded ? 'max-h-[650px]' : 'max-h-48'
+                              }`}
+                            >
+                              {proposal.currentValue && proposal.currentValue.trim() !== '' ? (
+                                proposal.currentValue
+                              ) : (
+                                <span className="text-gray-400 italic">None (Empty field)</span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Proposed New Value */}
+                          <div className="space-y-1.5">
+                            <span className="text-xs font-bold uppercase tracking-wider text-saffron flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-saffron"></span> Proposed{' '}
+                              {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField} (AI)
+                            </span>
+                            <div
+                              className={`text-xs sm:text-sm text-gray-900 bg-amber-50/50 p-3 rounded-md border border-amber-200 overflow-y-auto leading-relaxed whitespace-pre-wrap transition-all ${
+                                proposal.targetField === 'meaning' ? 'font-serif' : 'font-sans'
+                              } ${isExpanded ? 'max-h-[650px]' : 'max-h-48'}`}
+                            >
+                              {proposal.proposedValue}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    );
+                  })()
                 )}
 
                 {/* AI Reasoning */}

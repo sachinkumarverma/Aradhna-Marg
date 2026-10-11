@@ -213,6 +213,14 @@ export class BhajanRepository {
     );
   }
 
+  public async updateDescription(id: string, field: string, value: string): Promise<void> {
+    const ALLOWED_FIELDS = ['description', 'short_description'];
+    if (!ALLOWED_FIELDS.includes(field)) {
+      throw new Error(`Sacred Content Firewall: Field '${field}' is not permitted for description updates on Bhajans.`);
+    }
+    await db.query(`UPDATE ${this.tableName} SET ${field} = $1, updated_at = NOW() WHERE id = $2`, [value, id]);
+  }
+
   public async findMissingSeo(limit = 50) {
     const { rows } = await db.query(
       `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} 

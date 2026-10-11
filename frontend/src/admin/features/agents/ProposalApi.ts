@@ -61,5 +61,16 @@ export const ProposalApi = {
   }) => {
     const res = await apiClient.post('/admin/agents/seo/propose', data);
     return res.data?.data;
+  },
+
+  generateContentImprovementProposal: async (data: {
+    entityType: string;
+    entityId: string;
+    targetField: string;
+    proposedContent?: string;
+    reasoning?: string;
+  }) => {
+    const res = await apiClient.post('/admin/agents/content/propose', data);
+    return res.data?.data;
   }
 };

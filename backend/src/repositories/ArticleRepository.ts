@@ -184,6 +184,14 @@ export class ArticleRepository extends BaseRepository<any> {
     await db.query(`UPDATE ${this.tableName} SET content = $1, updated_at = NOW() WHERE id = $2`, [content, id]);
   }
 
+  public async updateContentField(id: string, field: string, value: string) {
+    const ALLOWED_FIELDS = ['content', 'excerpt', 'content_en', 'excerpt_en'];
+    if (!ALLOWED_FIELDS.includes(field)) {
+      throw new Error(`Invalid article content field: ${field}`);
+    }
+    await db.query(`UPDATE ${this.tableName} SET ${field} = $1, updated_at = NOW() WHERE id = $2`, [value, id]);
+  }
+
   public async findForSeo(id?: string) {
     if (id) {
       const res = await db.query(

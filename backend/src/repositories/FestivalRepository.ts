@@ -1,6 +1,6 @@
 import { db } from '@common/database/DatabaseClient';
 import { Festival, CreateFestivalDTO, UpdateFestivalDTO } from '@models/Festival';
-import { ConflictError, NotFoundError } from '@/errors/appError';
+import { ConflictError } from '@/errors/appError';
 
 export class FestivalRepository {
   private readonly tableName = 'festivals';
@@ -29,8 +29,10 @@ export class FestivalRepository {
       shortDescription_en: row.short_description_en,
       content_en: row.content_en,
       seoTitle_en: row.seo_title_en,
-      seoDescription_en: row.seo_description_en
-    };
+      seoDescription_en: row.seo_description_en,
+      short_description: row.short_description,
+      short_description_en: row.short_description_en
+    } as any;
   }
 
   private mapToDb(dto: Partial<CreateFestivalDTO>): any {
@@ -257,6 +259,14 @@ export class FestivalRepository {
       `UPDATE ${this.tableName} SET seo_title = $1, seo_description = $2, updated_at = NOW() WHERE id = $3`,
       [seoTitle, seoDescription, id]
     );
+  }
+
+  async updateContentField(id: string, field: string, value: string): Promise<void> {
+    const ALLOWED_FIELDS = ['content', 'short_description', 'content_en', 'short_description_en'];
+    if (!ALLOWED_FIELDS.includes(field)) {
+      throw new Error(`Invalid festival content field: ${field}`);
+    }
+    await db.query(`UPDATE ${this.tableName} SET ${field} = $1, updated_at = NOW() WHERE id = $2`, [value, id]);
   }
 
   async findMissingDescriptions(limit = 50) {

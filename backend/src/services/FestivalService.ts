@@ -52,6 +52,10 @@ export class FestivalService {
   async updateSeo(id: string, seoTitle: string, seoDescription: string): Promise<void> {
     await festivalRepository.updateSeo(id, seoTitle, seoDescription);
   }
+
+  async updateContentField(id: string, field: string, value: string): Promise<void> {
+    await festivalRepository.updateContentField(id, field, value);
+  }
 }
 
 export const festivalService = new FestivalService();

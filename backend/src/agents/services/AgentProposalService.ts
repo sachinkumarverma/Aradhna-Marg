@@ -92,6 +92,13 @@ export class AgentProposalService {
           title: this.getEntityTitle(proposal.entityType, entity),
           slug: entity.slug,
           currentMeaning: entity.short_description || entity.description || null,
+          content: entity.content || null,
+          excerpt: entity.excerpt || null,
+          short_description: entity.short_description || null,
+          description: entity.description || null,
+          description_en: entity.description_en || null,
+          content_en: entity.content_en || null,
+          excerpt_en: entity.excerpt_en || null,
           seo_title: entity.seo_title || null,
           seo_description: entity.seo_description || null
         };
@@ -269,6 +276,33 @@ export class AgentProposalService {
 
         if (titleMismatch || descMismatch) {
           const staleMsg = `Stale proposal detected: ${entityType} SEO metadata was modified externally after proposal creation. Overwrite prevented.`;
+          await agentProposalRepository.updateStatus(id, 'FAILED', executedBy, staleMsg);
+          logger.warn({ proposalId: id, entityId }, staleMsg);
+          throw new AppError(staleMsg, 409);
+        }
+      } else if (
+        [
+          'content',
+          'excerpt',
+          'content_en',
+          'excerpt_en',
+          'short_description',
+          'description',
+          'description_en'
+        ].includes(targetField)
+      ) {
+        const liveContent = (
+          liveEntity[targetField] ||
+          (targetField === 'short_description' ? liveEntity.shortDescription : '') ||
+          (targetField === 'short_description_en' ? liveEntity.shortDescription_en : '') ||
+          (targetField === 'description_en' ? liveEntity.descriptionEn : '') ||
+          ''
+        ).trim();
+        const expectedContent = (currentValue || '').trim();
+
+        // Stale if content has changed since proposal creation (either modified or populated externally)
+        if (liveContent !== expectedContent && (expectedContent !== '' || liveContent !== '')) {
+          const staleMsg = `Stale proposal detected: ${entityType} ${targetField} was modified externally after proposal creation (original length: ${expectedContent.length}, current length: ${liveContent.length}). Overwrite prevented.`;
           await agentProposalRepository.updateStatus(id, 'FAILED', executedBy, staleMsg);
           logger.warn({ proposalId: id, entityId }, staleMsg);
           throw new AppError(staleMsg, 409);

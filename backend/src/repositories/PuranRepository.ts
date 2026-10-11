@@ -156,6 +156,14 @@ export class PuranRepository extends BaseRepository<any> {
       [seoTitle, seoDescription, id]
     );
   }
+
+  public async updateDescription(id: string, field: string, value: string): Promise<void> {
+    const ALLOWED_FIELDS = ['short_description', 'description_en'];
+    if (!ALLOWED_FIELDS.includes(field)) {
+      throw new Error(`Invalid Puran description field: ${field}`);
+    }
+    await db.query(`UPDATE ${this.tableName} SET ${field} = $1, updated_at = NOW() WHERE id = $2`, [value, id]);
+  }
 }
 
 export const puranRepository = new PuranRepository();
