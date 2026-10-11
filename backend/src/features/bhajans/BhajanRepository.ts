@@ -153,6 +153,75 @@ export class BhajanRepository {
     const res = await db.query(query, [...values, id]);
     return res.rows[0];
   }
+
+  public async findForAiMeaning(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} 
+       WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  public async updateAiMeaning(id: string, meaning: string) {
+    await db.query(
+      `UPDATE ${this.tableName} 
+       SET short_description = $1, 
+           description = COALESCE(NULLIF(description, ''), $1),
+           ai_generated_flag = true,
+           updated_at = NOW() 
+       WHERE id = $2`,
+      [meaning, id]
+    );
+  }
+
+  public async findForSeo(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    await db.query(
+      `UPDATE ${this.tableName} SET seo_title = $1, seo_description = $2, updated_at = NOW() WHERE id = $3`,
+      [seoTitle, seoDescription, id]
+    );
+  }
+
+  public async findMissingSeo(limit = 50) {
+    const { rows } = await db.query(
+      `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       LIMIT $1`,
+      [limit]
+    );
+    return rows;
+  }
 }
 
 export const bhajanRepository = new BhajanRepository();

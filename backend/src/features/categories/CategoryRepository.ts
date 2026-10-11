@@ -143,6 +143,34 @@ export class CategoryRepository {
     const query = `DELETE FROM categories WHERE id = $1;`;
     await db.query(query, [id]);
   }
+
+  async findForSeo(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, name, description, seo_title, seo_description FROM categories WHERE id = $1`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, name, description, seo_title, seo_description FROM categories 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '')
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, name, description, seo_title, seo_description FROM categories ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    await db.query(`UPDATE categories SET seo_title = $1, seo_description = $2, updated_at = NOW() WHERE id = $3`, [
+      seoTitle,
+      seoDescription,
+      id
+    ]);
+  }
 }
 
 export const categoryRepository = new CategoryRepository();

@@ -200,6 +200,74 @@ export class FestivalRepository {
       }
     }
   }
+
+  async findForAiDescription(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, name, content, short_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, name, content, short_description FROM ${this.tableName} 
+       WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, name, content, short_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  async updateAiDescription(id: string, description: string) {
+    await db.query(
+      `UPDATE ${this.tableName} 
+       SET short_description = $1, 
+           content = COALESCE(NULLIF(content, ''), $1),
+           updated_at = NOW() 
+       WHERE id = $2`,
+      [description, id]
+    );
+  }
+
+  async findForSeo(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, name, content, short_description, seo_title, seo_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, name, content, short_description, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, name, content, short_description, seo_title, seo_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    await db.query(
+      `UPDATE ${this.tableName} SET seo_title = $1, seo_description = $2, updated_at = NOW() WHERE id = $3`,
+      [seoTitle, seoDescription, id]
+    );
+  }
+
+  async findMissingDescriptions(limit = 50) {
+    const { rows } = await db.query(
+      `SELECT id, name, content, short_description FROM ${this.tableName} 
+       WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL
+       LIMIT $1`,
+      [limit]
+    );
+    return rows;
+  }
 }
 
 export const festivalRepository = new FestivalRepository();
