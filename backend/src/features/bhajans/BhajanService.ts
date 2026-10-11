@@ -44,6 +44,13 @@ export class BhajanService {
     } else if (bhajanData.title_en && !bhajanData.english_title) {
       bhajanData.english_title = bhajanData.title_en;
     }
+
+    const sanitizeUuid = (val: any) => (!val || (typeof val === 'string' && val.trim() === '') ? null : val);
+    if ('category_id' in bhajanData) bhajanData.category_id = sanitizeUuid(bhajanData.category_id);
+    if ('god_id' in bhajanData) bhajanData.god_id = sanitizeUuid(bhajanData.god_id);
+    if ('festival_id' in bhajanData) bhajanData.festival_id = sanitizeUuid(bhajanData.festival_id);
+    if ('author_id' in bhajanData) bhajanData.author_id = sanitizeUuid(bhajanData.author_id);
+
     return { additionalDeities, bhajanData };
   }
 

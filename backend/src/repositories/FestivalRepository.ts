@@ -164,17 +164,18 @@ export class FestivalRepository {
     await db.query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
   }
 
-  async bulkAction(ids: string[], action: 'publish' | 'draft' | 'delete'): Promise<void> {
+  async bulkAction(ids: string[], action: string): Promise<void> {
     if (ids.length === 0) return;
+    const normalized = (action || '').toUpperCase();
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(',');
 
-    if (action === 'delete') {
+    if (normalized === 'DELETE') {
       await db.query(`DELETE FROM ${this.tableName} WHERE id IN (${placeholders})`, ids);
     } else {
-      const status = action === 'publish' ? 'Published' : 'Draft';
+      const status = normalized === 'PUBLISH' || normalized === 'PUBLISHED' ? 'Published' : 'Draft';
       await db.query(
-        `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`,
-        [status, ...ids]
+        `UPDATE ${this.tableName} SET status = $${ids.length + 1}, updated_at = NOW() WHERE id IN (${placeholders})`,
+        [...ids, status]
       );
     }
   }

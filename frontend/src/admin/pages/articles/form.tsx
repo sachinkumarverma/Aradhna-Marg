@@ -156,7 +156,12 @@ export const AdminArticleForm = () => {
 
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
-      const payload = { ...data };
+      const payload = {
+        ...data,
+        featured_image_id: data.featured_image_id || null,
+        category_id: data.category_id || null,
+        author_id: data.author_id || null
+      };
       if (isEditing) return apiClient.put(`/admin/articles/${id}`, payload);
       return apiClient.post('/admin/articles', payload);
     },

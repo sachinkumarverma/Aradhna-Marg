@@ -45,7 +45,7 @@ export class FestivalService {
     await festivalRepository.delete(id);
   }
 
-  async bulkAction(ids: string[], action: 'publish' | 'draft' | 'delete'): Promise<void> {
+  async bulkAction(ids: string[], action: string): Promise<void> {
     await festivalRepository.bulkAction(ids, action);
   }
 
