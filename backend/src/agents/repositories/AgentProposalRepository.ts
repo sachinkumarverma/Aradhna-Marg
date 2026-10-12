@@ -115,6 +115,7 @@ export class AgentProposalRepository {
           limit?: number;
           status?: string;
           entityType?: string;
+          entityId?: string;
           agentName?: string;
           targetField?: string;
           search?: string;
@@ -127,6 +128,7 @@ export class AgentProposalRepository {
     let limit: number;
     let status: string | undefined;
     let entityType: string | undefined;
+    let entityId: string | undefined;
     let agentName: string | undefined;
     let targetField: string | undefined;
     let search: string | undefined;
@@ -136,6 +138,7 @@ export class AgentProposalRepository {
       limit = pageOrFilter.limit || 10;
       status = pageOrFilter.status;
       entityType = pageOrFilter.entityType;
+      entityId = pageOrFilter.entityId;
       agentName = pageOrFilter.agentName;
       targetField = pageOrFilter.targetField;
       search = pageOrFilter.search;
@@ -170,6 +173,10 @@ export class AgentProposalRepository {
     if (entityType && entityType !== 'ALL') {
       params.push(entityType);
       whereClauses.push(`entity_type = $${params.length}`);
+    }
+    if (entityId && entityId !== 'ALL') {
+      params.push(entityId);
+      whereClauses.push(`entity_id = $${params.length}`);
     }
     if (agentName && agentName !== 'ALL') {
       params.push(agentName);

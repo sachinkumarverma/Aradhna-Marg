@@ -46,6 +46,7 @@ export class AgentProposalService {
     limit?: number;
     status?: string;
     entityType?: string;
+    entityId?: string;
     agentName?: string;
     targetField?: string;
     search?: string;
@@ -55,6 +56,7 @@ export class AgentProposalService {
       limit: options.limit || 10,
       status: options.status,
       entityType: options.entityType,
+      entityId: options.entityId,
       agentName: options.agentName,
       targetField: options.targetField,
       search: options.search

@@ -76,18 +76,19 @@ export const AdminProposals: React.FC = () => {
   const totalRecords = proposalsData?.count || 0;
   const totalPages = Math.ceil(totalRecords / limit) || 1;
 
-  // Approve Mutation
+  // Approve & Execute Mutation
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await ProposalApi.approveProposal(id);
+      await ProposalApi.approveProposal(id);
+      return await ProposalApi.executeProposal(id);
     },
     onSuccess: () => {
-      toast.success('Proposal approved! Ready for controlled execution.');
+      toast.success('Proposal approved and applied live!');
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to approve proposal');
+      toast.error(err.response?.data?.message || 'Failed to approve and apply proposal');
     }
   });
 

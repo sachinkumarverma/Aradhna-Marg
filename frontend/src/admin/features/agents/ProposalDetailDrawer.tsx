@@ -51,20 +51,21 @@ export const ProposalDetailDrawer: React.FC<ProposalDetailDrawerProps> = ({ prop
     enabled: !!proposalId
   });
 
-  // Approve Mutation (PENDING -> APPROVED)
+  // Approve & Publish Mutation (PENDING -> APPROVED -> EXECUTING -> COMPLETED)
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await ProposalApi.approveProposal(id);
+      await ProposalApi.approveProposal(id);
+      return await ProposalApi.executeProposal(id);
     },
     onSuccess: () => {
-      toast.success('Proposal approved and published!');
+      toast.success('Proposal approved and published live!');
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
       refetch();
       if (onStatusChanged) onStatusChanged();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to approve proposal');
+      toast.error(err.response?.data?.message || 'Failed to approve and publish proposal');
     }
   });
 

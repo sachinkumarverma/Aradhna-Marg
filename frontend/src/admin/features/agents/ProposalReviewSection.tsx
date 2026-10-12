@@ -69,17 +69,19 @@ export function ProposalReviewSection() {
 
   const proposals: AgentProposalItem[] = data?.data || [];
 
-  // Approve Mutation (PENDING -> APPROVED)
+  // Approve Mutation (PENDING -> APPROVED -> EXECUTING -> COMPLETED)
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await ProposalApi.approveProposal(id);
+      await ProposalApi.approveProposal(id);
+      return await ProposalApi.executeProposal(id);
     },
     onSuccess: () => {
-      toast.success('Proposal approved! Ready for controlled execution.');
+      toast.success('Proposal approved and applied live!');
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to approve proposal');
+      toast.error(err.response?.data?.message || 'Failed to approve and apply proposal');
     }
   });
 

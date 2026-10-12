@@ -77,6 +77,7 @@ export const ProposalApi = {
     limit?: number;
     status?: string;
     entityType?: string;
+    entityId?: string;
     agentName?: string;
     targetField?: string;
     search?: string;

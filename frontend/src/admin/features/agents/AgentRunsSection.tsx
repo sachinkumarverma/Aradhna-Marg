@@ -21,7 +21,8 @@ import {
   Calendar,
   Sparkles,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  Check
 } from 'lucide-react';
 import {
   AgentApi,
@@ -144,6 +145,7 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
       }));
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
       queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals-findings-lookup'] });
       queryClient.invalidateQueries({ queryKey: ['agent-runs'] });
       toast.success('Proposal generated & staged in AI Proposals for human review!');
     } catch (err: any) {
@@ -152,6 +154,13 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
       setGeneratingProposalKey(null);
     }
   };
+
+  // Fetch recent proposals to reflect live proposal status against findings
+  const { data: existingProposalsData } = useQuery({
+    queryKey: ['admin-agent-proposals', 'findings-lookup'],
+    queryFn: () => ProposalApi.getProposals({ limit: 250, page: 1 }),
+    staleTime: 3000
+  });
 
   // Fetch registered agent definitions
   const { data: definitions = [] } = useQuery({
@@ -845,9 +854,41 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
                             const field = finding.field || finding.targetField;
                             const issueType = (finding.issueType || finding.type || '').toUpperCase();
                             const findingKey = `${finding.id || idx}-${entityType || 'unknown'}-${entityId || 'none'}-${field || issueType}`;
-                            const isStaged = !!stagedProposalKeys[findingKey];
+                            const isStagedInMemory = !!stagedProposalKeys[findingKey];
                             const isGenerating = generatingProposalKey === findingKey;
                             const canPropose = Boolean(entityType && entityId);
+
+                            // Match against persistent proposals fetched from backend
+                            const matchingProposal = existingProposalsData?.data?.find((p) => {
+                              if (p.entityId !== entityId) return false;
+                              if (field && p.targetField === field) return true;
+                              if (
+                                p.targetField === 'seo_metadata' &&
+                                (field === 'seo_title' || field === 'seo_description')
+                              )
+                                return true;
+                              if (
+                                (p.targetField === 'seo_title' || p.targetField === 'seo_description') &&
+                                field === 'seo_metadata'
+                              )
+                                return true;
+                              if (issueType.includes('TITLE') && p.targetField === 'seo_title') return true;
+                              if (
+                                (issueType.includes('DESC') || issueType.includes('DESCRIPTION')) &&
+                                p.targetField === 'seo_description'
+                              )
+                                return true;
+                              if (issueType.includes('MEANING') && p.targetField === 'meaning') return true;
+                              if (
+                                (issueType.includes('EXCERPT') || issueType.includes('SUMMARY')) &&
+                                p.targetField === 'excerpt'
+                              )
+                                return true;
+                              if (!field && p.entityType === entityType) return true;
+                              return false;
+                            });
+
+                            const effectiveStatus = matchingProposal?.status || (isStagedInMemory ? 'PENDING' : null);
 
                             return (
                               <div
@@ -874,11 +915,53 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
 
                                 {canPropose && (
                                   <div className="pt-2 mt-1 border-t border-slate-100 flex items-center justify-between gap-2">
-                                    {isStaged ? (
+                                    {effectiveStatus === 'COMPLETED' ? (
                                       <div className="flex items-center justify-between w-full">
-                                        <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px]">
-                                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                          Staged in Proposals (Pending Review)
+                                        <span className="inline-flex items-center gap-1.5 text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300 text-[11px] shadow-2xs">
+                                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                          <span>Proposal Applied Live (Completed)</span>
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setSelectedRunId(null);
+                                            if (onNavigateToProposals) {
+                                              onNavigateToProposals();
+                                            } else {
+                                              navigate(getAdminPath('/ai'));
+                                            }
+                                          }}
+                                          className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-bold hover:underline cursor-pointer ml-auto"
+                                        >
+                                          View in Proposals <ArrowRight className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                    ) : effectiveStatus === 'APPROVED' ? (
+                                      <div className="flex items-center justify-between w-full">
+                                        <span className="inline-flex items-center gap-1.5 text-blue-800 font-semibold bg-blue-50 px-2 py-0.5 rounded border border-blue-200 text-[11px] shadow-2xs">
+                                          <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                          <span>Approved (Ready to Apply)</span>
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setSelectedRunId(null);
+                                            if (onNavigateToProposals) {
+                                              onNavigateToProposals();
+                                            } else {
+                                              navigate(getAdminPath('/ai'));
+                                            }
+                                          }}
+                                          className="inline-flex items-center gap-1 text-[11px] text-blue-700 font-bold hover:underline cursor-pointer ml-auto"
+                                        >
+                                          View in Proposals <ArrowRight className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                    ) : effectiveStatus === 'PENDING' ? (
+                                      <div className="flex items-center justify-between w-full">
+                                        <span className="inline-flex items-center gap-1.5 text-amber-800 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-300 text-[11px] shadow-2xs">
+                                          <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                          <span>Proposal Staged (Pending Review)</span>
                                         </span>
                                         <button
                                           type="button"
@@ -892,8 +975,40 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
                                           }}
                                           className="inline-flex items-center gap-1 text-[11px] text-saffron-dark font-bold hover:underline cursor-pointer ml-auto"
                                         >
-                                          View in Proposals <ArrowRight className="w-3 h-3" />
+                                          Review in Proposals <ArrowRight className="w-3 h-3" />
                                         </button>
+                                      </div>
+                                    ) : effectiveStatus === 'REJECTED' ? (
+                                      <div className="flex items-center justify-between w-full">
+                                        <span className="inline-flex items-center gap-1.5 text-rose-800 font-semibold bg-rose-50 px-2 py-0.5 rounded border border-rose-200 text-[11px]">
+                                          <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                                          <span>Proposal Rejected</span>
+                                        </span>
+                                        <button
+                                          type="button"
+                                          disabled={isGenerating}
+                                          onClick={() => handleGenerateProposal(finding, findingKey)}
+                                          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs hover:border-amber-400 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+                                        >
+                                          {isGenerating ? (
+                                            <>
+                                              <span className="inline-block w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
+                                              <span>Generating...</span>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                                              <span>Re-generate Proposal</span>
+                                            </>
+                                          )}
+                                        </button>
+                                      </div>
+                                    ) : effectiveStatus === 'EXECUTING' ? (
+                                      <div className="flex items-center justify-between w-full">
+                                        <span className="inline-flex items-center gap-1.5 text-purple-800 font-semibold bg-purple-50 px-2 py-0.5 rounded border border-purple-200 text-[11px]">
+                                          <RefreshCw className="w-3.5 h-3.5 text-purple-600 animate-spin shrink-0" />
+                                          <span>Applying Live...</span>
+                                        </span>
                                       </div>
                                     ) : (
                                       <button

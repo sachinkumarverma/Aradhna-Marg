@@ -64,6 +64,7 @@ class AgentController {
       const limit = parseInt(req.query.limit as string) || 10;
       const status = req.query.status as string | undefined;
       const entityType = req.query.entityType as string | undefined;
+      const entityId = req.query.entityId as string | undefined;
       const agentName = req.query.agentName as string | undefined;
       const targetField = req.query.targetField as string | undefined;
       const search = req.query.search as string | undefined;
@@ -73,6 +74,7 @@ class AgentController {
         limit,
         status,
         entityType,
+        entityId,
         agentName,
         targetField,
         search
