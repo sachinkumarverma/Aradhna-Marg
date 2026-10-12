@@ -10,6 +10,7 @@ import { youtubeRoutes } from '@features/youtube';
 import { adminAuthorController } from '@admin/controllers/author.controller';
 import { deityRoutes } from '@features/deities';
 import { adminAiController } from '@admin/controllers/ai.controller';
+import { agentController } from '@admin/controllers/agent.controller';
 import { translationRoutes } from '@features/translations';
 import { requireAdmin } from '@middlewares/auth';
 import { authController } from '@admin/controllers/auth.controller';
@@ -83,7 +84,6 @@ router.use('/media', mediaRoutes);
 
 // Future endpoints:
 // router.use('/seo', seoController);
-// router.use('/jobs', jobsController);
 
 // AI Processing Pipeline
 router.get('/ai/jobs', adminAiController.list);
@@ -93,5 +93,28 @@ router.post('/ai/queue', adminAiController.queueJob);
 router.post('/ai/jobs/:id/retry', adminAiController.retryJob);
 router.post('/ai/jobs/:id/cancel', adminAiController.cancelJob);
 router.delete('/ai/jobs/:id', adminAiController.deleteJob);
+
+// Agentic AI Gateway & Proposals Pipeline
+router.get('/agents/definitions', agentController.listAgents);
+router.get('/agents/definitions/:id', agentController.getAgentDefinition);
+router.post('/agents/:id/run', agentController.startAgentRun);
+router.get('/agents/schedules', agentController.listSchedules);
+router.put('/agents/schedules/:id', agentController.updateSchedule);
+router.post('/agents/schedules/:id/run', agentController.runScheduledAgentNow);
+router.get('/agents/tools', agentController.listTools);
+router.get('/agents/runs', agentController.listRuns);
+router.get('/agents/runs/:id', agentController.getRunDetails);
+router.post('/agents/runs/:id/cancel', agentController.cancelRun);
+router.get('/agents/proposals', agentController.listProposals);
+router.get('/agents/proposals/stats', agentController.getProposalStats);
+router.get('/agents/proposals/:id', agentController.getProposalDetails);
+router.post('/agents/proposals/:id/approve', agentController.approveProposal);
+router.post('/agents/proposals/:id/reject', agentController.rejectProposal);
+router.post('/agents/proposals/:id/execute', agentController.executeProposal);
+router.post('/agents/bhajan-meaning/propose', agentController.generateBhajanMeaningProposal);
+router.post('/agents/seo/propose', agentController.generateSeoProposal);
+router.post('/agents/content/propose', agentController.generateContentImprovementProposal);
+router.post('/agents/seo-audit/run', agentController.runSeoAudit);
+router.get('/agents/seo-audit/latest', agentController.getLatestSeoAudit);
 
 export default router;

@@ -25,4 +25,14 @@ export class SeoApi {
     const response = await apiClient.post('/v1/seo/generate-bulk', {});
     return response.data;
   }
+
+  static async runAgentAudit(scope?: string[]) {
+    const response = await apiClient.post('/admin/agents/seo-audit/run', { scope });
+    return response.data;
+  }
+
+  static async getLatestAgentAudit() {
+    const response = await apiClient.get('/v1/seo/agent-audit/latest');
+    return response.data;
+  }
 }

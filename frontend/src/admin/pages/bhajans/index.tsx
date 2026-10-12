@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Music2, CheckCircle2, XCircle } from 'lucide-react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { Plus, Music2, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
+import { useNavigate, useSearchParams, Outlet } from 'react-router-dom';
 import { DataTable } from '@admin/components/DataTable';
 import { AdminButton } from '@admin/components/AdminButton';
 import { Select } from '@components/ui/Select';
@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 export const AdminBhajans: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean; action: string; ids: string[] }>({
     isOpen: false,
@@ -24,11 +25,22 @@ export const AdminBhajans: React.FC = () => {
   });
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [sort, setSort] = useState('newest');
+  const [statusFilter, setStatusFilter] = useState(() => searchParams.get('status') || '');
+  const [sort, setSort] = useState(() => searchParams.get('sort') || 'newest');
+
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    if (statusParam !== null) {
+      setStatusFilter(statusParam);
+    }
+    const sortParam = searchParams.get('sort');
+    if (sortParam !== null) {
+      setSort(sortParam);
+    }
+  }, [searchParams]);
 
   // Fetch bhajans
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['admin-bhajans', page, search, statusFilter, sort],
     queryFn: async () => {
       const res = await BhajanApi.getList({
@@ -132,6 +144,18 @@ export const AdminBhajans: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <AdminButton
+            onClick={() => refetch()}
+            variant="outline"
+            title="Refresh"
+            aria-label="Refresh"
+            disabled={isFetching}
+            className="h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
+          >
+            <RefreshCw
+              className={`w-4 h-4 shrink-0 stroke-[2.2] ${isFetching ? 'animate-spin text-saffron' : 'text-slate-600'}`}
+            />
+          </AdminButton>
           <AdminButton
             onClick={() => navigate(getAdminPath('/bhajans/new'))}
             variant="primary"

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Calendar, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Calendar, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { DataTable } from '@admin/components/DataTable';
 import { AdminButton } from '@admin/components/AdminButton';
@@ -28,7 +28,7 @@ export const AdminFestivals: React.FC = () => {
   const [sort, setSort] = useState('newest');
 
   // Fetch festivals
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['admin-festivals', page, search, statusFilter, sort],
     queryFn: async () => {
       const res = await apiClient.get('/admin/festivals', {
@@ -156,6 +156,18 @@ export const AdminFestivals: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <AdminButton
+            onClick={() => refetch()}
+            variant="outline"
+            title="Refresh"
+            aria-label="Refresh"
+            disabled={isFetching}
+            className="h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
+          >
+            <RefreshCw
+              className={`w-4 h-4 shrink-0 stroke-[2.2] ${isFetching ? 'animate-spin text-saffron' : 'text-slate-600'}`}
+            />
+          </AdminButton>
           <AdminButton
             onClick={() => navigate(getAdminPath('/festivals/new'))}
             variant="primary"

@@ -196,7 +196,7 @@ export function AdminAuthors() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {authors.map((author: any) => (
-                    <tr key={author.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={author.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {author.photo ? (

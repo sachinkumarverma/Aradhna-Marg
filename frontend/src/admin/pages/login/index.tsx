@@ -54,60 +54,64 @@ export const AdminLogin: React.FC = () => {
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4 py-6 sm:py-12">
       <SEOHead title="Admin Portal Login" canonicalPath={getAdminPath('/login')} noIndex={true} />
 
-      <div className="max-w-[320px] sm:max-w-md w-full bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-        <div className="px-4 py-5 sm:p-8">
-          <div className="w-11 h-11 sm:w-16 sm:h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3.5 sm:mb-6">
-            <Lock className="w-5 h-5 sm:w-8 sm:h-8 text-saffron" />
+      <div className="max-w-[320px] sm:max-w-[400px] w-full bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div className="px-4 pt-5 pb-3.5 sm:px-7 sm:pt-6 sm:pb-4.5">
+          <div className="w-10 h-10 sm:w-13 sm:h-13 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+            <Lock className="w-4.5 h-4.5 sm:w-6.5 sm:h-6.5 text-saffron" />
           </div>
 
-          <h2 className="text-xl sm:text-3xl font-bold text-center text-darkBrown tracking-wide mb-1 sm:mb-2 uppercase">
+          <h2 className="text-lg sm:text-2xl font-bold text-center text-darkBrown tracking-wide mb-1 uppercase">
             Admin <span className="text-saffron">Access</span>
           </h2>
-          <p className="text-xs sm:text-sm text-center text-gray-500 mb-4 sm:mb-8">
+          <p className="text-xs sm:text-[13px] text-center text-gray-500 mb-3 sm:mb-5">
             Please login to access the dashboard
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-3.5 sm:space-y-6">
+          <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Username</label>
+              <label className="block text-xs sm:text-[13px] font-semibold text-gray-700 mb-1 sm:mb-1.5">
+                Username
+              </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full h-9 sm:h-12 px-3 sm:px-4 text-xs sm:text-sm rounded-md border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
+                className="w-full h-9 sm:h-10.5 px-3 sm:px-3.5 text-xs sm:text-[13px] rounded-md border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
                 placeholder="admin"
               />
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2">Password</label>
+              <label className="block text-xs sm:text-[13px] font-semibold text-gray-700 mb-1 sm:mb-1.5">
+                Password
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full h-9 sm:h-12 pl-3 pr-9 sm:pl-4 sm:pr-11 text-xs sm:text-sm rounded-md border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
+                  className="w-full h-9 sm:h-10.5 pl-3 pr-9 sm:pl-3.5 sm:pr-10 text-xs sm:text-[13px] rounded-md border border-gray-200 focus:border-saffron focus:ring-2 focus:ring-saffron/20 outline-none transition-all"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-darkBrown transition-colors p-1 rounded-md cursor-pointer focus:outline-none"
+                  className="absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-darkBrown transition-colors p-1 rounded-md cursor-pointer focus:outline-none"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <EyeOff className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                   ) : (
-                    <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Eye className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                   )}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="p-2 sm:p-3 bg-red-50 border border-red-200 rounded-md text-xs sm:text-sm text-red-600 font-medium text-center">
+              <div className="p-2 sm:p-2.5 bg-red-50 border border-red-200 rounded-md text-xs text-red-600 font-medium text-center">
                 {error}
               </div>
             )}
@@ -115,7 +119,7 @@ export const AdminLogin: React.FC = () => {
             <AdminButton
               type="submit"
               size="lg"
-              className="w-full h-9 sm:h-12 bg-saffron hover:bg-[#d96a1a] text-white font-bold text-xs sm:text-base tracking-wide rounded-md shadow-md flex justify-center items-center text-center cursor-pointer font-hindi-heading"
+              className="w-full h-9 sm:h-10.5 bg-saffron hover:bg-[#d96a1a] text-white font-bold text-xs sm:text-sm tracking-wide rounded-md shadow-md flex justify-center items-center text-center cursor-pointer font-hindi-heading"
               disabled={loading}
               isLoading={loading}
             >
@@ -123,7 +127,7 @@ export const AdminLogin: React.FC = () => {
             </AdminButton>
           </form>
 
-          <div className="mt-4 pt-3 sm:mt-6 sm:pt-6 border-t border-gray-100 text-center">
+          <div className="mt-3 pt-2 sm:mt-4 sm:pt-3 border-t border-gray-100 text-center">
             {isAdminHost() ? (
               <a
                 href={getPublicHomeUrl()}

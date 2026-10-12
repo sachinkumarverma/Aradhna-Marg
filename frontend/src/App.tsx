@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { SEOProvider } from './providers/SEOProvider';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,7 @@ function App() {
           <AppRouter />
           <Toaster position="top-right" />
           <Analytics />
+          <SpeedInsights />
         </LanguageProvider>
       </QueryClientProvider>
     </SEOProvider>

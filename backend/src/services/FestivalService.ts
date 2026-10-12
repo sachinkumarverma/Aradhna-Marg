@@ -45,8 +45,16 @@ export class FestivalService {
     await festivalRepository.delete(id);
   }
 
-  async bulkAction(ids: string[], action: 'publish' | 'draft' | 'delete'): Promise<void> {
+  async bulkAction(ids: string[], action: string): Promise<void> {
     await festivalRepository.bulkAction(ids, action);
+  }
+
+  async updateSeo(id: string, seoTitle: string, seoDescription: string): Promise<void> {
+    await festivalRepository.updateSeo(id, seoTitle, seoDescription);
+  }
+
+  async updateContentField(id: string, field: string, value: string): Promise<void> {
+    await festivalRepository.updateContentField(id, field, value);
   }
 }
 

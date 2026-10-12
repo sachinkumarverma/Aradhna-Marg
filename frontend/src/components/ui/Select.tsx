@@ -19,6 +19,7 @@ interface SelectProps {
   error?: boolean;
   menuPlacement?: 'top' | 'bottom';
   isLoading?: boolean;
+  disabled?: boolean;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -31,7 +32,8 @@ export const Select: React.FC<SelectProps> = ({
   triggerClassName,
   error,
   menuPlacement = 'bottom',
-  isLoading = false
+  isLoading = false,
+  disabled = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -60,9 +62,10 @@ export const Select: React.FC<SelectProps> = ({
           'flex items-center justify-between w-full px-3.5 sm:px-4 h-9 sm:h-10 bg-white border rounded-md cursor-pointer transition-colors text-xs sm:text-sm',
           isOpen ? 'border-saffron ring-2 ring-saffron/20' : 'border-gray-200 hover:border-gray-300',
           error && 'border-red-500 ring-2 ring-red-500/20',
+          disabled && 'opacity-60 cursor-not-allowed pointer-events-none bg-gray-50',
           triggerClassName
         )}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
       >
         <span className={cn('flex items-center gap-2 truncate', !selectedOption && 'text-gray-400')}>
           {selectedOption?.icon && (
@@ -81,7 +84,7 @@ export const Select: React.FC<SelectProps> = ({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden font-hindi-heading',
+            'absolute z-50 min-w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden font-hindi-heading',
             menuPlacement === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
           )}
         >

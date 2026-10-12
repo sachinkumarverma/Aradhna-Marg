@@ -21,6 +21,15 @@ export class SeoController {
     }
   }
 
+  async getLatestAgentAudit(req: Request, res: Response, next: NextFunction) {
+    try {
+      const audit = await seoService.getLatestAgentAudit();
+      return sendSuccess(res, 'Latest agent SEO audit retrieved', audit);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async generateSitemap(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await seoService.generateSitemap();

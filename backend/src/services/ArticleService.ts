@@ -62,6 +62,10 @@ export class ArticleService {
     const { globalTagIds, customTagNames } = this.parseTags(tags, articleData.custom_tags);
     articleData.custom_tags = customTagNames;
 
+    articleData.featured_image_id = this.sanitizeUuid(articleData.featured_image_id);
+    articleData.category_id = this.sanitizeUuid(articleData.category_id);
+    articleData.author_id = this.sanitizeUuid(articleData.author_id);
+
     if (!articleData.slug && articleData.title) {
       articleData.slug = randomUUID();
     }
@@ -75,6 +79,11 @@ export class ArticleService {
 
     await this.updateRelations(created.id, deities, festivals, globalTagIds, bhajans, related_articles);
     return created;
+  }
+
+  private sanitizeUuid(val: any): string | null {
+    if (!val || (typeof val === 'string' && val.trim() === '')) return null;
+    return val;
   }
 
   public async update(id: string, data: any) {
@@ -97,6 +106,16 @@ export class ArticleService {
 
     const { globalTagIds, customTagNames } = this.parseTags(tags, articleData.custom_tags);
     articleData.custom_tags = customTagNames;
+
+    if ('featured_image_id' in articleData) {
+      articleData.featured_image_id = this.sanitizeUuid(articleData.featured_image_id);
+    }
+    if ('category_id' in articleData) {
+      articleData.category_id = this.sanitizeUuid(articleData.category_id);
+    }
+    if ('author_id' in articleData) {
+      articleData.author_id = this.sanitizeUuid(articleData.author_id);
+    }
 
     const existing = await articleRepository.findById(id);
     if (articleData.status === 'PUBLISHED' && !existing?.publish_date) {
@@ -134,6 +153,14 @@ export class ArticleService {
 
   public async bulkAction(ids: string[], action: string) {
     return articleRepository.bulkAction(ids, action);
+  }
+
+  public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    return articleRepository.updateSeo(id, seoTitle, seoDescription);
+  }
+
+  public async updateContentField(id: string, field: string, value: string) {
+    return articleRepository.updateContentField(id, field, value);
   }
 }
 

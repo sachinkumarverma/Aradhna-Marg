@@ -56,6 +56,7 @@ export const AdminSEO = () => {
   const [isGeneratingSitemap, setIsGeneratingSitemap] = useState(false);
   const [isGeneratingRobots, setIsGeneratingRobots] = useState(false);
   const [isStartingBulk, setIsStartingBulk] = useState(false);
+  const [isRunningAgentAudit, setIsRunningAgentAudit] = useState(false);
 
   const { data: overview, isLoading: isLoadingOverview } = useQuery({
     queryKey: ['seo-overview'],
@@ -72,6 +73,47 @@ export const AdminSEO = () => {
       return data.data;
     }
   });
+
+  const { data: latestAgentAudit, isLoading: isLoadingAgentAudit } = useQuery({
+    queryKey: ['seo-agent-audit-latest'],
+    queryFn: async () => {
+      const res = await SeoApi.getLatestAgentAudit();
+      return res.data;
+    }
+  });
+
+  const getEditLink = (type: string, id?: string) => {
+    const normalized = (type || '').toLowerCase();
+    if (normalized.startsWith('bhajan')) return getAdminPath(`/bhajans/${id}/edit`);
+    if (normalized.startsWith('article')) return getAdminPath(`/articles/${id}/edit`);
+    if (normalized.startsWith('festival')) return getAdminPath(`/festivals/${id}/edit`);
+    if (normalized.startsWith('puran')) return getAdminPath(`/puranas/${id}/edit`);
+    if (normalized.startsWith('categor')) return getAdminPath('/categories');
+    return getAdminPath(`/${normalized}/${id}/edit`);
+  };
+
+  const agentFindings = (latestAgentAudit?.state?.findings || []).map((f: any) => ({
+    id: f.contentId,
+    title: f.contentTitle,
+    type: f.contentType,
+    issue: f.message || f.issueType?.replace(/_/g, ' '),
+    severity: f.severity,
+    recommendation: f.recommendation,
+    source: 'agent' as const
+  }));
+
+  const legacyIssues = (issues || []).map((i: any) => ({
+    id: i.id,
+    title: i.title,
+    type: i.type,
+    issue: i.issue,
+    severity: 'HIGH' as const,
+    recommendation: 'Add SEO title/description',
+    source: 'database' as const
+  }));
+
+  const displayIssues = agentFindings.length > 0 ? agentFindings : legacyIssues;
+  const isLoadingIssuesTable = isLoadingIssues || isLoadingAgentAudit;
 
   const { data: settings, isLoading: isLoadingSettings } = useQuery({
     queryKey: ['settings'],
@@ -178,6 +220,22 @@ export const AdminSEO = () => {
     }
   };
 
+  const handleRunAgentAudit = async () => {
+    setIsRunningAgentAudit(true);
+    try {
+      const res = await SeoApi.runAgentAudit();
+      await queryClient.invalidateQueries({ queryKey: ['seo-agent-audit-latest'] });
+      await queryClient.invalidateQueries({ queryKey: ['seo-overview'] });
+      await queryClient.invalidateQueries({ queryKey: ['seo-issues'] });
+      const issuesCount = res.data?.findingsCount ?? 0;
+      toast.success(`SEO Audit Agent finished. Identified ${issuesCount} issues.`);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'SEO Audit Agent run failed');
+    } finally {
+      setIsRunningAgentAudit(false);
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Overview & Audit', icon: LayoutDashboard },
     { id: 'issues', label: 'SEO Issues', icon: ShieldAlert },
@@ -199,6 +257,14 @@ export const AdminSEO = () => {
               Monitor, audit, and manage global search engine optimization.
             </p>
           </div>
+          <button
+            onClick={handleRunAgentAudit}
+            disabled={isRunningAgentAudit}
+            className="flex items-center gap-2 px-3.5 py-2 bg-saffron hover:bg-orange-600 text-white rounded-md text-xs sm:text-sm font-semibold transition-all shadow-sm shrink-0 disabled:opacity-50 cursor-pointer"
+          >
+            <Zap className={cn('w-4 h-4', isRunningAgentAudit && 'animate-spin')} />
+            <span>{isRunningAgentAudit ? 'Auditing Website...' : 'Run SEO Audit Agent'}</span>
+          </button>
         </div>
 
         <div className="flex overflow-x-auto scrollbar-hide">
@@ -223,36 +289,96 @@ export const AdminSEO = () => {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-            <div className="bg-gradient-to-br from-blue-50 to-white p-3.5 sm:p-5 rounded-md border border-blue-100 shadow-sm">
-              <h3 className="text-xs sm:text-sm font-semibold text-gray-500">Total Bhajans</h3>
+            <div
+              onClick={() => navigate(getAdminPath('/bhajans'))}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(getAdminPath('/bhajans'));
+                }
+              }}
+              className="bg-gradient-to-br from-blue-50 to-white p-3.5 sm:p-5 rounded-md border border-blue-100 shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.015] active:scale-[0.99] hover:border-blue-300 select-none group"
+            >
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-500 group-hover:text-blue-700 transition-colors">
+                Total Bhajans
+              </h3>
               {isLoadingOverview ? (
                 <JumpingDots />
               ) : (
-                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{overview?.totalBhajans || 0}</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2 text-gray-900 group-hover:text-blue-900 transition-colors">
+                  {overview?.totalBhajans || 0}
+                </p>
               )}
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-white p-3.5 sm:p-5 rounded-md border border-green-100 shadow-sm">
-              <h3 className="text-xs sm:text-sm font-semibold text-gray-500">Total Articles</h3>
+            <div
+              onClick={() => navigate(getAdminPath('/articles'))}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(getAdminPath('/articles'));
+                }
+              }}
+              className="bg-gradient-to-br from-green-50 to-white p-3.5 sm:p-5 rounded-md border border-green-100 shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.015] active:scale-[0.99] hover:border-green-300 select-none group"
+            >
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-500 group-hover:text-green-700 transition-colors">
+                Total Articles
+              </h3>
               {isLoadingOverview ? (
                 <JumpingDots />
               ) : (
-                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{overview?.totalArticles || 0}</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2 text-gray-900 group-hover:text-green-900 transition-colors">
+                  {overview?.totalArticles || 0}
+                </p>
               )}
             </div>
-            <div className="bg-gradient-to-br from-orange-50 to-white p-3.5 sm:p-5 rounded-md border border-orange-100 shadow-sm">
-              <h3 className="text-xs sm:text-sm font-semibold text-gray-500">Total Festivals</h3>
+            <div
+              onClick={() => navigate(getAdminPath('/festivals'))}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(getAdminPath('/festivals'));
+                }
+              }}
+              className="bg-gradient-to-br from-orange-50 to-white p-3.5 sm:p-5 rounded-md border border-orange-100 shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.015] active:scale-[0.99] hover:border-orange-300 select-none group"
+            >
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-500 group-hover:text-orange-700 transition-colors">
+                Total Festivals
+              </h3>
               {isLoadingOverview ? (
                 <JumpingDots />
               ) : (
-                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{overview?.totalFestivals || 0}</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2 text-gray-900 group-hover:text-orange-900 transition-colors">
+                  {overview?.totalFestivals || 0}
+                </p>
               )}
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-white p-3.5 sm:p-5 rounded-md border border-purple-100 shadow-sm">
-              <h3 className="text-xs sm:text-sm font-semibold text-gray-500">Total Puranas</h3>
+            <div
+              onClick={() => navigate(getAdminPath('/puranas'))}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(getAdminPath('/puranas'));
+                }
+              }}
+              className="bg-gradient-to-br from-purple-50 to-white p-3.5 sm:p-5 rounded-md border border-purple-100 shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.015] active:scale-[0.99] hover:border-purple-300 select-none group"
+            >
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-500 group-hover:text-purple-700 transition-colors">
+                Total Puranas
+              </h3>
               {isLoadingOverview ? (
                 <JumpingDots />
               ) : (
-                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{overview?.totalPuranas || 0}</p>
+                <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2 text-gray-900 group-hover:text-purple-900 transition-colors">
+                  {overview?.totalPuranas || 0}
+                </p>
               )}
             </div>
           </div>
@@ -312,7 +438,10 @@ export const AdminSEO = () => {
                   </tr>
                 ) : (
                   overview?.audit?.map((item: any) => (
-                    <tr key={item.type} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                    <tr
+                      key={item.type}
+                      className="border-b border-gray-100 last:border-0 bg-gray-50/50 hover:bg-blue-100/60 transition-colors"
+                    >
                       <td className="px-6 py-4 font-medium text-gray-900 capitalize">{item.type}</td>
                       <td className="px-6 py-4 text-center text-green-600 font-medium">{item.optimized}</td>
                       <td
@@ -343,53 +472,116 @@ export const AdminSEO = () => {
       )}
 
       {activeTab === 'issues' && (
-        <div className="bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
-                <th className="px-6 py-3">Content Type</th>
-                <th className="px-6 py-3 font-semibold">Title</th>
-                <th className="px-6 py-3 font-semibold">Issue</th>
-                <th className="px-6 py-3 font-semibold text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {isLoadingIssues ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12">
-                    <div className="flex flex-col items-center justify-center space-y-4">
-                      <Search className="w-8 h-8 text-gray-300 animate-bounce" />
-                      <span className="text-gray-400 font-medium animate-pulse">Fetching SEO issues...</span>
-                    </div>
-                  </td>
+        <div className="space-y-6">
+          {latestAgentAudit?.state?.summary && (
+            <div className="bg-gradient-to-br from-orange-50/60 to-white p-4 sm:p-5 rounded-md border border-orange-200 shadow-sm space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-orange-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="w-5 h-5 text-saffron shrink-0" />
+                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">AI SEO Audit Agent Findings</h3>
+                  <span className="text-xs bg-orange-100 text-orange-800 font-semibold px-2 py-0.5 rounded-full">
+                    Latest Run
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Audited {latestAgentAudit.state.summary.totalAudited || 0} items • Found{' '}
+                  <strong className="text-red-600">{latestAgentAudit.state.summary.totalIssues || 0}</strong> issues
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="font-semibold text-gray-600">Severity Breakdown:</span>
+                <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">
+                  Critical: {latestAgentAudit.state.summary.bySeverity?.CRITICAL || 0}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-bold">
+                  High: {latestAgentAudit.state.summary.bySeverity?.HIGH || 0}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-bold">
+                  Medium: {latestAgentAudit.state.summary.bySeverity?.MEDIUM || 0}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-bold">
+                  Low: {latestAgentAudit.state.summary.bySeverity?.LOW || 0}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
+                  <th className="px-6 py-3">Content Type</th>
+                  <th className="px-6 py-3 font-semibold">Title</th>
+                  <th className="px-6 py-3 font-semibold">Issue</th>
+                  <th className="px-6 py-3 font-semibold text-right">Action</th>
                 </tr>
-              ) : issues?.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                    <ShieldCheck className="w-12 h-12 text-green-400 mx-auto mb-3" strokeWidth={2.5} />
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">Excellent!</h3>
-                    <p>All content is currently optimized. No SEO issues found.</p>
-                  </td>
-                </tr>
-              ) : (
-                issues?.map((issue: any, i: number) => (
-                  <tr key={i} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-900 capitalize">{issue.type}</td>
-                    <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">{issue.title}</td>
-                    <td className="px-6 py-4 text-red-500 font-medium">{issue.issue}</td>
-                    <td className="px-6 py-4 text-right">
-                      <Link
-                        to={getAdminPath(`/${issue.type}/${issue.id}/edit`)}
-                        className="text-saffron hover:underline font-medium"
-                      >
-                        Fix Issue
-                      </Link>
+              </thead>
+              <tbody className="text-sm">
+                {isLoadingIssuesTable ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12">
+                      <div className="flex flex-col items-center justify-center space-y-4">
+                        <Search className="w-8 h-8 text-gray-300 animate-bounce" />
+                        <span className="text-gray-400 font-medium animate-pulse">Fetching SEO issues...</span>
+                      </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : displayIssues.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                      <ShieldCheck className="w-12 h-12 text-green-400 mx-auto mb-3" strokeWidth={2.5} />
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">Excellent!</h3>
+                      <p>All content is currently optimized. No SEO issues found.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  displayIssues.map((issue: any, i: number) => (
+                    <tr
+                      key={i}
+                      className="border-b border-gray-100 last:border-0 bg-gray-50/50 hover:bg-blue-100/60 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-medium text-gray-900 capitalize">
+                        <span className="inline-block px-2 py-0.5 bg-orange-100/70 text-orange-800 rounded text-xs font-semibold">
+                          {issue.type}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-800 font-medium truncate max-w-[220px]" title={issue.title}>
+                        {issue.title}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          {issue.severity && (
+                            <span
+                              className={cn(
+                                'text-[10px] px-1.5 py-0.5 rounded font-bold uppercase shrink-0',
+                                issue.severity === 'CRITICAL' && 'bg-red-100 text-red-700',
+                                issue.severity === 'HIGH' && 'bg-orange-100 text-orange-700',
+                                issue.severity === 'MEDIUM' && 'bg-amber-100 text-amber-800',
+                                issue.severity === 'LOW' && 'bg-blue-100 text-blue-700'
+                              )}
+                            >
+                              {issue.severity}
+                            </span>
+                          )}
+                          <span className="text-slate-800 font-medium text-xs sm:text-sm">{issue.issue}</span>
+                        </div>
+                        {issue.recommendation && <p className="text-xs text-gray-500 mt-1">{issue.recommendation}</p>}
+                      </td>
+                      <td className="px-6 py-4 text-right whitespace-nowrap">
+                        <Link
+                          to={getEditLink(issue.type, issue.id)}
+                          className="text-saffron hover:underline font-semibold text-xs inline-flex items-center gap-1 whitespace-nowrap"
+                        >
+                          Fix Issue
+                          <ExternalLink className="w-3 h-3 shrink-0" />
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

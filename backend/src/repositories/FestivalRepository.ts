@@ -1,6 +1,6 @@
 import { db } from '@common/database/DatabaseClient';
 import { Festival, CreateFestivalDTO, UpdateFestivalDTO } from '@models/Festival';
-import { ConflictError, NotFoundError } from '@/errors/appError';
+import { ConflictError } from '@/errors/appError';
 
 export class FestivalRepository {
   private readonly tableName = 'festivals';
@@ -29,8 +29,10 @@ export class FestivalRepository {
       shortDescription_en: row.short_description_en,
       content_en: row.content_en,
       seoTitle_en: row.seo_title_en,
-      seoDescription_en: row.seo_description_en
-    };
+      seoDescription_en: row.seo_description_en,
+      short_description: row.short_description,
+      short_description_en: row.short_description_en
+    } as any;
   }
 
   private mapToDb(dto: Partial<CreateFestivalDTO>): any {
@@ -162,17 +164,18 @@ export class FestivalRepository {
     await db.query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
   }
 
-  async bulkAction(ids: string[], action: 'publish' | 'draft' | 'delete'): Promise<void> {
+  async bulkAction(ids: string[], action: string): Promise<void> {
     if (ids.length === 0) return;
+    const normalized = (action || '').toUpperCase();
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(',');
 
-    if (action === 'delete') {
+    if (normalized === 'DELETE') {
       await db.query(`DELETE FROM ${this.tableName} WHERE id IN (${placeholders})`, ids);
     } else {
-      const status = action === 'publish' ? 'Published' : 'Draft';
+      const status = normalized === 'PUBLISH' || normalized === 'PUBLISHED' ? 'Published' : 'Draft';
       await db.query(
-        `UPDATE ${this.tableName} SET status = $1, updated_at = NOW() WHERE id IN (${placeholders.replace(/\$(\d+)/g, (match, p1) => `$${parseInt(p1, 10) + 1}`)})`,
-        [status, ...ids]
+        `UPDATE ${this.tableName} SET status = $${ids.length + 1}, updated_at = NOW() WHERE id IN (${placeholders})`,
+        [...ids, status]
       );
     }
   }
@@ -199,6 +202,82 @@ export class FestivalRepository {
         ]);
       }
     }
+  }
+
+  async findForAiDescription(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, name, content, short_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, name, content, short_description FROM ${this.tableName} 
+       WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, name, content, short_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  async updateAiDescription(id: string, description: string) {
+    await db.query(
+      `UPDATE ${this.tableName} 
+       SET short_description = $1, 
+           content = COALESCE(NULLIF(content, ''), $1),
+           updated_at = NOW() 
+       WHERE id = $2`,
+      [description, id]
+    );
+  }
+
+  async findForSeo(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, name, content, short_description, seo_title, seo_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, name, content, short_description, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, name, content, short_description, seo_title, seo_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    await db.query(
+      `UPDATE ${this.tableName} SET seo_title = $1, seo_description = $2, updated_at = NOW() WHERE id = $3`,
+      [seoTitle, seoDescription, id]
+    );
+  }
+
+  async updateContentField(id: string, field: string, value: string): Promise<void> {
+    const ALLOWED_FIELDS = ['content', 'short_description', 'content_en', 'short_description_en'];
+    if (!ALLOWED_FIELDS.includes(field)) {
+      throw new Error(`Invalid festival content field: ${field}`);
+    }
+    await db.query(`UPDATE ${this.tableName} SET ${field} = $1, updated_at = NOW() WHERE id = $2`, [value, id]);
+  }
+
+  async findMissingDescriptions(limit = 50) {
+    const { rows } = await db.query(
+      `SELECT id, name, content, short_description FROM ${this.tableName} 
+       WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL
+       LIMIT $1`,
+      [limit]
+    );
+    return rows;
   }
 }
 

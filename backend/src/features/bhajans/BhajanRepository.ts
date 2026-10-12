@@ -51,7 +51,7 @@ export class BhajanRepository {
     `;
 
     const dataQuery = `
-      SELECT b.id, b.title, b.slug, b.status, b.views, b.created_at, b.category_id, b.god_id,
+      SELECT b.id, b.title, b.slug, b.status, b.views, b.created_at, b.category_id, b.god_id, b.seo_title, b.seo_description,
              c.name as "categoryName", g.name as "deityName"
       FROM ${this.tableName} b
       LEFT JOIN categories c ON b.category_id = c.id
@@ -152,6 +152,83 @@ export class BhajanRepository {
     const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${keys.length + 1} RETURNING *`;
     const res = await db.query(query, [...values, id]);
     return res.rows[0];
+  }
+
+  public async findForAiMeaning(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} 
+       WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  public async updateAiMeaning(id: string, meaning: string) {
+    await db.query(
+      `UPDATE ${this.tableName} 
+       SET short_description = $1, 
+           description = COALESCE(NULLIF(description, ''), $1),
+           ai_generated_flag = true,
+           updated_at = NOW() 
+       WHERE id = $2`,
+      [meaning, id]
+    );
+  }
+
+  public async findForSeo(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    await db.query(
+      `UPDATE ${this.tableName} SET seo_title = $1, seo_description = $2, updated_at = NOW() WHERE id = $3`,
+      [seoTitle, seoDescription, id]
+    );
+  }
+
+  public async updateDescription(id: string, field: string, value: string): Promise<void> {
+    const ALLOWED_FIELDS = ['description', 'short_description'];
+    if (!ALLOWED_FIELDS.includes(field)) {
+      throw new Error(`Sacred Content Firewall: Field '${field}' is not permitted for description updates on Bhajans.`);
+    }
+    await db.query(`UPDATE ${this.tableName} SET ${field} = $1, updated_at = NOW() WHERE id = $2`, [value, id]);
+  }
+
+  public async findMissingSeo(limit = 50) {
+    const { rows } = await db.query(
+      `SELECT id, title, lyrics, description, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       LIMIT $1`,
+      [limit]
+    );
+    return rows;
   }
 }
 

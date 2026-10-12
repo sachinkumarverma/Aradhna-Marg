@@ -1,6 +1,6 @@
 import { db } from '@common/database/DatabaseClient';
 import { AiJob, CreateAiJobDTO } from '@models/AiJob';
-import { NotFoundError } from '@/errors/appError';
+import { NotFoundError, AppError } from '@/errors/appError';
 
 export class AiJobRepository {
   private tableName = 'ai_jobs';
@@ -129,6 +129,11 @@ export class AiJobRepository {
   }
 
   async resetForRetry(id: string): Promise<AiJob> {
+    const existing = await this.findById(id);
+    if (existing.status !== 'FAILED') {
+      throw new AppError(`Cannot retry AI Job with status '${existing.status}'. Only FAILED jobs can be retried.`, 400);
+    }
+
     const query = `
       UPDATE ${this.tableName}
       SET status = 'PENDING',
@@ -138,11 +143,11 @@ export class AiJobRepository {
           processed_items = 0,
           progress = 0,
           updated_at = NOW()
-      WHERE id = $1
+      WHERE id = $1 AND status = 'FAILED'
       RETURNING *
     `;
     const { rows } = await db.query(query, [id]);
-    if (rows.length === 0) throw new NotFoundError('AI Job not found');
+    if (rows.length === 0) throw new AppError('AI Job could not be retried because it is not in FAILED status', 400);
     return rows[0] as AiJob;
   }
 
@@ -170,4 +175,69 @@ export class AiJobRepository {
   async delete(id: string): Promise<void> {
     await db.query(`DELETE FROM ${this.tableName} WHERE id = $1`, [id]);
   }
+
+  async claimNextPendingJob(): Promise<AiJob | null> {
+    const query = `
+      UPDATE ${this.tableName}
+      SET status = 'PROCESSING', started_at = NOW(), updated_at = NOW()
+      WHERE id = (
+        SELECT id FROM ${this.tableName}
+        WHERE status = 'PENDING'
+        ORDER BY created_at ASC
+        LIMIT 1
+        FOR UPDATE SKIP LOCKED
+      )
+      RETURNING *
+    `;
+    const { rows } = await db.query(query);
+    return rows.length > 0 ? (rows[0] as AiJob) : null;
+  }
+
+  async completeJob(id: string): Promise<void> {
+    await db.query(
+      `UPDATE ${this.tableName} SET status = 'COMPLETED', progress = 100, completed_at = NOW(), updated_at = NOW() WHERE id = $1`,
+      [id]
+    );
+  }
+
+  async failJob(id: string, errorMessage: string): Promise<void> {
+    await db.query(
+      `UPDATE ${this.tableName} SET status = 'FAILED', error_message = $1, completed_at = NOW(), updated_at = NOW() WHERE id = $2`,
+      [errorMessage || 'Unknown processing error', id]
+    );
+  }
+
+  async updateProgress(id: string, processedItems: number, progress: number, totalItems?: number): Promise<void> {
+    if (totalItems !== undefined) {
+      await db.query(
+        `UPDATE ${this.tableName} SET total_items = $1, processed_items = $2, progress = $3, updated_at = NOW() WHERE id = $4`,
+        [totalItems, processedItems, progress, id]
+      );
+    } else {
+      await db.query(
+        `UPDATE ${this.tableName} SET processed_items = $1, progress = $2, updated_at = NOW() WHERE id = $3`,
+        [processedItems, progress, id]
+      );
+    }
+  }
+
+  async recoverStuckJobs(olderThanMinutes: number = 15): Promise<number> {
+    const query = `
+      UPDATE ${this.tableName}
+      SET status = 'PENDING',
+          started_at = NULL,
+          error_message = 'Automatically recovered from stuck PROCESSING state upon worker startup',
+          updated_at = NOW()
+      WHERE status = 'PROCESSING'
+        AND (
+          started_at < NOW() - ($1 || ' minutes')::interval
+          OR (started_at IS NULL AND updated_at < NOW() - ($1 || ' minutes')::interval)
+        )
+      RETURNING id
+    `;
+    const { rows } = await db.query(query, [olderThanMinutes]);
+    return rows.length;
+  }
 }
+
+export const aiJobRepository = new AiJobRepository();

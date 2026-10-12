@@ -102,6 +102,68 @@ export class PuranRepository extends BaseRepository<any> {
     const fieldName = field === 'view_count' ? 'view_count' : 'download_count';
     await db.query(`UPDATE ${this.tableName} SET ${fieldName} = COALESCE(${fieldName}, 0) + 1 WHERE id = $1`, [id]);
   }
+
+  public async findForAiDescription(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, author, short_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, author, short_description FROM ${this.tableName} 
+       WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, title, author, short_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  public async updateAiDescription(id: string, shortDescription: string) {
+    await db.query(`UPDATE ${this.tableName} SET short_description = $1, updated_at = NOW() WHERE id = $2`, [
+      shortDescription,
+      id
+    ]);
+  }
+
+  public async findForSeo(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, short_description, seo_title, seo_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, short_description, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, title, short_description, seo_title, seo_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    await db.query(
+      `UPDATE ${this.tableName} SET seo_title = $1, seo_description = $2, updated_at = NOW() WHERE id = $3`,
+      [seoTitle, seoDescription, id]
+    );
+  }
+
+  public async updateDescription(id: string, field: string, value: string): Promise<void> {
+    const ALLOWED_FIELDS = ['short_description', 'description_en'];
+    if (!ALLOWED_FIELDS.includes(field)) {
+      throw new Error(`Invalid Puran description field: ${field}`);
+    }
+    await db.query(`UPDATE ${this.tableName} SET ${field} = $1, updated_at = NOW() WHERE id = $2`, [value, id]);
+  }
 }
 
 export const puranRepository = new PuranRepository();

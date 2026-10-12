@@ -14,6 +14,10 @@ export class CategoryService {
     return category;
   }
 
+  async getById(id: string) {
+    return this.getCategory(id);
+  }
+
   async createCategory(data: CreateCategoryDTO) {
     if (!data.slug) {
       data.slug = randomUUID();
@@ -46,6 +50,10 @@ export class CategoryService {
     for (const id of ids) {
       await categoryRepository.update(id, data);
     }
+  }
+
+  async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    return categoryRepository.updateSeo(id, seoTitle, seoDescription);
   }
 }
 

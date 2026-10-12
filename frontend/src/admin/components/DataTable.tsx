@@ -12,6 +12,10 @@ interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
   isLoading?: boolean;
+  selectedRowId?: string | number | null;
+  onRowClick?: (row: T) => void;
+  rowClassName?: (row: T) => string;
+  renderActions?: (row: T) => React.ReactNode;
   onEdit?: (row: T) => void;
   onPreview?: (row: T) => void;
   onDelete?: (row: T) => void;
@@ -25,6 +29,10 @@ export function DataTable<T extends { id: string | number }>({
   data,
   columns,
   isLoading,
+  selectedRowId,
+  onRowClick,
+  rowClassName,
+  renderActions,
   onEdit,
   onPreview,
   onDelete,
@@ -89,55 +97,80 @@ export function DataTable<T extends { id: string | number }>({
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          {data.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50/50 transition-colors group">
-              {columns.map((col, idx) => (
-                <td key={idx} className={cn('px-6 py-4', col.className)}>
-                  {typeof col.accessor === 'function' ? col.accessor(row) : (row[col.accessor] as React.ReactNode)}
+          {data.map((row) => {
+            const isSelected =
+              selectedRowId !== undefined && selectedRowId !== null ? String(row.id) === String(selectedRowId) : false;
+            const customRowClass = rowClassName?.(row) || '';
+            const isHighlighted =
+              isSelected || customRowClass.includes('border-l-') || customRowClass.includes('bg-orange-');
+
+            return (
+              <tr
+                key={row.id}
+                onClick={() => onRowClick?.(row)}
+                className={cn(
+                  'bg-gray-50/50 hover:bg-blue-100/60 transition-colors group',
+                  onRowClick && 'cursor-pointer',
+                  isSelected && 'bg-orange-50/90 hover:bg-orange-100/70',
+                  customRowClass
+                )}
+              >
+                {columns.map((col, idx) => (
+                  <td
+                    key={idx}
+                    className={cn(
+                      'px-6 py-4',
+                      col.className,
+                      idx === 0 && isHighlighted && 'border-l-4 border-l-saffron'
+                    )}
+                  >
+                    {typeof col.accessor === 'function' ? col.accessor(row) : (row[col.accessor] as React.ReactNode)}
+                  </td>
+                ))}
+                <td className="px-6 py-4" onClick={(e) => (renderActions ? e.stopPropagation() : undefined)}>
+                  <div className="flex items-center justify-end gap-2 transition-opacity">
+                    {renderActions && renderActions(row)}
+                    {onPreview && (
+                      <button
+                        onClick={() => onPreview(row)}
+                        className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                        title="Open PDF"
+                      >
+                        <ExternalLink className="w-4 h-4" strokeWidth={2.5} />
+                      </button>
+                    )}
+                    {onEdit && (
+                      <button
+                        onClick={() => onEdit(row)}
+                        className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
+                        title="Edit"
+                      >
+                        <Edit2 className="w-4 h-4" strokeWidth={3.5} />
+                      </button>
+                    )}
+                    {onActionClick && (
+                      <button
+                        onClick={() => onActionClick('REGENERATE_AI', row)}
+                        className="p-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
+                        title="Regenerate AI Metadata"
+                      >
+                        <Sparkles className="w-4 h-4" strokeWidth={2.5} />
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        onClick={() => onDelete(row)}
+                        className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" strokeWidth={3.5} />
+                      </button>
+                    )}
+                  </div>
                 </td>
-              ))}
-              <td className="px-6 py-4">
-                <div className="flex items-center justify-end gap-2 transition-opacity">
-                  {onPreview && (
-                    <button
-                      onClick={() => onPreview(row)}
-                      className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
-                      title="Open PDF"
-                    >
-                      <ExternalLink className="w-4 h-4" strokeWidth={2.5} />
-                    </button>
-                  )}
-                  {onEdit && (
-                    <button
-                      onClick={() => onEdit(row)}
-                      className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors"
-                      title="Edit"
-                    >
-                      <Edit2 className="w-4 h-4" strokeWidth={3.5} />
-                    </button>
-                  )}
-                  {onActionClick && (
-                    <button
-                      onClick={() => onActionClick('REGENERATE_AI', row)}
-                      className="p-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
-                      title="Regenerate AI Metadata"
-                    >
-                      <Sparkles className="w-4 h-4" strokeWidth={2.5} />
-                    </button>
-                  )}
-                  {onDelete && (
-                    <button
-                      onClick={() => onDelete(row)}
-                      className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" strokeWidth={3.5} />
-                    </button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

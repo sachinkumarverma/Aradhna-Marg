@@ -64,7 +64,7 @@ export class ArticleRepository extends BaseRepository<any> {
 
     const dataQuery = `
       SELECT 
-        a.id, a.title, a.slug, a.status, a.featured, a.view_count, a.created_at, a.publish_date, a.category_id, a.author_id, a.featured_image_id,
+        a.id, a.title, a.slug, a.status, a.featured, a.view_count, a.created_at, a.publish_date, a.category_id, a.author_id, a.featured_image_id, a.seo_title, a.seo_description, a.excerpt,
         json_build_object('name', c.name) as categories,
         json_build_object('name', au.name) as authors,
         json_build_object('url', m.url) as media_files
@@ -140,6 +140,103 @@ export class ArticleRepository extends BaseRepository<any> {
         [status, ...ids]
       );
     }
+  }
+
+  public async findForAiSummary(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, content, excerpt FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, content, excerpt FROM ${this.tableName} 
+       WHERE (excerpt IS NULL OR trim(excerpt) = '') AND content IS NOT NULL AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, title, content, excerpt FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  public async updateExcerpt(id: string, excerpt: string) {
+    await db.query(`UPDATE ${this.tableName} SET excerpt = $1, updated_at = NOW() WHERE id = $2`, [excerpt, id]);
+  }
+
+  public async findForAiGrammar(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, content FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, content FROM ${this.tableName} WHERE content IS NOT NULL AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return res.rows[0] || null;
+  }
+
+  public async updateContent(id: string, content: string) {
+    await db.query(`UPDATE ${this.tableName} SET content = $1, updated_at = NOW() WHERE id = $2`, [content, id]);
+  }
+
+  public async updateContentField(id: string, field: string, value: string) {
+    const ALLOWED_FIELDS = ['content', 'excerpt', 'content_en', 'excerpt_en'];
+    if (!ALLOWED_FIELDS.includes(field)) {
+      throw new Error(`Invalid article content field: ${field}`);
+    }
+    await db.query(`UPDATE ${this.tableName} SET ${field} = $1, updated_at = NOW() WHERE id = $2`, [value, id]);
+  }
+
+  public async findForSeo(id?: string) {
+    if (id) {
+      const res = await db.query(
+        `SELECT id, title, excerpt, content, seo_title, seo_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        [id]
+      );
+      return res.rows[0] || null;
+    }
+    const res = await db.query(
+      `SELECT id, title, excerpt, content, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       ORDER BY created_at DESC LIMIT 1`
+    );
+    if (res.rows[0]) return res.rows[0];
+    const fallback = await db.query(
+      `SELECT id, title, excerpt, content, seo_title, seo_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+    );
+    return fallback.rows[0] || null;
+  }
+
+  public async updateSeo(id: string, seoTitle: string, seoDescription: string) {
+    await db.query(
+      `UPDATE ${this.tableName} SET seo_title = $1, seo_description = $2, updated_at = NOW() WHERE id = $3`,
+      [seoTitle, seoDescription, id]
+    );
+  }
+
+  public async findMissingSeo(limit = 50) {
+    const { rows } = await db.query(
+      `SELECT id, title, excerpt, content, seo_title, seo_description FROM ${this.tableName} 
+       WHERE (seo_title IS NULL OR trim(seo_title) = '' OR seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL
+       LIMIT $1`,
+      [limit]
+    );
+    return rows;
+  }
+
+  public async findMissingExcerpts(limit = 50) {
+    const { rows } = await db.query(
+      `SELECT id, title, content, excerpt FROM ${this.tableName} 
+       WHERE (excerpt IS NULL OR trim(excerpt) = '') AND content IS NOT NULL AND deleted_at IS NULL
+       LIMIT $1`,
+      [limit]
+    );
+    return rows;
   }
 }
 

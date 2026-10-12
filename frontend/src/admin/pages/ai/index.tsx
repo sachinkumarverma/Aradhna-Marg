@@ -19,14 +19,19 @@ import {
   BookOpen,
   Music,
   RefreshCw,
-  BrainCircuit
+  BrainCircuit,
+  FileCheck2
 } from 'lucide-react';
 import { AdminButton } from '@admin/components/AdminButton';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { ProposalReviewSection } from '@admin/features/agents/ProposalReviewSection';
+import { AgentRunsSection } from '@admin/features/agents/AgentRunsSection';
 
 export function AdminAI() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<'assistant' | 'bulk' | 'queue' | 'history' | 'failed'>('assistant');
+  const [activeTab, setActiveTab] = useState<
+    'assistant' | 'proposals' | 'agent-runs' | 'bulk' | 'queue' | 'history' | 'failed'
+  >('assistant');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Fetch Stats
@@ -133,26 +138,26 @@ export function AdminAI() {
     switch (status) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            <CheckCircle2 className="w-3 h-3 mr-1" /> Completed
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-100 text-green-800">
+            Completed
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-            <XCircle className="w-3 h-3 mr-1" strokeWidth={2.5} /> Failed
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-red-100 text-red-800">
+            Failed
           </span>
         );
       case 'PROCESSING':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 animate-pulse">
-            <Zap className="w-3 h-3 mr-1" /> Processing
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-800 animate-pulse">
+            Processing
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            <Clock className="w-3 h-3 mr-1" /> Pending
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+            Pending
           </span>
         );
     }
@@ -274,6 +279,8 @@ export function AdminAI() {
       <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide w-full max-w-full min-w-0 touch-pan-x overscroll-x-contain gap-1 sm:gap-2">
         {[
           { id: 'assistant', label: 'Content Assistant' },
+          { id: 'proposals', label: 'AI Proposals' },
+          { id: 'agent-runs', label: 'Agent Runs' },
           { id: 'bulk', label: 'Bulk Processing' },
           { id: 'queue', label: 'Processing Queue' },
           { id: 'history', label: 'History' },
@@ -295,223 +302,230 @@ export function AdminAI() {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm flex flex-col ">
-        {/* Content Assistant Tab */}
-        {activeTab === 'assistant' && (
-          <div className="p-3.5 sm:p-6">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Content Assistant</h2>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
-              Select an AI action for individual content types. The system will queue a job to process the requested
-              enhancements.
-            </p>
+      {activeTab === 'agent-runs' ? (
+        <AgentRunsSection />
+      ) : (
+        <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm flex flex-col ">
+          {/* Content Assistant Tab */}
+          {activeTab === 'assistant' && (
+            <div className="p-3.5 sm:p-6">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Content Assistant</h2>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
+                Select an AI action for individual content types. The system will queue a job to process the requested
+                enhancements.
+              </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
-              {assistantCards.map((card) => (
-                <div
-                  key={card.title}
-                  className="border border-indigo-100/80 bg-white/90 rounded-md p-3.5 sm:p-5 hover:border-saffron/30 hover:shadow-md transition-all shadow-xs"
-                >
-                  <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
-                    <div className="p-1.5 sm:p-2 bg-gray-50 rounded-md">{card.icon}</div>
-                    <h3 className="font-semibold text-sm sm:text-base text-gray-900">{card.title}</h3>
-                  </div>
-                  <div className="space-y-2">
-                    {card.actions.map((action) => (
-                      <button
-                        key={action.name}
-                        disabled={action.disabled || queueMutation.isPending}
-                        onClick={() => handleQueueJob(`${action.name} for ${card.title}`, card.title, action.type, 1)}
-                        className={`w-full flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-md border transition-colors ${
-                          action.disabled
-                            ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-saffron hover:text-saffron hover:bg-orange-50'
-                        }`}
-                      >
-                        <span>{action.name}</span>
-                        <Play className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${action.disabled ? 'text-gray-300' : ''}`} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Bulk Processing Tab */}
-        {activeTab === 'bulk' && (
-          <div className="p-3.5 sm:p-6">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Bulk Processing Tools</h2>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
-              Run AI operations across multiple records. The system will only process records where the target fields
-              are currently empty (it will never overwrite manual content).
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6">
-              {[
-                {
-                  name: 'Generate SEO Meta Descriptions',
-                  desc: 'Generates missing SEO descriptions for all Bhajans and Articles',
-                  type: 'BULK_SEO',
-                  content: 'Global',
-                  items: bulkCounts?.bulkSeo ?? 0
-                },
-                {
-                  name: 'Generate Article Excerpts',
-                  desc: 'Creates short summaries for articles missing an excerpt',
-                  type: 'BULK_EXCERPT',
-                  content: 'Articles',
-                  items: bulkCounts?.bulkExcerpt ?? 0
-                },
-                {
-                  name: 'Generate Festival Summaries',
-                  desc: 'Fills missing descriptions for upcoming festivals',
-                  type: 'BULK_FESTIVAL',
-                  content: 'Festivals',
-                  items: bulkCounts?.bulkFestival ?? 0
-                }
-              ].map((tool) => (
-                <div
-                  key={tool.name}
-                  className="flex flex-col border border-gray-200 rounded-md p-3.5 sm:p-5 bg-white/90 shadow-xs"
-                >
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-sm sm:text-base text-gray-900">{tool.name}</h3>
-                    <p className="text-xs sm:text-sm text-gray-500 mt-1">{tool.desc}</p>
-                    <div className="mt-2.5 sm:mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      {isLoadingBulkCounts
-                        ? 'Auditing database...'
-                        : `${tool.items} eligible record${tool.items === 1 ? '' : 's'} detected`}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
+                {assistantCards.map((card) => (
+                  <div
+                    key={card.title}
+                    className="border border-indigo-100/80 bg-white/90 rounded-md p-3.5 sm:p-5 hover:border-saffron/30 hover:shadow-md transition-all shadow-xs"
+                  >
+                    <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
+                      <div className="p-1.5 sm:p-2 bg-gray-50 rounded-md">{card.icon}</div>
+                      <h3 className="font-semibold text-sm sm:text-base text-gray-900">{card.title}</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {card.actions.map((action) => (
+                        <button
+                          key={action.name}
+                          disabled={action.disabled || queueMutation.isPending}
+                          onClick={() => handleQueueJob(`${action.name} for ${card.title}`, card.title, action.type, 1)}
+                          className={`w-full flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-md border transition-colors ${
+                            action.disabled
+                              ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
+                              : 'bg-white text-gray-700 border-gray-200 hover:border-saffron hover:text-saffron hover:bg-orange-50'
+                          }`}
+                        >
+                          <span>{action.name}</span>
+                          <Play className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${action.disabled ? 'text-gray-300' : ''}`} />
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-200">
-                    <AdminButton
-                      onClick={() => handleQueueJob(tool.name, tool.content, tool.type, tool.items)}
-                      disabled={queueMutation.isPending || tool.items === 0}
-                      className="w-full justify-center"
-                      leftIcon={<Zap className="w-4 h-4" />}
-                    >
-                      {tool.items === 0 ? 'No Eligible Records' : 'Run Bulk Job'}
-                    </AdminButton>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Table Views (Queue, History, Failed) */}
-        {['queue', 'history', 'failed'].includes(activeTab) && (
-          <div className="flex-1 overflow-x-auto">
-            {jobsLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <CustomLoader fullScreen={false} size="md" text="Loading AI jobs..." />
+          {/* AI Proposals Tab (Phase 4A) */}
+          {activeTab === 'proposals' && <ProposalReviewSection />}
+
+          {/* Bulk Processing Tab */}
+          {activeTab === 'bulk' && (
+            <div className="p-3.5 sm:p-6">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Bulk Processing Tools</h2>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
+                Run AI operations across multiple records. The system will only process records where the target fields
+                are currently empty (it will never overwrite manual content).
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5 lg:gap-6">
+                {[
+                  {
+                    name: 'Generate SEO Meta Descriptions',
+                    desc: 'Generates missing SEO descriptions for all Bhajans and Articles',
+                    type: 'BULK_SEO',
+                    content: 'Global',
+                    items: bulkCounts?.bulkSeo ?? 0
+                  },
+                  {
+                    name: 'Generate Article Excerpts',
+                    desc: 'Creates short summaries for articles missing an excerpt',
+                    type: 'BULK_EXCERPT',
+                    content: 'Articles',
+                    items: bulkCounts?.bulkExcerpt ?? 0
+                  },
+                  {
+                    name: 'Generate Festival Summaries',
+                    desc: 'Fills missing descriptions for upcoming festivals',
+                    type: 'BULK_FESTIVAL',
+                    content: 'Festivals',
+                    items: bulkCounts?.bulkFestival ?? 0
+                  }
+                ].map((tool) => (
+                  <div
+                    key={tool.name}
+                    className="flex flex-col justify-between border border-gray-200 rounded-md p-3.5 sm:p-5 bg-white/90 shadow-xs"
+                  >
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-sm sm:text-base text-gray-900">{tool.name}</h3>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-1">{tool.desc}</p>
+                      <div className="mt-2.5 sm:mt-3 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                        {isLoadingBulkCounts
+                          ? 'Auditing database...'
+                          : `${tool.items} eligible record${tool.items === 1 ? '' : 's'} detected`}
+                      </div>
+                    </div>
+                    <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-200">
+                      <AdminButton
+                        onClick={() => handleQueueJob(tool.name, tool.content, tool.type, tool.items)}
+                        disabled={queueMutation.isPending || tool.items === 0}
+                        className="w-full justify-center"
+                        leftIcon={<Zap className="w-4 h-4" />}
+                      >
+                        {tool.items === 0 ? 'No Eligible Records' : 'Run Bulk Job'}
+                      </AdminButton>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ) : jobs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                <Bot className="w-12 h-12 mb-3 opacity-20" />
-                <p>No jobs found in this view.</p>
-              </div>
-            ) : (
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
-                  <tr>
-                    <th className="px-6 py-4 font-bold">Job Name</th>
-                    <th className="px-6 py-4 font-bold">Content Type</th>
-                    {activeTab === 'queue' && <th className="px-6 py-4 font-bold">Progress</th>}
-                    {activeTab === 'history' && <th className="px-6 py-4 font-bold">Items Processed</th>}
-                    <th className="px-6 py-4 font-bold">Status</th>
-                    {activeTab === 'history' ? (
-                      <th className="px-6 py-4 font-bold">Completed Time</th>
-                    ) : (
-                      <th className="px-6 py-4 font-bold">Started</th>
-                    )}
-                    {activeTab === 'failed' && <th className="px-6 py-4 font-bold">Error</th>}
-                    <th className="px-6 py-4 font-bold text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {jobs.map((job: any) => (
-                    <tr key={job.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4 font-medium text-gray-900">{job.job_name}</td>
-                      <td className="px-6 py-4 text-gray-500">{job.content_type}</td>
+            </div>
+          )}
 
-                      {activeTab === 'queue' && (
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2 max-w-[150px]">
-                            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                              <div
-                                className={`h-full rounded-full transition-all duration-500 ${job.status === 'PROCESSING' ? 'bg-blue-500' : 'bg-gray-300'}`}
-                                style={{ width: `${job.progress}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-gray-500 w-8">{job.progress}%</span>
-                          </div>
-                        </td>
-                      )}
-
-                      {activeTab === 'history' && (
-                        <td className="px-6 py-4 text-gray-500">
-                          {job.processed_items} / {job.total_items}
-                        </td>
-                      )}
-
-                      <td className="px-6 py-4">{getStatusBadge(job.status)}</td>
-
+          {/* Table Views (Queue, History, Failed) */}
+          {['queue', 'history', 'failed'].includes(activeTab) && (
+            <div className="flex-1 overflow-x-auto">
+              {jobsLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <CustomLoader fullScreen={false} size="md" text="Loading AI jobs..." />
+                </div>
+              ) : jobs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+                  <Bot className="w-12 h-12 mb-3 opacity-20" />
+                  <p>No jobs found in this view.</p>
+                </div>
+              ) : (
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
+                    <tr>
+                      <th className="px-6 py-4 font-bold">Job Name</th>
+                      <th className="px-6 py-4 font-bold">Content Type</th>
+                      {activeTab === 'queue' && <th className="px-6 py-4 font-bold">Progress</th>}
+                      {activeTab === 'history' && <th className="px-6 py-4 font-bold">Items Processed</th>}
+                      <th className="px-6 py-4 font-bold">Status</th>
                       {activeTab === 'history' ? (
-                        <td className="px-6 py-4 text-gray-500">{formatDate(job.completed_at)}</td>
+                        <th className="px-6 py-4 font-bold">Completed Time</th>
                       ) : (
-                        <td className="px-6 py-4 text-gray-500">{formatDate(job.started_at)}</td>
+                        <th className="px-6 py-4 font-bold">Started</th>
                       )}
-
-                      {activeTab === 'failed' && (
-                        <td className="px-6 py-4 text-red-500 max-w-[200px] truncate" title={job.error_message}>
-                          {job.error_message || 'Unknown error'}
-                        </td>
-                      )}
-
-                      <td className="px-6 py-4 text-right space-x-2">
-                        {['PENDING', 'PROCESSING'].includes(job.status) && (
-                          <button
-                            onClick={() => cancelMutation.mutate(job.id)}
-                            disabled={cancelMutation.isPending}
-                            className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors"
-                            title="Cancel Job"
-                          >
-                            <XCircle className="w-4 h-4" strokeWidth={2.5} />
-                          </button>
-                        )}
-                        {job.status === 'FAILED' && (
-                          <button
-                            onClick={() => retryMutation.mutate(job.id)}
-                            disabled={retryMutation.isPending}
-                            className="p-1.5 text-blue-500 hover:text-blue-600 transition-colors"
-                            title="Retry Job"
-                          >
-                            <RotateCcw className="w-4 h-4" />
-                          </button>
-                        )}
-                        {['COMPLETED', 'FAILED'].includes(job.status) && (
-                          <button
-                            onClick={() => {
-                              setDeleteConfirmId(job.id);
-                            }}
-                            disabled={deleteMutation.isPending}
-                            className="p-1.5 text-red-500 hover:text-red-600 transition-colors"
-                            title="Delete Record"
-                          >
-                            <Trash2 className="w-4 h-4" strokeWidth={2.5} />
-                          </button>
-                        )}
-                      </td>
+                      {activeTab === 'failed' && <th className="px-6 py-4 font-bold">Error</th>}
+                      <th className="px-6 py-4 font-bold text-right">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
-      </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {jobs.map((job: any) => (
+                      <tr key={job.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
+                        <td className="px-6 py-4 font-medium text-gray-900">{job.job_name}</td>
+                        <td className="px-6 py-4 text-gray-500">{job.content_type}</td>
+
+                        {activeTab === 'queue' && (
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 max-w-[150px]">
+                              <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full transition-all duration-500 ${job.status === 'PROCESSING' ? 'bg-blue-500' : 'bg-gray-300'}`}
+                                  style={{ width: `${job.progress}%` }}
+                                />
+                              </div>
+                              <span className="text-xs text-gray-500 w-8">{job.progress}%</span>
+                            </div>
+                          </td>
+                        )}
+
+                        {activeTab === 'history' && (
+                          <td className="px-6 py-4 text-gray-500">
+                            {job.processed_items} / {job.total_items}
+                          </td>
+                        )}
+
+                        <td className="px-6 py-4">{getStatusBadge(job.status)}</td>
+
+                        {activeTab === 'history' ? (
+                          <td className="px-6 py-4 text-gray-500">{formatDate(job.completed_at)}</td>
+                        ) : (
+                          <td className="px-6 py-4 text-gray-500">{formatDate(job.started_at)}</td>
+                        )}
+
+                        {activeTab === 'failed' && (
+                          <td className="px-6 py-4 text-red-500 max-w-[200px] truncate" title={job.error_message}>
+                            {job.error_message || 'Unknown error'}
+                          </td>
+                        )}
+
+                        <td className="px-6 py-4 text-right space-x-2">
+                          {['PENDING', 'PROCESSING'].includes(job.status) && (
+                            <button
+                              onClick={() => cancelMutation.mutate(job.id)}
+                              disabled={cancelMutation.isPending}
+                              className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors"
+                              title="Cancel Job"
+                            >
+                              <XCircle className="w-4 h-4" strokeWidth={2.5} />
+                            </button>
+                          )}
+                          {job.status === 'FAILED' && (
+                            <button
+                              onClick={() => retryMutation.mutate(job.id)}
+                              disabled={retryMutation.isPending}
+                              className="p-1.5 text-blue-500 hover:text-blue-600 transition-colors"
+                              title="Retry Job"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </button>
+                          )}
+                          {['COMPLETED', 'FAILED'].includes(job.status) && (
+                            <button
+                              onClick={() => {
+                                setDeleteConfirmId(job.id);
+                              }}
+                              disabled={deleteMutation.isPending}
+                              className="p-1.5 text-red-500 hover:text-red-600 transition-colors"
+                              title="Delete Record"
+                            >
+                              <Trash2 className="w-4 h-4" strokeWidth={2.5} />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       <ConfirmDialog
         isOpen={!!deleteConfirmId}
         title="Delete Job Log"
