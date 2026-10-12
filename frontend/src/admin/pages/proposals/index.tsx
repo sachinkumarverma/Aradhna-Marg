@@ -1,32 +1,16 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  Sparkles,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Play,
-  RotateCcw,
-  AlertCircle,
-  FileText,
-  Calendar,
-  FolderTree,
-  BookOpen,
-  Music,
-  Tag,
-  ShieldCheck,
-  Eye,
-  Bot,
-  User
-} from 'lucide-react';
+import { Sparkles, CheckCircle2, XCircle, Clock, Play, RefreshCw, AlertCircle, Eye, Check, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { DataTable } from '@admin/components/DataTable';
 import { AdminButton } from '@admin/components/AdminButton';
-import { CustomLoader } from '@components/common/CustomLoader';
-import { SearchInput } from '@components/ui/SearchInput';
 import { Select } from '@components/ui/Select';
+import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
 import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { ProposalApi, type AgentProposalItem, type ProposalStats } from '@admin/features/agents/ProposalApi';
-import { ProposalDetailModal } from '@admin/features/agents/ProposalDetailModal';
+import { ProposalDetailDrawer } from '@admin/features/agents/ProposalDetailDrawer';
 import toast from 'react-hot-toast';
 
 export const AdminProposals: React.FC = () => {
@@ -38,10 +22,10 @@ export const AdminProposals: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('ALL');
-  const [agentFilter, setAgentFilter] = useState<string>('ALL');
   const [targetFieldFilter, setTargetFieldFilter] = useState<string>('ALL');
+  const [agentFilter, setAgentFilter] = useState<string>('ALL');
 
-  // Selected proposal for Detail Modal
+  // Selected proposal for Detail Side Panel Drawer
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
 
   // Quick Action execution confirmation dialog
@@ -103,7 +87,7 @@ export const AdminProposals: React.FC = () => {
   const totalRecords = proposalsData?.count || 0;
   const totalPages = Math.ceil(totalRecords / limit) || 1;
 
-  // Approve Mutation (PENDING -> APPROVED)
+  // Approve Mutation
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
       return await ProposalApi.approveProposal(id);
@@ -118,7 +102,27 @@ export const AdminProposals: React.FC = () => {
     }
   });
 
-  // Reject Mutation (PENDING/APPROVED -> REJECTED)
+  // Execute Mutation
+  const executeMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await ProposalApi.executeProposal(id);
+    },
+    onSuccess: () => {
+      toast.success('Proposal executed! Live content updated via ToolGateway.');
+      setQuickExecuteProposal(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
+    },
+    onError: (err: any) => {
+      setQuickExecuteProposal(null);
+      const msg = err.response?.data?.message || err.message;
+      toast.error(msg || 'Failed to execute proposal');
+      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
+    }
+  });
+
+  // Reject Mutation
   const rejectMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
       return await ProposalApi.rejectProposal(id, reason);
@@ -135,106 +139,52 @@ export const AdminProposals: React.FC = () => {
     }
   });
 
-  // Execute Mutation (APPROVED -> EXECUTING -> COMPLETED)
-  const executeMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await ProposalApi.executeProposal(id);
-    },
-    onSuccess: () => {
-      toast.success('Proposal executed! Live content updated via ToolGateway.');
-      setQuickExecuteProposal(null);
-      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
-    },
-    onError: (err: any) => {
-      setQuickExecuteProposal(null);
-      const statusCode = err.response?.status;
-      const msg = err.response?.data?.message || err.message;
-      if (statusCode === 409 || msg?.includes('Stale proposal') || msg?.includes('409')) {
-        toast.error('Stale proposal conflict (409): Live content has changed.');
-      } else {
-        toast.error(msg || 'Failed to execute proposal');
-      }
-      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
-    }
-  });
-
-  const getEntityIcon = (type: string) => {
-    switch (type) {
-      case 'bhajan':
-        return <Music className="w-4 h-4 text-orange-600" />;
-      case 'article':
-        return <FileText className="w-4 h-4 text-blue-600" />;
-      case 'festival':
-        return <Calendar className="w-4 h-4 text-purple-600" />;
-      case 'puran':
-        return <BookOpen className="w-4 h-4 text-emerald-600" />;
-      case 'category':
-        return <FolderTree className="w-4 h-4 text-amber-600" />;
-      default:
-        return <Tag className="w-4 h-4 text-gray-600" />;
-    }
-  };
-
+  // Status badge matching Articles / Puranas / Bhajans design system tokens
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'PENDING':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
-            <Clock className="w-3 h-3" /> Pending
-          </span>
-        );
-      case 'APPROVED':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-200">
-            <CheckCircle2 className="w-3 h-3" /> Approved
-          </span>
-        );
-      case 'EXECUTING':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200 animate-pulse">
-            <RotateCcw className="w-3 h-3 animate-spin" /> Executing
-          </span>
-        );
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">
-            <CheckCircle2 className="w-3 h-3" /> Completed
+          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-green-600 text-white">
+            <CheckCircle2 className="w-3 h-3" />
+            COMPLETED
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200">
-            <XCircle className="w-3 h-3" /> Failed
+          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-red-600 text-white">
+            <AlertCircle className="w-3 h-3" />
+            FAILED
+          </span>
+        );
+      case 'APPROVED':
+        return (
+          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-blue-600 text-white">
+            <CheckCircle2 className="w-3 h-3" />
+            APPROVED
+          </span>
+        );
+      case 'PENDING':
+        return (
+          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-amber-600 text-white">
+            <Clock className="w-3 h-3" />
+            PENDING
+          </span>
+        );
+      case 'EXECUTING':
+        return (
+          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-purple-600 text-white animate-pulse">
+            <RefreshCw className="w-3 h-3 animate-spin" />
+            EXECUTING
           </span>
         );
       case 'REJECTED':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-200">
-            <XCircle className="w-3 h-3" /> Rejected
-          </span>
-        );
       default:
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-800">
-            {status}
+          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-gray-500 text-white">
+            <XCircle className="w-3 h-3" strokeWidth={2.5} />
+            REJECTED
           </span>
         );
-    }
-  };
-
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return '-';
-    try {
-      return new Date(dateStr).toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch {
-      return dateStr;
     }
   };
 
@@ -242,393 +192,410 @@ export const AdminProposals: React.FC = () => {
     setSearch('');
     setStatusFilter('ALL');
     setEntityTypeFilter('ALL');
-    setAgentFilter('ALL');
     setTargetFieldFilter('ALL');
+    setAgentFilter('ALL');
     setPage(1);
   };
 
+  const columns = [
+    {
+      header: 'TARGET ENTITY',
+      accessor: (row: AgentProposalItem) => (
+        <div className="min-w-0">
+          <p className="font-bold text-gray-900 line-clamp-1 font-anek leading-snug text-sm">
+            {row.targetTitle || `Entity ID: ${row.entityId.slice(0, 12)}...`}
+          </p>
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mt-0.5">{row.entityType}</p>
+        </div>
+      )
+    },
+    {
+      header: 'FIELD',
+      accessor: (row: AgentProposalItem) => (
+        <span className="text-[11px] font-medium text-slate-600">
+          {(row.targetField || 'content').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+        </span>
+      )
+    },
+    {
+      header: 'GENERATING AGENT',
+      accessor: (row: AgentProposalItem) => (
+        <span className="truncate max-w-[170px] text-sm text-gray-700 font-medium block">{row.agentName}</span>
+      )
+    },
+    {
+      header: 'STATUS',
+      className: 'text-center w-32',
+      accessor: (row: AgentProposalItem) => getStatusBadge(row.status)
+    },
+    {
+      header: 'CREATED',
+      accessor: (row: AgentProposalItem) => (
+        <span className="text-sm text-slate-800 font-medium">
+          {row.createdAt ? format(new Date(row.createdAt), 'MMM dd, yyyy') : '—'}
+        </span>
+      )
+    }
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-darkBrown tracking-tight">AI Proposals Management</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-              Phase 5D UX
-            </span>
-          </div>
-          <p className="text-sm text-gray-500 mt-1">
+    <div className="space-y-6 flex flex-col min-h-full">
+      {/* Top Header matching other sections */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-lg sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase truncate">
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
+            <span className="truncate">AI PROPOSALS</span>
+          </h1>
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
             Review, diff, approve, and execute AI-staged mutations under strict human editorial governance.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
+        <div className="flex items-center gap-2 shrink-0">
+          <AdminButton
             onClick={() => {
               refetch();
               queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
             }}
+            variant="outline"
+            title="Refresh"
+            aria-label="Refresh"
             disabled={isFetching}
-            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-60 shadow-xs cursor-pointer"
+            className="h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
           >
-            <RotateCcw className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin text-saffron' : 'text-gray-500'}`} />
-            <span>{isFetching ? 'Refreshing...' : 'Refresh'}</span>
-          </button>
+            <RefreshCw
+              className={`w-4 h-4 shrink-0 stroke-[2.2] ${isFetching ? 'animate-spin text-saffron' : 'text-slate-600'}`}
+            />
+          </AdminButton>
         </div>
       </div>
 
-      {/* Summary Stat Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {[
-          {
-            label: 'Pending',
-            count: stats.pending,
-            statusKey: 'PENDING',
-            color: 'text-amber-700',
-            bg: 'bg-amber-50/70',
-            border: 'border-amber-200',
-            activeBorder: 'ring-2 ring-amber-500'
-          },
-          {
-            label: 'Approved (Ready)',
-            count: stats.approved,
-            statusKey: 'APPROVED',
-            color: 'text-blue-700',
-            bg: 'bg-blue-50/70',
-            border: 'border-blue-200',
-            activeBorder: 'ring-2 ring-blue-500'
-          },
-          {
-            label: 'Executing',
-            count: stats.executing,
-            statusKey: 'EXECUTING',
-            color: 'text-purple-700',
-            bg: 'bg-purple-50/70',
-            border: 'border-purple-200',
-            activeBorder: 'ring-2 ring-purple-500'
-          },
-          {
-            label: 'Completed',
-            count: stats.completed,
-            statusKey: 'COMPLETED',
-            color: 'text-emerald-700',
-            bg: 'bg-emerald-50/70',
-            border: 'border-emerald-200',
-            activeBorder: 'ring-2 ring-emerald-500'
-          },
-          {
-            label: 'Failed',
-            count: stats.failed,
-            statusKey: 'FAILED',
-            color: 'text-rose-700',
-            bg: 'bg-rose-50/70',
-            border: 'border-rose-200',
-            activeBorder: 'ring-2 ring-rose-500'
-          },
-          {
-            label: 'Rejected',
-            count: stats.rejected,
-            statusKey: 'REJECTED',
-            color: 'text-gray-700',
-            bg: 'bg-gray-50/70',
-            border: 'border-gray-200',
-            activeBorder: 'ring-2 ring-gray-500'
-          }
-        ].map((item) => {
-          const isActive = statusFilter === item.statusKey;
-          return (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => {
-                setStatusFilter(isActive ? 'ALL' : item.statusKey);
-                setPage(1);
-              }}
-              className={`p-3.5 rounded-xl border transition-all text-left cursor-pointer shadow-xs ${item.bg} ${
-                item.border
-              } ${isActive ? `${item.activeBorder} shadow-sm` : 'hover:border-gray-300'}`}
-            >
-              <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">{item.label}</span>
-              <span className={`text-xl font-black mt-1 block ${item.color}`}>{item.count}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Filter & Search Bar */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs space-y-3">
-        <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
-          <div className="w-full md:w-80">
-            <SearchInput
-              value={search}
-              onChange={(val) => {
-                setSearch(val);
-                setPage(1);
-              }}
-              placeholder="Search by title, proposal ID, entity ID..."
-            />
+      {/* 6 Summary Stat Cards (square icon containers matching dashboard cards) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+        {/* Pending */}
+        <div
+          onClick={() => {
+            setStatusFilter(statusFilter === 'PENDING' ? 'ALL' : 'PENDING');
+            setPage(1);
+          }}
+          className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
+            statusFilter === 'PENDING'
+              ? 'ring-1 ring-amber-400 border-amber-400 bg-amber-50/60'
+              : 'border-amber-200/80 bg-gradient-to-br from-amber-50/50 to-white hover:border-amber-400'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-gray-500">Pending</span>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4" />
+            </div>
           </div>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{stats.pending}</p>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-            {/* Status Filter */}
-            <Select
-              value={statusFilter}
-              onChange={(val) => {
-                setStatusFilter(val);
-                setPage(1);
-              }}
-              options={[
-                { value: 'ALL', label: 'All Statuses' },
-                { value: 'PENDING', label: 'Pending Approval' },
-                { value: 'APPROVED', label: 'Approved (Ready)' },
-                { value: 'EXECUTING', label: 'Executing' },
-                { value: 'COMPLETED', label: 'Completed' },
-                { value: 'FAILED', label: 'Failed' },
-                { value: 'REJECTED', label: 'Rejected' }
-              ]}
-              className="w-40 text-xs"
-            />
-
-            {/* Entity Type Filter */}
-            <Select
-              value={entityTypeFilter}
-              onChange={(val) => {
-                setEntityTypeFilter(val);
-                setPage(1);
-              }}
-              options={[
-                { value: 'ALL', label: 'All Entities' },
-                { value: 'bhajan', label: 'Bhajans' },
-                { value: 'article', label: 'Articles' },
-                { value: 'festival', label: 'Festivals' },
-                { value: 'puran', label: 'Puranas' },
-                { value: 'category', label: 'Categories' }
-              ]}
-              className="w-36 text-xs"
-            />
-
-            {/* Target Field Filter */}
-            <Select
-              value={targetFieldFilter}
-              onChange={(val) => {
-                setTargetFieldFilter(val);
-                setPage(1);
-              }}
-              options={[
-                { value: 'ALL', label: 'All Fields' },
-                { value: 'meaning', label: 'Bhajan Meaning' },
-                { value: 'seo_metadata', label: 'SEO Metadata' },
-                { value: 'content', label: 'Main Content' },
-                { value: 'content_en', label: 'English Content' },
-                { value: 'excerpt', label: 'Excerpt' },
-                { value: 'short_description', label: 'Short Description' }
-              ]}
-              className="w-40 text-xs"
-            />
-
-            {/* Agent Filter */}
-            <Select
-              value={agentFilter}
-              onChange={(val) => {
-                setAgentFilter(val);
-                setPage(1);
-              }}
-              options={[
-                { value: 'ALL', label: 'All Agents' },
-                { value: 'BhajanMeaningAgent', label: 'BhajanMeaningAgent' },
-                { value: 'SeoImprovementAgent', label: 'SeoImprovementAgent' },
-                { value: 'ContentImprovementAgent', label: 'ContentImprovementAgent' }
-              ]}
-              className="w-48 text-xs"
-            />
-
-            {(search ||
-              statusFilter !== 'ALL' ||
-              entityTypeFilter !== 'ALL' ||
-              agentFilter !== 'ALL' ||
-              targetFieldFilter !== 'ALL') && (
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="px-2.5 py-1.5 text-xs font-semibold text-gray-500 hover:text-darkBrown transition-colors cursor-pointer"
-              >
-                Clear Filters
-              </button>
-            )}
+        {/* Approved */}
+        <div
+          onClick={() => {
+            setStatusFilter(statusFilter === 'APPROVED' ? 'ALL' : 'APPROVED');
+            setPage(1);
+          }}
+          className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
+            statusFilter === 'APPROVED'
+              ? 'ring-1 ring-blue-400 border-blue-400 bg-blue-50/60'
+              : 'border-blue-200/80 bg-gradient-to-br from-blue-50/50 to-white hover:border-blue-400'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-gray-500">Approved</span>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
           </div>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{stats.approved}</p>
+        </div>
+
+        {/* Executing */}
+        <div
+          onClick={() => {
+            setStatusFilter(statusFilter === 'EXECUTING' ? 'ALL' : 'EXECUTING');
+            setPage(1);
+          }}
+          className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
+            statusFilter === 'EXECUTING'
+              ? 'ring-1 ring-purple-400 border-purple-400 bg-purple-50/60'
+              : 'border-purple-200/80 bg-gradient-to-br from-purple-50/50 to-white hover:border-purple-400'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-gray-500">Executing</span>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
+              <Play className="w-3.5 h-3.5 fill-purple-600 text-purple-600 ml-0.5" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{stats.executing}</p>
+        </div>
+
+        {/* Completed */}
+        <div
+          onClick={() => {
+            setStatusFilter(statusFilter === 'COMPLETED' ? 'ALL' : 'COMPLETED');
+            setPage(1);
+          }}
+          className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
+            statusFilter === 'COMPLETED'
+              ? 'ring-1 ring-emerald-400 border-emerald-400 bg-emerald-50/60'
+              : 'border-emerald-200/80 bg-gradient-to-br from-emerald-50/50 to-white hover:border-emerald-400'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-gray-500">Completed</span>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{stats.completed}</p>
+        </div>
+
+        {/* Failed */}
+        <div
+          onClick={() => {
+            setStatusFilter(statusFilter === 'FAILED' ? 'ALL' : 'FAILED');
+            setPage(1);
+          }}
+          className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
+            statusFilter === 'FAILED'
+              ? 'ring-1 ring-rose-400 border-rose-400 bg-rose-50/60'
+              : 'border-rose-200/80 bg-gradient-to-br from-rose-50/50 to-white hover:border-rose-400'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-gray-500">Failed</span>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+              <AlertCircle className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{stats.failed}</p>
+        </div>
+
+        {/* Rejected */}
+        <div
+          onClick={() => {
+            setStatusFilter(statusFilter === 'REJECTED' ? 'ALL' : 'REJECTED');
+            setPage(1);
+          }}
+          className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
+            statusFilter === 'REJECTED'
+              ? 'ring-1 ring-gray-400 border-gray-400 bg-gray-100'
+              : 'border-gray-200/80 bg-gradient-to-br from-gray-50/50 to-white hover:border-gray-400'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-gray-500">Rejected</span>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center shrink-0">
+              <XCircle className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{stats.rejected}</p>
         </div>
       </div>
 
-      {/* Proposals List / Table */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-xs overflow-hidden">
-        {isLoading ? (
-          <div className="py-20 flex flex-col items-center justify-center gap-2">
-            <CustomLoader />
-            <p className="text-xs text-gray-500">Loading proposals...</p>
-          </div>
-        ) : proposals.length === 0 ? (
-          <div className="py-16 text-center p-8 space-y-2">
-            <Sparkles className="w-10 h-10 text-gray-300 mx-auto" />
-            <h3 className="text-base font-bold text-gray-700">No Proposals Found</h3>
-            <p className="text-xs text-gray-500 max-w-sm mx-auto">
-              No AI proposals match the current filter criteria. You can trigger proposals manually from content forms
-              or review agents.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-gray-50/80 border-b border-gray-200 text-gray-500 uppercase tracking-wider font-bold">
-                <tr>
-                  <th className="py-3 px-4">Target Entity</th>
-                  <th className="py-3 px-4">Field</th>
-                  <th className="py-3 px-4">Generating Agent</th>
-                  <th className="py-3 px-4 text-center">Status</th>
-                  <th className="py-3 px-4">Created</th>
-                  <th className="py-3 px-4">Reviewed By</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {proposals.map((proposal) => {
-                  const isPending = proposal.status === 'PENDING';
-                  const isApproved = proposal.status === 'APPROVED';
-
-                  return (
-                    <tr
-                      key={proposal.id}
-                      className="hover:bg-amber-50/30 transition-colors group cursor-pointer"
-                      onClick={() => setSelectedProposalId(proposal.id)}
-                    >
-                      {/* Entity & Title */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 border border-gray-200 group-hover:border-saffron/30">
-                            {getEntityIcon(proposal.entityType)}
-                          </div>
-                          <div className="min-w-0 max-w-xs">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                              {proposal.entityType}
-                            </span>
-                            <p className="font-bold text-gray-900 truncate text-xs sm:text-sm">
-                              {proposal.targetTitle || `ID: ${proposal.entityId.slice(0, 8)}...`}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Target Field */}
-                      <td className="py-3.5 px-4 font-mono font-medium text-gray-700">
-                        <span className="px-2 py-0.5 rounded bg-gray-100 border border-gray-200 text-[11px]">
-                          {proposal.targetField}
-                        </span>
-                      </td>
-
-                      {/* Generating Agent */}
-                      <td className="py-3.5 px-4 text-gray-600">
-                        <span className="inline-flex items-center gap-1.5 font-medium">
-                          <Bot className="w-3.5 h-3.5 text-saffron shrink-0" />
-                          <span className="truncate max-w-[140px]">{proposal.agentName}</span>
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-3.5 px-4 text-center">{getStatusBadge(proposal.status)}</td>
-
-                      {/* Created Date */}
-                      <td className="py-3.5 px-4 text-gray-500 whitespace-nowrap">{formatDate(proposal.createdAt)}</td>
-
-                      {/* Reviewed By */}
-                      <td className="py-3.5 px-4 text-gray-600 whitespace-nowrap">
-                        {proposal.reviewedBy ? (
-                          <span className="inline-flex items-center gap-1 font-medium text-gray-800">
-                            <User className="w-3 h-3 text-gray-400" /> {proposal.reviewedBy}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1.5">
-                          {/* Quick Actions for PENDING */}
-                          {isPending && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => setQuickRejectProposal(proposal)}
-                                className="px-2.5 py-1 text-[11px] font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-md transition-colors cursor-pointer"
-                                title="Reject proposal"
-                              >
-                                Reject
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => approveMutation.mutate(proposal.id)}
-                                disabled={approveMutation.isPending}
-                                className="px-2.5 py-1 text-[11px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-md transition-colors cursor-pointer"
-                                title="Approve proposal"
-                              >
-                                Approve
-                              </button>
-                            </>
-                          )}
-
-                          {/* Quick Action for APPROVED */}
-                          {isApproved && (
-                            <button
-                              type="button"
-                              onClick={() => setQuickExecuteProposal(proposal)}
-                              className="px-2.5 py-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-md transition-colors flex items-center gap-1 cursor-pointer"
-                              title="Execute approved proposal"
-                            >
-                              <Play className="w-3 h-3 fill-emerald-800" />
-                              <span>Execute</span>
-                            </button>
-                          )}
-
-                          {/* Primary Review & Diff Button */}
-                          <AdminButton
-                            variant="secondary"
-                            onClick={() => setSelectedProposalId(proposal.id)}
-                            leftIcon={<Eye className="w-3.5 h-3.5 text-gray-500" />}
-                            className="!py-1 !px-2.5 !text-[11px]"
-                          >
-                            Review & Diff
-                          </AdminButton>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Server-Side Pagination Footer */}
-        {totalRecords > 0 && (
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            totalRecords={totalRecords}
-            limit={limit}
-            onPageChange={(p) => setPage(p)}
-            onLimitChange={(l) => {
-              setLimit(l);
+      {/* Filter & Search Toolbar (same rounded-md border radius & padding as other sections) */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap gap-4 items-center justify-between">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+          {/* Status Filter */}
+          <Select
+            value={statusFilter}
+            onChange={(val) => {
+              setStatusFilter(val);
               setPage(1);
             }}
-            limitOptions={[10, 25, 50]}
+            options={[
+              { value: 'ALL', label: 'All Statuses' },
+              { value: 'PENDING', label: 'Pending' },
+              { value: 'APPROVED', label: 'Approved' },
+              { value: 'EXECUTING', label: 'Executing' },
+              { value: 'COMPLETED', label: 'Completed' },
+              { value: 'FAILED', label: 'Failed' },
+              { value: 'REJECTED', label: 'Rejected' }
+            ]}
+            className="w-full sm:w-36"
+            searchable={false}
           />
-        )}
+
+          {/* Entity Type Filter */}
+          <Select
+            value={entityTypeFilter}
+            onChange={(val) => {
+              setEntityTypeFilter(val);
+              setPage(1);
+            }}
+            options={[
+              { value: 'ALL', label: 'All Entities' },
+              { value: 'article', label: 'Articles' },
+              { value: 'bhajan', label: 'Bhajans' },
+              { value: 'festival', label: 'Festivals' },
+              { value: 'puran', label: 'Puranas' },
+              { value: 'category', label: 'Categories' }
+            ]}
+            className="w-full sm:w-36"
+            searchable={false}
+          />
+
+          {/* Target Field Filter */}
+          <Select
+            value={targetFieldFilter}
+            onChange={(val) => {
+              setTargetFieldFilter(val);
+              setPage(1);
+            }}
+            options={[
+              { value: 'ALL', label: 'All Fields' },
+              { value: 'excerpt', label: 'Excerpt' },
+              { value: 'content', label: 'Content' },
+              { value: 'lyrics', label: 'Lyrics' },
+              { value: 'meaning', label: 'Meaning' },
+              { value: 'description', label: 'Description' },
+              { value: 'short_description', label: 'Short Description' },
+              { value: 'seo_title', label: 'SEO Title' },
+              { value: 'seo_description', label: 'SEO Description' }
+            ]}
+            className="w-full sm:w-36"
+            searchable={false}
+          />
+
+          {/* Agent Filter */}
+          <Select
+            value={agentFilter}
+            onChange={(val) => {
+              setAgentFilter(val);
+              setPage(1);
+            }}
+            options={[
+              { value: 'ALL', label: 'All Agents' },
+              { value: 'ContentImprovementAgent', label: 'ContentImprovementAgent' },
+              { value: 'SeoOptimizationAgent', label: 'SeoOptimizationAgent' },
+              { value: 'LyricsPreservationAgent', label: 'LyricsPreservationAgent' },
+              { value: 'GrammarImprovementAgent', label: 'GrammarImprovementAgent' }
+            ]}
+            className="w-full sm:w-52"
+            searchable={false}
+          />
+
+          {(search ||
+            statusFilter !== 'ALL' ||
+            entityTypeFilter !== 'ALL' ||
+            targetFieldFilter !== 'ALL' ||
+            agentFilter !== 'ALL') && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="text-xs text-saffron hover:underline font-semibold px-2 cursor-pointer"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        <SearchInput
+          placeholder="Search proposals by title, ID..."
+          value={search}
+          onChange={(val) => {
+            setSearch(val);
+            setPage(1);
+          }}
+        />
       </div>
 
-      {/* Proposal Detail Review Modal */}
+      {/* Proposals DataTable (Exact same DataTable component and tokens as other sections) */}
+      <div className="flex-1 min-h-0 relative">
+        <DataTable
+          data={proposals}
+          columns={columns}
+          isLoading={isLoading}
+          selectedRowId={selectedProposalId}
+          onRowClick={(row) => setSelectedProposalId(row.id)}
+          rowClassName={(row) =>
+            selectedProposalId && String(selectedProposalId) === String(row.id) ? 'bg-orange-50/80 font-medium' : ''
+          }
+          renderActions={(proposal) => {
+            const isPending = proposal.status === 'PENDING';
+            const isApproved = proposal.status === 'APPROVED';
+
+            return (
+              <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+                {isPending && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setQuickRejectProposal(proposal)}
+                      className="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-md transition-colors cursor-pointer"
+                      title="Reject Proposal"
+                      aria-label="Reject Proposal"
+                    >
+                      <X className="w-4 h-4 stroke-[2.5]" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => approveMutation.mutate(proposal.id)}
+                      disabled={approveMutation.isPending}
+                      className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
+                      title="Approve Proposal"
+                      aria-label="Approve Proposal"
+                    >
+                      <Check className="w-4 h-4 stroke-[2.5]" />
+                    </button>
+                  </>
+                )}
+
+                {isApproved && (
+                  <button
+                    type="button"
+                    onClick={() => setQuickExecuteProposal(proposal)}
+                    className="p-1 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-md transition-colors cursor-pointer"
+                    title="Execute Proposal"
+                    aria-label="Execute Proposal"
+                  >
+                    <Play className="w-4 h-4 fill-emerald-600 stroke-[2.5]" />
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedProposalId(proposal.id)}
+                  className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
+                  title="View Proposal Details"
+                  aria-label="View Proposal Details"
+                >
+                  <Eye className="w-4 h-4 stroke-[2]" />
+                </button>
+              </div>
+            );
+          }}
+          emptyIcon={Sparkles}
+          emptyTitle="No Proposals Found"
+          emptySubtext="No AI proposals match the current filters."
+        />
+      </div>
+
+      {/* Pagination Footer (same connected rounded-b-md as other sections) */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 relative z-20">
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          totalRecords={totalRecords}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(l) => {
+            setLimit(l);
+            setPage(1);
+          }}
+        />
+      </div>
+
+      {/* Proposal Detail Side Panel Drawer */}
       {selectedProposalId && (
-        <ProposalDetailModal
+        <ProposalDetailDrawer
           proposalId={selectedProposalId}
           onClose={() => setSelectedProposalId(null)}
           onStatusChanged={() => {
@@ -646,10 +613,10 @@ export const AdminProposals: React.FC = () => {
           quickExecuteProposal
             ? `Are you sure you want to execute and apply this approved proposal to live content?\n\n` +
               `• Entity: ${quickExecuteProposal.entityType.toUpperCase()}\n` +
-              `• Target Field: ${quickExecuteProposal.targetField}\n` +
-              `• Live Stale Check: Will verify baseline matches live content ✓\n` +
-              `• Sacred Content: Lyrics and titles remain immutable ✓\n\n` +
-              `This action cannot be automatically reversed.`
+              `• Target Field: ${quickExecuteProposal.targetField?.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}\n` +
+              `• Live Stale Check: Baseline will be verified against live content ✓\n` +
+              `• Sacred Guard: Lyrics and sacred titles remain immutable ✓\n\n` +
+              `This action will mutate live production content.`
             : ''
         }
         confirmText="Execute Change"
@@ -661,48 +628,50 @@ export const AdminProposals: React.FC = () => {
       />
 
       {/* Quick Reject Modal */}
-      {quickRejectProposal && (
-        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl border border-gray-200 max-w-md w-full p-6 space-y-4">
-            <h4 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <XCircle className="w-5 h-5 text-rose-600" /> Reject AI Proposal
-            </h4>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              Are you sure you want to reject this proposal? Rejected proposals cannot be executed and will not modify
-              live content.
-            </p>
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-700">Rejection Reason (Optional):</label>
-              <textarea
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="e.g. Inaccurate devotional context, redundant tags..."
-                rows={3}
-                className="w-full text-xs p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron focus:border-saffron outline-none resize-none"
-              />
+      {quickRejectProposal &&
+        createPortal(
+          <div className="fixed inset-0 z-[1050] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full p-5 space-y-3.5">
+              <h4 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                <XCircle className="w-5 h-5 text-rose-600" /> Reject AI Proposal
+              </h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Are you sure you want to reject this proposal? Rejected proposals cannot be executed and will not modify
+                live content.
+              </p>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-gray-700">Rejection Reason (Optional):</label>
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="e.g. Inaccurate devotional context, redundant tags..."
+                  rows={3}
+                  className="w-full text-xs p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron focus:border-saffron outline-none resize-none"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setQuickRejectProposal(null)}
+                  className="px-3.5 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <AdminButton
+                  variant="danger"
+                  onClick={() => {
+                    if (quickRejectProposal)
+                      rejectMutation.mutate({ id: quickRejectProposal.id, reason: rejectionReason });
+                  }}
+                  isLoading={rejectMutation.isPending}
+                >
+                  Confirm Rejection
+                </AdminButton>
+              </div>
             </div>
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setQuickRejectProposal(null)}
-                className="px-3.5 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-              <AdminButton
-                variant="danger"
-                onClick={() => {
-                  if (quickRejectProposal)
-                    rejectMutation.mutate({ id: quickRejectProposal.id, reason: rejectionReason });
-                }}
-                isLoading={rejectMutation.isPending}
-              >
-                Confirm Rejection
-              </AdminButton>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

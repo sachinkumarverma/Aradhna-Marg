@@ -288,18 +288,27 @@
     background: #ff3402;
   }
 
-  /* Thin scrollbars for sidebar and tables */
+  /* Thin scrollbars for sidebar, tables, and internal scroll areas */
+  .scrollbar-thin,
+  .overflow-y-auto,
+  .overflow-x-auto {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
   .scrollbar-thin::-webkit-scrollbar,
-  .overflow-x-auto::-webkit-scrollbar {
+  .overflow-x-auto::-webkit-scrollbar,
+  .overflow-y-auto::-webkit-scrollbar {
     width: 4px;
     height: 4px;
   }
   .scrollbar-thin::-webkit-scrollbar-track,
-  .overflow-x-auto::-webkit-scrollbar-track {
-    @apply bg-transparent;
+  .overflow-x-auto::-webkit-scrollbar-track,
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb,
-  .overflow-x-auto::-webkit-scrollbar-thumb {
+  .overflow-x-auto::-webkit-scrollbar-thumb,
+  .overflow-y-auto::-webkit-scrollbar-thumb {
     @apply bg-slate-300 rounded-full hover:bg-saffron transition-colors;
   }
 }

@@ -98,9 +98,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
               <div className="w-9 h-9 rounded-md overflow-hidden flex-shrink-0 shadow-sm border border-white/20">
                 <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="font-serif text-xl font-bold tracking-wide whitespace-nowrap">
-                <span className="text-white">ARADHNA </span>
-                <span className="text-black">MARG</span>
+              <span className="font-serif text-xl font-bold tracking-wide whitespace-nowrap inline-flex items-baseline">
+                <span className="text-white">ARADHNA</span>
+                <span className="text-black ml-1.5 text-[22px] font-extrabold">MARG</span>
               </span>
             </div>
           </div>

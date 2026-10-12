@@ -87,32 +87,38 @@ export const FormattedContentPreview: React.FC<FormattedContentPreviewProps> = (
   }, [content]);
 
   if (!content || !content.trim()) {
-    return <span className="text-gray-400 italic">None (Empty field)</span>;
+    return (
+      <div className={`overflow-y-auto scrollbar-thin transition-all ${maxHeightClass} ${className}`}>
+        <div className="max-w-none break-words text-gray-400 italic leading-relaxed font-sans text-[12px] sm:text-[12.5px]">
+          <p className="mb-0 leading-relaxed text-[12px] sm:text-[12.5px]">None (Empty field)</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className={`overflow-y-auto leading-relaxed transition-all ${maxHeightClass} ${className}`}>
+    <div className={`overflow-y-auto scrollbar-thin transition-all ${maxHeightClass} ${className}`}>
       <div
-        className={`prose prose-xs sm:prose-sm max-w-none break-words ${
+        className={`max-w-none break-words ${
           isProposed ? 'text-gray-900' : 'text-gray-700'
-        } leading-relaxed font-sans
+        } leading-relaxed font-sans text-[12px] sm:text-[12.5px]
           [&_*]:!whitespace-normal
-          [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-amber-950 [&_h1]:mt-2 [&_h1]:mb-1
-          [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-amber-950 [&_h2]:mt-2 [&_h2]:mb-1 [&_h2]:border-b [&_h2]:border-amber-200/50 [&_h2]:pb-0.5
-          [&_h3]:text-xs [&_h3]:font-bold [&_h3]:text-amber-900 [&_h3]:mt-1.5 [&_h3]:mb-0.5
-          [&_h4]:text-xs [&_h4]:font-semibold [&_h4]:text-amber-900 [&_h4]:mt-1 [&_h4]:mb-0.5
-          [&_p]:mb-2 [&_p]:last:mb-0 [&_p]:leading-relaxed
+          [&_h1]:text-sm [&_h1]:font-bold [&_h1]:text-amber-950 [&_h1]:mt-1.5 [&_h1]:mb-1
+          [&_h2]:text-xs [&_h2]:font-bold [&_h2]:text-amber-950 [&_h2]:mt-1.5 [&_h2]:mb-1 [&_h2]:border-b [&_h2]:border-amber-200/50 [&_h2]:pb-0.5
+          [&_h3]:text-xs [&_h3]:font-bold [&_h3]:text-amber-900 [&_h3]:mt-1 [&_h3]:mb-0.5
+          [&_h4]:text-[11px] [&_h4]:font-semibold [&_h4]:text-amber-900 [&_h4]:mt-1 [&_h4]:mb-0.5
+          [&_p]:mb-1.5 [&_p]:last:mb-0 [&_p]:leading-relaxed [&_p]:text-[12px] sm:[&_p]:text-[12.5px]
           [&_strong]:font-bold [&_strong]:text-amber-950
           [&_b]:font-bold [&_b]:text-amber-950
           [&_em]:italic
-          [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-2 [&_ul]:space-y-0.5
-          [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-2 [&_ol]:space-y-0.5
-          [&_li]:text-inherit
-          [&_blockquote]:border-l-3 [&_blockquote]:border-saffron [&_blockquote]:bg-amber-50/50 [&_blockquote]:pl-3 [&_blockquote]:py-1 [&_blockquote]:my-2 [&_blockquote]:italic [&_blockquote]:text-gray-700
+          [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-1.5 [&_ul]:space-y-0.5
+          [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-1.5 [&_ol]:space-y-0.5
+          [&_li]:text-inherit [&_li]:text-[12px] sm:[&_li]:text-[12.5px]
+          [&_blockquote]:border-l-2 [&_blockquote]:border-saffron [&_blockquote]:bg-amber-50/50 [&_blockquote]:pl-2.5 [&_blockquote]:py-0.5 [&_blockquote]:my-1.5 [&_blockquote]:italic [&_blockquote]:text-gray-700
           [&_a]:text-saffron [&_a]:underline
-          [&_table]:w-full [&_table]:border [&_table]:border-gray-200 [&_table]:my-2
-          [&_th]:bg-gray-100 [&_th]:p-1.5 [&_th]:text-left [&_th]:border [&_th]:border-gray-200 [&_th]:text-xs [&_th]:font-bold
-          [&_td]:p-1.5 [&_td]:border [&_td]:border-gray-200 [&_td]:text-xs
+          [&_table]:w-full [&_table]:border [&_table]:border-gray-200 [&_table]:my-1.5
+          [&_th]:bg-gray-100 [&_th]:p-1 [&_th]:text-left [&_th]:border [&_th]:border-gray-200 [&_th]:text-[11px] [&_th]:font-bold
+          [&_td]:p-1 [&_td]:border [&_td]:border-gray-200 [&_td]:text-[11px]
         `}
         dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
       />

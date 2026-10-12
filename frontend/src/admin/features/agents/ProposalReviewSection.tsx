@@ -8,10 +8,8 @@ import {
   Zap,
   AlertCircle,
   Sparkles,
-  ArrowRight,
-  ShieldAlert,
   Play,
-  RotateCcw,
+  RefreshCw,
   Music,
   FileCheck,
   FileText,
@@ -19,8 +17,6 @@ import {
   BookOpen,
   Tag,
   Globe,
-  Maximize2,
-  Minimize2,
   FileDiff,
   ExternalLink,
   Eye
@@ -39,12 +35,7 @@ export function ProposalReviewSection() {
   const [rejectingProposalId, setRejectingProposalId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [executingProposalId, setExecutingProposalId] = useState<string | null>(null);
-  const [expandedProposals, setExpandedProposals] = useState<Record<string, boolean>>({});
   const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null);
-
-  const toggleExpand = (id: string) => {
-    setExpandedProposals((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   const getTextStats = (text?: string) => {
     if (!text) return { chars: 0, words: 0 };
@@ -128,21 +119,21 @@ export function ProposalReviewSection() {
 
   const getEntityIcon = (entityType: string, targetField: string) => {
     if (targetField.startsWith('seo')) {
-      return <Globe className="w-4 h-4 text-emerald-600" />;
+      return <Globe className="w-3.5 h-3.5 text-emerald-600" />;
     }
     switch (entityType) {
       case 'bhajan':
-        return <Music className="w-4 h-4" />;
+        return <Music className="w-3.5 h-3.5" />;
       case 'article':
-        return <FileText className="w-4 h-4" />;
+        return <FileText className="w-3.5 h-3.5" />;
       case 'festival':
-        return <Calendar className="w-4 h-4" />;
+        return <Calendar className="w-3.5 h-3.5" />;
       case 'puran':
-        return <BookOpen className="w-4 h-4" />;
+        return <BookOpen className="w-3.5 h-3.5" />;
       case 'category':
-        return <Tag className="w-4 h-4" />;
+        return <Tag className="w-3.5 h-3.5" />;
       default:
-        return <Sparkles className="w-4 h-4" />;
+        return <Sparkles className="w-3.5 h-3.5" />;
     }
   };
 
@@ -150,43 +141,43 @@ export function ProposalReviewSection() {
     switch (status) {
       case 'PENDING':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-amber-100 text-amber-900">
-            <Clock className="w-3.5 h-3.5 mr-1 text-amber-600" /> Pending Approval
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-900">
+            <Clock className="w-3 h-3 mr-1 text-amber-600" /> Pending Approval
           </span>
         );
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-900">
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-blue-600" /> Approved (Ready)
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-900">
+            <CheckCircle2 className="w-3 h-3 mr-1 text-blue-600" /> Approved
           </span>
         );
       case 'EXECUTING':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-indigo-100 text-indigo-900 animate-pulse">
-            <Zap className="w-3.5 h-3.5 mr-1 text-indigo-600" /> Executing Mutation...
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-900 animate-pulse">
+            <Zap className="w-3 h-3 mr-1 text-indigo-600" /> Executing...
           </span>
         );
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-800">
-            <FileCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" /> Successfully Applied
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+            <FileCheck className="w-3 h-3 mr-1 text-emerald-600" /> Applied
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-rose-100 text-rose-800">
-            <AlertCircle className="w-3.5 h-3.5 mr-1 text-rose-600" /> Execution Failed
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">
+            <AlertCircle className="w-3 h-3 mr-1 text-rose-600" /> Failed
           </span>
         );
       case 'REJECTED':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700">
-            <XCircle className="w-3.5 h-3.5 mr-1 text-gray-500" /> Rejected
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-700">
+            <XCircle className="w-3 h-3 mr-1 text-gray-500" /> Rejected
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-800">
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-800">
             {status}
           </span>
         );
@@ -203,31 +194,21 @@ export function ProposalReviewSection() {
     });
   };
 
-  return (
-    <div className="space-y-6 p-4 sm:p-6">
-      {/* Explicit Safety Governance Notice */}
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 text-amber-950 flex items-start gap-3 shadow-xs">
-        <ShieldAlert className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
-        <div className="text-xs sm:text-sm">
-          <p className="font-semibold text-amber-900">Human Approval Architecture (Phase 5C Controlled AI Actions)</p>
-          <p className="mt-0.5 text-amber-800">
-            AI-generated content is strictly a staged proposal and <strong>has not changed any live content</strong>. An
-            administrator must explicitly approve the proposal, and then execute it in a separate step. Sacred verses,
-            lyrics, and titles remain protected and immutable.
-          </p>
-        </div>
-      </div>
+  const formatField = (field?: string) =>
+    (field || 'content').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
+  return (
+    <div className="space-y-4 p-3 sm:p-5">
       {/* Filter Tabs */}
-      <div className="flex items-center justify-between flex-wrap gap-3 border-b border-gray-200 pb-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
+      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-gray-200 pb-2.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-0.5">
           {[
+            { id: 'ALL', label: 'All Proposals' },
             { id: 'PENDING', label: 'Pending Approval' },
-            { id: 'APPROVED', label: 'Approved (Ready)' },
+            { id: 'APPROVED', label: 'Approved' },
             { id: 'COMPLETED', label: 'Completed' },
             { id: 'FAILED', label: 'Failed' },
-            { id: 'REJECTED', label: 'Rejected' },
-            { id: 'ALL', label: 'All Proposals' }
+            { id: 'REJECTED', label: 'Rejected' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -248,48 +229,43 @@ export function ProposalReviewSection() {
             to={getAdminPath('/ai-proposals')}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-darkBrown bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-md transition-colors shadow-2xs"
           >
-            <span>Full Proposals Manager</span>
+            <span>Full Manager</span>
             <ExternalLink className="w-3.5 h-3.5 text-amber-800" />
           </Link>
 
-          <button
-            type="button"
+          <AdminButton
             onClick={handleRefresh}
+            variant="outline"
+            title="Refresh proposals"
+            aria-label="Refresh"
             disabled={isManualRefreshing || isFetching}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-60 cursor-pointer shadow-2xs"
-            title="Refresh proposals list"
+            className="h-8 w-8 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700 rounded-md"
           >
-            <RotateCcw
-              className={`w-3.5 h-3.5 transition-transform ${
-                isManualRefreshing || isFetching ? 'animate-spin text-saffron' : 'text-gray-500'
-              }`}
+            <RefreshCw
+              className={`w-3.5 h-3.5 shrink-0 stroke-[2.2] ${isManualRefreshing || isFetching ? 'animate-spin text-saffron' : 'text-slate-600'}`}
             />
-            <span>{isManualRefreshing || isFetching ? 'Refreshing...' : 'Refresh'}</span>
-          </button>
+          </AdminButton>
         </div>
       </div>
 
       {/* Proposals List */}
       {isLoading ? (
-        <div className="py-12 flex justify-center">
+        <div className="py-10 flex justify-center">
           <CustomLoader />
         </div>
       ) : proposals.length === 0 ? (
-        <div className="py-12 text-center bg-white rounded-lg border border-gray-200 p-8">
-          <Sparkles className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-          <h3 className="text-base font-semibold text-gray-700">No Proposals Found</h3>
-          <p className="text-xs text-gray-500 mt-1">
-            There are currently no proposals matching status &ldquo;{statusFilter}&rdquo;.
-          </p>
+        <div className="py-10 text-center bg-white rounded-lg border border-gray-200 p-6">
+          <Sparkles className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+          <h3 className="text-sm font-semibold text-gray-700">No Proposals Found</h3>
+          <p className="text-xs text-gray-500 mt-1">No proposals matching &ldquo;{statusFilter}&rdquo;.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {proposals.map((proposal) => {
             const isPending = proposal.status === 'PENDING';
             const isApproved = proposal.status === 'APPROVED';
             const isExecuting = proposal.status === 'EXECUTING' || executingProposalId === proposal.id;
 
-            // Helper to parse JSON values safely
             const parseJsonValue = (val?: string) => {
               if (!val) return null;
               try {
@@ -305,51 +281,48 @@ export function ProposalReviewSection() {
             return (
               <div
                 key={proposal.id}
-                className="bg-white border border-gray-200 rounded-lg shadow-xs hover:border-gray-300 transition-all p-4 sm:p-5 space-y-4"
+                className="bg-white border border-gray-200 rounded-lg shadow-xs hover:border-gray-300 transition-all p-3 sm:p-4 space-y-3"
               >
                 {/* Proposal Header */}
                 <div className="flex items-start justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-md bg-saffron/10 text-saffron flex items-center justify-center shrink-0">
-                      {getEntityIcon(proposal.entityType, proposal.targetField)}
-                    </div>
+                  <div className="flex items-center gap-2">
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
                           {proposal.entityType}
                         </span>
-                        <span className="text-xs text-gray-400">&bull;</span>
-                        <span className="text-xs text-gray-400">Field: {proposal.targetField}</span>
+                        <span className="text-gray-300">•</span>
+                        <span className="text-[10px] text-gray-400">Field: {formatField(proposal.targetField)}</span>
                       </div>
-                      <h4 className="text-sm sm:text-base font-bold text-gray-900 mt-0.5">
-                        {proposal.targetTitle || `Target Entity: ${proposal.entityId}`}
+                      <h4 className="text-sm sm:text-base font-bold text-gray-900 mt-0.5 leading-snug">
+                        {proposal.targetTitle || `Entity: ${proposal.entityId}`}
                       </h4>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     {getStatusBadge(proposal.status)}
-                    <span className="text-xs text-gray-400">{formatDate(proposal.createdAt)}</span>
+                    <span className="text-[10px] text-gray-400">{formatDate(proposal.createdAt)}</span>
                   </div>
                 </div>
 
                 {/* Content Comparison: CURRENT vs PROPOSED */}
                 {proposal.targetField === 'seo_metadata' && (currentParsed || proposedParsed) ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 bg-gray-50/60 p-3.5 rounded-lg border border-gray-100">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 bg-gray-50/60 p-2.5 rounded-md border border-gray-100">
                     {/* Current SEO Baseline */}
-                    <div className="space-y-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-gray-400"></span> Current SEO Metadata
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Current SEO
                       </span>
-                      <div className="space-y-2 text-xs sm:text-sm text-gray-700 bg-white p-3 rounded-md border border-gray-200">
+                      <div className="space-y-1.5 text-xs text-gray-700 bg-white p-2.5 rounded border border-gray-200">
                         <div>
-                          <span className="text-xs font-semibold text-gray-500 block">SEO Title:</span>
+                          <span className="text-[10px] font-semibold text-gray-500 block">SEO Title:</span>
                           <p className="mt-0.5">
                             {currentParsed?.seoTitle || <span className="text-gray-400 italic">None</span>}
                           </p>
                         </div>
-                        <div className="pt-2 border-t border-gray-100">
-                          <span className="text-xs font-semibold text-gray-500 block">Meta Description:</span>
+                        <div className="pt-1.5 border-t border-gray-100">
+                          <span className="text-[10px] font-semibold text-gray-500 block">Meta Description:</span>
                           <p className="mt-0.5">
                             {currentParsed?.seoDescription || <span className="text-gray-400 italic">None</span>}
                           </p>
@@ -357,18 +330,18 @@ export function ProposalReviewSection() {
                       </div>
                     </div>
 
-                    {/* Proposed SEO Improvement */}
-                    <div className="space-y-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-saffron flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-saffron"></span> Proposed SEO Metadata (AI)
+                    {/* Proposed SEO */}
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-saffron flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-saffron"></span> Proposed SEO (AI)
                       </span>
-                      <div className="space-y-2 text-xs sm:text-sm text-gray-900 bg-amber-50/50 p-3 rounded-md border border-amber-200">
+                      <div className="space-y-1.5 text-xs text-gray-900 bg-amber-50/50 p-2.5 rounded border border-amber-200">
                         <div>
-                          <span className="text-xs font-semibold text-amber-800 block">SEO Title:</span>
+                          <span className="text-[10px] font-semibold text-amber-800 block">SEO Title:</span>
                           <p className="mt-0.5 font-medium">{proposedParsed?.seoTitle || proposal.proposedValue}</p>
                         </div>
-                        <div className="pt-2 border-t border-amber-200/60">
-                          <span className="text-xs font-semibold text-amber-800 block">Meta Description:</span>
+                        <div className="pt-1.5 border-t border-amber-200/60">
+                          <span className="text-[10px] font-semibold text-amber-800 block">Meta Description:</span>
                           <p className="mt-0.5">{proposedParsed?.seoDescription || '-'}</p>
                         </div>
                       </div>
@@ -385,78 +358,61 @@ export function ProposalReviewSection() {
                       'description',
                       'description_en'
                     ].includes(proposal.targetField);
-                    const isExpanded = expandedProposals[proposal.id];
                     const currentStats = getTextStats(proposal.currentValue);
                     const proposedStats = getTextStats(proposal.proposedValue);
                     const charDelta = proposedStats.chars - currentStats.chars;
 
                     return (
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         {isContentField && (
-                          <div className="flex items-center justify-between flex-wrap gap-2 px-1 text-xs text-gray-500">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center gap-1 font-semibold text-saffron bg-saffron/10 px-2 py-0.5 rounded text-[11px]">
-                                <FileDiff className="w-3 h-3" /> Content Improvement Diff
-                              </span>
-                              <span>
-                                Current: {currentStats.chars} chars ({currentStats.words} words)
-                              </span>
-                              <span>&bull;</span>
-                              <span className="font-medium text-gray-700">
-                                Proposed: {proposedStats.chars} chars ({proposedStats.words} words) (
+                          <div className="flex items-center gap-1.5 px-0.5 text-[10px] text-gray-500">
+                            <span className="inline-flex items-center gap-1 font-semibold text-saffron bg-saffron/10 px-1.5 py-0.5 rounded text-[10px]">
+                              <FileDiff className="w-2.5 h-2.5" /> Diff
+                            </span>
+                            <span>
+                              {currentStats.chars}c / {currentStats.words}w
+                            </span>
+                            <span>→</span>
+                            <span className="font-medium text-gray-700">
+                              {proposedStats.chars}c (
+                              {
                                 <span className={charDelta >= 0 ? 'text-emerald-600' : 'text-rose-600'}>
-                                  {charDelta >= 0 ? `+${charDelta}` : charDelta} chars
+                                  {charDelta >= 0 ? `+${charDelta}` : charDelta}
                                 </span>
-                                )
-                              </span>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => toggleExpand(proposal.id)}
-                              className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-                            >
-                              {isExpanded ? (
-                                <>
-                                  <Minimize2 className="w-3 h-3" /> Collapse
-                                </>
-                              ) : (
-                                <>
-                                  <Maximize2 className="w-3 h-3" /> Expand Full View
-                                </>
-                              )}
-                            </button>
+                              }
+                              )
+                            </span>
                           </div>
                         )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 bg-gray-50/60 p-3.5 rounded-lg border border-gray-100">
-                          {/* Current Baseline Value */}
-                          <div className="space-y-1.5">
-                            <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-gray-400"></span> Current{' '}
-                              {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 bg-gray-50/60 p-2.5 rounded-md border border-gray-100">
+                          {/* Current */}
+                          <div className="space-y-1 flex flex-col">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                              Current {formatField(proposal.targetField)}
                             </span>
-                            <div className="bg-white p-3 rounded-md border border-gray-200 shadow-2xs">
+                            <div className="bg-white p-2 rounded border border-gray-200 shadow-2xs flex-1">
                               <FormattedContentPreview
                                 content={proposal.currentValue}
                                 field={proposal.targetField}
-                                maxHeightClass={isExpanded ? 'max-h-[650px]' : 'max-h-48'}
+                                maxHeightClass="max-h-28"
                               />
                             </div>
                           </div>
 
-                          {/* Proposed New Value */}
-                          <div className="space-y-1.5">
-                            <span className="text-xs font-bold uppercase tracking-wider text-saffron flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-saffron"></span> Proposed{' '}
-                              {proposal.targetField === 'meaning' ? 'Meaning' : proposal.targetField} (AI)
+                          {/* Proposed */}
+                          <div className="space-y-1 flex flex-col">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-saffron flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-saffron"></span>
+                              Proposed {formatField(proposal.targetField)} (AI)
                             </span>
-                            <div className="bg-amber-50/50 p-3 rounded-md border border-amber-200 shadow-2xs">
+                            <div className="bg-amber-50/50 p-2 rounded border border-amber-200 shadow-2xs flex-1">
                               <FormattedContentPreview
                                 content={proposal.proposedValue}
                                 field={proposal.targetField}
                                 isProposed
-                                maxHeightClass={isExpanded ? 'max-h-[650px]' : 'max-h-48'}
+                                maxHeightClass="max-h-28"
                               />
                             </div>
                           </div>
@@ -468,17 +424,17 @@ export function ProposalReviewSection() {
 
                 {/* AI Reasoning */}
                 {proposal.reasoning && (
-                  <div className="text-xs text-gray-600 bg-blue-50/40 p-2.5 rounded-md border border-blue-100/70 flex items-start gap-2">
-                    <Sparkles className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                  <div className="text-[10px] text-gray-600 bg-blue-50/40 px-2.5 py-1.5 rounded border border-blue-100/70 flex items-start gap-1.5">
+                    <Sparkles className="w-3 h-3 text-blue-500 shrink-0 mt-0.5" />
                     <span>
                       <strong className="text-blue-900">AI Reasoning:</strong> {proposal.reasoning}
                     </span>
                   </div>
                 )}
 
-                {/* Review / Rejection / Execution Metadata */}
-                <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-gray-100 text-xs text-gray-500">
-                  <div className="space-y-0.5">
+                {/* Review / Rejection Metadata */}
+                {(proposal.reviewedBy || proposal.rejectionReason) && (
+                  <div className="pt-1.5 text-[10px] text-gray-500 space-y-0.5">
                     {proposal.reviewedBy && (
                       <p>
                         Reviewed by <strong className="text-gray-700">{proposal.reviewedBy}</strong> on{' '}
@@ -486,84 +442,82 @@ export function ProposalReviewSection() {
                       </p>
                     )}
                     {proposal.rejectionReason && (
-                      <p className="text-rose-600">
-                        <strong>Reason / Error:</strong> {proposal.rejectionReason}
+                      <p className="text-rose-600 break-words">
+                        <strong>Reason:</strong> {proposal.rejectionReason}
                       </p>
                     )}
                   </div>
+                )}
 
-                  {/* Action Buttons */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedDetailId(proposal.id)}
-                      className="px-2.5 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors flex items-center gap-1 cursor-pointer"
-                      title="Inspect Full Details & Diff"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Details & Diff</span>
-                    </button>
-                    {/* PENDING State: Approve or Reject */}
-                    {isPending && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setRejectingProposalId(proposal.id);
-                            setRejectionReason('');
-                          }}
-                          className="px-3 py-1.5 text-xs font-semibold text-rose-600 bg-white border border-rose-300 rounded-md hover:bg-rose-50 transition-colors"
-                        >
-                          Reject
-                        </button>
-                        <AdminButton
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => approveMutation.mutate(proposal.id)}
-                          isLoading={approveMutation.isPending}
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Approve
-                        </AdminButton>
-                      </>
-                    )}
+                {/* Action Buttons — own row, always right-aligned */}
+                <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDetailId(proposal.id)}
+                    className="px-2 py-1 text-[11px] font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors flex items-center gap-1 cursor-pointer shrink-0"
+                    title="Inspect Full Details &amp; Diff"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>Details &amp; Diff</span>
+                  </button>
 
-                    {/* APPROVED State: Execute Mutation */}
-                    {isApproved && (
-                      <AdminButton
-                        variant="primary"
-                        size="sm"
-                        onClick={() => executeMutation.mutate(proposal.id)}
-                        isLoading={isExecuting}
+                  {isPending && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRejectingProposalId(proposal.id);
+                          setRejectionReason('');
+                        }}
+                        className="px-2 py-1 text-[11px] font-semibold text-rose-600 bg-white border border-rose-300 rounded hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
                       >
-                        <Play className="w-3.5 h-3.5 mr-1 fill-current" /> Execute Mutation
-                      </AdminButton>
-                    )}
+                        Reject
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => approveMutation.mutate(proposal.id)}
+                        disabled={approveMutation.isPending}
+                        className="px-2 py-1 text-[11px] font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded transition-colors cursor-pointer shrink-0 flex items-center gap-1 disabled:opacity-50"
+                      >
+                        <CheckCircle2 className="w-3 h-3" /> Approve
+                      </button>
+                    </>
+                  )}
 
-                    {/* EXECUTING State */}
-                    {isExecuting && (
-                      <span className="text-xs text-indigo-600 font-medium flex items-center gap-1">
-                        <Zap className="w-3.5 h-3.5 animate-spin" /> Executing...
-                      </span>
-                    )}
-                  </div>
+                  {isApproved && (
+                    <AdminButton
+                      variant="primary"
+                      size="sm"
+                      onClick={() => executeMutation.mutate(proposal.id)}
+                      isLoading={isExecuting}
+                    >
+                      <Play className="w-3 h-3 mr-1 fill-current" /> Execute
+                    </AdminButton>
+                  )}
+
+                  {isExecuting && (
+                    <span className="text-[11px] text-indigo-600 font-medium flex items-center gap-1 shrink-0">
+                      <Zap className="w-3 h-3 animate-spin" /> Executing...
+                    </span>
+                  )}
                 </div>
 
-                {/* Rejection Input Drawer */}
+                {/* Rejection Input */}
                 {rejectingProposalId === proposal.id && (
-                  <div className="mt-3 p-3 bg-rose-50/60 rounded-md border border-rose-200 space-y-2">
-                    <label className="text-xs font-medium text-rose-900 block">Rejection Reason (Optional):</label>
+                  <div className="p-2.5 bg-rose-50/60 rounded border border-rose-200 space-y-2">
+                    <label className="text-[10px] font-medium text-rose-900 block">Rejection Reason (Optional):</label>
                     <input
                       type="text"
                       value={rejectionReason}
                       onChange={(e) => setRejectionReason(e.target.value)}
                       placeholder="e.g. Meaning does not match traditional Sampradaya commentary"
-                      className="w-full text-xs px-3 py-1.5 bg-white border border-rose-300 rounded-md focus:outline-hidden focus:ring-1 focus:ring-rose-500"
+                      className="w-full text-xs px-2.5 py-1.5 bg-white border border-rose-300 rounded focus:outline-hidden focus:ring-1 focus:ring-rose-500"
                     />
                     <div className="flex justify-end gap-2">
                       <button
                         type="button"
                         onClick={() => setRejectingProposalId(null)}
-                        className="px-2.5 py-1 text-xs text-gray-600 hover:text-gray-900"
+                        className="px-2 py-1 text-[11px] text-gray-600 hover:text-gray-900"
                       >
                         Cancel
                       </button>
@@ -571,7 +525,7 @@ export function ProposalReviewSection() {
                         type="button"
                         onClick={() => rejectMutation.mutate({ id: proposal.id, reason: rejectionReason })}
                         disabled={rejectMutation.isPending}
-                        className="px-3 py-1 text-xs font-semibold text-white bg-rose-600 rounded-md hover:bg-rose-700"
+                        className="px-2.5 py-1 text-[11px] font-semibold text-white bg-rose-600 rounded hover:bg-rose-700"
                       >
                         Confirm Rejection
                       </button>

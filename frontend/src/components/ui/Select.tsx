@@ -81,7 +81,7 @@ export const Select: React.FC<SelectProps> = ({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden font-hindi-heading',
+            'absolute z-50 min-w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden font-hindi-heading',
             menuPlacement === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
           )}
         >
