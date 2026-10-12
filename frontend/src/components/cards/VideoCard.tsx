@@ -3,7 +3,6 @@ import { Play, Clock, ChevronRight, Heart, Eye } from 'lucide-react';
 import { Card } from '@components/ui/Card';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useFavorites } from '@hooks/useFavorites';
 import { useTranslation } from '@i18n/LanguageContext';
 

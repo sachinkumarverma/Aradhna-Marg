@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -16,7 +13,7 @@ export default {
         gray: {
           light: '#F3F4F6',
           DEFAULT: '#9CA3AF',
-          dark: '#4B5563',
+          dark: '#4B5563'
         }
       },
       fontFamily: {
@@ -30,20 +27,20 @@ export default {
         hindiDisplay: ['"Rozha One"', '"Tiro Devanagari Hindi"', 'serif'],
         hindi: ['"Anek Devanagari"', 'Hind', 'sans-serif'],
         hindiSans: ['"Anek Devanagari"', 'Hind', 'sans-serif'],
-        logo: ['"Rekord Antiqua"', 'Lora', 'serif'],
+        logo: ['"Rekord Antiqua"', 'Lora', 'serif']
       },
       spacing: {
         18: '4.5rem',
-        22: '5.5rem',
+        22: '5.5rem'
       },
       borderRadius: {
         xl: '1rem',
         '2xl': '1.5rem',
-        '3xl': '2rem',
+        '3xl': '2rem'
       },
       boxShadow: {
-        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-        'premium': '0 10px 30px -5px rgba(62, 39, 35, 0.1)',
+        soft: '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+        premium: '0 10px 30px -5px rgba(62, 39, 35, 0.1)'
       },
       container: {
         center: true,
@@ -52,17 +49,17 @@ export default {
           sm: '1.5rem',
           md: '2rem',
           lg: '2.5rem',
-          xl: '3rem',
+          xl: '3rem'
         },
         screens: {
           sm: '640px',
           md: '768px',
           lg: '1024px',
           xl: '1280px',
-          '2xl': '1440px',
-        },
-      },
-    },
+          '2xl': '1440px'
+        }
+      }
+    }
   },
-  plugins: [],
-}
+  plugins: []
+};

@@ -12,11 +12,11 @@
     --font-family-devanagari: 'Anek Devanagari', 'Hind', sans-serif;
   }
 
-  html[lang="hi"] {
+  html[lang='hi'] {
     font-family: var(--font-family-devanagari);
   }
 
-  html[lang="en"] {
+  html[lang='en'] {
     font-family: var(--font-family-latin);
   }
 
@@ -54,27 +54,35 @@
   .font-devotional-title {
     font-family: 'Playfair Display', 'Lora', 'Tiro Devanagari Hindi', 'Rozha One', Georgia, serif !important;
   }
+
   .font-cinzel {
     font-family: 'Cinzel', 'Tiro Devanagari Hindi', serif !important;
   }
+
   .font-hindi-heading {
     font-family: 'Outfit', 'Anek Devanagari', 'Hind', sans-serif !important;
   }
+
   .font-hindi-body {
     font-family: 'Anek Devanagari', 'Hind', 'Mukta', sans-serif;
   }
+
   .font-hindi-sub {
     font-family: 'Anek Devanagari', 'Mukta', 'Hind', sans-serif;
   }
+
   .font-hindi-display {
     font-family: 'Rozha One', 'Tiro Devanagari Hindi', serif;
   }
+
   .font-hindi {
     font-family: 'Anek Devanagari', 'Hind', sans-serif;
   }
+
   .font-hindi-sans {
     font-family: 'Anek Devanagari', 'Hind', sans-serif;
   }
+
   .font-legal {
     font-family: 'Tiro Devanagari Hindi', 'Lora', 'Merriweather', Georgia, serif;
   }
@@ -84,17 +92,20 @@
     display: inline-flex;
     align-items: center;
   }
+
   .icon-box {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
+
   /* SafeHtmlContent Rich Text Formatting - Editorial Devotional Styling */
   .safe-html-content h2,
   .safe-html-content h1 {
     font-family: 'Outfit', 'Anek Devanagari', 'Hind', sans-serif !important;
-    font-size: 1.5rem !important; /* 24px on mobile */
+    font-size: 1.5rem !important;
+    /* 24px on mobile */
     line-height: 1.35 !important;
     font-weight: 800 !important;
     color: #3b1d0c !important;
@@ -107,7 +118,8 @@
   @media (min-width: 768px) {
     .safe-html-content h2,
     .safe-html-content h1 {
-      font-size: 1.85rem !important; /* 30px on desktop */
+      font-size: 1.85rem !important;
+      /* 30px on desktop */
     }
   }
 
@@ -124,7 +136,8 @@
 
   .safe-html-content p {
     font-family: 'Tiro Devanagari Hindi', 'Lora', Georgia, serif !important;
-    font-size: 1.125rem !important; /* 18px on mobile */
+    font-size: 1.125rem !important;
+    /* 18px on mobile */
     line-height: 1.85 !important;
     color: #27272a !important;
     margin-top: 0 !important;
@@ -134,7 +147,8 @@
 
   @media (min-width: 768px) {
     .safe-html-content p {
-      font-size: 1.25rem !important; /* 20px on desktop */
+      font-size: 1.25rem !important;
+      /* 20px on desktop */
       line-height: 1.95 !important;
       margin-bottom: 1.5rem !important;
     }
@@ -143,7 +157,8 @@
   /* Compact verse spacing and typography specifically for lyrics / bhajan variant */
   .safe-html-content.safe-html-content-lyrics h2,
   .safe-html-content.safe-html-content-lyrics h1 {
-    font-size: 1.15rem !important; /* ~18px on mobile */
+    font-size: 1.15rem !important;
+    /* ~18px on mobile */
     line-height: 1.3 !important;
     margin-top: 1.15rem !important;
     margin-bottom: 0.4rem !important;
@@ -159,14 +174,16 @@
   }
 
   .safe-html-content.safe-html-content-lyrics p {
-    font-size: 0.9375rem !important; /* 15px on mobile */
+    font-size: 0.9375rem !important;
+    /* 15px on mobile */
     line-height: 1.55 !important;
     margin-bottom: 0.25rem !important;
   }
 
   @media (min-width: 768px) {
     .safe-html-content.safe-html-content-lyrics p {
-      font-size: 1.0625rem !important; /* 17px on desktop */
+      font-size: 1.0625rem !important;
+      /* 17px on desktop */
       line-height: 1.65 !important;
       margin-bottom: 0.35rem !important;
     }
@@ -223,8 +240,10 @@
   .overflow-y-auto,
   .scrollbar-thin,
   * {
-    -ms-overflow-style: none !important; /* IE and Edge */
-    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important;
+    /* IE and Edge */
+    scrollbar-width: none !important;
+    /* Firefox */
   }
 
   html::-webkit-scrollbar,
@@ -252,6 +271,7 @@
   width: 0 !important;
   height: 0 !important;
 }
+
 .no-scrollbar,
 .scrollbar-none {
   -ms-overflow-style: none !important;
@@ -268,19 +288,22 @@
     width: 7px;
     height: 7px;
   }
+
   html::-webkit-scrollbar-track,
   body::-webkit-scrollbar-track,
   main::-webkit-scrollbar-track,
   .main-scroll-container::-webkit-scrollbar-track {
-    background: #F9F7F3;
+    background: #f9f7f3;
   }
+
   html::-webkit-scrollbar-thumb,
   body::-webkit-scrollbar-thumb,
   main::-webkit-scrollbar-thumb,
   .main-scroll-container::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: #cbd5e1;
     border-radius: 9999px;
   }
+
   html::-webkit-scrollbar-thumb:hover,
   body::-webkit-scrollbar-thumb:hover,
   main::-webkit-scrollbar-thumb:hover,
@@ -295,17 +318,20 @@
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 transparent;
   }
+
   .scrollbar-thin::-webkit-scrollbar,
   .overflow-x-auto::-webkit-scrollbar,
   .overflow-y-auto::-webkit-scrollbar {
     width: 4px;
     height: 4px;
   }
+
   .scrollbar-thin::-webkit-scrollbar-track,
   .overflow-x-auto::-webkit-scrollbar-track,
   .overflow-y-auto::-webkit-scrollbar-track {
     background: transparent;
   }
+
   .scrollbar-thin::-webkit-scrollbar-thumb,
   .overflow-x-auto::-webkit-scrollbar-thumb,
   .overflow-y-auto::-webkit-scrollbar-thumb {
@@ -329,15 +355,18 @@ header *::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track,
 .custom-scrollbar *::-webkit-scrollbar-track {
   background: #090d16;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb,
 .custom-scrollbar *::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 9999px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover,
 .custom-scrollbar *::-webkit-scrollbar-thumb:hover {
   background: #ff3402;
@@ -347,16 +376,19 @@ header *::-webkit-scrollbar {
 .ql-container {
   @apply bg-white;
 }
+
 .ql-editor {
   min-height: 250px;
 }
+
 .ql-toolbar {
   @apply bg-white;
 }
 
 /* Admin Pages Base Styling */
 html.admin-html {
-  font-size: 15px; /* ~94% scale for crisp, sleek density matching user preference */
+  font-size: 15px;
+  /* ~94% scale for crisp, sleek density matching user preference */
 }
 
 body.admin-body {

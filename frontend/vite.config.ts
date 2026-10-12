@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -19,15 +19,15 @@ export default defineConfig({
       '@admin': path.resolve(__dirname, './src/admin'),
       '@user': path.resolve(__dirname, './src/user'),
       '@assets': path.resolve(__dirname, './src/assets'),
-      '@i18n': path.resolve(__dirname, './src/i18n'),
-    },
+      '@i18n': path.resolve(__dirname, './src/i18n')
+    }
   },
   server: {
     proxy: {
       '/uploads': {
         target: 'http://localhost:5000',
-        changeOrigin: true,
+        changeOrigin: true
       }
     }
   }
-})
+});
