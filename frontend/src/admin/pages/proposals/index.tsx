@@ -22,7 +22,6 @@ export const AdminProposals: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('ALL');
-  const [targetFieldFilter, setTargetFieldFilter] = useState<string>('ALL');
   const [agentFilter, setAgentFilter] = useState<string>('ALL');
 
   // Selected proposal for Detail Side Panel Drawer
@@ -59,16 +58,7 @@ export const AdminProposals: React.FC = () => {
     isFetching,
     refetch
   } = useQuery({
-    queryKey: [
-      'admin-agent-proposals',
-      page,
-      limit,
-      statusFilter,
-      entityTypeFilter,
-      agentFilter,
-      targetFieldFilter,
-      search
-    ],
+    queryKey: ['admin-agent-proposals', page, limit, statusFilter, entityTypeFilter, agentFilter, search],
     queryFn: async () => {
       return await ProposalApi.getProposals({
         page,
@@ -76,7 +66,6 @@ export const AdminProposals: React.FC = () => {
         status: statusFilter === 'ALL' ? undefined : statusFilter,
         entityType: entityTypeFilter === 'ALL' ? undefined : entityTypeFilter,
         agentName: agentFilter === 'ALL' ? undefined : agentFilter,
-        targetField: targetFieldFilter === 'ALL' ? undefined : targetFieldFilter,
         search: search.trim() || undefined
       });
     },
@@ -144,44 +133,38 @@ export const AdminProposals: React.FC = () => {
     switch (status) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-green-600 text-white">
-            <CheckCircle2 className="w-3 h-3" />
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-green-600 text-white">
             COMPLETED
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-red-600 text-white">
-            <AlertCircle className="w-3 h-3" />
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-red-600 text-white">
             FAILED
           </span>
         );
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-blue-600 text-white">
-            <CheckCircle2 className="w-3 h-3" />
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-blue-600 text-white">
             APPROVED
           </span>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-amber-600 text-white">
-            <Clock className="w-3 h-3" />
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-amber-600 text-white">
             PENDING
           </span>
         );
       case 'EXECUTING':
         return (
-          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-purple-600 text-white animate-pulse">
-            <RefreshCw className="w-3 h-3 animate-spin" />
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-purple-600 text-white animate-pulse">
             EXECUTING
           </span>
         );
       case 'REJECTED':
       default:
         return (
-          <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-gray-500 text-white">
-            <XCircle className="w-3 h-3" strokeWidth={2.5} />
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-gray-500 text-white">
             REJECTED
           </span>
         );
@@ -192,7 +175,6 @@ export const AdminProposals: React.FC = () => {
     setSearch('');
     setStatusFilter('ALL');
     setEntityTypeFilter('ALL');
-    setTargetFieldFilter('ALL');
     setAgentFilter('ALL');
     setPage(1);
   };
@@ -442,28 +424,6 @@ export const AdminProposals: React.FC = () => {
             searchable={false}
           />
 
-          {/* Target Field Filter */}
-          <Select
-            value={targetFieldFilter}
-            onChange={(val) => {
-              setTargetFieldFilter(val);
-              setPage(1);
-            }}
-            options={[
-              { value: 'ALL', label: 'All Fields' },
-              { value: 'excerpt', label: 'Excerpt' },
-              { value: 'content', label: 'Content' },
-              { value: 'lyrics', label: 'Lyrics' },
-              { value: 'meaning', label: 'Meaning' },
-              { value: 'description', label: 'Description' },
-              { value: 'short_description', label: 'Short Description' },
-              { value: 'seo_title', label: 'SEO Title' },
-              { value: 'seo_description', label: 'SEO Description' }
-            ]}
-            className="w-full sm:w-36"
-            searchable={false}
-          />
-
           {/* Agent Filter */}
           <Select
             value={agentFilter}
@@ -482,11 +442,7 @@ export const AdminProposals: React.FC = () => {
             searchable={false}
           />
 
-          {(search ||
-            statusFilter !== 'ALL' ||
-            entityTypeFilter !== 'ALL' ||
-            targetFieldFilter !== 'ALL' ||
-            agentFilter !== 'ALL') && (
+          {(search || statusFilter !== 'ALL' || entityTypeFilter !== 'ALL' || agentFilter !== 'ALL') && (
             <button
               type="button"
               onClick={handleResetFilters}

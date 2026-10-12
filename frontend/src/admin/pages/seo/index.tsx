@@ -5,16 +5,13 @@ import {
   AlertTriangle,
   FileText,
   Globe,
-  Key,
   LayoutDashboard,
   Search,
   Settings,
   ShieldAlert,
   ShieldCheck,
   CheckCircle2,
-  Clock,
   Zap,
-  XCircle,
   ExternalLink
 } from 'lucide-react';
 import { SeoApi } from '@admin/features/seo/SeoApi';

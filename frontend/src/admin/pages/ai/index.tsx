@@ -440,7 +440,7 @@ export function AdminAI() {
                         <th className="px-6 py-4 font-bold">Started</th>
                       )}
                       {activeTab === 'failed' && <th className="px-6 py-4 font-bold">Error</th>}
-                      <th className="px-6 py-4 font-bold text-right">Actions</th>
+                      {activeTab !== 'history' && <th className="px-6 py-4 font-bold text-right">Actions</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -483,40 +483,42 @@ export function AdminAI() {
                           </td>
                         )}
 
-                        <td className="px-6 py-4 text-right space-x-2">
-                          {['PENDING', 'PROCESSING'].includes(job.status) && (
-                            <button
-                              onClick={() => cancelMutation.mutate(job.id)}
-                              disabled={cancelMutation.isPending}
-                              className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors"
-                              title="Cancel Job"
-                            >
-                              <XCircle className="w-4 h-4" strokeWidth={2.5} />
-                            </button>
-                          )}
-                          {job.status === 'FAILED' && (
-                            <button
-                              onClick={() => retryMutation.mutate(job.id)}
-                              disabled={retryMutation.isPending}
-                              className="p-1.5 text-blue-500 hover:text-blue-600 transition-colors"
-                              title="Retry Job"
-                            >
-                              <RotateCcw className="w-4 h-4" />
-                            </button>
-                          )}
-                          {['COMPLETED', 'FAILED'].includes(job.status) && (
-                            <button
-                              onClick={() => {
-                                setDeleteConfirmId(job.id);
-                              }}
-                              disabled={deleteMutation.isPending}
-                              className="p-1.5 text-red-500 hover:text-red-600 transition-colors"
-                              title="Delete Record"
-                            >
-                              <Trash2 className="w-4 h-4" strokeWidth={2.5} />
-                            </button>
-                          )}
-                        </td>
+                        {activeTab !== 'history' && (
+                          <td className="px-6 py-4 text-right space-x-2">
+                            {['PENDING', 'PROCESSING'].includes(job.status) && (
+                              <button
+                                onClick={() => cancelMutation.mutate(job.id)}
+                                disabled={cancelMutation.isPending}
+                                className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors"
+                                title="Cancel Job"
+                              >
+                                <XCircle className="w-4 h-4" strokeWidth={2.5} />
+                              </button>
+                            )}
+                            {job.status === 'FAILED' && (
+                              <button
+                                onClick={() => retryMutation.mutate(job.id)}
+                                disabled={retryMutation.isPending}
+                                className="p-1.5 text-blue-500 hover:text-blue-600 transition-colors"
+                                title="Retry Job"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+                            )}
+                            {['COMPLETED', 'FAILED'].includes(job.status) && (
+                              <button
+                                onClick={() => {
+                                  setDeleteConfirmId(job.id);
+                                }}
+                                disabled={deleteMutation.isPending}
+                                className="p-1.5 text-red-500 hover:text-red-600 transition-colors"
+                                title="Delete Record"
+                              >
+                                <Trash2 className="w-4 h-4" strokeWidth={2.5} />
+                              </button>
+                            )}
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
