@@ -438,7 +438,10 @@ export const AdminSEO = () => {
                   </tr>
                 ) : (
                   overview?.audit?.map((item: any) => (
-                    <tr key={item.type} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                    <tr
+                      key={item.type}
+                      className="border-b border-gray-100 last:border-0 bg-gray-50/50 hover:bg-blue-100/60 transition-colors"
+                    >
                       <td className="px-6 py-4 font-medium text-gray-900 capitalize">{item.type}</td>
                       <td className="px-6 py-4 text-center text-green-600 font-medium">{item.optimized}</td>
                       <td
@@ -533,7 +536,10 @@ export const AdminSEO = () => {
                   </tr>
                 ) : (
                   displayIssues.map((issue: any, i: number) => (
-                    <tr key={i} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                    <tr
+                      key={i}
+                      className="border-b border-gray-100 last:border-0 bg-gray-50/50 hover:bg-blue-100/60 transition-colors"
+                    >
                       <td className="px-6 py-4 font-medium text-gray-900 capitalize">
                         <span className="inline-block px-2 py-0.5 bg-orange-100/70 text-orange-800 rounded text-xs font-semibold">
                           {issue.type}

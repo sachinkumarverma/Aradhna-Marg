@@ -580,7 +580,7 @@ export const AdminYoutube = () => {
                     </tr>
                   ) : (
                     videosData.data.map((video: any) => (
-                      <tr key={video.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={video.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
                             <div className="w-32 h-18 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 relative group">
@@ -743,7 +743,7 @@ export const AdminYoutube = () => {
                 </tr>
               ) : (
                 historyData.map((log: any) => (
-                  <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={log.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                     <td className="px-6 py-4 text-sm text-gray-900 font-medium">
                       {log.started_at ? format(new Date(log.started_at), 'dd MMM yyyy, hh:mm a') : '-'}
                     </td>

@@ -95,7 +95,9 @@ export class AgentRunRepository {
 
     if (agentName) {
       params.push(agentName);
-      whereClauses.push(`agent_name = $${params.length}`);
+      whereClauses.push(
+        `(LOWER(agent_name) = LOWER($${params.length}) OR REPLACE(REPLACE(LOWER(agent_name), '_', ''), ' ', '') = REPLACE(REPLACE(LOWER($${params.length}), '_', ''), ' ', ''))`
+      );
     }
     if (status) {
       params.push(status);

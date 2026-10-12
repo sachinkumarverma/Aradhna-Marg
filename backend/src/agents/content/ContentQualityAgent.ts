@@ -9,8 +9,7 @@ export class ContentQualityAgent implements AutonomousAgent {
   public readonly definition: AgentDefinition = {
     id: 'content_quality_agent',
     name: 'Content Quality Agent',
-    description:
-      'Analyzes supported editorial content (Articles, Festivals, Puranas, and Bhajan descriptions) for readability, grammar, excerpt completeness, and paragraph structure without altering text or sacred lyrics.',
+    description: 'Inspects editorial content for readability, grammar, and completeness.',
     permissionTier: AgentPermissionTier.TIER_2_ANALYZE,
     allowedTools: ['get_content_quality_batch'],
     allowedEntityTypes: ['article', 'festival', 'puran', 'bhajan'],

@@ -139,7 +139,7 @@ export const AdminDashboard: React.FC = () => {
               <tbody className="divide-y divide-gray-100">
                 {activityData?.length > 0 ? (
                   activityData.map((activity: any) => (
-                    <tr key={activity.id}>
+                    <tr key={activity.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-4 py-2.5 sm:px-5 sm:py-3">Bhajan Created</td>
                       <td className="px-4 py-2.5 sm:px-5 sm:py-3 font-medium text-gray-900">{activity.title}</td>
                       <td className="px-4 py-2.5 sm:px-5 sm:py-3 text-center">

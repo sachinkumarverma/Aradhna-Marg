@@ -109,7 +109,7 @@ export function DataTable<T extends { id: string | number }>({
                 key={row.id}
                 onClick={() => onRowClick?.(row)}
                 className={cn(
-                  'hover:bg-gray-50/50 transition-colors group',
+                  'bg-gray-50/50 hover:bg-blue-100/60 transition-colors group',
                   onRowClick && 'cursor-pointer',
                   isSelected && 'bg-orange-50/90 hover:bg-orange-100/70',
                   customRowClass

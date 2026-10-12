@@ -48,8 +48,7 @@ export class SeoAuditAgent implements AutonomousAgent {
   public readonly definition: AgentDefinition = {
     id: 'seo_audit_agent',
     name: 'SEO Audit Agent',
-    description:
-      'Audits website content (Bhajans, Articles, Festivals, Puranas, Categories) for SEO issues and generates structured findings without mutating content.',
+    description: 'Audits website content for missing metadata and SEO issues.',
     permissionTier: AgentPermissionTier.TIER_2_ANALYZE,
     allowedTools: ['get_seo_audit', 'get_seo_content_batch'],
     allowedEntityTypes: ['bhajan', 'article', 'festival', 'puran', 'category'],

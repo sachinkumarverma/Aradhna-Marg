@@ -198,7 +198,7 @@ export const AdminDeities = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {deities.map((deity: any) => (
-                    <tr key={deity.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={deity.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-6 py-2.5">
                         <div className="flex items-center gap-3">
                           {deity.image ? (

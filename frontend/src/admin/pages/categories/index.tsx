@@ -221,7 +221,7 @@ export const AdminCategories = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {categories.map((category: any) => (
-                    <tr key={category.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={category.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">

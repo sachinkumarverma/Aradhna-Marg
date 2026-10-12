@@ -12,8 +12,9 @@ import { globalErrorHandler, notFoundHandler } from './middlewares/error';
 import { base64UploadMiddleware } from './middlewares/base64Upload.middleware';
 import { logger } from './utils/logger';
 
-// Register cron jobs
+// Register cron jobs & autonomous agents
 import './features/youtube/jobs/youtube.cron';
+import './agents';
 import './agents/scheduler/agent.cron';
 
 const app: Application = express();

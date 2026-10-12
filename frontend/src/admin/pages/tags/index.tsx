@@ -228,7 +228,7 @@ export function AdminTags() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {tags.map((tag: any) => (
-                    <tr key={tag.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={tag.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-6 py-3">
                         <div>
                           <p className="font-semibold text-gray-900">{tag.name}</p>

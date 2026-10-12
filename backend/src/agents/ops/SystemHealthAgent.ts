@@ -9,8 +9,7 @@ export class SystemHealthAgent implements AutonomousAgent {
   public readonly definition: AgentDefinition = {
     id: 'system_health_agent',
     name: 'System Health Agent',
-    description:
-      'Grounded, read-only inspection of database connectivity, AI job queues, agent run health, and process runtime.',
+    description: 'Monitors database health, AI queues, and system runtime.',
     permissionTier: AgentPermissionTier.TIER_1_READ,
     allowedTools: ['get_system_health'],
     allowedEntityTypes: ['system'],

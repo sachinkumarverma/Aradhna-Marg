@@ -3,7 +3,7 @@ import { sendSuccess } from '@/responses/apiResponse';
 import { agentExecutionService } from '@/agents/services/AgentExecutionService';
 import { agentProposalService } from '@/agents/services/AgentProposalService';
 import { toolRegistry } from '@/agents/registry/ToolRegistry';
-import { agentRegistry } from '@/agents/registry/AgentRegistry';
+import { agentRegistry, registerDefaultAgents } from '@/agents';
 import { agentRunner } from '@/agents/services/AgentRunner';
 import { seoAuditAgent } from '@/agents/seo/SeoAuditAgent';
 import { seoImprovementAgent } from '@/agents/seo/SeoImprovementAgent';
@@ -260,6 +260,9 @@ class AgentController {
 
   public listAgents = async (_req: Request, res: Response, next: NextFunction) => {
     try {
+      if (agentRegistry.getAll().length === 0) {
+        registerDefaultAgents();
+      }
       const definitions = agentRegistry.getAllDefinitions();
       sendSuccess(res, 'Registered autonomous agents retrieved successfully', definitions);
     } catch (error) {

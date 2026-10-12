@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Select } from '@components/ui/Select';
+import { Pagination } from '@components/ui/Pagination';
 import {
   Play,
-  RotateCcw,
-  CheckCircle2,
+  RefreshCw,
+  X,
   XCircle,
   AlertTriangle,
   Clock,
-  Search,
   ExternalLink,
   ChevronRight,
   Shield,
@@ -29,11 +31,46 @@ import { AdminButton } from '@admin/components/AdminButton';
 import { CustomLoader } from '@components/common/CustomLoader';
 import toast from 'react-hot-toast';
 
+const formatStandardCase = (str?: string): string => {
+  if (!str) return '';
+  return str
+    .replace(/[_-]+/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .map((word) => {
+      const lower = word.toLowerCase();
+      if (lower === 'seo') return 'SEO';
+      if (lower === 'ai') return 'AI';
+      if (lower === 'id') return 'ID';
+      if (lower === 'tier') return 'Tier';
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(' ');
+};
+
+const getShortAgentDescription = (agentId: string, desc?: string): string => {
+  const shortMap: Record<string, string> = {
+    content_quality_agent: 'Inspects editorial content for readability, grammar, and completeness.',
+    seo_audit_agent: 'Audits website content for missing metadata and SEO issues.',
+    system_health_agent: 'Monitors database health, AI queues, and system runtime.'
+  };
+  return shortMap[agentId] || desc || '';
+};
+
+const scheduleIntervalOptions = [
+  { value: 'hourly', label: 'Hourly' },
+  { value: 'every_6_hours', label: 'Every 6 Hours' },
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' }
+];
+
 export const AgentRunsSection: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [agentFilter, setAgentFilter] = useState<string>('ALL');
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
 
   // Fetch registered agent definitions
   const { data: definitions = [] } = useQuery({
@@ -62,7 +99,7 @@ export const AgentRunsSection: React.FC = () => {
       payload: { enabled?: boolean; scheduleInterval?: 'hourly' | 'every_6_hours' | 'daily' | 'weekly' };
     }) => AgentApi.updateSchedule(id, payload),
     onSuccess: (_, vars) => {
-      toast.success(`Schedule for '${vars.id}' updated`);
+      toast.success(`Schedule for '${formatStandardCase(vars.id)}' updated`);
       queryClient.invalidateQueries({ queryKey: ['agent-schedules'] });
     },
     onError: (err: any) => {
@@ -74,7 +111,7 @@ export const AgentRunsSection: React.FC = () => {
   const runScheduledAgentMutation = useMutation({
     mutationFn: (id: string) => AgentApi.runScheduledAgent(id),
     onSuccess: (data, agentId) => {
-      toast.success(`Scheduled agent '${agentId}' executed successfully!`);
+      toast.success(`Scheduled agent '${formatStandardCase(agentId)}' executed successfully!`);
       queryClient.invalidateQueries({ queryKey: ['agent-runs'] });
       queryClient.invalidateQueries({ queryKey: ['agent-schedules'] });
       if (data?.run?.id) {
@@ -88,22 +125,67 @@ export const AgentRunsSection: React.FC = () => {
     }
   });
 
-  // Fetch runs list
+  // Fetch runs list with pagination
   const {
     data: runsData,
     isLoading: isLoadingRuns,
     isFetching: isFetchingRuns,
     refetch: refetchRuns
   } = useQuery({
-    queryKey: ['agent-runs', statusFilter, agentFilter],
+    queryKey: ['agent-runs', statusFilter, agentFilter, page, limit],
     queryFn: () =>
       AgentApi.getRuns({
         status: statusFilter === 'ALL' ? undefined : statusFilter,
         agentName: agentFilter === 'ALL' ? undefined : agentFilter,
-        limit: 50
+        page,
+        limit
       }),
     refetchInterval: 5000 // auto refresh runs
   });
+
+  const runs = runsData?.data || [];
+  const totalRecords = runsData?.count || 0;
+  const totalPages = Math.ceil(totalRecords / limit);
+
+  // Dynamic list of all available agents combining definitions, schedules, and active runs
+  const agentFilterOptions = useMemo(() => {
+    const map = new Map<string, string>();
+
+    definitions.forEach((d) => {
+      if (d.id) map.set(d.id, d.name || d.id);
+    });
+
+    schedules.forEach((s) => {
+      if (s.agentId && !map.has(s.agentId)) {
+        map.set(s.agentId, s.agentName || s.agentId);
+      }
+    });
+
+    runs.forEach((r) => {
+      if (r.agentName && !map.has(r.agentName)) {
+        map.set(r.agentName, r.agentName);
+      }
+    });
+
+    const defaultAgents = [
+      { id: 'content_quality_agent', name: 'Content Quality Agent' },
+      { id: 'seo_audit_agent', name: 'SEO Audit Agent' },
+      { id: 'system_health_agent', name: 'System Health Agent' }
+    ];
+    defaultAgents.forEach((a) => {
+      if (!map.has(a.id)) {
+        map.set(a.id, a.name);
+      }
+    });
+
+    return [
+      { value: 'ALL', label: 'All Agents' },
+      ...Array.from(map.entries()).map(([value, label]) => ({
+        value,
+        label: formatStandardCase(label)
+      }))
+    ];
+  }, [definitions, schedules, runs]);
 
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
@@ -134,7 +216,7 @@ export const AgentRunsSection: React.FC = () => {
   const runAgentMutation = useMutation({
     mutationFn: (agentId: string) => AgentApi.runAgent(agentId),
     onSuccess: (data, agentId) => {
-      toast.success(`Agent '${agentId}' run completed!`);
+      toast.success(`Agent '${formatStandardCase(agentId)}' run completed!`);
       queryClient.invalidateQueries({ queryKey: ['agent-runs'] });
       if (data?.run?.id) {
         setSelectedRunId(data.run.id);
@@ -146,52 +228,24 @@ export const AgentRunsSection: React.FC = () => {
     }
   });
 
-  const runs = runsData?.data || [];
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'COMPLETED':
-        return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-800">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Completed
-          </span>
-        );
+        return <span className="inline-flex items-center text-xs font-semibold text-emerald-600">Completed</span>;
       case 'RUNNING':
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-900 animate-pulse">
-            <Clock className="w-3.5 h-3.5" /> Running
-          </span>
+          <span className="inline-flex items-center text-xs font-semibold text-blue-600 animate-pulse">Running</span>
         );
       case 'FAILED':
-        return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-rose-100 text-rose-800">
-            <XCircle className="w-3.5 h-3.5" /> Failed
-          </span>
-        );
+        return <span className="inline-flex items-center text-xs font-semibold text-red-600">Failed</span>;
       case 'SKIPPED':
-        return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-amber-100 text-amber-800">
-            <AlertTriangle className="w-3.5 h-3.5" /> Skipped
-          </span>
-        );
+        return <span className="inline-flex items-center text-xs font-semibold text-amber-600">Skipped</span>;
       case 'CANCELLED':
-        return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700">
-            Cancelled
-          </span>
-        );
+        return <span className="inline-flex items-center text-xs font-semibold text-gray-500">Cancelled</span>;
       case 'TIMEOUT':
-        return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold bg-amber-100 text-amber-900">
-            <Clock className="w-3.5 h-3.5" /> Timeout
-          </span>
-        );
+        return <span className="inline-flex items-center text-xs font-semibold text-amber-600">Timeout</span>;
       default:
-        return (
-          <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-800">
-            {status}
-          </span>
-        );
+        return <span className="inline-flex items-center text-xs font-semibold text-gray-600">{status}</span>;
     }
   };
 
@@ -253,42 +307,41 @@ export const AgentRunsSection: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner: Scheduled Autonomous Monitoring (Phase 5B) */}
-      <div className="bg-white border border-indigo-100 rounded-md p-4 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+      {/* Detached Card 1: Scheduled Autonomous Monitoring */}
+      <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm p-4 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
           <div>
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide flex items-center gap-2">
               <Calendar className="w-4 h-4 text-saffron" />
-              Scheduled Autonomous Monitoring (Phase 5B)
+              Scheduled Autonomous Monitoring
             </h3>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Read-only automated surveillance. Scheduled agents inspect health, SEO, and content quality on defined
-              schedules without content mutation.
-            </p>
           </div>
-          <button
-            type="button"
+          <AdminButton
+            variant="outline"
             onClick={handleRefreshRuns}
+            title="Refresh Status"
+            aria-label="Refresh Status"
             disabled={isManualRefreshing || isFetchingRuns}
-            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded cursor-pointer transition-colors shadow-2xs"
+            className="self-start sm:self-auto h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
           >
-            <RotateCcw
-              className={`w-3 h-3 ${isManualRefreshing || isFetchingRuns ? 'animate-spin text-saffron' : 'text-gray-500'}`}
+            <RefreshCw
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 stroke-[2.2] ${
+                isManualRefreshing || isFetchingRuns ? 'animate-spin text-saffron' : 'text-slate-600'
+              }`}
             />
-            <span>{isManualRefreshing || isFetchingRuns ? 'Refreshing...' : 'Refresh Status'}</span>
-          </button>
+          </AdminButton>
         </div>
 
         {isLoadingSchedules ? (
-          <div className="py-6 flex justify-center">
+          <div className="py-8 flex justify-center">
             <CustomLoader text="Loading monitoring schedules..." />
           </div>
         ) : schedules.length === 0 ? (
-          <div className="p-4 text-xs text-gray-500 text-center bg-slate-50 rounded">
+          <div className="p-4 text-xs text-gray-500 text-center bg-slate-50 rounded-md">
             No monitoring schedules registered.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
             {schedules.map((sched) => {
               const isRunPending =
                 runScheduledAgentMutation.isPending && runScheduledAgentMutation.variables === sched.agentId;
@@ -298,17 +351,18 @@ export const AgentRunsSection: React.FC = () => {
               return (
                 <div
                   key={sched.id}
-                  className="border border-slate-200 rounded-md p-3.5 bg-gradient-to-br from-slate-50 to-white flex flex-col justify-between gap-3 shadow-2xs"
+                  className="border border-indigo-100/80 bg-white/90 rounded-md p-4 sm:p-5 shadow-xs flex flex-col justify-between gap-3.5"
                 >
-                  <div>
+                  <div className="space-y-3">
                     {/* Header: Name and Enabled Toggle */}
-                    <div className="flex items-start justify-between gap-2 mb-1.5">
-                      <div>
-                        <span className="font-bold text-sm text-slate-900 block">{sched.agentName}</span>
-                        <span className="text-[10px] text-gray-500 font-mono">{sched.agentId}</span>
-                      </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-sm text-slate-900 block leading-snug">
+                        {formatStandardCase(sched.agentName || sched.agentId)}
+                      </span>
                       <button
                         type="button"
+                        role="switch"
+                        aria-checked={sched.enabled}
                         disabled={isUpdatePending}
                         onClick={() =>
                           updateScheduleMutation.mutate({
@@ -316,44 +370,60 @@ export const AgentRunsSection: React.FC = () => {
                             payload: { enabled: !sched.enabled }
                           })
                         }
-                        className={`px-2.5 py-0.5 rounded text-[11px] font-bold cursor-pointer transition-colors ${
-                          sched.enabled
-                            ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
-                            : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-                        }`}
+                        className="flex items-center gap-2 cursor-pointer group focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                         title={sched.enabled ? 'Click to disable schedule' : 'Click to enable schedule'}
                       >
-                        {isUpdatePending ? '...' : sched.enabled ? 'Enabled' : 'Disabled'}
+                        <span
+                          className={`text-xs font-semibold transition-colors ${
+                            sched.enabled ? 'text-emerald-600' : 'text-slate-400'
+                          }`}
+                        >
+                          {isUpdatePending ? '...' : sched.enabled ? 'Enabled' : 'Disabled'}
+                        </span>
+                        <span
+                          className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                            sched.enabled ? 'bg-emerald-500' : 'bg-slate-300 group-hover:bg-slate-400'
+                          }`}
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
+                              sched.enabled ? 'translate-x-4' : 'translate-x-0'
+                            }`}
+                          />
+                        </span>
                       </button>
                     </div>
 
-                    <p className="text-xs text-gray-600 line-clamp-2 mb-3">{sched.description}</p>
+                    {getShortAgentDescription(sched.agentId, sched.description) && (
+                      <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                        {getShortAgentDescription(sched.agentId, sched.description)}
+                      </p>
+                    )}
 
                     {/* Schedule Selector & Status Grid */}
-                    <div className="bg-slate-50/80 border border-slate-100 rounded p-2.5 space-y-2 text-[11px]">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-500 font-semibold uppercase text-[10px]">Schedule:</span>
-                        <select
-                          value={sched.scheduleInterval}
-                          disabled={isUpdatePending}
-                          onChange={(e) =>
-                            updateScheduleMutation.mutate({
-                              id: sched.agentId,
-                              payload: {
-                                scheduleInterval: e.target.value as 'hourly' | 'every_6_hours' | 'daily' | 'weekly'
-                              }
-                            })
-                          }
-                          className="bg-white border border-gray-200 text-slate-800 font-semibold rounded px-1.5 py-0.5 text-[11px] focus:outline-none cursor-pointer"
-                        >
-                          <option value="hourly">Hourly</option>
-                          <option value="every_6_hours">Every 6 Hours</option>
-                          <option value="daily">Daily</option>
-                          <option value="weekly">Weekly</option>
-                        </select>
+                    <div className="bg-slate-50/80 border border-slate-200/80 rounded-md p-3 space-y-2.5 text-[11px]">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-gray-500 font-semibold uppercase text-[10px] shrink-0">Schedule:</span>
+                        <div className="w-36">
+                          <Select
+                            options={scheduleIntervalOptions}
+                            value={sched.scheduleInterval}
+                            disabled={isUpdatePending}
+                            onChange={(val) =>
+                              updateScheduleMutation.mutate({
+                                id: sched.agentId,
+                                payload: {
+                                  scheduleInterval: val as 'hourly' | 'every_6_hours' | 'daily' | 'weekly'
+                                }
+                              })
+                            }
+                            searchable={false}
+                            triggerClassName="h-7 sm:h-7.5 text-[11px] px-2.5 py-0 font-medium bg-white border-gray-200"
+                          />
+                        </div>
                       </div>
 
-                      <div className="flex items-center justify-between text-gray-600">
+                      <div className="flex items-center justify-between text-gray-600 pt-0.5">
                         <span className="text-gray-500">Last Run:</span>
                         <span className="font-medium text-slate-900">{formatTimestamp(sched.lastRunAt)}</span>
                       </div>
@@ -375,14 +445,14 @@ export const AgentRunsSection: React.FC = () => {
                       </div>
 
                       {sched.consecutiveFailures > 0 && (
-                        <div className="bg-rose-50 border border-rose-200 text-rose-800 rounded px-2 py-1 flex items-center gap-1.5 font-semibold text-[10px]">
+                        <div className="text-rose-600 flex items-center gap-1.5 font-semibold text-[10px]">
                           <AlertTriangle className="w-3 h-3 text-rose-600 shrink-0" />
                           <span>{sched.consecutiveFailures} consecutive failure(s)</span>
                         </div>
                       )}
 
                       {sched.isRunning && (
-                        <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded px-2 py-1 flex items-center gap-1.5 font-semibold text-[10px] animate-pulse">
+                        <div className="text-blue-600 flex items-center gap-1.5 font-semibold text-[10px] animate-pulse">
                           <Clock className="w-3 h-3 text-blue-600 shrink-0" />
                           <span>Currently executing...</span>
                         </div>
@@ -391,18 +461,22 @@ export const AgentRunsSection: React.FC = () => {
                   </div>
 
                   {/* Action Footer: Run Now */}
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px]">
-                    <span className="text-gray-400 font-mono text-[10px]">
+                  <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-[11px]">
+                    <span className="text-gray-400 font-medium text-xs">
                       {formatIntervalLabel(sched.scheduleInterval)}
                     </span>
                     <AdminButton
                       onClick={() => runScheduledAgentMutation.mutate(sched.agentId)}
                       disabled={isRunPending || sched.isRunning}
                       variant="primary"
-                      className="h-7 px-3 text-xs gap-1 font-semibold"
+                      leftIcon={
+                        <Play
+                          className={`w-3.5 h-3.5 shrink-0 ${isRunPending || sched.isRunning ? 'animate-spin' : ''}`}
+                        />
+                      }
+                      className="h-8 px-3.5 text-xs font-semibold gap-1.5"
                     >
-                      <Play className={`w-3 h-3 ${isRunPending || sched.isRunning ? 'animate-spin' : ''}`} />
-                      <span>{isRunPending || sched.isRunning ? 'Executing...' : 'Run Now'}</span>
+                      {isRunPending || sched.isRunning ? 'Executing...' : 'Run Now'}
                     </AdminButton>
                   </div>
                 </div>
@@ -412,324 +486,366 @@ export const AgentRunsSection: React.FC = () => {
         )}
       </div>
 
-      {/* Filter Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-md border border-gray-200 shadow-2xs">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-gray-500 uppercase">Status:</span>
-          {['ALL', 'COMPLETED', 'RUNNING', 'FAILED', 'TIMEOUT'].map((st) => (
-            <button
-              key={st}
-              onClick={() => setStatusFilter(st)}
-              className={`px-2.5 py-1 text-xs font-semibold rounded cursor-pointer transition-colors ${
-                statusFilter === st ? 'bg-slate-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {st}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-gray-500 uppercase">Agent:</span>
-          <select
-            value={agentFilter}
-            onChange={(e) => setAgentFilter(e.target.value)}
-            className="text-xs font-medium border border-gray-200 rounded px-2 py-1 bg-white focus:outline-none"
-          >
-            <option value="ALL">All Agents</option>
-            {definitions.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
+      {/* Detached Section 2: Agent Runs Table & Toolbar */}
+      <div className="space-y-4">
+        {/* Table Filter Toolbar */}
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase">Status:</span>
+            {['ALL', 'COMPLETED', 'RUNNING', 'FAILED', 'TIMEOUT'].map((st) => (
+              <button
+                key={st}
+                onClick={() => {
+                  setStatusFilter(st);
+                  setPage(1);
+                }}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-colors ${
+                  statusFilter === st
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                }`}
+              >
+                {st}
+              </button>
             ))}
-          </select>
-          <button
-            type="button"
-            onClick={handleRefreshRuns}
-            disabled={isManualRefreshing || isFetchingRuns}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-60 cursor-pointer shadow-2xs ml-1"
-            title="Refresh agent runs list"
-          >
-            <RotateCcw
-              className={`w-3 h-3 transition-transform ${
-                isManualRefreshing || isFetchingRuns ? 'animate-spin text-saffron' : 'text-gray-500'
-              }`}
-            />
-            <span>{isManualRefreshing || isFetchingRuns ? 'Refreshing...' : 'Refresh'}</span>
-          </button>
-        </div>
-      </div>
+          </div>
 
-      {/* Runs Table */}
-      <div className="bg-white border border-gray-200 rounded-md shadow-2xs overflow-hidden">
-        {isLoadingRuns ? (
-          <div className="py-12 flex justify-center">
-            <CustomLoader text="Loading agent runs..." />
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-semibold text-gray-500 uppercase">Agent:</span>
+            <div className="w-44 sm:w-52">
+              <Select
+                value={agentFilter}
+                onChange={(val) => {
+                  setAgentFilter(val);
+                  setPage(1);
+                }}
+                options={agentFilterOptions}
+                searchable={false}
+                triggerClassName="h-9 sm:h-10 text-xs sm:text-sm font-medium bg-white border-gray-200"
+              />
+            </div>
+            <AdminButton
+              variant="outline"
+              onClick={handleRefreshRuns}
+              title="Refresh"
+              aria-label="Refresh"
+              disabled={isManualRefreshing || isFetchingRuns}
+              className="h-9 w-9 sm:h-10 sm:w-10 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
+            >
+              <RefreshCw
+                className={`w-4 h-4 shrink-0 stroke-[2.2] ${
+                  isManualRefreshing || isFetchingRuns ? 'animate-spin text-saffron' : 'text-slate-600'
+                }`}
+              />
+            </AdminButton>
           </div>
-        ) : runs.length === 0 ? (
-          <div className="py-12 text-center text-gray-500 text-sm">
-            No agent runs found. Click "Run Agent" above to initiate an autonomous analysis run.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-50 border-b border-gray-200 text-gray-600 font-bold uppercase tracking-wider text-[11px]">
-                  <th className="py-3 px-4">Agent Name</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Trigger</th>
-                  <th className="py-3 px-4">Started At</th>
-                  <th className="py-3 px-4">Duration</th>
-                  <th className="py-3 px-4">Findings</th>
-                  <th className="py-3 px-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {runs.map((run) => {
-                  const findingsCount = run.state?.findings?.length || 0;
-                  const isSelected = selectedRunId === run.id;
-                  return (
-                    <tr
-                      key={run.id}
-                      onClick={() => setSelectedRunId(run.id)}
-                      className={`hover:bg-slate-50/80 transition-colors cursor-pointer ${
-                        isSelected ? 'bg-orange-50/50' : ''
-                      }`}
-                    >
-                      <td className="py-3 px-4 font-semibold text-slate-900">
-                        <div className="flex items-center gap-1.5">
-                          <Activity className="w-3.5 h-3.5 text-saffron" />
-                          <span>{run.agentName}</span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">{getStatusBadge(run.status)}</td>
-                      <td className="py-3 px-4 text-gray-600">{run.triggerType}</td>
-                      <td className="py-3 px-4 text-gray-600">
-                        {new Date(run.startedAt || run.createdAt).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          second: '2-digit'
-                        })}
-                      </td>
-                      <td className="py-3 px-4 text-gray-600 font-mono">{formatDuration(run)}</td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`inline-flex px-2 py-0.5 rounded text-[11px] font-bold ${
-                            findingsCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'
+        </div>
+
+        {/* Runs Table Body in standard DataTable container */}
+        <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm">
+          {isLoadingRuns ? (
+            <div className="py-16 flex justify-center">
+              <CustomLoader fullScreen={false} size="md" text="Loading agent runs..." />
+            </div>
+          ) : runs.length === 0 ? (
+            <div className="py-16 text-center text-gray-400 text-sm">
+              <Activity className="w-10 h-10 mx-auto mb-2 opacity-30 text-saffron" />
+              <p className="font-medium text-gray-600">No agent runs found</p>
+              <p className="text-xs text-gray-400 mt-1">Autonomous runs will appear here once executed or scheduled.</p>
+            </div>
+          ) : (
+            <>
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
+                  <tr>
+                    <th className="px-6 py-4 font-bold">Agent Name</th>
+                    <th className="px-6 py-4 font-bold">Status</th>
+                    <th className="px-6 py-4 font-bold">Trigger</th>
+                    <th className="px-6 py-4 font-bold">Started At</th>
+                    <th className="px-6 py-4 font-bold">Duration</th>
+                    <th className="px-6 py-4 font-bold">Findings</th>
+                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {runs.map((run) => {
+                    const findingsCount = run.state?.findings?.length || 0;
+                    const isSelected = selectedRunId === run.id;
+                    return (
+                      <tr
+                        key={run.id}
+                        onClick={() => setSelectedRunId(run.id)}
+                        className={`transition-colors cursor-pointer group ${
+                          isSelected ? 'bg-orange-50/90 hover:bg-orange-100/70' : 'bg-gray-50/50 hover:bg-blue-100/60'
+                        }`}
+                      >
+                        <td
+                          className={`px-6 py-4 font-medium text-gray-900 ${
+                            isSelected ? 'border-l-4 border-l-saffron' : ''
                           }`}
                         >
-                          {findingsCount} finding(s)
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <span className="text-saffron font-bold text-xs inline-flex items-center gap-0.5 hover:underline">
-                          Inspect <ChevronRight className="w-3 h-3" />
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+                          <div className="flex items-center gap-2.5">
+                            <Activity className="w-4 h-4 text-saffron shrink-0" />
+                            <span className="font-semibold text-gray-900">{formatStandardCase(run.agentName)}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">{getStatusBadge(run.status)}</td>
+                        <td className="px-6 py-4">
+                          <span className="text-xs font-semibold text-slate-700">{run.triggerType}</span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-500">
+                          {new Date(run.startedAt || run.createdAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          })}
+                        </td>
+                        <td className="px-6 py-4 text-gray-500 font-medium">{formatDuration(run)}</td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`text-xs font-semibold ${
+                              findingsCount > 0 ? 'text-amber-600' : 'text-emerald-600'
+                            }`}
+                          >
+                            {findingsCount} finding(s)
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <span className="text-saffron font-bold text-xs inline-flex items-center gap-1 hover:underline">
+                            Inspect <ChevronRight className="w-3.5 h-3.5" />
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                totalRecords={totalRecords}
+                limit={limit}
+                onPageChange={(p) => setPage(p)}
+                onLimitChange={(l) => {
+                  setLimit(l);
+                  setPage(1);
+                }}
+                limitOptions={[10, 20, 50]}
+              />
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Selected Run Inspection Modal / Drawer */}
-      {selectedRunId && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-gray-200">
-            {/* Modal Header */}
-            <div className="px-5 py-3.5 border-b border-gray-200 bg-slate-50 flex items-center justify-between">
-              <div>
-                <h4 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-saffron" />
-                  {selectedDetails?.run?.agentName} — Execution Details
-                </h4>
-                <p className="text-xs text-gray-500 font-mono mt-0.5">Run ID: {selectedRunId}</p>
-              </div>
-              <button
-                onClick={() => setSelectedRunId(null)}
-                className="text-gray-400 hover:text-gray-700 text-sm font-bold p-1 rounded cursor-pointer"
-              >
-                ✕ Close
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-5 overflow-y-auto space-y-5 flex-1 text-xs">
-              {isLoadingDetails ? (
-                <div className="py-12 flex justify-center">
-                  <CustomLoader text="Loading run details..." />
+      {/* Selected Run Inspection Modal / Drawer with Portal for 100% full height backdrop */}
+      {selectedRunId &&
+        createPortal(
+          <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
+            <div className="fixed inset-0" onClick={() => setSelectedRunId(null)} />
+            <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-gray-200 z-10 animate-in zoom-in-95 duration-200">
+              {/* Modal Header */}
+              <div className="px-5 py-4 border-b border-gray-200 bg-slate-50 flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-saffron" />
+                    {formatStandardCase(selectedDetails?.run?.agentName)} — Execution Details
+                  </h4>
+                  <p className="text-xs text-gray-500 font-mono mt-0.5">Run ID: {selectedRunId}</p>
                 </div>
-              ) : selectedDetails ? (
-                <>
-                  {/* Summary Banner */}
-                  <div className="bg-slate-50 border border-slate-200 rounded p-3.5 flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedRunId(null)}
+                  className="text-gray-400 hover:text-gray-700 hover:bg-gray-200/60 p-1.5 rounded-lg transition-colors cursor-pointer"
+                  title="Close"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-5 overflow-y-auto space-y-5 flex-1 text-xs">
+                {isLoadingDetails ? (
+                  <div className="py-12 flex justify-center">
+                    <CustomLoader text="Loading run details..." />
+                  </div>
+                ) : selectedDetails ? (
+                  <>
+                    {/* Summary Banner */}
+                    <div className="bg-slate-50 border border-slate-200 rounded p-3.5 flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">
+                          Summary Status
+                        </span>
+                        <p className="text-sm font-bold text-slate-900 mt-0.5">
+                          {selectedDetails.run.state?.summary?.overview || 'Execution completed without overview.'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">{getStatusBadge(selectedDetails.run.status)}</div>
+                    </div>
+
+                    {/* Multi-Step Orchestration Metrics Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                      <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
+                        <span className="text-[10px] uppercase font-bold text-gray-500">Iterations</span>
+                        <p className="text-sm font-bold text-slate-900 mt-0.5">
+                          {selectedDetails.run.iterationCount || 1}
+                        </p>
+                      </div>
+                      <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
+                        <span className="text-[10px] uppercase font-bold text-gray-500">Tool Calls</span>
+                        <p className="text-sm font-bold text-slate-900 mt-0.5">
+                          {selectedDetails.toolCalls?.length || 0}
+                        </p>
+                      </div>
+                      <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
+                        <span className="text-[10px] uppercase font-bold text-gray-500">Tokens</span>
+                        <p className="text-sm font-bold text-slate-900 mt-0.5">
+                          {selectedDetails.run.totalTokensUsed || 0}
+                        </p>
+                      </div>
+                      <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
+                        <span className="text-[10px] uppercase font-bold text-gray-500">Trigger</span>
+                        <p className="text-sm font-bold text-slate-900 mt-0.5">{selectedDetails.run.triggerType}</p>
+                      </div>
+                    </div>
+
+                    {/* Error / Failure Banner */}
+                    {selectedDetails.run.errorMessage && (
+                      <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3 rounded text-xs space-y-1">
+                        <strong className="font-bold flex items-center gap-1">
+                          <XCircle className="w-4 h-4 text-rose-600" /> Execution Issue:
+                        </strong>
+                        <p className="text-rose-700">{selectedDetails.run.errorMessage}</p>
+                      </div>
+                    )}
+
+                    {/* Staged Proposals Link */}
+                    {(selectedDetails.run.state?.proposalIds?.length > 0 || selectedDetails.run.state?.proposalId) && (
+                      <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded text-xs font-medium flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-saffron" />
+                          Proposal Staged for Human Review
+                        </span>
+                        <a
+                          href="/admin/ai-proposals"
+                          className="text-saffron-dark font-bold hover:underline inline-flex items-center gap-1"
+                        >
+                          View in Proposal Review <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Findings Section */}
                     <div>
-                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">
-                        Summary Status
-                      </span>
-                      <p className="text-sm font-bold text-slate-900 mt-0.5">
-                        {selectedDetails.run.state?.summary?.overview || 'Execution completed without overview.'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">{getStatusBadge(selectedDetails.run.status)}</div>
-                  </div>
+                      <h5 className="font-bold text-sm text-slate-900 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                        <Layers className="w-4 h-4 text-saffron" />
+                        Structured Findings ({selectedDetails.run.state?.findings?.length || 0})
+                      </h5>
 
-                  {/* Multi-Step Orchestration Metrics Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
-                      <span className="text-[10px] uppercase font-bold text-gray-500">Iterations</span>
-                      <p className="text-sm font-bold text-slate-900 mt-0.5">
-                        {selectedDetails.run.iterationCount || 1}
-                      </p>
-                    </div>
-                    <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
-                      <span className="text-[10px] uppercase font-bold text-gray-500">Tool Calls</span>
-                      <p className="text-sm font-bold text-slate-900 mt-0.5">
-                        {selectedDetails.toolCalls?.length || 0}
-                      </p>
-                    </div>
-                    <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
-                      <span className="text-[10px] uppercase font-bold text-gray-500">Tokens</span>
-                      <p className="text-sm font-bold text-slate-900 mt-0.5">
-                        {selectedDetails.run.totalTokensUsed || 0}
-                      </p>
-                    </div>
-                    <div className="bg-white border border-gray-200 p-2.5 rounded text-center">
-                      <span className="text-[10px] uppercase font-bold text-gray-500">Trigger</span>
-                      <p className="text-sm font-bold text-slate-900 mt-0.5">{selectedDetails.run.triggerType}</p>
-                    </div>
-                  </div>
-
-                  {/* Error / Failure Banner */}
-                  {selectedDetails.run.errorMessage && (
-                    <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3 rounded text-xs space-y-1">
-                      <strong className="font-bold flex items-center gap-1">
-                        <XCircle className="w-4 h-4 text-rose-600" /> Execution Issue:
-                      </strong>
-                      <p className="text-rose-700">{selectedDetails.run.errorMessage}</p>
-                    </div>
-                  )}
-
-                  {/* Staged Proposals Link */}
-                  {(selectedDetails.run.state?.proposalIds?.length > 0 || selectedDetails.run.state?.proposalId) && (
-                    <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded text-xs font-medium flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <Sparkles className="w-4 h-4 text-saffron" />
-                        Proposal Staged for Human Review
-                      </span>
-                      <a
-                        href="/admin/ai-proposals"
-                        className="text-saffron-dark font-bold hover:underline inline-flex items-center gap-1"
-                      >
-                        View in Proposal Review <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                  )}
-
-                  {/* Findings Section */}
-                  <div>
-                    <h5 className="font-bold text-sm text-slate-900 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                      <Layers className="w-4 h-4 text-saffron" />
-                      Structured Findings ({selectedDetails.run.state?.findings?.length || 0})
-                    </h5>
-
-                    {!selectedDetails.run.state?.findings || selectedDetails.run.state.findings.length === 0 ? (
-                      <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded text-xs font-medium">
-                        ✓ Zero issues discovered. System passed all quality and health evaluations.
-                      </div>
-                    ) : (
-                      <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-                        {selectedDetails.run.state.findings.map((finding: any, idx: number) => (
-                          <div
-                            key={finding.id || idx}
-                            className="border border-slate-200 rounded-md p-3 bg-white hover:border-slate-300 transition-colors space-y-1.5"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="font-bold text-slate-900 text-xs">{finding.title || finding.type}</span>
-                              {getSeverityBadge(finding.severity)}
-                            </div>
-                            <p className="text-gray-700">{finding.message}</p>
-                            {finding.recommendation && (
-                              <div className="bg-amber-50/70 border-l-2 border-amber-500 pl-2 py-1 text-amber-900 text-[11px]">
-                                <strong>Recommendation:</strong> {finding.recommendation}
+                      {!selectedDetails.run.state?.findings || selectedDetails.run.state.findings.length === 0 ? (
+                        <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded text-xs font-medium">
+                          ✓ Zero issues discovered. System passed all quality and health evaluations.
+                        </div>
+                      ) : (
+                        <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                          {selectedDetails.run.state.findings.map((finding: any, idx: number) => (
+                            <div
+                              key={finding.id || idx}
+                              className="border border-slate-200 rounded-md p-3 bg-white hover:border-slate-300 transition-colors space-y-1.5"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-bold text-slate-900 text-xs">
+                                  {finding.title || finding.type}
+                                </span>
+                                {getSeverityBadge(finding.severity)}
                               </div>
-                            )}
-                            {finding.evidence && (
-                              <pre className="bg-slate-100 p-1.5 rounded font-mono text-[10px] text-slate-700 overflow-x-auto">
-                                {JSON.stringify(finding.evidence, null, 2)}
-                              </pre>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                              <p className="text-gray-700">{finding.message}</p>
+                              {finding.recommendation && (
+                                <div className="bg-amber-50/70 border-l-2 border-amber-500 pl-2 py-1 text-amber-900 text-[11px]">
+                                  <strong>Recommendation:</strong> {finding.recommendation}
+                                </div>
+                              )}
+                              {finding.evidence && (
+                                <pre className="bg-slate-100 p-1.5 rounded font-mono text-[10px] text-slate-700 overflow-x-auto">
+                                  {JSON.stringify(finding.evidence, null, 2)}
+                                </pre>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
-                  {/* Tool Calls Audit Trail */}
-                  <div>
-                    <h5 className="font-bold text-sm text-slate-900 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                      <Wrench className="w-4 h-4 text-saffron" />
-                      Audited Tool Calls ({selectedDetails.toolCalls?.length || 0})
-                    </h5>
+                    {/* Tool Calls Audit Trail */}
+                    <div>
+                      <h5 className="font-bold text-sm text-slate-900 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                        <Wrench className="w-4 h-4 text-saffron" />
+                        Audited Tool Calls ({selectedDetails.toolCalls?.length || 0})
+                      </h5>
 
-                    {selectedDetails.toolCalls?.length === 0 ? (
-                      <p className="text-gray-500 italic">No tool calls logged for this run.</p>
-                    ) : (
-                      <div className="border border-gray-200 rounded overflow-hidden">
-                        <table className="w-full text-left text-[11px]">
-                          <thead className="bg-slate-100 text-gray-700 font-bold border-b border-gray-200">
-                            <tr>
-                              <th className="py-2 px-3">Tool Name</th>
-                              <th className="py-2 px-3">Tier</th>
-                              <th className="py-2 px-3">Status</th>
-                              <th className="py-2 px-3 font-mono">Duration</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100 font-mono">
-                            {selectedDetails.toolCalls.map((tc: AgentToolCallItem) => (
-                              <tr key={tc.id} className="hover:bg-slate-50">
-                                <td className="py-2 px-3 font-bold text-slate-900">{tc.toolName}</td>
-                                <td className="py-2 px-3 text-gray-600">{tc.permissionTier}</td>
-                                <td className="py-2 px-3">
-                                  <span
-                                    className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                      tc.status === 'SUCCESS'
-                                        ? 'bg-green-100 text-green-800'
-                                        : tc.status === 'BLOCKED'
-                                          ? 'bg-red-100 text-red-800'
-                                          : 'bg-amber-100 text-amber-800'
-                                    }`}
-                                  >
-                                    {tc.status}
-                                  </span>
-                                </td>
-                                <td className="py-2 px-3 text-gray-600">{tc.durationMs}ms</td>
+                      {selectedDetails.toolCalls?.length === 0 ? (
+                        <p className="text-gray-500 italic">No tool calls logged for this run.</p>
+                      ) : (
+                        <div className="border border-gray-200 rounded overflow-hidden">
+                          <table className="w-full text-left text-xs">
+                            <thead className="bg-slate-100 text-gray-700 font-bold border-b border-gray-200">
+                              <tr>
+                                <th className="py-2.5 px-3.5">Tool Name</th>
+                                <th className="py-2.5 px-3.5">Tier</th>
+                                <th className="py-2.5 px-3.5">Status</th>
+                                <th className="py-2.5 px-3.5 font-mono text-right">Duration</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : null}
-            </div>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                              {selectedDetails.toolCalls.map((tc: AgentToolCallItem) => (
+                                <tr key={tc.id} className="hover:bg-slate-50 transition-colors">
+                                  <td className="py-2.5 px-3.5 font-semibold text-slate-900">
+                                    {formatStandardCase(tc.toolName)}
+                                  </td>
+                                  <td className="py-2.5 px-3.5 text-gray-600 font-mono text-[11px]">
+                                    {formatStandardCase(tc.permissionTier)}
+                                  </td>
+                                  <td className="py-2.5 px-3.5">
+                                    <span
+                                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                        tc.status === 'SUCCESS'
+                                          ? 'bg-green-100 text-green-800'
+                                          : tc.status === 'BLOCKED'
+                                            ? 'bg-red-100 text-red-800'
+                                            : 'bg-amber-100 text-amber-800'
+                                      }`}
+                                    >
+                                      {tc.status}
+                                    </span>
+                                  </td>
+                                  <td className="py-2.5 px-3.5 text-gray-600 font-mono text-right">
+                                    {tc.durationMs}ms
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : null}
+              </div>
 
-            {/* Modal Footer */}
-            <div className="px-5 py-3 border-t border-gray-200 bg-slate-50 flex justify-end">
-              <button
-                onClick={() => setSelectedRunId(null)}
-                className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded text-xs cursor-pointer"
-              >
-                Done
-              </button>
+              {/* Modal Footer */}
+              <div className="px-5 py-3.5 border-t border-gray-200 bg-slate-50 flex justify-end">
+                <button
+                  onClick={() => setSelectedRunId(null)}
+                  className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded text-xs cursor-pointer shadow-2xs"
+                >
+                  Done
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
