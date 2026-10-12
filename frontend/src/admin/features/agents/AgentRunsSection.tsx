@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Select } from '@components/ui/Select';
 import { Pagination } from '@components/ui/Pagination';
@@ -18,7 +19,9 @@ import {
   Wrench,
   FileText,
   Calendar,
-  Sparkles
+  Sparkles,
+  ArrowRight,
+  CheckCircle2
 } from 'lucide-react';
 import {
   AgentApi,
@@ -27,9 +30,15 @@ import {
   type AgentDefinitionItem,
   type AgentScheduleItem
 } from './AgentApi';
+import { ProposalApi } from './ProposalApi';
 import { AdminButton } from '@admin/components/AdminButton';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { getAdminPath } from '@utils/host';
 import toast from 'react-hot-toast';
+
+export interface AgentRunsSectionProps {
+  onNavigateToProposals?: () => void;
+}
 
 const formatStandardCase = (str?: string): string => {
   if (!str) return '';
@@ -64,13 +73,85 @@ const scheduleIntervalOptions = [
   { value: 'weekly', label: 'Weekly' }
 ];
 
-export const AgentRunsSection: React.FC = () => {
+const normalizeEntityType = (type?: string): 'bhajan' | 'article' | 'festival' | 'puran' | 'category' | null => {
+  if (!type) return null;
+  const lower = type.toLowerCase().trim();
+  if (lower.startsWith('bhajan')) return 'bhajan';
+  if (lower.startsWith('article')) return 'article';
+  if (lower.startsWith('festival')) return 'festival';
+  if (lower.startsWith('puran')) return 'puran';
+  if (lower.startsWith('categor')) return 'category';
+  return null;
+};
+
+export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateToProposals }) => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [agentFilter, setAgentFilter] = useState<string>('ALL');
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
+  const [generatingProposalKey, setGeneratingProposalKey] = useState<string | null>(null);
+  const [stagedProposalKeys, setStagedProposalKeys] = useState<Record<string, { proposalId?: string }>>({});
+
+  const handleGenerateProposal = async (finding: any, key: string) => {
+    const rawEntityType = finding.entityType || finding.contentType;
+    const entityId = finding.entityId || finding.contentId;
+    const entityType = normalizeEntityType(rawEntityType);
+    const field = finding.field || finding.targetField;
+    const issueType = (finding.issueType || finding.type || '').toUpperCase();
+
+    if (!entityType || !entityId) {
+      toast.error('Unable to determine entity identifier for this finding.');
+      return;
+    }
+
+    setGeneratingProposalKey(key);
+    try {
+      const isSeo =
+        selectedDetails?.run?.agentName === 'SeoAuditAgent' ||
+        issueType.includes('SEO') ||
+        field === 'seo_title' ||
+        field === 'seo_description';
+
+      const isBhajanMeaning =
+        issueType.includes('BHAJAN_MEANING') || (entityType === 'bhajan' && issueType.includes('MEANING'));
+
+      let res: any;
+      if (isSeo) {
+        res = await ProposalApi.generateSeoProposal({
+          entityType,
+          entityId,
+          targetField: field || (issueType.includes('TITLE') ? 'seo_title' : 'seo_description'),
+          auditIssue: issueType,
+          reasoning: finding.recommendation || finding.message
+        });
+      } else if (isBhajanMeaning) {
+        res = await ProposalApi.generateBhajanMeaning(entityId);
+      } else {
+        res = await ProposalApi.generateContentImprovementProposal({
+          entityType,
+          entityId,
+          targetField: field || (issueType.includes('EXCERPT') ? 'excerpt' : 'content'),
+          reasoning: finding.recommendation || finding.message
+        });
+      }
+
+      setStagedProposalKeys((prev) => ({
+        ...prev,
+        [key]: { proposalId: res?.proposalId }
+      }));
+      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposals'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['agent-runs'] });
+      toast.success('Proposal generated & staged in AI Proposals for human review!');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || err.message || 'Failed to generate proposal');
+    } finally {
+      setGeneratingProposalKey(null);
+    }
+  };
 
   // Fetch registered agent definitions
   const { data: definitions = [] } = useQuery({
@@ -727,12 +808,20 @@ export const AgentRunsSection: React.FC = () => {
                           <Sparkles className="w-4 h-4 text-saffron" />
                           Proposal Staged for Human Review
                         </span>
-                        <a
-                          href="/admin/ai-proposals"
-                          className="text-saffron-dark font-bold hover:underline inline-flex items-center gap-1"
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedRunId(null);
+                            if (onNavigateToProposals) {
+                              onNavigateToProposals();
+                            } else {
+                              navigate(getAdminPath('/ai'));
+                            }
+                          }}
+                          className="text-saffron-dark font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
                         >
-                          View in Proposal Review <ExternalLink className="w-3 h-3" />
-                        </a>
+                          View in Proposal Review <ArrowRight className="w-3 h-3" />
+                        </button>
                       </div>
                     )}
 
@@ -749,30 +838,88 @@ export const AgentRunsSection: React.FC = () => {
                         </div>
                       ) : (
                         <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-                          {selectedDetails.run.state.findings.map((finding: any, idx: number) => (
-                            <div
-                              key={finding.id || idx}
-                              className="border border-slate-200 rounded-md p-3 bg-white hover:border-slate-300 transition-colors space-y-1.5"
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="font-bold text-slate-900 text-xs">
-                                  {finding.title || finding.type}
-                                </span>
-                                {getSeverityBadge(finding.severity)}
-                              </div>
-                              <p className="text-gray-700">{finding.message}</p>
-                              {finding.recommendation && (
-                                <div className="bg-amber-50/70 border-l-2 border-amber-500 pl-2 py-1 text-amber-900 text-[11px]">
-                                  <strong>Recommendation:</strong> {finding.recommendation}
+                          {selectedDetails.run.state.findings.map((finding: any, idx: number) => {
+                            const rawEntityType = finding.entityType || finding.contentType;
+                            const entityId = finding.entityId || finding.contentId;
+                            const entityType = normalizeEntityType(rawEntityType);
+                            const field = finding.field || finding.targetField;
+                            const issueType = (finding.issueType || finding.type || '').toUpperCase();
+                            const findingKey = `${finding.id || idx}-${entityType || 'unknown'}-${entityId || 'none'}-${field || issueType}`;
+                            const isStaged = !!stagedProposalKeys[findingKey];
+                            const isGenerating = generatingProposalKey === findingKey;
+                            const canPropose = Boolean(entityType && entityId);
+
+                            return (
+                              <div
+                                key={findingKey}
+                                className="border border-slate-200 rounded-md p-3 bg-white hover:border-slate-300 transition-colors space-y-1.5"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="font-bold text-slate-900 text-xs">
+                                    {finding.title || finding.type}
+                                  </span>
+                                  {getSeverityBadge(finding.severity)}
                                 </div>
-                              )}
-                              {finding.evidence && (
-                                <pre className="bg-slate-100 p-1.5 rounded font-mono text-[10px] text-slate-700 overflow-x-auto">
-                                  {JSON.stringify(finding.evidence, null, 2)}
-                                </pre>
-                              )}
-                            </div>
-                          ))}
+                                <p className="text-gray-700 text-xs">{finding.message}</p>
+                                {finding.recommendation && (
+                                  <div className="bg-amber-50/70 border-l-2 border-amber-500 pl-2 py-1 text-amber-900 text-[11px]">
+                                    <strong>Recommendation:</strong> {finding.recommendation}
+                                  </div>
+                                )}
+                                {finding.evidence && (
+                                  <pre className="bg-slate-100 p-1.5 rounded font-mono text-[10px] text-slate-700 overflow-x-auto">
+                                    {JSON.stringify(finding.evidence, null, 2)}
+                                  </pre>
+                                )}
+
+                                {canPropose && (
+                                  <div className="pt-2 mt-1 border-t border-slate-100 flex items-center justify-between gap-2">
+                                    {isStaged ? (
+                                      <div className="flex items-center justify-between w-full">
+                                        <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px]">
+                                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                          Staged in Proposals (Pending Review)
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setSelectedRunId(null);
+                                            if (onNavigateToProposals) {
+                                              onNavigateToProposals();
+                                            } else {
+                                              navigate(getAdminPath('/ai'));
+                                            }
+                                          }}
+                                          className="inline-flex items-center gap-1 text-[11px] text-saffron-dark font-bold hover:underline cursor-pointer ml-auto"
+                                        >
+                                          View in Proposals <ArrowRight className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        disabled={isGenerating}
+                                        onClick={() => handleGenerateProposal(finding, findingKey)}
+                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs hover:border-amber-400 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        {isGenerating ? (
+                                          <>
+                                            <span className="inline-block w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
+                                            <span>Generating Proposal...</span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                                            <span>Generate AI Proposal</span>
+                                          </>
+                                        )}
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>

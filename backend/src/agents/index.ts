@@ -44,11 +44,17 @@ import { agentRegistry } from './registry/AgentRegistry';
 import { seoAuditAgent } from './seo/SeoAuditAgent';
 import { systemHealthAgent } from './ops/SystemHealthAgent';
 import { contentQualityAgent } from './content/ContentQualityAgent';
+import { seoImprovementAgent } from './seo/SeoImprovementAgent';
+import { contentImprovementAgent } from './content/ContentImprovementAgent';
+import { bhajanMeaningAgent } from './bhajan/BhajanMeaningAgent';
 
 export function registerDefaultAgents(): void {
   agentRegistry.register(seoAuditAgent);
   agentRegistry.register(systemHealthAgent);
   agentRegistry.register(contentQualityAgent);
+  agentRegistry.register(seoImprovementAgent);
+  agentRegistry.register(contentImprovementAgent);
+  agentRegistry.register(bhajanMeaningAgent);
 }
 
 // Automatically register defaults upon load

@@ -152,20 +152,20 @@ export class AiJobRepository {
   }
 
   async getBulkCounts(): Promise<{ bulkSeo: number; bulkExcerpt: number; bulkFestival: number }> {
-    const [bhajanSeo, articleSeo, festivalSeo, puranSeo, articleExcerpt, festivalDesc] = await Promise.all([
-      db.query(`SELECT COUNT(*) FROM bhajans WHERE seo_description IS NULL OR trim(seo_description) = ''`),
-      db.query(`SELECT COUNT(*) FROM articles WHERE seo_description IS NULL OR trim(seo_description) = ''`),
-      db.query(`SELECT COUNT(*) FROM festivals WHERE seo_description IS NULL OR trim(seo_description) = ''`),
-      db.query(`SELECT COUNT(*) FROM puranas WHERE seo_description IS NULL OR trim(seo_description) = ''`),
-      db.query(`SELECT COUNT(*) FROM articles WHERE (excerpt IS NULL OR trim(excerpt) = '') AND content IS NOT NULL`),
+    const [bhajanSeo, articleSeo, articleExcerpt, festivalDesc] = await Promise.all([
+      db.query(
+        `SELECT COUNT(*) FROM bhajans WHERE (seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL`
+      ),
+      db.query(
+        `SELECT COUNT(*) FROM articles WHERE (seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL`
+      ),
+      db.query(
+        `SELECT COUNT(*) FROM articles WHERE (excerpt IS NULL OR trim(excerpt) = '') AND content IS NOT NULL AND deleted_at IS NULL`
+      ),
       db.query(`SELECT COUNT(*) FROM festivals WHERE short_description IS NULL OR trim(short_description) = ''`)
     ]);
 
-    const bulkSeo =
-      parseInt(bhajanSeo.rows[0].count, 10) +
-      parseInt(articleSeo.rows[0].count, 10) +
-      parseInt(festivalSeo.rows[0].count, 10) +
-      parseInt(puranSeo.rows[0].count, 10);
+    const bulkSeo = parseInt(bhajanSeo.rows[0].count, 10) + parseInt(articleSeo.rows[0].count, 10);
     const bulkExcerpt = parseInt(articleExcerpt.rows[0].count, 10);
     const bulkFestival = parseInt(festivalDesc.rows[0].count, 10);
 

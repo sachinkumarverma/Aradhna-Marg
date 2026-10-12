@@ -303,7 +303,7 @@ export function AdminAI() {
 
       {/* Tab Content */}
       {activeTab === 'agent-runs' ? (
-        <AgentRunsSection />
+        <AgentRunsSection onNavigateToProposals={() => setActiveTab('proposals')} />
       ) : (
         <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm flex flex-col ">
           {/* Content Assistant Tab */}

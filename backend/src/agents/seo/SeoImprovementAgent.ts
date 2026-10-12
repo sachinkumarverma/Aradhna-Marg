@@ -124,12 +124,26 @@ export class SeoImprovementAgent implements AutonomousAgent {
       if (!finalTitle || !finalDescription) {
         try {
           const provider = getAiProvider();
+          const deityName =
+            entity.deityName || entity.gods?.name || entity.deity?.name || entity.data?.gods?.name || '';
+          const categoryName =
+            entity.categoryName ||
+            entity.categories?.name ||
+            entity.category?.name ||
+            entity.data?.categories?.name ||
+            '';
+
           const promptPayload = AiPrompts.seoMetadata(options.entityType, {
             title: entityTitle,
             name: entity.name,
             content: entity.content,
             description: entity.description || entity.short_description || entity.excerpt,
-            lyrics: entity.lyrics
+            lyrics: entity.lyrics,
+            deity: deityName,
+            category: categoryName,
+            currentSeoTitle,
+            currentSeoDescription,
+            auditIssue: detectedIssue || options.auditIssue || options.reasoning
           });
 
           const rawCompletion = await provider.generateCompletion(promptPayload);

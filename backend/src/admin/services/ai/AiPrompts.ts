@@ -2,6 +2,7 @@ export interface PromptPayload {
   systemPrompt: string;
   prompt: string;
   maxTokens?: number;
+  temperature?: number;
   responseFormatJson?: boolean;
 }
 
@@ -122,33 +123,82 @@ Instructions:
 
   /**
    * Generates concise, optimal SEO Title (max 60 chars) and Meta Description (max 155 chars).
+   * Enforces strict theological fidelity to the primary deity and prevents cross-deity hallucinations.
    */
   static seoMetadata(
     contentType: string,
-    item: { title?: string; name?: string; content?: string; description?: string; lyrics?: string }
+    item: {
+      title?: string;
+      name?: string;
+      content?: string;
+      description?: string;
+      lyrics?: string;
+      deity?: string;
+      category?: string;
+      currentSeoTitle?: string;
+      currentSeoDescription?: string;
+      auditIssue?: string;
+    }
   ): PromptPayload {
-    const title = item.title || item.name || '';
+    const title = (item.title || item.name || '').trim();
     const bodyContext = (item.content || item.description || item.lyrics || '').replace(/<[^>]*>/g, '').slice(0, 1500);
+    const deityInfo = item.deity ? `\nPrimary Deity / Aradhya: "${item.deity}"` : '';
+    const categoryInfo = item.category ? `\nCategory: "${item.category}"` : '';
+
+    let taskSpecificGuidance = '';
+    if (item.currentSeoDescription) {
+      taskSpecificGuidance += `\nExisting Meta Description (${item.currentSeoDescription.length} chars):
+"${item.currentSeoDescription}"`;
+
+      if (item.auditIssue?.includes('LONG') || item.currentSeoDescription.length > 160) {
+        taskSpecificGuidance += `
+CRITICAL TASK FOR DESCRIPTION:
+The current meta description is too long (${item.currentSeoDescription.length} characters).
+You MUST CONDENSE this existing description down to between 120 and 155 characters.
+Preserve the EXACT same deity, topic, devotional tone, and meaning as the existing description.
+Do NOT invent new storylines or mention different deities!`;
+      } else if (item.auditIssue?.includes('SHORT') || item.currentSeoDescription.length < 40) {
+        taskSpecificGuidance += `
+CRITICAL TASK FOR DESCRIPTION:
+The current meta description is too brief (${item.currentSeoDescription.length} characters).
+Expand it to between 120 and 155 characters while strictly preserving the existing topic, deity, and theme.`;
+      }
+    }
+
+    if (item.currentSeoTitle) {
+      taskSpecificGuidance += `\nExisting SEO Title: "${item.currentSeoTitle}"`;
+    }
 
     return {
       systemPrompt:
-        'You are an SEO metadata specialist for a sacred Sanatan Dharma portal (Aradhna Marg). You output strictly valid JSON with "seo_title" and "seo_description" properties.',
-      prompt: `Generate an SEO title and meta description for this ${contentType}:
+        'You are a high-precision devotional SEO specialist for a sacred Sanatan Dharma web platform (Aradhna Marg). You output strictly valid JSON with "seo_title" and "seo_description" properties. You maintain absolute theological accuracy and NEVER mix or confuse Hindu deities or traditions.',
+      prompt: `Generate an optimized SEO Title and Meta Description for this ${contentType}:
 
-Title/Name: "${title}"
+Title/Name: "${title}"${deityInfo}${categoryInfo}
 Context:
 ${bodyContext}
+${taskSpecificGuidance}
 
-Requirements:
-1. "seo_title": Compelling and accurate, between 40 and 60 characters long. Include key devotional keywords naturally.
-2. "seo_description": Clear, high-click-through summary between 120 and 155 characters long. No keyword stuffing.
-3. Language must match the content (Hindi if context is Hindi, English if context is English).
-4. Output strictly a JSON object in this exact format:
+MANDATORY SANATAN DHARMA ACCURACY & THEOLOGICAL FIDELITY RULES:
+1. STRICT DEITY FIDELITY: Maintain total theological consistency with the specific deity, leela, or tradition of this content.
+   - If dedicated to Shri Krishna / Radha / Vrindavan / Gokul, focus strictly on Krishna, Radha, Vrindavan, and Krishna-bhakti. NEVER mention Shri Ram, Lord Shiva, or other deities.
+   - If dedicated to Shri Ram / Sita / Ayodhya, focus strictly on Ram, Sita, and Ram-bhakti.
+   - If dedicated to Lord Shiva / Mahadev, focus strictly on Shiva, Bholenath, and Shaivism.
+   - If dedicated to Hanuman, Durga, Ganesha, etc., focus strictly on that deity.
+   - NEVER hallucinate or substitute unrelated deities!
+2. FIDELITY TO CONTENT: The description must accurately reflect this specific composition, its emotional rasa (e.g. viraha, shringara, surrender, aarti), and key lyrical themes.
+3. PRESERVE EXISTING WORK: If an existing description or title is provided, retain its core phrasing, tone, and deities while adjusting length to fit the target range.
+4. TARGET LENGTH LIMITS:
+   - "seo_title": Compelling and devotional, between 40 and 60 characters.
+   - "seo_description": High-click-through devotional summary, strictly between 120 and 155 characters.
+5. LANGUAGE: Match the content language (pure, eloquent Hindi in Devanagari script for Hindi content; English for English content).
+6. Output strictly a JSON object in this exact format:
 {
   "seo_title": "your generated title",
   "seo_description": "your generated meta description"
 }`,
       maxTokens: 250,
+      temperature: 0.15,
       responseFormatJson: true
     };
   }
