@@ -1,13 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import axios from 'axios';
-import crypto from 'crypto';
 import { config } from '@/config';
-import { sendSuccess, sendError } from '@/responses/apiResponse';
-import { AppError, InternalServerError } from '@/errors/appError';
-import { logger } from '@utils/logger';
-import { emailService } from '@services/EmailService';
+import { sendSuccess } from '@/responses/apiResponse';
+import { paymentService, PaymentService } from '@services/PaymentService';
+import { AppError } from '@/errors/appError';
 
 export class PaymentController {
+  constructor(private readonly service: PaymentService = paymentService) {}
+
   public getConfig = async (req: Request, res: Response, next: NextFunction) => {
     try {
       return sendSuccess(res, 'Payment config retrieved', {
@@ -20,58 +19,19 @@ export class PaymentController {
 
   public createOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { amount, donorName, donorEmail, donorPhone, note } = req.body;
+      const { amount, donorName, donorEmail, donorPhone, note, isAnonymous } = req.body;
 
-      const numAmount = Number(amount);
-      if (isNaN(numAmount) || numAmount < 1) {
-        throw new AppError('कृपया एक वैध राशि दर्ज करें (कम से कम ₹1) / Please enter a valid amount (minimum ₹1)', 400);
-      }
-
-      if (!config.RAZORPAY_KEY_ID || !config.RAZORPAY_KEY_SECRET) {
-        throw new InternalServerError('Razorpay gateway is not configured properly.');
-      }
-
-      const amountInPaise = Math.round(numAmount * 100);
-      const receipt = `rcpt_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-
-      const auth = Buffer.from(`${config.RAZORPAY_KEY_ID}:${config.RAZORPAY_KEY_SECRET}`).toString('base64');
-
-      const response = await axios.post(
-        'https://api.razorpay.com/v1/orders',
-        {
-          amount: amountInPaise,
-          currency: 'INR',
-          receipt,
-          notes: {
-            donorName: donorName || 'Devotee / श्रद्धालु',
-            donorEmail: donorEmail || '',
-            donorPhone: donorPhone || '',
-            note: note || '',
-            purpose: 'Aradhna Marg Sanatan Devotional Support'
-          }
-        },
-        {
-          headers: {
-            Authorization: `Basic ${auth}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      const order = response.data;
-
-      return sendSuccess(res, 'Order created successfully', {
-        orderId: order.id,
-        amount: order.amount,
-        currency: order.currency,
-        keyId: config.RAZORPAY_KEY_ID,
-        receipt: order.receipt
+      const order = await this.service.createOrder({
+        amount,
+        donorName,
+        donorEmail,
+        donorPhone,
+        note,
+        isAnonymous
       });
-    } catch (error: any) {
-      logger.error('Razorpay Create Order Error:', error?.response?.data || error.message);
-      if (error?.response?.data?.error?.description) {
-        return sendError(res, error.response.data.error.description, undefined, 400);
-      }
+
+      return sendSuccess(res, 'Order created successfully', order);
+    } catch (error) {
       next(error);
     }
   };
@@ -89,71 +49,43 @@ export class PaymentController {
         note
       } = req.body;
 
-      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-        throw new AppError('Payment signature or IDs missing.', 400);
+      const result = await this.service.verifyPayment({
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        donorName,
+        donorEmail,
+        donorPhone,
+        amount: amount !== undefined ? Number(amount) : undefined,
+        note
+      });
+
+      return sendSuccess(res, result.message, {
+        verified: result.verified,
+        orderId: result.orderId,
+        paymentId: result.paymentId,
+        payment: result.payment,
+        message: result.message
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public handleWebhook = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const signature = req.headers['x-razorpay-signature'] as string;
+      if (!signature) {
+        throw new AppError('Missing x-razorpay-signature header', 400);
       }
 
-      if (!config.RAZORPAY_KEY_SECRET) {
-        throw new InternalServerError('Razorpay secret is not configured.');
+      const rawBody = (req as any).rawBody;
+      if (!rawBody) {
+        throw new AppError('Raw request body unavailable for signature verification', 400);
       }
+      const result = await this.service.handleWebhook(req.body, signature, rawBody);
 
-      const body = `${razorpay_order_id}|${razorpay_payment_id}`;
-      const expectedSignature = crypto
-        .createHmac('sha256', config.RAZORPAY_KEY_SECRET)
-        .update(body.toString())
-        .digest('hex');
-
-      const isAuthentic = expectedSignature === razorpay_signature;
-
-      if (!isAuthentic) {
-        logger.warn('Payment Signature Verification Failed for Order:', razorpay_order_id);
-        throw new AppError('भुगतान सत्यापन विफल रहा / Payment verification failed', 400);
-      }
-
-      logger.info(
-        `✅ Donation Payment Successful: Order ${razorpay_order_id}, Payment ${razorpay_payment_id}, Amount ₹${amount} by ${donorName || 'Anonymous'}`
-      );
-
-      // 1. Send Electronic Invoice Receipt to the Donor via Email
-      if (donorEmail && donorEmail.trim() && donorEmail.includes('@')) {
-        emailService
-          .sendDonationReceipt({
-            donorName: donorName || 'Devotee / श्रद्धालु',
-            donorEmail: donorEmail.trim(),
-            donorPhone: donorPhone ? donorPhone.trim() : undefined,
-            amount: Number(amount) || 0,
-            paymentId: razorpay_payment_id,
-            orderId: razorpay_order_id,
-            date: new Date(),
-            note: note || undefined
-          })
-          .catch((err) => logger.warn('Failed to dispatch donor email receipt:', err.message));
-      }
-
-      // 2. Send Alert to Platform Admin
-      emailService
-        .sendDonationAlertToAdmin({
-          donorName: donorName || 'Devotee / श्रद्धालु',
-          donorEmail: donorEmail || 'Not specified',
-          donorPhone: donorPhone,
-          amount: Number(amount) || 0,
-          paymentId: razorpay_payment_id,
-          orderId: razorpay_order_id,
-          date: new Date(),
-          note: note
-        })
-        .catch((err) => logger.warn('Failed to dispatch admin donation alert:', err.message));
-
-      return sendSuccess(
-        res,
-        'दान एवं सहयोग हेतु आपका कोटि-कोटि धन्यवाद! सहयोग रसीद आपके ईमेल पर प्रेषित कर दी गई है।',
-        {
-          verified: true,
-          orderId: razorpay_order_id,
-          paymentId: razorpay_payment_id,
-          message: 'दान एवं सहयोग हेतु आपका कोटि-कोटि धन्यवाद! सहयोग रसीद आपके ईमेल पर प्रेषित कर दी गई है।'
-        }
-      );
+      return sendSuccess(res, 'Webhook processed successfully', result);
     } catch (error) {
       next(error);
     }

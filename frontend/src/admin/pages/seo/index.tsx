@@ -489,18 +489,6 @@ export const AdminSEO = () => {
                   </p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={handleRunAgentAudit}
-                  disabled={isRunningAgentAudit}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-orange-200 hover:border-saffron text-slate-800 hover:text-saffron rounded-md text-xs font-semibold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
-                >
-                  <Zap className={cn('w-3.5 h-3.5', isRunningAgentAudit && 'animate-spin text-saffron')} />
-                  <span>{isRunningAgentAudit ? 'Auditing Website...' : 'Run SEO Audit Agent'}</span>
-                </button>
-              </div>
             </div>
 
             {latestAgentAudit?.state?.summary ? (

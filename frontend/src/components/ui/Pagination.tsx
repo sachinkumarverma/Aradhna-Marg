@@ -40,14 +40,14 @@ export function Pagination({
   if (totalPages === 0) return null;
 
   return (
-    <div className="flex items-center justify-between py-2.5 px-3 sm:px-6 bg-orange-50 border-t border-orange-100 mt-auto rounded-b-md gap-2">
+    <div className="grid grid-cols-3 items-center py-2.5 px-3 sm:px-6 bg-orange-50 border-t border-orange-100 mt-auto rounded-b-md w-full gap-2">
       {/* Total records (Left End on both Mobile and Desktop) */}
-      <div className="text-xs sm:text-sm text-gray-700 font-medium whitespace-nowrap shrink-0">
+      <div className="text-xs sm:text-sm text-gray-700 font-medium whitespace-nowrap justify-self-start min-w-0">
         <span className="font-bold text-gray-900">{totalRecords}</span> records
       </div>
 
-      {/* Pagination Controls */}
-      <div className="flex items-center gap-1 justify-center mx-auto sm:mx-0">
+      {/* Pagination Controls - Truly centered in the card */}
+      <div className="flex items-center gap-1 justify-center justify-self-center min-w-0">
         {/* Previous Button */}
         <button
           type="button"
@@ -103,8 +103,8 @@ export function Pagination({
         </button>
       </div>
 
-      {/* Rows per page selector */}
-      <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 font-medium whitespace-nowrap shrink-0">
+      {/* Rows per page selector (Right End) */}
+      <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 font-medium whitespace-nowrap justify-self-end min-w-0">
         <span className="hidden lg:inline">Rows per page</span>
         <span className="hidden sm:inline lg:hidden">Rows:</span>
         <div className="w-[66px] sm:w-20 shrink-0">

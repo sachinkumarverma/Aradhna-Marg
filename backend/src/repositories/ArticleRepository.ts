@@ -17,12 +17,19 @@ export class ArticleRepository extends BaseRepository<any> {
     festival?: string;
     deity?: string;
     sort?: string;
+    missing?: string;
   }) {
-    const { page, limit, search, status, category, author, featured, sort } = params;
+    const { page, limit, search, status, category, author, featured, sort, missing } = params;
     const offset = (page - 1) * limit;
 
     const whereClauses = ['a.deleted_at IS NULL'];
     const queryParams: any[] = [];
+
+    if (missing === 'excerpt') {
+      whereClauses.push(`(a.excerpt IS NULL OR trim(a.excerpt) = '') AND a.content IS NOT NULL`);
+    } else if (missing === 'seo') {
+      whereClauses.push(`(a.seo_description IS NULL OR trim(a.seo_description) = '')`);
+    }
 
     if (status) {
       queryParams.push(status);

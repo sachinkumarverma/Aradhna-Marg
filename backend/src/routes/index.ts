@@ -10,6 +10,7 @@ import puranaRoutes from './puranas.routes';
 import { seoRoutes } from '@features/seo';
 import publicRoutes from './public.routes';
 import cronRoutes from './cron.routes';
+import { paymentController } from '@controllers/PaymentController';
 
 const router = Router();
 
@@ -30,5 +31,9 @@ router.use('/v1/settings', settingsRoutes);
 router.use('/v1/seo', seoRoutes);
 router.use('/public', publicRoutes);
 router.use('/v1/public', publicRoutes);
+
+// Direct Gateway Webhook Routing (serves /api/payments/webhook and /api/v1/payments/webhook)
+router.post('/payments/webhook', paymentController.handleWebhook);
+router.post('/v1/payments/webhook', paymentController.handleWebhook);
 
 export default router;

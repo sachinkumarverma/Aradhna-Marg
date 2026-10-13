@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiClient } from '@api/client';
 import toast from 'react-hot-toast';
-import { Zap, Play, FileText, Calendar, FolderTree, BookOpen, Music, BrainCircuit } from 'lucide-react';
+import { Zap, Play, FileText, Calendar, FolderTree, BookOpen, Music, BrainCircuit, ArrowUpRight } from 'lucide-react';
 import { AdminButton } from '@admin/components/AdminButton';
 import { getAdminPath } from '@utils/host';
 
@@ -233,21 +233,27 @@ export function AdminAIProcessing() {
                   desc: 'Generates missing SEO titles and meta descriptions for Bhajans and Articles',
                   type: 'BULK_SEO',
                   content: 'Global',
-                  items: bulkCounts?.bulkSeo ?? 0
+                  items: bulkCounts?.bulkSeo ?? 0,
+                  redirectPath: getAdminPath('/seo?tab=issues'),
+                  redirectTooltip: 'View missing SEO records in SEO Engine Issues'
                 },
                 {
                   name: 'Generate Article Excerpts',
                   desc: 'Creates short summaries for articles missing an excerpt',
                   type: 'BULK_EXCERPT',
                   content: 'Articles',
-                  items: bulkCounts?.bulkExcerpt ?? 0
+                  items: bulkCounts?.bulkExcerpt ?? 0,
+                  redirectPath: getAdminPath('/articles?missing=excerpt'),
+                  redirectTooltip: 'View articles missing an excerpt'
                 },
                 {
                   name: 'Generate Festival Summaries',
                   desc: 'Fills missing descriptions for upcoming festivals',
                   type: 'BULK_FESTIVAL',
                   content: 'Festivals',
-                  items: bulkCounts?.bulkFestival ?? 0
+                  items: bulkCounts?.bulkFestival ?? 0,
+                  redirectPath: getAdminPath('/festivals?missing=description'),
+                  redirectTooltip: 'View festivals missing short description'
                 }
               ].map((tool) => (
                 <div
@@ -259,10 +265,34 @@ export function AdminAIProcessing() {
                       <h3 className="font-semibold text-sm sm:text-base text-gray-900">{tool.name}</h3>
                       <p className="text-xs sm:text-sm text-gray-500 mt-1 leading-relaxed">{tool.desc}</p>
                     </div>
-                    <div className="mt-4 inline-flex self-start items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                      {isLoadingBulkCounts
-                        ? 'Auditing database...'
-                        : `${tool.items} eligible record${tool.items === 1 ? '' : 's'} detected`}
+                    <div className="mt-4 flex items-center justify-between gap-2">
+                      {tool.items > 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => navigate(tool.redirectPath)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-orange-50 text-orange-800 border border-orange-200/90 hover:bg-orange-100 hover:text-orange-900 hover:border-orange-300 transition-all cursor-pointer group shadow-2xs"
+                          title={tool.redirectTooltip}
+                        >
+                          <span>
+                            {tool.items} eligible record{tool.items === 1 ? '' : 's'} detected
+                          </span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-orange-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        </button>
+                      ) : (
+                        <div className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600">
+                          {isLoadingBulkCounts ? 'Auditing database...' : '0 eligible records detected'}
+                        </div>
+                      )}
+
+                      {tool.items > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => navigate(tool.redirectPath)}
+                          className="text-xs font-semibold text-saffron hover:text-orange-700 underline flex items-center gap-1 cursor-pointer shrink-0"
+                        >
+                          View list →
+                        </button>
+                      )}
                     </div>
                   </div>
                   <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-200">

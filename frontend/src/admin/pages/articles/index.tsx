@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ConfirmDialog } from '@components/ui/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, FileText, CheckCircle2, XCircle, Star, RefreshCw } from 'lucide-react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet, useSearchParams } from 'react-router-dom';
 import { DataTable } from '@admin/components/DataTable';
 import { AdminButton } from '@admin/components/AdminButton';
 import { Select } from '@components/ui/Select';
@@ -16,6 +16,8 @@ import toast from 'react-hot-toast';
 export const AdminArticles: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const missingFilter = searchParams.get('missing') || '';
   const [page, setPage] = useState(1);
   const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean; action: string; ids: string[] }>({
     isOpen: false,
@@ -29,10 +31,10 @@ export const AdminArticles: React.FC = () => {
 
   // Fetch articles
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['admin-articles', page, search, statusFilter, sort],
+    queryKey: ['admin-articles', page, search, statusFilter, sort, missingFilter],
     queryFn: async () => {
       const res = await apiClient.get('/admin/articles', {
-        params: { page, limit: 10, search, status: statusFilter, sort }
+        params: { page, limit: 10, search, status: statusFilter, sort, missing: missingFilter }
       });
       return res.data;
     }
@@ -193,6 +195,26 @@ export const AdminArticles: React.FC = () => {
         </div>
         <SearchInput placeholder="Search articles..." value={search} onChange={setSearch} />
       </div>
+
+      {missingFilter && (
+        <div className="flex items-center justify-between px-3.5 py-2 bg-amber-50 border border-amber-200 rounded-md text-xs text-amber-900 shadow-2xs">
+          <span className="font-semibold flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            Filtering articles missing an {missingFilter === 'excerpt' ? 'excerpt' : missingFilter.toUpperCase()}
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              const next = new URLSearchParams(searchParams);
+              next.delete('missing');
+              setSearchParams(next);
+            }}
+            className="text-amber-700 hover:text-amber-950 font-bold underline cursor-pointer text-xs"
+          >
+            Clear Filter ×
+          </button>
+        </div>
+      )}
 
       <div className="flex-1  relative">
         <DataTable

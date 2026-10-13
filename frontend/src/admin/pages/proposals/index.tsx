@@ -167,7 +167,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
       case 'PENDING':
         return (
           <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-amber-600 text-white">
-            PENDING
+            NEEDS REVIEW
           </span>
         );
       case 'EXECUTING':
@@ -267,14 +267,15 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
         </div>
       )}
 
-      {/* 6 Summary Stat Cards (square icon containers matching dashboard cards) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
-        {/* Pending */}
+      {/* 4 User-Facing Summary Stat Cards: Needs Review (Pending), Completed, Failed, Rejected */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        {/* Needs Review (PENDING) */}
         <div
           onClick={() => {
             setStatusFilter(statusFilter === 'PENDING' ? 'ALL' : 'PENDING');
             setPage(1);
           }}
+          title="Proposals waiting for human review and decision."
           className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
             statusFilter === 'PENDING'
               ? 'ring-1 ring-amber-400 border-amber-400 bg-amber-50/60'
@@ -282,54 +283,13 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500">Pending</span>
+            <span className="text-xs font-semibold text-gray-500">Needs Review</span>
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900 mt-2">{stats.pending}</p>
-        </div>
-
-        {/* Approved */}
-        <div
-          onClick={() => {
-            setStatusFilter(statusFilter === 'APPROVED' ? 'ALL' : 'APPROVED');
-            setPage(1);
-          }}
-          className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
-            statusFilter === 'APPROVED'
-              ? 'ring-1 ring-blue-400 border-blue-400 bg-blue-50/60'
-              : 'border-blue-200/80 bg-gradient-to-br from-blue-50/50 to-white hover:border-blue-400'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500">Approved</span>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900 mt-2">{stats.approved}</p>
-        </div>
-
-        {/* Executing */}
-        <div
-          onClick={() => {
-            setStatusFilter(statusFilter === 'EXECUTING' ? 'ALL' : 'EXECUTING');
-            setPage(1);
-          }}
-          className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
-            statusFilter === 'EXECUTING'
-              ? 'ring-1 ring-purple-400 border-purple-400 bg-purple-50/60'
-              : 'border-purple-200/80 bg-gradient-to-br from-purple-50/50 to-white hover:border-purple-400'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500">Executing</span>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
-              <Play className="w-3.5 h-3.5 fill-purple-600 text-purple-600 ml-0.5" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900 mt-2">{stats.executing}</p>
+          <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">Waiting for human review &amp; decision</p>
         </div>
 
         {/* Completed */}
@@ -338,6 +298,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
             setStatusFilter(statusFilter === 'COMPLETED' ? 'ALL' : 'COMPLETED');
             setPage(1);
           }}
+          title="Approved proposals whose execution completed successfully."
           className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
             statusFilter === 'COMPLETED'
               ? 'ring-1 ring-emerald-400 border-emerald-400 bg-emerald-50/60'
@@ -351,6 +312,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900 mt-2">{stats.completed}</p>
+          <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">Execution completed successfully</p>
         </div>
 
         {/* Failed */}
@@ -359,6 +321,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
             setStatusFilter(statusFilter === 'FAILED' ? 'ALL' : 'FAILED');
             setPage(1);
           }}
+          title="Approved proposals whose execution failed."
           className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
             statusFilter === 'FAILED'
               ? 'ring-1 ring-rose-400 border-rose-400 bg-rose-50/60'
@@ -372,6 +335,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900 mt-2">{stats.failed}</p>
+          <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">Approved execution failed</p>
         </div>
 
         {/* Rejected */}
@@ -380,6 +344,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
             setStatusFilter(statusFilter === 'REJECTED' ? 'ALL' : 'REJECTED');
             setPage(1);
           }}
+          title="Proposals rejected during human review."
           className={`p-4 rounded-md border transition-all cursor-pointer shadow-sm ${
             statusFilter === 'REJECTED'
               ? 'ring-1 ring-gray-400 border-gray-400 bg-gray-100'
@@ -393,6 +358,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900 mt-2">{stats.rejected}</p>
+          <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">Declined during human review</p>
         </div>
       </div>
 
@@ -408,7 +374,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
             }}
             options={[
               { value: 'ALL', label: 'All Statuses' },
-              { value: 'PENDING', label: 'Pending' },
+              { value: 'PENDING', label: 'Needs Review' },
               { value: 'APPROVED', label: 'Approved' },
               { value: 'EXECUTING', label: 'Executing' },
               { value: 'COMPLETED', label: 'Completed' },

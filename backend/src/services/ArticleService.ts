@@ -12,7 +12,8 @@ export class ArticleService {
       category: query.category,
       author: query.author,
       featured: query.featured,
-      sort: query.sort
+      sort: query.sort,
+      missing: query.missing
     });
   }
 

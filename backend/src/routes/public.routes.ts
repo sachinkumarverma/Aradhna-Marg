@@ -171,6 +171,7 @@ import { paymentController } from '@controllers/PaymentController';
 router.get('/payments/config', paymentController.getConfig);
 router.post('/payments/create-order', paymentController.createOrder);
 router.post('/payments/verify', paymentController.verifyPayment);
+router.post('/payments/webhook', paymentController.handleWebhook);
 
 // Contact & Suggestions / Newsletter Routes
 import { contactController } from '@controllers/ContactController';

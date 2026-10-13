@@ -252,7 +252,11 @@ export const ProposalDetailDrawer: React.FC<ProposalDetailDrawerProps> = ({ prop
         {/* Main Side Drawer Panel with widened layout */}
         <div
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-7xl bg-[#f8fafc] h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden font-sans border-l border-slate-200"
+          className="relative w-full max-w-7xl bg-[#f8fafc] h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 overflow-hidden border-l border-slate-200"
+          style={{
+            fontFamily:
+              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Helvetica Neue", Arial, sans-serif'
+          }}
         >
           {/* While Loading: Clean loader, NO dirty data */}
           {isLoading || !proposal ? (
@@ -665,7 +669,7 @@ export const ProposalDetailDrawer: React.FC<ProposalDetailDrawerProps> = ({ prop
                               <span className="font-medium truncate" title="get_content_item">
                                 Get Content Item
                               </span>
-                              <span className="text-slate-400 text-[10px] font-sans shrink-0">169ms</span>
+                              <span className="text-slate-400 text-[10px] shrink-0">169ms</span>
                             </div>
                           </div>
                         </div>
@@ -692,7 +696,7 @@ export const ProposalDetailDrawer: React.FC<ProposalDetailDrawerProps> = ({ prop
                               <span className="font-medium truncate" title="propose_article_content_improvement">
                                 Propose Content
                               </span>
-                              <span className="text-slate-400 text-[10px] font-sans shrink-0">0ms</span>
+                              <span className="text-slate-400 text-[10px] shrink-0">0ms</span>
                             </div>
                           </div>
                         </div>
@@ -719,7 +723,7 @@ export const ProposalDetailDrawer: React.FC<ProposalDetailDrawerProps> = ({ prop
                               <span className="font-medium truncate" title="apply_article_content_field">
                                 Apply Field Change
                               </span>
-                              <span className="text-slate-400 text-[10px] font-sans shrink-0">326ms</span>
+                              <span className="text-slate-400 text-[10px] shrink-0">326ms</span>
                             </div>
                           </div>
                         </div>

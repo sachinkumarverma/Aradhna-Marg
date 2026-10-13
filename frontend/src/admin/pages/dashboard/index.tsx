@@ -9,8 +9,12 @@ import {
   Activity,
   FileText,
   CheckCircle2,
-  XCircle
+  XCircle,
+  HeartHandshake,
+  ArrowRight
 } from 'lucide-react';
+import { DonationsApi, type PaymentItem } from '@admin/features/donations/DonationsApi';
+
 import { StatCard } from '@admin/components/StatCard';
 import { apiClient } from '@api/client';
 import { getAdminPath } from '@utils/host';
@@ -40,6 +44,16 @@ export const AdminDashboard: React.FC = () => {
       const res = await apiClient.get('/v1/settings');
       return res.data.data;
     }
+  });
+
+  const { data: donationsOverview } = useQuery({
+    queryKey: ['admin-dashboard-donations-overview'],
+    queryFn: () => DonationsApi.getOverview('30d')
+  });
+
+  const { data: recentDonations } = useQuery({
+    queryKey: ['admin-dashboard-donations-recent'],
+    queryFn: () => DonationsApi.getPayments({ page: 1, limit: 4, status: 'SUCCESS' })
   });
 
   if (isLoading) {
@@ -219,6 +233,86 @@ export const AdminDashboard: React.FC = () => {
               Manage Synchronization
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Devotional Support & Donations Widget */}
+      <div className="bg-gradient-to-br from-amber-50/60 via-orange-50/30 to-white rounded-md border border-amber-200/70 shadow-sm p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3.5 border-b border-amber-100/80">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-[#ff3b00] text-white flex items-center justify-center shadow-xs">
+              <HeartHandshake className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-gray-900 flex items-center gap-2">
+                Devotional Support & Donations
+              </h3>
+              <p className="text-xs text-gray-500">Voluntary community contributions & offerings</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate(getAdminPath('/donations'))}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ff3b00] hover:text-[#d9480f] bg-white hover:bg-orange-50/60 border border-orange-200 px-3 py-1.5 rounded-md transition-all shadow-2xs self-start sm:self-auto cursor-pointer"
+          >
+            <span>View Donations</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Overview Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
+          <div className="bg-white/90 p-3 rounded-md border border-amber-100 shadow-2xs">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Collected</p>
+            <p className="text-lg font-black text-slate-900 mt-0.5">
+              ₹{new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.totalCollected || 0)}
+            </p>
+          </div>
+          <div className="bg-white/90 p-3 rounded-md border border-amber-100 shadow-2xs">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">This Month</p>
+            <p className="text-lg font-black text-emerald-600 mt-0.5">
+              ₹{new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.thisMonth || 0)}
+            </p>
+          </div>
+          <div className="bg-white/90 p-3 rounded-md border border-amber-100 shadow-2xs">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Successful Payments</p>
+            <p className="text-lg font-black text-slate-900 mt-0.5">
+              {new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.successfulPayments || 0)}
+            </p>
+          </div>
+        </div>
+
+        {/* Recent Contributions */}
+        <div>
+          <p className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Recent Contributions</p>
+          {recentDonations?.data && recentDonations.data.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              {recentDonations.data.map((payment: PaymentItem) => (
+                <div
+                  key={payment.id}
+                  onClick={() => navigate(getAdminPath('/donations?tab=payments'))}
+                  className="flex items-center justify-between p-2.5 bg-white rounded-md border border-gray-100 hover:border-orange-200 transition-all cursor-pointer shadow-2xs"
+                >
+                  <div className="min-w-0 pr-2">
+                    <p className="text-xs font-semibold text-gray-900 truncate">
+                      {payment.isAnonymous ? 'Anonymous Supporter' : payment.supporterName || 'Supporter'}
+                    </p>
+                    <p className="text-[11px] text-gray-400">
+                      {payment.paidAt
+                        ? new Intl.DateTimeFormat('en-IN', { dateStyle: 'short' }).format(new Date(payment.paidAt))
+                        : 'Recent'}
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 shrink-0">
+                    ₹{payment.amount}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4 bg-white/70 rounded-md border border-dashed border-gray-200 text-xs text-gray-400">
+              No recent contributions recorded yet.
+            </div>
+          )}
         </div>
       </div>
     </div>

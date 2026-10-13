@@ -61,13 +61,26 @@ export class FestivalRepository {
   }
 
   async findAll(
-    options: { search?: string; sort?: string; order?: 'asc' | 'desc'; page?: number; limit?: number } = {}
+    options: {
+      search?: string;
+      sort?: string;
+      order?: 'asc' | 'desc';
+      page?: number;
+      limit?: number;
+      missing?: string;
+    } = {}
   ): Promise<{ data: Festival[]; total: number }> {
-    const { search, sort = 'created_at', order = 'desc', page = 1, limit = 10 } = options;
+    const { search, sort = 'created_at', order = 'desc', page = 1, limit = 10, missing } = options;
     const offset = (page - 1) * limit;
 
     const whereClauses: string[] = [];
     const queryParams: any[] = [];
+
+    if (missing === 'description') {
+      whereClauses.push(`(f.short_description IS NULL OR trim(f.short_description) = '')`);
+    } else if (missing === 'seo') {
+      whereClauses.push(`(f.seo_description IS NULL OR trim(f.seo_description) = '')`);
+    }
 
     if (search) {
       queryParams.push(`%${search}%`);

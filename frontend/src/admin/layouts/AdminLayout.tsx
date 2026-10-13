@@ -1,8 +1,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Bell, Search, LogOut } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import { AdminSidebar } from '@admin/components/AdminSidebar';
 import { SessionManager } from '@admin/components/SessionManager';
+import { NotificationBell } from '@admin/components/NotificationBell';
 import { logout, verifySession } from '@api/auth';
 import { SEOHead } from '@components/seo';
 import { CustomLoader } from '@components/common/CustomLoader';
@@ -68,23 +69,10 @@ export const AdminLayout: React.FC = () => {
             >
               <Menu className="w-5 h-5" />
             </button>
-
-            {/* Quick Search */}
-            <div className="hidden md:flex items-center relative">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Global Search (Cmd+K)"
-                className="pl-9 pr-4 py-2 bg-white/90 hover:bg-white focus:bg-white border-transparent rounded-md text-sm w-64 text-gray-700 placeholder:text-gray-400 focus:text-gray-900 focus:ring-2 focus:ring-white/50 transition-all outline-none shadow-inner"
-              />
-            </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="p-2 text-white/90 hover:text-white hover:bg-white/10 rounded-md relative transition-colors">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full border-2 border-[#ff3b00]"></span>
-            </button>
+            <NotificationBell />
             <button
               onClick={handleLogout}
               className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white/90 hover:text-white hover:bg-white/10 rounded-md transition-colors"

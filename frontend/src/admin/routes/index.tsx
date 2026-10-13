@@ -34,6 +34,7 @@ const AdminAdvertisements = lazy(() =>
 const AdminSystemHealth = lazy(() =>
   import('@admin/pages/system-health').then((m) => ({ default: m.AdminSystemHealth }))
 );
+const AdminDonations = lazy(() => import('@admin/pages/donations').then((m) => ({ default: m.AdminDonations })));
 
 export const AdminNotFoundPage = () => (
   <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -148,6 +149,10 @@ const adminChildRoutes: RouteObject[] = [
   {
     path: 'advertisements',
     element: <AdminAdvertisements />
+  },
+  {
+    path: 'donations',
+    element: <AdminDonations />
   },
   {
     path: 'settings',

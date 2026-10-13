@@ -43,9 +43,7 @@ export const DonatePage: React.FC = () => {
   const [donorPhone, setDonorPhone] = useState<string>('');
   const [donorNote, setDonorNote] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [razorpayKeyId, setRazorpayKeyId] = useState<string>(
-    import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_T8YGTOWbbSya4S'
-  );
+  const [razorpayKeyId, setRazorpayKeyId] = useState<string>(import.meta.env.VITE_RAZORPAY_KEY_ID || '');
   const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false);
   const [successPaymentDetails, setSuccessPaymentDetails] = useState<any>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);

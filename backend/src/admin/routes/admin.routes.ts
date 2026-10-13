@@ -117,4 +117,28 @@ router.post('/agents/content/propose', agentController.generateContentImprovemen
 router.post('/agents/seo-audit/run', agentController.runSeoAudit);
 router.get('/agents/seo-audit/latest', agentController.getLatestSeoAudit);
 
+// Payments & Donations Management
+import { adminPaymentController } from '@admin/controllers/payment.controller';
+
+// Donations Routes
+router.get('/donations/overview', adminPaymentController.getOverview);
+router.get('/donations/payments', adminPaymentController.list);
+router.get('/donations/payments/:id', adminPaymentController.getById);
+router.get('/donations/supporters', adminPaymentController.getSupporters);
+router.get('/donations/supporters/:id', adminPaymentController.getSupporterDetails);
+router.get('/donations/reports', adminPaymentController.getReports);
+router.get('/donations/export', adminPaymentController.exportCsv);
+router.get('/donations/reconciliation/latest', adminPaymentController.getLatestReconciliation);
+router.post('/donations/reconciliation/run', adminPaymentController.runReconciliation);
+router.get('/donations/audit-logs', adminPaymentController.getAuditLogs);
+router.get('/donations/notifications', adminPaymentController.getNotifications);
+router.post('/donations/payments/:id/refund', adminPaymentController.refund);
+
+// Backward-compatible /payments aliases
+router.get('/payments', adminPaymentController.list);
+router.get('/payments/stats', adminPaymentController.getStats);
+router.get('/payments/supporters', adminPaymentController.getSupporters);
+router.get('/payments/:id', adminPaymentController.getById);
+router.post('/payments/:id/refund', adminPaymentController.refund);
+
 export default router;

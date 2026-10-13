@@ -13,6 +13,7 @@ const envSchema = z.object({
   GROQ_LARGE_MODEL: z.string().default('openai/gpt-oss-120b'),
   RAZORPAY_KEY_ID: z.string().optional(),
   RAZORPAY_KEY_SECRET: z.string().optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
   YOUTUBE_API_KEY: z.string().optional(),
