@@ -116,7 +116,7 @@ export const AdminDashboard: React.FC = () => {
           colorClassName="bg-purple-100 text-purple-600"
           bgClassName="bg-gradient-to-br from-purple-50 to-white"
           borderClassName="border-purple-100"
-          onClick={() => navigate(getAdminPath('/ai'))}
+          onClick={() => navigate(getAdminPath('/ai-jobs'))}
         />
       </div>
 

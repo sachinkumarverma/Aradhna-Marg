@@ -50,7 +50,7 @@ export const AdminLayout: React.FC = () => {
   }
 
   return (
-    <div className="fixed inset-0 flex overflow-hidden bg-gray-50 font-sans">
+    <div className="fixed inset-0 flex overflow-hidden bg-gray-50 admin-font-normal">
       <SEOHead title="Admin Dashboard" noIndex={true} />
       <SessionManager />
 

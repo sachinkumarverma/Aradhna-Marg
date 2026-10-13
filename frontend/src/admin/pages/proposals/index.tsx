@@ -13,7 +13,11 @@ import { ProposalApi, type AgentProposalItem, type ProposalStats } from '@admin/
 import { ProposalDetailDrawer } from '@admin/features/agents/ProposalDetailDrawer';
 import toast from 'react-hot-toast';
 
-export const AdminProposals: React.FC = () => {
+export interface AdminProposalsProps {
+  showHeader?: boolean;
+}
+
+export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = true }) => {
   const queryClient = useQueryClient();
 
   // Search & Filter state
@@ -31,6 +35,16 @@ export const AdminProposals: React.FC = () => {
   const [quickExecuteProposal, setQuickExecuteProposal] = useState<AgentProposalItem | null>(null);
   const [quickRejectProposal, setQuickRejectProposal] = useState<AgentProposalItem | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+
+  const handleManualRefresh = async () => {
+    setIsManualRefreshing(true);
+    try {
+      await Promise.all([refetch(), queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] })]);
+    } finally {
+      setIsManualRefreshing(false);
+    }
+  };
 
   // 1. Fetch Backend Lifecycle Statistics
   const { data: statsData } = useQuery({
@@ -224,35 +238,34 @@ export const AdminProposals: React.FC = () => {
   return (
     <div className="space-y-6 flex flex-col min-h-full">
       {/* Top Header matching other sections */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-lg sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase truncate">
-            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
-            <span className="truncate">AI PROPOSALS</span>
-          </h1>
-          <p className="hidden sm:block text-sm text-gray-500 mt-1">
-            Review, diff, approve, and execute AI-staged mutations under strict human editorial governance.
-          </p>
-        </div>
+      {showHeader && (
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase truncate">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
+              <span className="truncate">AI PROPOSALS</span>
+            </h1>
+            <p className="hidden sm:block text-sm text-gray-500 mt-1">
+              Review, diff, approve, and execute AI-staged mutations under strict human editorial governance.
+            </p>
+          </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <AdminButton
-            onClick={() => {
-              refetch();
-              queryClient.invalidateQueries({ queryKey: ['admin-agent-proposal-stats'] });
-            }}
-            variant="outline"
-            title="Refresh"
-            aria-label="Refresh"
-            disabled={isFetching}
-            className="h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
-          >
-            <RefreshCw
-              className={`w-4 h-4 shrink-0 stroke-[2.2] ${isFetching ? 'animate-spin text-saffron' : 'text-slate-600'}`}
-            />
-          </AdminButton>
+          <div className="flex items-center gap-2 shrink-0">
+            <AdminButton
+              onClick={handleManualRefresh}
+              variant="outline"
+              title="Refresh"
+              aria-label="Refresh"
+              disabled={isManualRefreshing}
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
+            >
+              <RefreshCw
+                className={`w-4 h-4 shrink-0 stroke-[2.2] ${isManualRefreshing ? 'animate-spin text-saffron' : 'text-slate-600'}`}
+              />
+            </AdminButton>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 6 Summary Stat Cards (square icon containers matching dashboard cards) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">

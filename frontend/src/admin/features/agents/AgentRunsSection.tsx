@@ -39,6 +39,8 @@ import toast from 'react-hot-toast';
 
 export interface AgentRunsSectionProps {
   onNavigateToProposals?: () => void;
+  onNavigateToRuns?: () => void;
+  subView?: 'overview' | 'runs' | 'all';
 }
 
 const formatStandardCase = (str?: string): string => {
@@ -85,7 +87,11 @@ const normalizeEntityType = (type?: string): 'bhajan' | 'article' | 'festival' |
   return null;
 };
 
-export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateToProposals }) => {
+export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
+  onNavigateToProposals,
+  onNavigateToRuns,
+  subView = 'all'
+}) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
@@ -230,7 +236,8 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
         page,
         limit
       }),
-    refetchInterval: 5000 // auto refresh runs
+    enabled: subView === 'runs' || subView === 'all',
+    refetchInterval: subView === 'runs' || subView === 'all' ? 10000 : false
   });
 
   const runs = runsData?.data || [];
@@ -282,12 +289,14 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
   const handleRefreshRuns = async () => {
     setIsManualRefreshing(true);
     try {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['agent-runs'] }),
+      const promises: Promise<any>[] = [
         queryClient.invalidateQueries({ queryKey: ['agent-schedules'] }),
-        refetchRuns(),
         refetchSchedules()
-      ]);
+      ];
+      if (subView === 'runs' || subView === 'all') {
+        promises.push(queryClient.invalidateQueries({ queryKey: ['agent-runs'] }), refetchRuns());
+      }
+      await Promise.all(promises);
     } catch {
       // Silent refresh
     } finally {
@@ -398,334 +407,352 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
   return (
     <div className="space-y-6">
       {/* Detached Card 1: Scheduled Autonomous Monitoring */}
-      <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm p-4 sm:p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
-          <div>
-            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-saffron" />
-              Scheduled Autonomous Monitoring
-            </h3>
-          </div>
-          <AdminButton
-            variant="outline"
-            onClick={handleRefreshRuns}
-            title="Refresh Status"
-            aria-label="Refresh Status"
-            disabled={isManualRefreshing || isFetchingRuns}
-            className="self-start sm:self-auto h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
-          >
-            <RefreshCw
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 stroke-[2.2] ${
-                isManualRefreshing || isFetchingRuns ? 'animate-spin text-saffron' : 'text-slate-600'
-              }`}
-            />
-          </AdminButton>
-        </div>
-
-        {isLoadingSchedules ? (
-          <div className="py-8 flex justify-center">
-            <CustomLoader text="Loading monitoring schedules..." />
-          </div>
-        ) : schedules.length === 0 ? (
-          <div className="p-4 text-xs text-gray-500 text-center bg-slate-50 rounded-md">
-            No monitoring schedules registered.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
-            {schedules.map((sched) => {
-              const isRunPending =
-                runScheduledAgentMutation.isPending && runScheduledAgentMutation.variables === sched.agentId;
-              const isUpdatePending =
-                updateScheduleMutation.isPending && updateScheduleMutation.variables?.id === sched.agentId;
-
-              return (
-                <div
-                  key={sched.id}
-                  className="border border-indigo-100/80 bg-white/90 rounded-md p-4 sm:p-5 shadow-xs flex flex-col justify-between gap-3.5"
-                >
-                  <div className="space-y-3">
-                    {/* Header: Name and Enabled Toggle */}
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-bold text-sm text-slate-900 block leading-snug">
-                        {formatStandardCase(sched.agentName || sched.agentId)}
-                      </span>
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={sched.enabled}
-                        disabled={isUpdatePending}
-                        onClick={() =>
-                          updateScheduleMutation.mutate({
-                            id: sched.agentId,
-                            payload: { enabled: !sched.enabled }
-                          })
-                        }
-                        className="flex items-center gap-2 cursor-pointer group focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
-                        title={sched.enabled ? 'Click to disable schedule' : 'Click to enable schedule'}
-                      >
-                        <span
-                          className={`text-xs font-semibold transition-colors ${
-                            sched.enabled ? 'text-emerald-600' : 'text-slate-400'
-                          }`}
-                        >
-                          {isUpdatePending ? '...' : sched.enabled ? 'Enabled' : 'Disabled'}
-                        </span>
-                        <span
-                          className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                            sched.enabled ? 'bg-emerald-500' : 'bg-slate-300 group-hover:bg-slate-400'
-                          }`}
-                        >
-                          <span
-                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
-                              sched.enabled ? 'translate-x-4' : 'translate-x-0'
-                            }`}
-                          />
-                        </span>
-                      </button>
-                    </div>
-
-                    {getShortAgentDescription(sched.agentId, sched.description) && (
-                      <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
-                        {getShortAgentDescription(sched.agentId, sched.description)}
-                      </p>
-                    )}
-
-                    {/* Schedule Selector & Status Grid */}
-                    <div className="bg-slate-50/80 border border-slate-200/80 rounded-md p-3 space-y-2.5 text-[11px]">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-gray-500 font-semibold uppercase text-[10px] shrink-0">Schedule:</span>
-                        <div className="w-36">
-                          <Select
-                            options={scheduleIntervalOptions}
-                            value={sched.scheduleInterval}
-                            disabled={isUpdatePending}
-                            onChange={(val) =>
-                              updateScheduleMutation.mutate({
-                                id: sched.agentId,
-                                payload: {
-                                  scheduleInterval: val as 'hourly' | 'every_6_hours' | 'daily' | 'weekly'
-                                }
-                              })
-                            }
-                            searchable={false}
-                            triggerClassName="h-7 sm:h-7.5 text-[11px] px-2.5 py-0 font-medium bg-white border-gray-200"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between text-gray-600 pt-0.5">
-                        <span className="text-gray-500">Last Run:</span>
-                        <span className="font-medium text-slate-900">{formatTimestamp(sched.lastRunAt)}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-gray-600">
-                        <span className="text-gray-500">Last Status:</span>
-                        <div>
-                          {sched.lastRunStatus ? (
-                            getStatusBadge(sched.lastRunStatus)
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between text-gray-600">
-                        <span className="text-gray-500">Next Run:</span>
-                        <span className="font-medium text-slate-900">{formatTimestamp(sched.nextRunAt)}</span>
-                      </div>
-
-                      {sched.consecutiveFailures > 0 && (
-                        <div className="text-rose-600 flex items-center gap-1.5 font-semibold text-[10px]">
-                          <AlertTriangle className="w-3 h-3 text-rose-600 shrink-0" />
-                          <span>{sched.consecutiveFailures} consecutive failure(s)</span>
-                        </div>
-                      )}
-
-                      {sched.isRunning && (
-                        <div className="text-blue-600 flex items-center gap-1.5 font-semibold text-[10px] animate-pulse">
-                          <Clock className="w-3 h-3 text-blue-600 shrink-0" />
-                          <span>Currently executing...</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Action Footer: Run Now */}
-                  <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-[11px]">
-                    <span className="text-gray-400 font-medium text-xs">
-                      {formatIntervalLabel(sched.scheduleInterval)}
-                    </span>
-                    <AdminButton
-                      onClick={() => runScheduledAgentMutation.mutate(sched.agentId)}
-                      disabled={isRunPending || sched.isRunning}
-                      variant="primary"
-                      leftIcon={
-                        <Play
-                          className={`w-3.5 h-3.5 shrink-0 ${isRunPending || sched.isRunning ? 'animate-spin' : ''}`}
-                        />
-                      }
-                      className="h-8 px-3.5 text-xs font-semibold gap-1.5"
-                    >
-                      {isRunPending || sched.isRunning ? 'Executing...' : 'Run Now'}
-                    </AdminButton>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Detached Section 2: Agent Runs Table & Toolbar */}
-      <div className="space-y-4">
-        {/* Table Filter Toolbar */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase">Status:</span>
-            {['ALL', 'COMPLETED', 'RUNNING', 'FAILED', 'TIMEOUT'].map((st) => (
-              <button
-                key={st}
-                onClick={() => {
-                  setStatusFilter(st);
-                  setPage(1);
-                }}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-colors ${
-                  statusFilter === st
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                {st}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <span className="text-xs font-semibold text-gray-500 uppercase">Agent:</span>
-            <div className="w-44 sm:w-52">
-              <Select
-                value={agentFilter}
-                onChange={(val) => {
-                  setAgentFilter(val);
-                  setPage(1);
-                }}
-                options={agentFilterOptions}
-                searchable={false}
-                triggerClassName="h-9 sm:h-10 text-xs sm:text-sm font-medium bg-white border-gray-200"
-              />
+      {(subView === 'overview' || subView === 'all') && (
+        <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm p-4 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+            <div>
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-saffron" />
+                Scheduled Autonomous Monitoring
+              </h3>
             </div>
             <AdminButton
               variant="outline"
               onClick={handleRefreshRuns}
-              title="Refresh"
-              aria-label="Refresh"
-              disabled={isManualRefreshing || isFetchingRuns}
-              className="h-9 w-9 sm:h-10 sm:w-10 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
+              title="Refresh Status"
+              aria-label="Refresh Status"
+              disabled={isManualRefreshing}
+              className="self-start sm:self-auto h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
             >
               <RefreshCw
-                className={`w-4 h-4 shrink-0 stroke-[2.2] ${
-                  isManualRefreshing || isFetchingRuns ? 'animate-spin text-saffron' : 'text-slate-600'
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 stroke-[2.2] ${
+                  isManualRefreshing ? 'animate-spin text-saffron' : 'text-slate-600'
                 }`}
               />
             </AdminButton>
           </div>
-        </div>
 
-        {/* Runs Table Body in standard DataTable container */}
-        <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm">
-          {isLoadingRuns ? (
-            <div className="py-16 flex justify-center">
-              <CustomLoader fullScreen={false} size="md" text="Loading agent runs..." />
+          {isLoadingSchedules ? (
+            <div className="py-8 flex justify-center">
+              <CustomLoader text="Loading monitoring schedules..." />
             </div>
-          ) : runs.length === 0 ? (
-            <div className="py-16 text-center text-gray-400 text-sm">
-              <Activity className="w-10 h-10 mx-auto mb-2 opacity-30 text-saffron" />
-              <p className="font-medium text-gray-600">No agent runs found</p>
-              <p className="text-xs text-gray-400 mt-1">Autonomous runs will appear here once executed or scheduled.</p>
+          ) : schedules.length === 0 ? (
+            <div className="p-4 text-xs text-gray-500 text-center bg-slate-50 rounded-md">
+              No monitoring schedules registered.
             </div>
           ) : (
-            <>
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
-                  <tr>
-                    <th className="px-6 py-4 font-bold">Agent Name</th>
-                    <th className="px-6 py-4 font-bold">Status</th>
-                    <th className="px-6 py-4 font-bold">Trigger</th>
-                    <th className="px-6 py-4 font-bold">Started At</th>
-                    <th className="px-6 py-4 font-bold">Duration</th>
-                    <th className="px-6 py-4 font-bold">Findings</th>
-                    <th className="px-6 py-4 font-bold text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {runs.map((run) => {
-                    const findingsCount = run.state?.findings?.length || 0;
-                    const isSelected = selectedRunId === run.id;
-                    return (
-                      <tr
-                        key={run.id}
-                        onClick={() => setSelectedRunId(run.id)}
-                        className={`transition-colors cursor-pointer group ${
-                          isSelected ? 'bg-orange-50/90 hover:bg-orange-100/70' : 'bg-gray-50/50 hover:bg-blue-100/60'
-                        }`}
-                      >
-                        <td
-                          className={`px-6 py-4 font-medium text-gray-900 ${
-                            isSelected ? 'border-l-4 border-l-saffron' : ''
-                          }`}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
+              {schedules.map((sched) => {
+                const isRunPending =
+                  runScheduledAgentMutation.isPending && runScheduledAgentMutation.variables === sched.agentId;
+                const isUpdatePending =
+                  updateScheduleMutation.isPending && updateScheduleMutation.variables?.id === sched.agentId;
+
+                return (
+                  <div
+                    key={sched.id}
+                    className="border border-indigo-100/80 bg-white/90 rounded-md p-4 sm:p-5 shadow-xs flex flex-col justify-between gap-3.5"
+                    style={{
+                      fontFamily:
+                        "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                    }}
+                  >
+                    <div className="space-y-3">
+                      {/* Header: Name and Enabled Toggle */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-sm text-slate-900 block leading-snug">
+                          {formatStandardCase(sched.agentName || sched.agentId)}
+                        </span>
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={sched.enabled}
+                          disabled={isUpdatePending}
+                          onClick={() =>
+                            updateScheduleMutation.mutate({
+                              id: sched.agentId,
+                              payload: { enabled: !sched.enabled }
+                            })
+                          }
+                          className="flex items-center gap-2 cursor-pointer group focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                          title={sched.enabled ? 'Click to disable schedule' : 'Click to enable schedule'}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <Activity className="w-4 h-4 text-saffron shrink-0" />
-                            <span className="font-semibold text-gray-900">{formatStandardCase(run.agentName)}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">{getStatusBadge(run.status)}</td>
-                        <td className="px-6 py-4">
-                          <span className="text-xs font-semibold text-slate-700">{run.triggerType}</span>
-                        </td>
-                        <td className="px-6 py-4 text-gray-500">
-                          {new Date(run.startedAt || run.createdAt).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                          })}
-                        </td>
-                        <td className="px-6 py-4 text-gray-500 font-medium">{formatDuration(run)}</td>
-                        <td className="px-6 py-4">
                           <span
-                            className={`text-xs font-semibold ${
-                              findingsCount > 0 ? 'text-amber-600' : 'text-emerald-600'
+                            className={`text-xs font-semibold transition-colors ${
+                              sched.enabled ? 'text-emerald-600' : 'text-slate-400'
                             }`}
                           >
-                            {findingsCount} finding(s)
+                            {isUpdatePending ? '...' : sched.enabled ? 'Enabled' : 'Disabled'}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <span className="text-saffron font-bold text-xs inline-flex items-center gap-1 hover:underline">
-                            Inspect <ChevronRight className="w-3.5 h-3.5" />
+                          <span
+                            className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                              sched.enabled ? 'bg-emerald-500' : 'bg-slate-300 group-hover:bg-slate-400'
+                            }`}
+                          >
+                            <span
+                              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
+                                sched.enabled ? 'translate-x-4' : 'translate-x-0'
+                              }`}
+                            />
                           </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              <Pagination
-                page={page}
-                totalPages={totalPages}
-                totalRecords={totalRecords}
-                limit={limit}
-                onPageChange={(p) => setPage(p)}
-                onLimitChange={(l) => {
-                  setLimit(l);
-                  setPage(1);
-                }}
-                limitOptions={[10, 20, 50]}
-              />
-            </>
+                        </button>
+                      </div>
+
+                      {getShortAgentDescription(sched.agentId, sched.description) && (
+                        <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                          {getShortAgentDescription(sched.agentId, sched.description)}
+                        </p>
+                      )}
+
+                      {/* Schedule Selector & Status Grid */}
+                      <div
+                        className="bg-slate-50/90 border border-slate-200/80 rounded-md p-3.5 space-y-2.5 text-xs"
+                        style={{
+                          fontFamily:
+                            "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                        }}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-slate-600 font-medium text-xs shrink-0">Schedule:</span>
+                          <div className="w-36">
+                            <Select
+                              options={scheduleIntervalOptions}
+                              value={sched.scheduleInterval}
+                              disabled={isUpdatePending}
+                              onChange={(val) =>
+                                updateScheduleMutation.mutate({
+                                  id: sched.agentId,
+                                  payload: {
+                                    scheduleInterval: val as 'hourly' | 'every_6_hours' | 'daily' | 'weekly'
+                                  }
+                                })
+                              }
+                              searchable={false}
+                              triggerClassName="h-8 text-xs px-2.5 font-normal bg-white border-gray-200"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs pt-0.5">
+                          <span className="text-slate-500 font-normal">Last Run:</span>
+                          <span className="font-semibold text-slate-900 tracking-normal">
+                            {formatTimestamp(sched.lastRunAt)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-500 font-normal">Last Status:</span>
+                          <div>
+                            {sched.lastRunStatus ? (
+                              getStatusBadge(sched.lastRunStatus)
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-500 font-normal">Next Run:</span>
+                          <span className="font-semibold text-slate-900 tracking-normal">
+                            {formatTimestamp(sched.nextRunAt)}
+                          </span>
+                        </div>
+
+                        {sched.consecutiveFailures > 0 && (
+                          <div className="text-rose-600 flex items-center gap-1.5 font-medium text-xs pt-1">
+                            <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                            <span>{sched.consecutiveFailures} consecutive failure(s)</span>
+                          </div>
+                        )}
+
+                        {sched.isRunning && (
+                          <div className="text-blue-600 flex items-center gap-1.5 font-medium text-xs animate-pulse pt-1">
+                            <Clock className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            <span>Currently executing...</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Footer: Run Now */}
+                    <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-xs">
+                      <span className="text-slate-500 font-normal">{formatIntervalLabel(sched.scheduleInterval)}</span>
+                      <AdminButton
+                        onClick={() => runScheduledAgentMutation.mutate(sched.agentId)}
+                        disabled={isRunPending || sched.isRunning}
+                        variant="primary"
+                        leftIcon={
+                          <Play
+                            className={`w-3.5 h-3.5 shrink-0 ${isRunPending || sched.isRunning ? 'animate-spin' : ''}`}
+                          />
+                        }
+                        className="h-8 px-3.5 text-xs font-semibold gap-1.5"
+                      >
+                        {isRunPending || sched.isRunning ? 'Executing...' : 'Run Now'}
+                      </AdminButton>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
-      </div>
+      )}
+
+      {/* Detached Section 2: Agent Runs Table & Toolbar */}
+      {(subView === 'runs' || subView === 'all') && (
+        <div className="space-y-4">
+          {/* Table Filter Toolbar */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-md shadow-sm border border-blue-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold text-gray-500 uppercase">Status:</span>
+              {['ALL', 'COMPLETED', 'RUNNING', 'FAILED', 'TIMEOUT'].map((st) => (
+                <button
+                  key={st}
+                  onClick={() => {
+                    setStatusFilter(st);
+                    setPage(1);
+                  }}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-colors ${
+                    statusFilter === st
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs font-semibold text-gray-500 uppercase">Agent:</span>
+              <div className="w-44 sm:w-52">
+                <Select
+                  value={agentFilter}
+                  onChange={(val) => {
+                    setAgentFilter(val);
+                    setPage(1);
+                  }}
+                  options={agentFilterOptions}
+                  searchable={false}
+                  triggerClassName="h-9 sm:h-10 text-xs sm:text-sm font-medium bg-white border-gray-200"
+                />
+              </div>
+              <AdminButton
+                variant="outline"
+                onClick={handleRefreshRuns}
+                title="Refresh"
+                aria-label="Refresh"
+                disabled={isManualRefreshing}
+                className="h-9 w-9 sm:h-10 sm:w-10 p-0 flex items-center justify-center shrink-0 bg-white hover:bg-slate-50 border-gray-200 text-slate-700"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 shrink-0 stroke-[2.2] ${
+                    isManualRefreshing ? 'animate-spin text-saffron' : 'text-slate-600'
+                  }`}
+                />
+              </AdminButton>
+            </div>
+          </div>
+
+          {/* Runs Table Body in standard DataTable container */}
+          <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm">
+            {isLoadingRuns ? (
+              <div className="py-16 flex justify-center">
+                <CustomLoader fullScreen={false} size="md" text="Loading agent runs..." />
+              </div>
+            ) : runs.length === 0 ? (
+              <div className="py-16 text-center text-gray-400 text-sm">
+                <Activity className="w-10 h-10 mx-auto mb-2 opacity-30 text-saffron" />
+                <p className="font-medium text-gray-600">No agent runs found</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Autonomous runs will appear here once executed or scheduled.
+                </p>
+              </div>
+            ) : (
+              <>
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
+                    <tr>
+                      <th className="px-6 py-4 font-bold">Agent Name</th>
+                      <th className="px-6 py-4 font-bold">Status</th>
+                      <th className="px-6 py-4 font-bold">Trigger</th>
+                      <th className="px-6 py-4 font-bold">Started At</th>
+                      <th className="px-6 py-4 font-bold">Duration</th>
+                      <th className="px-6 py-4 font-bold">Findings</th>
+                      <th className="px-6 py-4 font-bold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {runs.map((run) => {
+                      const findingsCount = run.state?.findings?.length || 0;
+                      const isSelected = selectedRunId === run.id;
+                      return (
+                        <tr
+                          key={run.id}
+                          onClick={() => setSelectedRunId(run.id)}
+                          className={`transition-colors cursor-pointer group ${
+                            isSelected ? 'bg-orange-50/90 hover:bg-orange-100/70' : 'bg-gray-50/50 hover:bg-blue-100/60'
+                          }`}
+                        >
+                          <td
+                            className={`px-6 py-4 font-medium text-gray-900 ${
+                              isSelected ? 'border-l-4 border-l-saffron' : ''
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <Activity className="w-4 h-4 text-saffron shrink-0" />
+                              <span className="font-semibold text-gray-900">{formatStandardCase(run.agentName)}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">{getStatusBadge(run.status)}</td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs font-semibold text-slate-700">{run.triggerType}</span>
+                          </td>
+                          <td className="px-6 py-4 text-gray-500">
+                            {new Date(run.startedAt || run.createdAt).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            })}
+                          </td>
+                          <td className="px-6 py-4 text-gray-500 font-medium">{formatDuration(run)}</td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`text-xs font-semibold ${
+                                findingsCount > 0 ? 'text-amber-600' : 'text-emerald-600'
+                              }`}
+                            >
+                              {findingsCount} finding(s)
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <span className="text-saffron font-bold text-xs inline-flex items-center gap-1 hover:underline">
+                              Inspect <ChevronRight className="w-3.5 h-3.5" />
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <Pagination
+                  page={page}
+                  totalPages={totalPages}
+                  totalRecords={totalRecords}
+                  limit={limit}
+                  onPageChange={(p) => setPage(p)}
+                  onLimitChange={(l) => {
+                    setLimit(l);
+                    setPage(1);
+                  }}
+                  limitOptions={[10, 20, 50]}
+                />
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Selected Run Inspection Modal / Drawer with Portal for 100% full height backdrop */}
       {selectedRunId &&
@@ -824,7 +851,7 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
                             if (onNavigateToProposals) {
                               onNavigateToProposals();
                             } else {
-                              navigate(getAdminPath('/ai'));
+                              navigate(getAdminPath('/ai-agents?tab=proposals'));
                             }
                           }}
                           className="text-saffron-dark font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
@@ -928,7 +955,7 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
                                             if (onNavigateToProposals) {
                                               onNavigateToProposals();
                                             } else {
-                                              navigate(getAdminPath('/ai'));
+                                              navigate(getAdminPath('/ai-agents?tab=proposals'));
                                             }
                                           }}
                                           className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-bold hover:underline cursor-pointer ml-auto"
@@ -949,7 +976,7 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
                                             if (onNavigateToProposals) {
                                               onNavigateToProposals();
                                             } else {
-                                              navigate(getAdminPath('/ai'));
+                                              navigate(getAdminPath('/ai-agents?tab=proposals'));
                                             }
                                           }}
                                           className="inline-flex items-center gap-1 text-[11px] text-blue-700 font-bold hover:underline cursor-pointer ml-auto"
@@ -970,7 +997,7 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({ onNavigateTo
                                             if (onNavigateToProposals) {
                                               onNavigateToProposals();
                                             } else {
-                                              navigate(getAdminPath('/ai'));
+                                              navigate(getAdminPath('/ai-agents?tab=proposals'));
                                             }
                                           }}
                                           className="inline-flex items-center gap-1 text-[11px] text-saffron-dark font-bold hover:underline cursor-pointer ml-auto"

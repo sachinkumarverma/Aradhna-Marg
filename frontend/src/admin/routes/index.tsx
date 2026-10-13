@@ -9,8 +9,9 @@ import { getAdminPath } from '@utils/host';
 
 // Lazy loaded Admin pages
 const AdminYoutube = lazy(() => import('@admin/pages/youtube').then((m) => ({ default: m.AdminYoutube })));
-const AdminAI = lazy(() => import('@admin/pages/ai').then((m) => ({ default: m.AdminAI })));
-const AdminProposals = lazy(() => import('@admin/pages/proposals').then((m) => ({ default: m.AdminProposals })));
+const AdminAIProcessing = lazy(() => import('@admin/pages/ai').then((m) => ({ default: m.AdminAIProcessing })));
+const AdminAIAgents = lazy(() => import('@admin/pages/ai-agents').then((m) => ({ default: m.AdminAIAgents })));
+const AdminAIJobs = lazy(() => import('@admin/pages/ai-jobs').then((m) => ({ default: m.AdminAIJobs })));
 const AdminCategories = lazy(() => import('@admin/pages/categories').then((m) => ({ default: m.AdminCategories })));
 const AdminDeities = lazy(() => import('@admin/pages/deities').then((m) => ({ default: m.AdminDeities })));
 const AdminFestivals = lazy(() => import('@admin/pages/festivals').then((m) => ({ default: m.AdminFestivals })));
@@ -118,19 +119,27 @@ const adminChildRoutes: RouteObject[] = [
   },
   {
     path: 'ai',
-    element: <AdminAI />
+    element: <AdminAIProcessing />
   },
   {
     path: 'ai-processing',
-    element: <AdminAI />
+    element: <AdminAIProcessing />
+  },
+  {
+    path: 'ai-agents',
+    element: <AdminAIAgents />
   },
   {
     path: 'ai-proposals',
-    element: <AdminProposals />
+    element: <AdminAIAgents defaultTab="proposals" />
   },
   {
     path: 'proposals',
-    element: <AdminProposals />
+    element: <AdminAIAgents defaultTab="proposals" />
+  },
+  {
+    path: 'ai-jobs',
+    element: <AdminAIJobs />
   },
   {
     path: 'seo',

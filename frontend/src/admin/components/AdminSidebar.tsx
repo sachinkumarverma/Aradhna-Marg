@@ -16,7 +16,9 @@ import {
   Search,
   Activity,
   Languages,
-  FileCheck2
+  FileCheck2,
+  Bot,
+  Clock
 } from 'lucide-react';
 import { cn } from '@utils/cn';
 import { getAdminPath } from '@utils/host';
@@ -44,11 +46,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
   ];
 
   const AUTOMATION_NAV = [
-    { name: 'AI PROPOSALS', path: getAdminPath('/ai-proposals'), icon: FileCheck2 },
-    { name: 'AI PROCESSING', path: getAdminPath('/ai'), icon: BrainCircuit },
-    { name: 'SEO ENGINE', path: getAdminPath('/seo'), icon: Search },
+    { name: 'AI PROCESSING', path: getAdminPath('/ai-processing'), icon: BrainCircuit },
+    { name: 'AI AGENTS', path: getAdminPath('/ai-agents'), icon: Bot },
+    { name: 'AI JOBS', path: getAdminPath('/ai-jobs'), icon: Clock },
     { name: 'YOUTUBE SYNC', path: getAdminPath('/youtube'), icon: PlaySquare }
   ];
+
+  const SEO_NAV = [{ name: 'SEO ENGINE', path: getAdminPath('/seo'), icon: Search }];
 
   const SYSTEM_NAV = [
     { name: 'SETTINGS', path: getAdminPath('/settings'), icon: Settings },
@@ -65,7 +69,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
             onClick={onClose}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 px-3 py-2 rounded-md text-[14px] font-bold transition-all duration-200',
+                'flex items-center gap-3 px-3 py-2 rounded-md text-[14px] font-bold tracking-[0.02em] transition-all duration-200',
                 isActive
                   ? 'bg-[#ff3b00] text-white shadow-md shadow-red-500/20'
                   : 'text-[#00274c] hover:bg-gray-100 hover:text-[#d9480f]'
@@ -90,17 +94,17 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
       {/* Mobile Backdrop */}
       {isMobileOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onClose} />}
 
-      <aside className={sidebarClasses}>
+      <aside className={sidebarClasses} style={{ fontFamily: "'Outfit', sans-serif" }}>
         <div className="h-full flex flex-col overflow-hidden">
           {/* Header */}
           <div className="px-6 h-16 border-b border-[#e63500] flex-shrink-0 flex items-center bg-[#ff3b00] shadow-sm relative z-20 -mr-[1px]">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-md overflow-hidden flex-shrink-0 shadow-sm border border-white/20">
+              <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 shadow-sm border border-white/20">
                 <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="font-serif text-xl font-bold tracking-wide whitespace-nowrap inline-flex items-baseline">
+              <span className="font-serif text-[19px] font-bold tracking-wide whitespace-nowrap inline-flex items-baseline">
                 <span className="text-white">ARADHNA</span>
-                <span className="text-black ml-1.5 text-[22px] font-extrabold">MARG</span>
+                <span className="text-black ml-1.5">MARG</span>
               </span>
             </div>
           </div>
@@ -122,6 +126,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
             <div>
               <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Automation</h3>
               {renderLinks(AUTOMATION_NAV)}
+            </div>
+
+            <div>
+              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">SEO</h3>
+              {renderLinks(SEO_NAV)}
             </div>
 
             <div>

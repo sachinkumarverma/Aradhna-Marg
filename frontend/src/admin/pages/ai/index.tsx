@@ -1,48 +1,31 @@
-import React, { useState } from 'react';
-import { ConfirmDialog } from '@components/ui/ConfirmDialog';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiClient } from '@api/client';
 import toast from 'react-hot-toast';
-import {
-  Bot,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Zap,
-  Play,
-  RotateCcw,
-  Trash2,
-  AlertCircle,
-  FileText,
-  Calendar,
-  FolderTree,
-  BookOpen,
-  Music,
-  RefreshCw,
-  BrainCircuit,
-  FileCheck2
-} from 'lucide-react';
+import { Zap, Play, FileText, Calendar, FolderTree, BookOpen, Music, BrainCircuit } from 'lucide-react';
 import { AdminButton } from '@admin/components/AdminButton';
-import { CustomLoader } from '@components/common/CustomLoader';
-import { ProposalReviewSection } from '@admin/features/agents/ProposalReviewSection';
-import { AgentRunsSection } from '@admin/features/agents/AgentRunsSection';
+import { getAdminPath } from '@utils/host';
 
-export function AdminAI() {
+export function AdminAIProcessing() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<
-    'assistant' | 'proposals' | 'agent-runs' | 'bulk' | 'queue' | 'history' | 'failed'
-  >('assistant');
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab') as 'single' | 'bulk' | null;
+  const [activeTab, setActiveTab] = useState<'single' | 'bulk'>(
+    urlTab && ['single', 'bulk'].includes(urlTab) ? urlTab : 'single'
+  );
 
-  // Fetch Stats
-  const { data: stats } = useQuery({
-    queryKey: ['admin-ai-stats'],
-    queryFn: async () => {
-      const res = await apiClient.get('/admin/ai/stats');
-      return res.data?.data || { today: 0, completed: 0, failed: 0, pending: 0 };
-    },
-    refetchInterval: 10000 // poll every 10 seconds
-  });
+  useEffect(() => {
+    if (urlTab && ['single', 'bulk'].includes(urlTab) && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    }
+  }, [urlTab]);
+
+  const handleTabChange = (tab: 'single' | 'bulk') => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
 
   // Fetch real Bulk Counts from Database
   const { data: bulkCounts, isLoading: isLoadingBulkCounts } = useQuery({
@@ -55,27 +38,7 @@ export function AdminAI() {
     refetchInterval: activeTab === 'bulk' ? 5000 : false
   });
 
-  // Fetch Jobs based on active tab
-  const { data: jobsData, isLoading: jobsLoading } = useQuery({
-    queryKey: ['admin-ai-jobs', activeTab],
-    queryFn: async () => {
-      let status = '';
-      if (activeTab === 'queue') status = 'PENDING,PROCESSING';
-      if (activeTab === 'history') status = 'COMPLETED';
-      if (activeTab === 'failed') status = 'FAILED';
-
-      const res = await apiClient.get('/admin/ai/jobs', {
-        params: { status, limit: 50 }
-      });
-      return res.data?.data || { data: [], count: 0 };
-    },
-    enabled: ['queue', 'history', 'failed'].includes(activeTab),
-    refetchInterval: activeTab === 'queue' ? 5000 : false
-  });
-
-  const jobs = jobsData?.data || [];
-
-  // Mutations
+  // Queue Mutation
   const queueMutation = useMutation({
     mutationFn: async (payload: {
       job_name: string;
@@ -85,92 +48,35 @@ export function AdminAI() {
     }) => {
       await apiClient.post('/admin/ai/queue', payload);
     },
-    onSuccess: () => {
-      toast.success('AI Job added to queue');
+    onSuccess: (_, variables) => {
+      toast.success(
+        (t) => (
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <span>Job "{variables.job_name}" added to queue!</span>
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                navigate(getAdminPath('/ai-jobs'));
+              }}
+              className="text-saffron font-bold underline cursor-pointer shrink-0"
+            >
+              View Jobs →
+            </button>
+          </div>
+        ),
+        { duration: 5000 }
+      );
       queryClient.invalidateQueries({ queryKey: ['admin-ai-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-ai-jobs'] });
       queryClient.invalidateQueries({ queryKey: ['admin-ai-bulk-counts'] });
-      setActiveTab('queue');
+      queryClient.invalidateQueries({ queryKey: ['admin-ai-jobs-activity'] });
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Failed to queue job');
     }
   });
 
-  const retryMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await apiClient.post(`/admin/ai/jobs/${id}/retry`);
-    },
-    onSuccess: () => {
-      toast.success('Job queued for retry');
-      queryClient.invalidateQueries({ queryKey: ['admin-ai-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-ai-jobs'] });
-    }
-  });
-
-  const cancelMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await apiClient.post(`/admin/ai/jobs/${id}/cancel`);
-    },
-    onSuccess: () => {
-      toast.success('Job cancelled');
-      queryClient.invalidateQueries({ queryKey: ['admin-ai-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-ai-jobs'] });
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await apiClient.delete(`/admin/ai/jobs/${id}`);
-    },
-    onSuccess: () => {
-      toast.success('Job deleted');
-      queryClient.invalidateQueries({ queryKey: ['admin-ai-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-ai-jobs'] });
-    }
-  });
-
   const handleQueueJob = (job_name: string, content_type: string, action_type: string, total_items = 1) => {
     queueMutation.mutate({ job_name, content_type, action_type, total_items });
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'COMPLETED':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-100 text-green-800">
-            Completed
-          </span>
-        );
-      case 'FAILED':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-red-100 text-red-800">
-            Failed
-          </span>
-        );
-      case 'PROCESSING':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-800 animate-pulse">
-            Processing
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-            Pending
-          </span>
-        );
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleString('en-IN', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   const assistantCards = [
@@ -213,84 +119,50 @@ export function AdminAI() {
 
   return (
     <div className="space-y-6 flex flex-col flex-1 pb-8 w-full max-w-full min-w-0">
-      {/* Header & Stats Overview */}
-      <div className="space-y-6">
+      {/* Header & Direct Execution Notice */}
+      <div className="space-y-4">
         <div>
           <h1 className="text-lg sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase truncate">
             <BrainCircuit className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
-            <span className="truncate">AI PROCESSING PIPELINE</span>
+            <span className="truncate">AI PROCESSING</span>
           </h1>
-          <p className="hidden sm:block text-sm text-gray-500 mt-1">
-            Automate repetitive content tasks with AI. Your API keys and configurations are securely managed by the
-            server.
+          <p className="text-sm text-gray-500 mt-1">
+            Run AI-powered operations directly on your content. The system generates results and automatically updates
+            database records.
           </p>
         </div>
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
-          <div className="bg-gradient-to-br from-blue-50 to-white p-3.5 sm:p-5 rounded-md shadow-sm border border-blue-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Today's Jobs</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.today || 0}</p>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-              </div>
-            </div>
+        {/* Mental Model / Direct AI Notice */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-md p-4 flex items-center gap-3 shadow-2xs">
+          <div className="p-2 bg-blue-100 rounded-md text-blue-800 shrink-0">
+            <Zap className="w-5 h-5" />
           </div>
-          <div className="bg-gradient-to-br from-orange-50 to-white p-3.5 sm:p-5 rounded-md shadow-sm border border-orange-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Pending Queue</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.pending || 0}</p>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
-                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
-              </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider bg-blue-200/80 text-blue-950 px-2 py-0.5 rounded">
+                Direct Execution
+              </span>
+              <span className="text-xs font-semibold text-blue-900">Single & Bulk Operations</span>
             </div>
-          </div>
-          <div className="bg-gradient-to-br from-green-50 to-white p-3.5 sm:p-5 rounded-md shadow-sm border border-green-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Completed Jobs</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.completed || 0}</p>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-red-50 to-white p-3.5 sm:p-5 rounded-md shadow-sm border border-red-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Failed Jobs</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.failed || 0}</p>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0">
-                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
-              </div>
-            </div>
+            <p className="text-xs text-blue-950/80 mt-1">
+              Operations triggered here execute directly without a proposal staging step. Choose a single content action
+              below or run bulk processing across eligible records.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide w-full max-w-full min-w-0 touch-pan-x overscroll-x-contain gap-1 sm:gap-2">
+      {/* Mode Tabs */}
+      <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide gap-1 sm:gap-2">
         {[
-          { id: 'assistant', label: 'Content Assistant' },
-          { id: 'proposals', label: 'AI Proposals' },
-          { id: 'agent-runs', label: 'Agent Runs' },
-          { id: 'bulk', label: 'Bulk Processing' },
-          { id: 'queue', label: 'Processing Queue' },
-          { id: 'history', label: 'History' },
-          { id: 'failed', label: 'Failed Jobs' }
+          { id: 'single', label: 'Single Content Operations' },
+          { id: 'bulk', label: 'Bulk Operations' }
         ].map((tab) => (
           <button
             key={tab.id}
             type="button"
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 whitespace-nowrap ${
+            onClick={() => handleTabChange(tab.id as any)}
+            className={`px-4 py-2.5 text-xs sm:text-sm font-bold uppercase border-b-2 transition-colors shrink-0 ${
               activeTab === tab.id
                 ? 'border-saffron text-saffron'
                 : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
@@ -302,246 +174,116 @@ export function AdminAI() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'agent-runs' ? (
-        <AgentRunsSection onNavigateToProposals={() => setActiveTab('proposals')} />
-      ) : (
-        <div className="bg-gradient-to-br from-indigo-50 to-white rounded-md border border-indigo-100 shadow-sm flex flex-col ">
-          {/* Content Assistant Tab */}
-          {activeTab === 'assistant' && (
-            <div className="p-3.5 sm:p-6">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Content Assistant</h2>
-              <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
-                Select an AI action for individual content types. The system will queue a job to process the requested
-                enhancements.
-              </p>
+      <div className="bg-gradient-to-br from-indigo-50/50 to-white rounded-md border border-indigo-100 shadow-xs flex flex-col">
+        {/* Single Operations Tab */}
+        {activeTab === 'single' && (
+          <div className="p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">AI Operations for Content</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
+              Select an action for individual content types. The background worker will process the request and update
+              the corresponding record directly.
+            </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
-                {assistantCards.map((card) => (
-                  <div
-                    key={card.title}
-                    className="border border-indigo-100/80 bg-white/90 rounded-md p-3.5 sm:p-5 hover:border-saffron/30 hover:shadow-md transition-all shadow-xs"
-                  >
-                    <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
-                      <div className="p-1.5 sm:p-2 bg-gray-50 rounded-md">{card.icon}</div>
-                      <h3 className="font-semibold text-sm sm:text-base text-gray-900">{card.title}</h3>
-                    </div>
-                    <div className="space-y-2">
-                      {card.actions.map((action) => (
-                        <button
-                          key={action.name}
-                          disabled={action.disabled || queueMutation.isPending}
-                          onClick={() => handleQueueJob(`${action.name} for ${card.title}`, card.title, action.type, 1)}
-                          className={`w-full flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-md border transition-colors ${
-                            action.disabled
-                              ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
-                              : 'bg-white text-gray-700 border-gray-200 hover:border-saffron hover:text-saffron hover:bg-orange-50'
-                          }`}
-                        >
-                          <span>{action.name}</span>
-                          <Play className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${action.disabled ? 'text-gray-300' : ''}`} />
-                        </button>
-                      ))}
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
+              {assistantCards.map((card) => (
+                <div
+                  key={card.title}
+                  className="border border-indigo-100/80 bg-white/90 rounded-md p-3.5 sm:p-5 hover:border-saffron/30 hover:shadow-md transition-all shadow-xs"
+                >
+                  <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
+                    <div className="p-1.5 sm:p-2 bg-gray-50 rounded-md">{card.icon}</div>
+                    <h3 className="font-semibold text-sm sm:text-base text-gray-900">{card.title}</h3>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* AI Proposals Tab (Phase 4A) */}
-          {activeTab === 'proposals' && <ProposalReviewSection />}
-
-          {/* Bulk Processing Tab */}
-          {activeTab === 'bulk' && (
-            <div className="p-3.5 sm:p-6">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Bulk Processing Tools</h2>
-              <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
-                Run AI operations across multiple records. The system will only process records where the target fields
-                are currently empty (it will never overwrite manual content).
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5 lg:gap-6">
-                {[
-                  {
-                    name: 'Generate SEO Meta Descriptions',
-                    desc: 'Generates missing SEO descriptions for all Bhajans and Articles',
-                    type: 'BULK_SEO',
-                    content: 'Global',
-                    items: bulkCounts?.bulkSeo ?? 0
-                  },
-                  {
-                    name: 'Generate Article Excerpts',
-                    desc: 'Creates short summaries for articles missing an excerpt',
-                    type: 'BULK_EXCERPT',
-                    content: 'Articles',
-                    items: bulkCounts?.bulkExcerpt ?? 0
-                  },
-                  {
-                    name: 'Generate Festival Summaries',
-                    desc: 'Fills missing descriptions for upcoming festivals',
-                    type: 'BULK_FESTIVAL',
-                    content: 'Festivals',
-                    items: bulkCounts?.bulkFestival ?? 0
-                  }
-                ].map((tool) => (
-                  <div
-                    key={tool.name}
-                    className="flex flex-col justify-between border border-gray-200 rounded-md p-3.5 sm:p-5 bg-white/90 shadow-xs"
-                  >
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-sm sm:text-base text-gray-900">{tool.name}</h3>
-                      <p className="text-xs sm:text-sm text-gray-500 mt-1">{tool.desc}</p>
-                      <div className="mt-2.5 sm:mt-3 inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                        {isLoadingBulkCounts
-                          ? 'Auditing database...'
-                          : `${tool.items} eligible record${tool.items === 1 ? '' : 's'} detected`}
-                      </div>
-                    </div>
-                    <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-200">
-                      <AdminButton
-                        onClick={() => handleQueueJob(tool.name, tool.content, tool.type, tool.items)}
-                        disabled={queueMutation.isPending || tool.items === 0}
-                        className="w-full justify-center"
-                        leftIcon={<Zap className="w-4 h-4" />}
+                  <div className="space-y-2">
+                    {card.actions.map((action) => (
+                      <button
+                        key={action.name}
+                        disabled={action.disabled || queueMutation.isPending}
+                        onClick={() => handleQueueJob(`${action.name} for ${card.title}`, card.title, action.type, 1)}
+                        className={`w-full flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-md border transition-colors cursor-pointer ${
+                          action.disabled
+                            ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed'
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-saffron hover:text-saffron hover:bg-orange-50'
+                        }`}
                       >
-                        {tool.items === 0 ? 'No Eligible Records' : 'Run Bulk Job'}
-                      </AdminButton>
+                        <span>{action.name}</span>
+                        <Play className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${action.disabled ? 'text-gray-300' : ''}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Operations Tab */}
+        {activeTab === 'bulk' && (
+          <div className="p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Bulk Operations</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 mb-4 sm:mb-6">
+              Run AI operations across multiple records. The system only processes records where target fields are
+              currently empty (it will never overwrite manual editorial content).
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5 lg:gap-6">
+              {[
+                {
+                  name: 'Generate Missing SEO',
+                  desc: 'Generates missing SEO titles and meta descriptions for Bhajans and Articles',
+                  type: 'BULK_SEO',
+                  content: 'Global',
+                  items: bulkCounts?.bulkSeo ?? 0
+                },
+                {
+                  name: 'Generate Article Excerpts',
+                  desc: 'Creates short summaries for articles missing an excerpt',
+                  type: 'BULK_EXCERPT',
+                  content: 'Articles',
+                  items: bulkCounts?.bulkExcerpt ?? 0
+                },
+                {
+                  name: 'Generate Festival Summaries',
+                  desc: 'Fills missing descriptions for upcoming festivals',
+                  type: 'BULK_FESTIVAL',
+                  content: 'Festivals',
+                  items: bulkCounts?.bulkFestival ?? 0
+                }
+              ].map((tool) => (
+                <div
+                  key={tool.name}
+                  className="flex flex-col justify-between border border-gray-200 rounded-md p-3.5 sm:p-5 bg-white/90 shadow-xs"
+                >
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-semibold text-sm sm:text-base text-gray-900">{tool.name}</h3>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-1 leading-relaxed">{tool.desc}</p>
+                    </div>
+                    <div className="mt-4 inline-flex self-start items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                      {isLoadingBulkCounts
+                        ? 'Auditing database...'
+                        : `${tool.items} eligible record${tool.items === 1 ? '' : 's'} detected`}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Table Views (Queue, History, Failed) */}
-          {['queue', 'history', 'failed'].includes(activeTab) && (
-            <div className="flex-1 overflow-x-auto">
-              {jobsLoading ? (
-                <div className="flex items-center justify-center h-64">
-                  <CustomLoader fullScreen={false} size="md" text="Loading AI jobs..." />
+                  <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-200">
+                    <AdminButton
+                      onClick={() => handleQueueJob(tool.name, tool.content, tool.type, tool.items)}
+                      disabled={queueMutation.isPending || tool.items === 0}
+                      className="w-full justify-center"
+                      leftIcon={<Zap className="w-4 h-4" />}
+                    >
+                      {tool.items === 0 ? 'No Eligible Records' : 'Run Bulk Job'}
+                    </AdminButton>
+                  </div>
                 </div>
-              ) : jobs.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                  <Bot className="w-12 h-12 mb-3 opacity-20" />
-                  <p>No jobs found in this view.</p>
-                </div>
-              ) : (
-                <table className="w-full text-left text-sm whitespace-nowrap">
-                  <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
-                    <tr>
-                      <th className="px-6 py-4 font-bold">Job Name</th>
-                      <th className="px-6 py-4 font-bold">Content Type</th>
-                      {activeTab === 'queue' && <th className="px-6 py-4 font-bold">Progress</th>}
-                      {activeTab === 'history' && <th className="px-6 py-4 font-bold">Items Processed</th>}
-                      <th className="px-6 py-4 font-bold">Status</th>
-                      {activeTab === 'history' ? (
-                        <th className="px-6 py-4 font-bold">Completed Time</th>
-                      ) : (
-                        <th className="px-6 py-4 font-bold">Started</th>
-                      )}
-                      {activeTab === 'failed' && <th className="px-6 py-4 font-bold">Error</th>}
-                      {activeTab !== 'history' && <th className="px-6 py-4 font-bold text-right">Actions</th>}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {jobs.map((job: any) => (
-                      <tr key={job.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
-                        <td className="px-6 py-4 font-medium text-gray-900">{job.job_name}</td>
-                        <td className="px-6 py-4 text-gray-500">{job.content_type}</td>
-
-                        {activeTab === 'queue' && (
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2 max-w-[150px]">
-                              <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div
-                                  className={`h-full rounded-full transition-all duration-500 ${job.status === 'PROCESSING' ? 'bg-blue-500' : 'bg-gray-300'}`}
-                                  style={{ width: `${job.progress}%` }}
-                                />
-                              </div>
-                              <span className="text-xs text-gray-500 w-8">{job.progress}%</span>
-                            </div>
-                          </td>
-                        )}
-
-                        {activeTab === 'history' && (
-                          <td className="px-6 py-4 text-gray-500">
-                            {job.processed_items} / {job.total_items}
-                          </td>
-                        )}
-
-                        <td className="px-6 py-4">{getStatusBadge(job.status)}</td>
-
-                        {activeTab === 'history' ? (
-                          <td className="px-6 py-4 text-gray-500">{formatDate(job.completed_at)}</td>
-                        ) : (
-                          <td className="px-6 py-4 text-gray-500">{formatDate(job.started_at)}</td>
-                        )}
-
-                        {activeTab === 'failed' && (
-                          <td className="px-6 py-4 text-red-500 max-w-[200px] truncate" title={job.error_message}>
-                            {job.error_message || 'Unknown error'}
-                          </td>
-                        )}
-
-                        {activeTab !== 'history' && (
-                          <td className="px-6 py-4 text-right space-x-2">
-                            {['PENDING', 'PROCESSING'].includes(job.status) && (
-                              <button
-                                onClick={() => cancelMutation.mutate(job.id)}
-                                disabled={cancelMutation.isPending}
-                                className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors"
-                                title="Cancel Job"
-                              >
-                                <XCircle className="w-4 h-4" strokeWidth={2.5} />
-                              </button>
-                            )}
-                            {job.status === 'FAILED' && (
-                              <button
-                                onClick={() => retryMutation.mutate(job.id)}
-                                disabled={retryMutation.isPending}
-                                className="p-1.5 text-blue-500 hover:text-blue-600 transition-colors"
-                                title="Retry Job"
-                              >
-                                <RotateCcw className="w-4 h-4" />
-                              </button>
-                            )}
-                            {['COMPLETED', 'FAILED'].includes(job.status) && (
-                              <button
-                                onClick={() => {
-                                  setDeleteConfirmId(job.id);
-                                }}
-                                disabled={deleteMutation.isPending}
-                                className="p-1.5 text-red-500 hover:text-red-600 transition-colors"
-                                title="Delete Record"
-                              >
-                                <Trash2 className="w-4 h-4" strokeWidth={2.5} />
-                              </button>
-                            )}
-                          </td>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+              ))}
             </div>
-          )}
-        </div>
-      )}
-      <ConfirmDialog
-        isOpen={!!deleteConfirmId}
-        title="Delete Job Log"
-        message="Are you sure you want to delete this AI job log? This action cannot be undone."
-        confirmText="Delete"
-        isDestructive={true}
-        onCancel={() => setDeleteConfirmId(null)}
-        onConfirm={() => {
-          if (deleteConfirmId) {
-            deleteMutation.mutate(deleteConfirmId);
-            setDeleteConfirmId(null);
-          }
-        }}
-      />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+// Backward compatibility alias
+export { AdminAIProcessing as AdminAI };

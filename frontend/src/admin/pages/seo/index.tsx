@@ -10,9 +10,10 @@ import {
   Settings,
   ShieldAlert,
   ShieldCheck,
-  CheckCircle2,
   Zap,
-  ExternalLink
+  ExternalLink,
+  ArrowRight,
+  Bot
 } from 'lucide-react';
 import { SeoApi } from '@admin/features/seo/SeoApi';
 import { apiClient } from '@api/client';
@@ -52,7 +53,6 @@ export const AdminSEO = () => {
   // Loading states for Tools
   const [isGeneratingSitemap, setIsGeneratingSitemap] = useState(false);
   const [isGeneratingRobots, setIsGeneratingRobots] = useState(false);
-  const [isStartingBulk, setIsStartingBulk] = useState(false);
   const [isRunningAgentAudit, setIsRunningAgentAudit] = useState(false);
 
   const { data: overview, isLoading: isLoadingOverview } = useQuery({
@@ -118,18 +118,6 @@ export const AdminSEO = () => {
       const res = await apiClient.get('/v1/settings');
       return res.data.data;
     }
-  });
-
-  // Query recent bulk SEO jobs
-  const { data: bulkJobs } = useQuery({
-    queryKey: ['admin-seo-bulk-jobs'],
-    queryFn: async () => {
-      const res = await apiClient.get('/admin/ai/jobs', { params: { limit: 10 } });
-      const allJobs = res.data?.data?.data || [];
-      return allJobs.filter((j: any) => j.action_type === 'BULK_SEO' || (j.job_name && j.job_name.includes('SEO')));
-    },
-    enabled: activeTab === 'generator',
-    refetchInterval: activeTab === 'generator' ? 4000 : false
   });
 
   // Sync settings into controlled local state
@@ -202,21 +190,6 @@ export const AdminSEO = () => {
     }
   };
 
-  const handleGenerateBulk = async () => {
-    setIsStartingBulk(true);
-    try {
-      const res = await SeoApi.generateBulk();
-      queryClient.invalidateQueries({ queryKey: ['admin-seo-bulk-jobs'] });
-      queryClient.invalidateQueries({ queryKey: ['seo-overview'] });
-      const total = res.data?.totalItems ?? 0;
-      toast.success(`Bulk SEO job queued (${total} records to evaluate)`);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Bulk generation failed to start');
-    } finally {
-      setIsStartingBulk(false);
-    }
-  };
-
   const handleRunAgentAudit = async () => {
     setIsRunningAgentAudit(true);
     try {
@@ -237,8 +210,7 @@ export const AdminSEO = () => {
     { id: 'overview', label: 'Overview & Audit', icon: LayoutDashboard },
     { id: 'issues', label: 'SEO Issues', icon: ShieldAlert },
     { id: 'settings', label: 'Default SEO & Schema', icon: Settings },
-    { id: 'tools', label: 'Tools (Sitemap & Robots)', icon: Globe },
-    { id: 'generator', label: 'Bulk SEO Tools', icon: Search }
+    { id: 'tools', label: 'Tools (Sitemap & Robots)', icon: Globe }
   ];
 
   return (
@@ -465,43 +437,100 @@ export const AdminSEO = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Quick-jump to AI Processing for Bulk Generation - only shown when missing SEO items exist */}
+          {((overview?.missingTitles || 0) > 0 || (overview?.missingDescriptions || 0) > 0) && (
+            <div className="bg-gradient-to-r from-orange-50 via-amber-50 to-white p-4 rounded-md border border-orange-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-md bg-saffron/10 text-saffron flex items-center justify-center shrink-0">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    {(overview?.missingTitles || 0) + (overview?.missingDescriptions || 0)} content items are missing
+                    SEO tags
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    You can generate and fill missing meta titles and descriptions in bulk using AI Processing.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate(getAdminPath('/ai-processing?tab=bulk'))}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-saffron hover:bg-orange-600 text-white text-xs font-semibold rounded-md shadow-sm transition-colors whitespace-nowrap self-start sm:self-auto cursor-pointer"
+              >
+                <span>Generate in AI Processing</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
       )}
 
       {activeTab === 'issues' && (
         <div className="space-y-6">
-          {latestAgentAudit?.state?.summary && (
-            <div className="bg-gradient-to-br from-orange-50/60 to-white p-4 sm:p-5 rounded-md border border-orange-200 shadow-sm space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-orange-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <ShieldAlert className="w-5 h-5 text-saffron shrink-0" />
-                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">AI SEO Audit Agent Findings</h3>
-                  <span className="text-xs bg-orange-100 text-orange-800 font-semibold px-2 py-0.5 rounded-full">
-                    Latest Run
-                  </span>
+          <div className="bg-gradient-to-br from-orange-50/70 via-amber-50/50 to-white p-4 sm:p-5 rounded-md border border-orange-200 shadow-sm space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-orange-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-orange-100 text-saffron rounded-md shrink-0">
+                  <Bot className="w-5 h-5" />
                 </div>
-                <div className="text-xs text-gray-500">
-                  Audited {latestAgentAudit.state.summary.totalAudited || 0} items • Found{' '}
-                  <strong className="text-red-600">{latestAgentAudit.state.summary.totalIssues || 0}</strong> issues
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-slate-900 text-sm sm:text-base">AI SEO Audit Agent Findings</h3>
+                    <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                      Autonomous Analysis
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Source: <strong>SEO Audit Agent</strong> • Read & Analyze inspection • No content is modified until
+                    you fix or approve changes.
+                  </p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="font-semibold text-gray-600">Severity Breakdown:</span>
-                <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">
-                  Critical: {latestAgentAudit.state.summary.bySeverity?.CRITICAL || 0}
-                </span>
-                <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-bold">
-                  High: {latestAgentAudit.state.summary.bySeverity?.HIGH || 0}
-                </span>
-                <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-bold">
-                  Medium: {latestAgentAudit.state.summary.bySeverity?.MEDIUM || 0}
-                </span>
-                <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-bold">
-                  Low: {latestAgentAudit.state.summary.bySeverity?.LOW || 0}
-                </span>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleRunAgentAudit}
+                  disabled={isRunningAgentAudit}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-orange-200 hover:border-saffron text-slate-800 hover:text-saffron rounded-md text-xs font-semibold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+                >
+                  <Zap className={cn('w-3.5 h-3.5', isRunningAgentAudit && 'animate-spin text-saffron')} />
+                  <span>{isRunningAgentAudit ? 'Auditing Website...' : 'Run SEO Audit Agent'}</span>
+                </button>
               </div>
             </div>
-          )}
+
+            {latestAgentAudit?.state?.summary ? (
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="text-gray-600">
+                  Audited <strong>{latestAgentAudit.state.summary.totalAudited || 0}</strong> content items • Found{' '}
+                  <strong className="text-red-600">{latestAgentAudit.state.summary.totalIssues || 0}</strong> issues
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="font-semibold text-gray-500 mr-1">Severity:</span>
+                  <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">
+                    Critical: {latestAgentAudit.state.summary.bySeverity?.CRITICAL || 0}
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 font-bold">
+                    High: {latestAgentAudit.state.summary.bySeverity?.HIGH || 0}
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-bold">
+                    Medium: {latestAgentAudit.state.summary.bySeverity?.MEDIUM || 0}
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-bold">
+                    Low: {latestAgentAudit.state.summary.bySeverity?.LOW || 0}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="text-xs text-gray-500 flex items-center justify-between">
+                <span>No audit snapshot available yet. Click "Run SEO Audit Agent" to analyze all public pages.</span>
+              </div>
+            )}
+          </div>
 
           <div className="bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm overflow-hidden">
             <table className="w-full text-left border-collapse">
@@ -578,6 +607,29 @@ export const AdminSEO = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Clear Resolution Guidance */}
+          <div className="bg-slate-50 border border-slate-200/80 rounded-md p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 bg-slate-200/70 rounded text-slate-700 shrink-0">
+                <FileText className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-semibold text-slate-800">Resolving SEO Issues</span>
+                <p className="text-slate-500 mt-0.5">
+                  Click <strong>Fix Issue</strong> on any row above to edit that content item directly and adjust its
+                  title or description according to the recommendation.
+                </p>
+              </div>
+            </div>
+            <Link
+              to={getAdminPath('/ai-agents?tab=overview')}
+              className="text-saffron hover:underline font-bold inline-flex items-center gap-1 shrink-0"
+            >
+              <span>View in AI Agents</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       )}
@@ -732,101 +784,6 @@ export const AdminSEO = () => {
               >
                 View robots.txt
               </a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'generator' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-8 text-center">
-            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search className="w-10 h-10 text-saffron" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Bulk SEO Tools</h2>
-            <p className="text-gray-500 mb-8 max-w-2xl mx-auto">
-              Automatically generate missing SEO titles and meta descriptions for all content in the background. This
-              process will <strong>never</strong> overwrite manually entered SEO values. It will generate values{' '}
-              <strong>only when</strong> the SEO Title or Meta Description is empty.
-            </p>
-
-            <div className="bg-gray-50 p-4 rounded-md border border-gray-200 text-left space-y-4 mb-8">
-              <h4 className="font-semibold text-gray-900">Supported content types:</h4>
-              <div className="grid grid-cols-2 gap-3">
-                {['Bhajans', 'Articles', 'Festivals', 'Puranas', 'Categories'].map((item) => (
-                  <div key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-gray-700">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={handleGenerateBulk}
-              disabled={isStartingBulk}
-              className="px-6 py-3 bg-saffron text-white rounded-md font-bold hover:bg-saffron/90 disabled:opacity-60 w-full shadow-sm text-lg flex items-center justify-center gap-2 transition-colors"
-            >
-              <Zap className="w-5 h-5" />
-              {isStartingBulk ? 'Queueing Bulk Job...' : 'Start Bulk Generation Job'}
-            </button>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900">Background Job Status</h3>
-              <Link
-                to={getAdminPath('/ai')}
-                className="text-xs text-saffron hover:underline flex items-center gap-1 font-medium"
-              >
-                Queue <ExternalLink className="w-3 h-3" />
-              </Link>
-            </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-md divide-y divide-gray-100">
-              {bulkJobs && bulkJobs.length > 0 ? (
-                bulkJobs.slice(0, 4).map((job: any) => (
-                  <div key={job.id} className="p-3 text-left space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-gray-800 truncate max-w-[150px]">{job.job_name}</span>
-                      <span
-                        className={cn(
-                          'text-[10px] font-bold px-2 py-0.5 rounded-full uppercase',
-                          job.status === 'COMPLETED'
-                            ? 'bg-green-100 text-green-800'
-                            : job.status === 'PROCESSING'
-                              ? 'bg-blue-100 text-blue-800 animate-pulse'
-                              : job.status === 'FAILED'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-gray-100 text-gray-700'
-                        )}
-                      >
-                        {job.status}
-                      </span>
-                    </div>
-                    {job.status === 'PROCESSING' && (
-                      <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                          style={{ width: `${job.progress || 10}%` }}
-                        />
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between text-[11px] text-gray-500">
-                      <span>
-                        {job.processed_items || 0} / {job.total_items || 0} items
-                      </span>
-                      <span>
-                        {new Date(job.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="p-8 text-gray-500 text-center">
-                  <Search className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm">No SEO generation jobs have been executed yet.</p>
-                </div>
-              )}
             </div>
           </div>
         </div>

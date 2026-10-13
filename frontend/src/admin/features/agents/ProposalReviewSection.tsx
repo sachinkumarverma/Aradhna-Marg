@@ -228,7 +228,7 @@ export function ProposalReviewSection() {
 
         <div className="flex items-center gap-2">
           <Link
-            to={getAdminPath('/ai-proposals')}
+            to={getAdminPath('/ai-agents?tab=proposals')}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-darkBrown bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-md transition-colors shadow-2xs"
           >
             <span>Full Manager</span>
