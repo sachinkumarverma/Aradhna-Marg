@@ -26,7 +26,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({ scope, placeholder, autoFo
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  const { data: suggestions = [], isFetching } = useSearchSuggestions(debouncedQuery, scope);
+  const { data: suggestions = [], isFetching } = useSearchSuggestions(
+    debouncedQuery,
+    scope,
+    isOpen || debouncedQuery.trim().length > 0
+  );
   const { data: trending = [] } = useTrendingSearches();
   const { recentSearches, addSearch, removeSearch } = useRecentSearches();
 

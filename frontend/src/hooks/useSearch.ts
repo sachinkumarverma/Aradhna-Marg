@@ -33,7 +33,7 @@ export const useSearch = (query: string, filters: SearchFilters = {}, sort: stri
   });
 };
 
-export const useSearchSuggestions = (query: string, type: string = 'ALL') => {
+export const useSearchSuggestions = (query: string, type: string = 'ALL', enabled: boolean = true) => {
   return useQuery<any[]>({
     queryKey: ['search-suggestions', query, type],
     queryFn: async () => {
@@ -42,7 +42,7 @@ export const useSearchSuggestions = (query: string, type: string = 'ALL') => {
       });
       return res.data?.data?.suggestions || [];
     },
-    enabled: true,
+    enabled: Boolean(enabled),
     staleTime: 30000
   });
 };

@@ -9,11 +9,12 @@ export class RobotsGenerator {
     const robots = `# robots.txt for Aradhna Marg (https://aradhnamarg.com)
 User-agent: *
 Allow: /
+Allow: /api/v1/public/
 
 # Disallowed internal, admin, and search endpoints
+Disallow: /api/
 Disallow: /admin
 Disallow: /admin/
-Disallow: /api/
 Disallow: /search
 Disallow: /preview/
 

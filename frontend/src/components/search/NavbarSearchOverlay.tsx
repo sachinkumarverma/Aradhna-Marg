@@ -20,7 +20,7 @@ export const NavbarSearchOverlay: React.FC<NavbarSearchOverlayProps> = ({ isOpen
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const { data: suggestions = [], isFetching } = useSearchSuggestions(debouncedQuery);
+  const { data: suggestions = [], isFetching } = useSearchSuggestions(debouncedQuery, 'ALL', isOpen);
 
   // Auto-focus input when opened
   useEffect(() => {

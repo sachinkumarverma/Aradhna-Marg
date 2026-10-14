@@ -85,6 +85,7 @@ export const Home: React.FC = () => {
     '/Deities/Shriram.png'
   ];
   const [bgIndex, setBgIndex] = useState(0);
+  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => new Set([0, 1]));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -92,6 +93,17 @@ export const Home: React.FC = () => {
     }, 3500);
     return () => clearInterval(interval);
   }, [heroImages.length]);
+
+  useEffect(() => {
+    const nextIdx = (bgIndex + 1) % heroImages.length;
+    setLoadedIndices((prev) => {
+      if (prev.has(bgIndex) && prev.has(nextIdx)) return prev;
+      const updated = new Set(prev);
+      updated.add(bgIndex);
+      updated.add(nextIdx);
+      return updated;
+    });
+  }, [bgIndex, heroImages.length]);
 
   const fullVideos = (data?.featuredVideos || []).filter((v: any) => !isShortVideo(v));
 
@@ -102,16 +114,19 @@ export const Home: React.FC = () => {
       <SEOHead canonicalPath="/" schema={homeSchemas} />
       {/* 1. HERO SECTION */}
       <section className="relative w-full overflow-hidden bg-black isolate min-h-[580px] sm:min-h-[640px] md:min-h-[700px] lg:min-h-[760px] py-16 sm:py-20 md:py-24 flex items-center">
-        {heroImages.map((img, i) => (
-          <div
-            key={i}
-            className={`absolute inset-0 bg-cover bg-top bg-no-repeat transition-opacity duration-1000 ${i === bgIndex ? 'opacity-100' : 'opacity-0'}`}
-            style={{
-              backgroundImage: `url("${img}")`,
-              backgroundPosition: 'center top'
-            }}
-          ></div>
-        ))}
+        {heroImages.map((img, i) => {
+          const shouldLoad = loadedIndices.has(i);
+          return (
+            <div
+              key={i}
+              className={`absolute inset-0 bg-cover bg-top bg-no-repeat transition-opacity duration-1000 ${i === bgIndex ? 'opacity-100' : 'opacity-0'}`}
+              style={{
+                backgroundImage: shouldLoad ? `url("${img}")` : 'none',
+                backgroundPosition: 'center top'
+              }}
+            ></div>
+          );
+        })}
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
 
