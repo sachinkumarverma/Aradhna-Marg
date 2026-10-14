@@ -146,10 +146,28 @@ function buildHtml(template, options) {
   }
 
   // Initial Semantic Body Content inside <div id="root">
+  // Wrapped in <noscript> so visitors with JavaScript enabled see the smooth loading spinner
+  // until React hydrates, without any flash of unstyled content (FOUC), while search engine crawlers
+  // can still crawl and index the semantic text and links.
   if (options.bodyHtml) {
+    const loadingSpinnerHtml = `
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #F9F7F3; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <div style="width: 44px; height: 44px; border: 3px solid #ffedd5; border-radius: 50%; box-sizing: border-box;"></div>
+          <div style="position: absolute; width: 44px; height: 44px; border: 3px solid transparent; border-top-color: #ea580c; border-right-color: #ea580c; border-radius: 50%; animation: aradhna-spin 0.8s linear infinite; box-sizing: border-box;"></div>
+          <div style="position: absolute; width: 8px; height: 8px; background-color: #ea580c; border-radius: 50%;"></div>
+        </div>
+        <style>
+          @keyframes aradhna-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      </div>`;
+
     html = html.replace(
       /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/i,
-      `<div id="root">\n${options.bodyHtml}\n    </div>`
+      `<div id="root">\n      <noscript>\n${options.bodyHtml}\n      </noscript>${loadingSpinnerHtml}\n    </div>`
     );
   }
 
@@ -689,12 +707,14 @@ async function prerenderAll() {
     .replace(
       /<div id="root">[\s\S]*?<\/div>/,
       `<div id="root">
-        <main style="max-width: 600px; margin: 4rem auto; text-align: center; font-family: system-ui, -apple-system, sans-serif; padding: 2rem;">
-          <h1 style="font-size: 3rem; color: #ea580c; margin-bottom: 1rem;">४०४</h1>
-          <h2 style="font-size: 1.5rem; color: #1c1917; margin-bottom: 1rem;">पृष्ठ उपलब्ध नहीं है (Page Not Found)</h2>
-          <p style="color: #64748b; margin-bottom: 2rem;">आप जिस लिंक पर पहुँचे हैं वह उपलब्ध नहीं है। कृपया मुख्य पृष्ठ पर लौटें।</p>
-          <a href="/" style="display: inline-block; padding: 0.75rem 1.5rem; background: #ea580c; color: white; border-radius: 8px; font-weight: 600; text-decoration: none;">मुख्य पृष्ठ (Home)</a>
-        </main>
+        <noscript>
+          <main style="max-width: 600px; margin: 4rem auto; text-align: center; font-family: system-ui, -apple-system, sans-serif; padding: 2rem;">
+            <h1 style="font-size: 3rem; color: #ea580c; margin-bottom: 1rem;">४०४</h1>
+            <h2 style="font-size: 1.5rem; color: #1c1917; margin-bottom: 1rem;">पृष्ठ उपलब्ध नहीं है (Page Not Found)</h2>
+            <p style="color: #64748b; margin-bottom: 2rem;">आप जिस लिंक पर पहुँचे हैं वह उपलब्ध नहीं है। कृपया मुख्य पृष्ठ पर लौटें।</p>
+            <a href="/" style="display: inline-block; padding: 0.75rem 1.5rem; background: #ea580c; color: white; border-radius: 8px; font-weight: 600; text-decoration: none;">मुख्य पृष्ठ (Home)</a>
+          </main>
+        </noscript>
       </div>`
     );
 
