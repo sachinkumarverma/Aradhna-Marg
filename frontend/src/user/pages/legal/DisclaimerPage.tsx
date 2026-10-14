@@ -49,22 +49,28 @@ export const DisclaimerPage: React.FC = () => {
           <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-3xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4">
+            <h1
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 ${isHi ? 'font-hindi-body' : 'font-sans'}`}
+            >
               {isHi ? 'अस्वीकरण' : 'Disclaimer'}
-              <span className="block text-xl sm:text-2xl md:text-3xl text-amber-300/95 font-semibold mt-3">
+              <span
+                className={`block text-xl sm:text-2xl md:text-3xl text-amber-300/95 font-medium mt-3 ${isHi ? 'font-hindi-body' : 'font-sans'}`}
+              >
                 {isHi ? '(Disclaimer - आराधना मार्ग)' : '(Legal & Devotional Disclaimer)'}
               </span>
             </h1>
 
             <p
-              className={`text-slate-200 text-lg sm:text-xl md:text-2xl leading-relaxed max-w-2xl mx-auto font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
+              className={`text-slate-200 text-lg sm:text-xl md:text-2xl leading-relaxed max-w-2xl mx-auto font-normal ${isHi ? 'font-hindi-body' : 'font-sans'}`}
             >
               {isHi
                 ? 'आराधना मार्ग पर प्रस्तुत भजनों, पुराणों, आरतियों, भावार्थ एवं वीडियो सामग्री की प्रकृति, कॉपीराइट एवं उपयोग से संबंधित महत्वपूर्ण सूचना।'
                 : 'Read the Disclaimer for Aradhna Marg, including information about devotional content, copyright, user submissions, embedded media, external links, and website accuracy.'}
             </p>
 
-            <div className="mt-8 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 text-sm sm:text-base font-semibold text-amber-200">
+            <div
+              className={`mt-8 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 text-sm sm:text-base font-semibold text-amber-200 ${isHi ? 'font-hindi-body' : 'font-sans'}`}
+            >
               <Sparkles className="w-5 h-5 text-amber-400 shrink-0" />
               <span className="leading-none">{isHi ? 'अंतिम अद्यतन: अक्टूबर 2026' : 'Last Updated: October 2026'}</span>
             </div>

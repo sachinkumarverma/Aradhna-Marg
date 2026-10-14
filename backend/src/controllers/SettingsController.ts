@@ -13,6 +13,7 @@ import {
 } from '@/validators/settings.validator';
 import { sendSuccess } from '@/responses/apiResponse';
 import { ValidationError } from '@/errors/appError';
+import { publicCacheService } from '@services/PublicCacheService';
 
 /** Generic helper: validate with a schema and persist only that section's fields */
 async function updateSection(
@@ -28,6 +29,8 @@ async function updateSection(
       throw new ValidationError('Validation failed', parsed.error.format());
     }
     const updated = await settingsService.updateSettings(parsed.data);
+    publicCacheService.delete('public_settings');
+    publicCacheService.delete('maintenance_mode');
     return sendSuccess(res, successMsg, updated);
   } catch (error) {
     next(error);

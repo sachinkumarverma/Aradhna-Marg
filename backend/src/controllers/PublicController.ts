@@ -5,6 +5,7 @@ import { puranService } from '@services/PuranService';
 import { bhajanPdfService } from '@services/BhajanPdfService';
 import { isShortVideo } from '@utils/videoUtils';
 import { publicCacheService } from '@services/PublicCacheService';
+import { settingsRepository } from '@repositories/SettingsRepository';
 
 export class PublicController {
   // 1. Home Payload
@@ -1174,6 +1175,51 @@ export class PublicController {
       publicCacheService.set(cacheKey, payload, 300);
 
       return sendSuccess(res, 'Author fetched', payload);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // 17. Public Platform Settings (Safe fields for client rendering)
+  public getPublicSettings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+
+      const cached = publicCacheService.get<any>('public_settings');
+      if (cached) {
+        return sendSuccess(res, 'Settings fetched (cached)', cached.data);
+      }
+
+      const settings = await settingsRepository.getSettings();
+      if (!settings) {
+        return sendSuccess(res, 'Settings fetched', {});
+      }
+
+      const publicData = {
+        siteName: settings.siteName || 'Aradhna Marg',
+        siteDescription: settings.siteDescription || '',
+        copyrightText: settings.copyrightText || '',
+        contactEmail: settings.contactEmail || '',
+        contactPhone: settings.contactPhone || '',
+        contactAddress: settings.contactAddress || '',
+        facebookUrl: settings.facebookUrl || '',
+        instagramUrl: settings.instagramUrl || '',
+        youtubeUrl: settings.youtubeUrl || '',
+        twitterUrl: settings.twitterUrl || '',
+        enableAnalytics: Boolean(settings.enableAnalytics),
+        googleAnalyticsId: settings.googleAnalyticsId || '',
+        microsoftClarity: settings.microsoftClarity || '',
+        enableAds: Boolean(settings.enableAds),
+        adTopBanner: settings.adTopBanner || '',
+        adInline: settings.adInline || '',
+        adFooter: settings.adFooter || '',
+        maintenanceMode: Boolean(settings.maintenanceMode)
+      };
+
+      publicCacheService.set('public_settings', publicData, 300);
+      return sendSuccess(res, 'Settings fetched', publicData);
     } catch (error) {
       next(error);
     }

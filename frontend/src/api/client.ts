@@ -22,6 +22,14 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       window.dispatchEvent(new CustomEvent('session-expired'));
     }
+    if (error.response && (error.response.status === 503 || error.response.data?.maintenance)) {
+      try {
+        sessionStorage.setItem('am_maintenance_mode', 'true');
+      } catch {
+        // ignore
+      }
+      window.dispatchEvent(new CustomEvent('maintenance-mode-active'));
+    }
     return Promise.reject(error);
   }
 );

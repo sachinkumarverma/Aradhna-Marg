@@ -77,7 +77,9 @@ function buildHtml(template, options) {
   html = html.replace(/<html lang="[^"]*"/, `<html lang="${lang}"`);
 
   // Document Title
-  const title = options.title ? `${options.title}` : 'आराधना मार्ग - भजनों, आरती, चालीसा, एवं पौराणिक कथाओं का पावन संग्रह';
+  const title = options.title
+    ? `${options.title}`
+    : 'आराधना मार्ग - भजनों, आरती, चालीसा, एवं पौराणिक कथाओं का पावन संग्रह';
   html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/, `<title data-rh="true">${escapeHtml(title)}</title>`);
 
   // Meta Description
@@ -145,7 +147,10 @@ function buildHtml(template, options) {
 
   // Initial Semantic Body Content inside <div id="root">
   if (options.bodyHtml) {
-    html = html.replace(/<div id="root">[\s\S]*?<\/div>/, `<div id="root">\n${options.bodyHtml}\n    </div>`);
+    html = html.replace(
+      /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/i,
+      `<div id="root">\n${options.bodyHtml}\n    </div>`
+    );
   }
 
   return html;
@@ -251,8 +256,7 @@ async function prerenderAll() {
     {
       route: 'categories',
       title: 'भक्ति एवं आध्यात्मिक श्रेणियां (Categories) | Aradhna Marg',
-      description:
-        'भजन, आरती, चालीसा, स्तोत्र, धार्मिक ग्रंथ एवं पौराणिक कथाओं की विषयवार श्रेणियां।',
+      description: 'भजन, आरती, चालीसा, स्तोत्र, धार्मिक ग्रंथ एवं पौराणिक कथाओं की विषयवार श्रेणियां।',
       h1: 'भक्ति एवं आध्यात्मिक श्रेणियां (Categories)',
       items: categories.map((c) => ({
         url: `/categories/${encodeURIComponent(c.slug || c.id)}`,
@@ -265,8 +269,7 @@ async function prerenderAll() {
       description:
         'आराधना मार्ग का उद्देश्य सनातन धर्म के पावन साहित्य, मधुर भजनों और पौराणिक ग्रंथों को जन-जन तक पहुंचाना है।',
       h1: 'हमारे बारे में (About Us)',
-      content:
-        'आराधना मार्ग (Aradhna Marg) सनातन धर्म और भक्ति साहित्य को समर्पित एक पावन डिजिटल मंच है।'
+      content: 'आराधना मार्ग (Aradhna Marg) सनातन धर्म और भक्ति साहित्य को समर्पित एक पावन डिजिटल मंच है।'
     },
     {
       route: 'contact',
@@ -357,7 +360,11 @@ async function prerenderAll() {
     const title = detail.hindi_title || detail.title || b.hindi_title || b.title;
     const pageTitle = `${title} - भजन के बोल | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/bhajans/${encodeURIComponent(b.slug)}`;
-    const desc = detail.short_description || detail.description || b.short_description || `${title} के सम्पूर्ण पावन बोल, अर्थ और भावार्थ।`;
+    const desc =
+      detail.short_description ||
+      detail.description ||
+      b.short_description ||
+      `${title} के सम्पूर्ण पावन बोल, अर्थ और भावार्थ।`;
     const cleanDesc = stripHtml(desc).slice(0, 180);
     const lyrics = detail.lyrics || detail.clean_lyrics || detail.description || b.short_description || '';
 
@@ -414,7 +421,11 @@ async function prerenderAll() {
     const title = detail.title || a.title;
     const pageTitle = detail.seo_title || `${title} | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/articles/${encodeURIComponent(a.slug)}`;
-    const desc = detail.seo_description || detail.excerpt || a.excerpt || `${title} - सनातन धर्म, संस्कृति व भक्ति पर विस्तृत धार्मिक आलेख पढ़ें।`;
+    const desc =
+      detail.seo_description ||
+      detail.excerpt ||
+      a.excerpt ||
+      `${title} - सनातन धर्म, संस्कृति व भक्ति पर विस्तृत धार्मिक आलेख पढ़ें।`;
     const cleanDesc = stripHtml(desc).slice(0, 180);
     const content = detail.content || detail.displayContent || a.excerpt || '';
 
@@ -477,7 +488,11 @@ async function prerenderAll() {
     const title = detail.name || f.name;
     const pageTitle = detail.seo_title || `${title} - तिथि, कथा एवं पूजा विधि | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/festivals/${encodeURIComponent(slug)}`;
-    const desc = detail.seo_description || detail.short_description || f.short_description || `${title} की पावन कथा, शुभ मुहूर्त, पूजा विधि और महत्व।`;
+    const desc =
+      detail.seo_description ||
+      detail.short_description ||
+      f.short_description ||
+      `${title} की पावन कथा, शुभ मुहूर्त, पूजा विधि और महत्व।`;
     const cleanDesc = stripHtml(desc).slice(0, 180);
     const content = detail.content || detail.displayContent || detail.short_description || '';
 
@@ -533,7 +548,11 @@ async function prerenderAll() {
     const title = detail.title || p.title;
     const pageTitle = `${title} - कथा, सार एवं परिचय | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/puranas/${encodeURIComponent(p.slug)}`;
-    const desc = detail.short_description || detail.description || p.short_description || `${title} का प्रामाणिक परिचय, अध्याय, श्लोक संख्या व महत्व।`;
+    const desc =
+      detail.short_description ||
+      detail.description ||
+      p.short_description ||
+      `${title} का प्रामाणिक परिचय, अध्याय, श्लोक संख्या व महत्व।`;
     const cleanDesc = stripHtml(desc).slice(0, 180);
     const descriptionText = detail.description || detail.short_description || '';
 
@@ -650,7 +669,10 @@ async function prerenderAll() {
 
   // 8. 404 Page (Dedicated non-indexable 404 response)
   const notFoundHtml = baseTemplate
-    .replace(/<title[^>]*>[\s\S]*?<\/title>/, '<title data-rh="true">४०४ - पृष्ठ उपलब्ध नहीं है | 404 Not Found</title>')
+    .replace(
+      /<title[^>]*>[\s\S]*?<\/title>/,
+      '<title data-rh="true">४०४ - पृष्ठ उपलब्ध नहीं है | 404 Not Found</title>'
+    )
     .replace(
       /<meta[^>]*name="description"[^>]*content="[^"]*"[^>]*\/?>/,
       '<meta data-rh="true" name="description" content="The requested page could not be found on Aradhna Marg." />'

@@ -19,10 +19,12 @@ import { Select } from '@components/ui/Select';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
+import { usePublicSettings } from '@/hooks/usePublicSettings';
 
 export const ContactPage: React.FC = () => {
   const { language } = useTranslation();
   const isHi = language === 'hi';
+  const { settings } = usePublicSettings();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -95,8 +97,8 @@ export const ContactPage: React.FC = () => {
     } catch (err: any) {
       toast.error(
         isHi
-          ? 'संदेश भेजने में त्रुटि हुई। कृपया पुनः प्रयास करें अथवा सीधे support@aradhnamarg.com पर ईमेल करें।'
-          : 'Failed to send message. Please try again or email support@aradhnamarg.com directly.'
+          ? `संदेश भेजने में त्रुटि हुई। कृपया पुनः प्रयास करें अथवा सीधे ${settings.contactEmail || 'support@aradhnamarg.com'} पर ईमेल करें।`
+          : `Failed to send message. Please try again or email ${settings.contactEmail || 'support@aradhnamarg.com'} directly.`
       );
     } finally {
       setLoading(false);
@@ -134,7 +136,7 @@ export const ContactPage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-saffron/20 border border-saffron/30 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 font-hindi-heading"
+              className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-saffron/20 border border-saffron/30 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 ${isHi ? 'font-hindi-body' : 'font-sans'}`}
             >
               <Sparkles className="w-3.5 h-3.5 text-saffron" />
               <span>{isHi ? 'सनातन धर्म सेवा एवं संवाद' : 'Devotional Connect & Support'}</span>
@@ -144,7 +146,7 @@ export const ContactPage: React.FC = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 tracking-tight font-hindi-heading leading-tight"
+              className={`text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight leading-tight ${isHi ? 'font-hindi-body' : 'font-sans'}`}
             >
               {isHi ? 'संपर्क एवं पावन सुझाव' : 'Contact & Sacred Suggestions'}
             </motion.h1>
@@ -153,7 +155,7 @@ export const ContactPage: React.FC = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-amber-100/80 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto"
+              className={`text-amber-100/90 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-normal ${isHi ? 'font-hindi-body' : 'font-sans'}`}
             >
               {isHi
                 ? 'आराधना मार्ग को और अधिक प्रामाणिक व उपयोगी बनाने हेतु अपने विचार, श्लोक सुधार अथवा प्रश्न हमारे साथ साझा करें।'
@@ -319,26 +321,52 @@ export const ContactPage: React.FC = () => {
 
           {/* Right Column: Contact Details, Social Channels & Support */}
           <div className="lg:col-span-5 space-y-6">
-            {/* Direct Email Card */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-orange-100 shadow-md">
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-saffron flex items-center justify-center mb-4 border border-amber-200">
-                <Mail className="w-6 h-6" />
+            {/* Direct Email & Contact Card */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-orange-100 shadow-md space-y-4">
+              <div>
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 text-saffron flex items-center justify-center mb-4 border border-amber-200">
+                  <Mail className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-darkBrown font-hindi-heading mb-1">
+                  {isHi ? 'सीधा ईमेल संपर्क' : 'Direct Email Support'}
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm mb-4 leading-relaxed">
+                  {isHi
+                    ? 'किसी भी आधिकारिक पूछताछ, ग्रंथ अधिकार अथवा सुझाव हेतु हमें सीधे ईमेल भेज सकते हैं:'
+                    : 'For official inquiries, scripture submissions, or copyright queries, contact us directly at:'}
+                </p>
+                <a
+                  href={`mailto:${settings.contactEmail || 'support@aradhnamarg.com'}`}
+                  className="inline-flex items-center gap-2 text-saffron hover:text-orange-600 font-bold text-sm bg-amber-50/70 hover:bg-amber-100/70 px-4 py-2.5 rounded-xl border border-amber-200/80 transition-colors"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span>{settings.contactEmail || 'support@aradhnamarg.com'}</span>
+                </a>
               </div>
-              <h3 className="text-lg font-bold text-darkBrown font-hindi-heading mb-1">
-                {isHi ? 'सीधा ईमेल संपर्क' : 'Direct Email Support'}
-              </h3>
-              <p className="text-slate-600 text-xs sm:text-sm mb-4 leading-relaxed">
-                {isHi
-                  ? 'किसी भी आधिकारिक पूछताछ, ग्रंथ अधिकार अथवा सुझाव हेतु हमें सीधे ईमेल भेज सकते हैं:'
-                  : 'For official inquiries, scripture submissions, or copyright queries, contact us directly at:'}
-              </p>
-              <a
-                href="mailto:support@aradhnamarg.com"
-                className="inline-flex items-center gap-2 text-saffron hover:text-orange-600 font-bold text-sm bg-amber-50/70 hover:bg-amber-100/70 px-4 py-2.5 rounded-xl border border-amber-200/80 transition-colors"
-              >
-                <Mail className="w-4 h-4" />
-                <span>support@aradhnamarg.com</span>
-              </a>
+
+              {settings.contactPhone && (
+                <div className="pt-3 border-t border-gray-100">
+                  <p className="text-xs text-slate-500 font-medium mb-1.5">{isHi ? 'दूरभाष (Phone):' : 'Telephone:'}</p>
+                  <a
+                    href={`tel:${settings.contactPhone}`}
+                    className="inline-flex items-center gap-2 text-slate-700 hover:text-saffron font-bold text-sm transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-saffron" />
+                    <span>{settings.contactPhone}</span>
+                  </a>
+                </div>
+              )}
+
+              {settings.contactAddress && (
+                <div className="pt-3 border-t border-gray-100">
+                  <p className="text-xs text-slate-500 font-medium mb-1">
+                    {isHi ? 'पता (Address):' : 'Office Address:'}
+                  </p>
+                  <p className="text-xs text-slate-600 whitespace-pre-line leading-relaxed">
+                    {settings.contactAddress}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Official Social Media Channels */}
@@ -352,35 +380,61 @@ export const ContactPage: React.FC = () => {
               </h3>
 
               <div className="space-y-3 text-xs sm:text-sm">
-                <a
-                  href="https://youtube.com/@thebhaktimarg_official"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
-                >
-                  <span className="font-bold text-slate-200 group-hover:text-red-400">YouTube</span>
-                  <span className="text-slate-400 text-xs">@thebhaktimarg_official</span>
-                </a>
+                {settings.youtubeUrl && (
+                  <a
+                    href={settings.youtubeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
+                  >
+                    <span className="font-bold text-slate-200 group-hover:text-red-400">YouTube</span>
+                    <span className="text-slate-400 text-xs">
+                      {settings.youtubeUrl.replace('https://youtube.com/', '')}
+                    </span>
+                  </a>
+                )}
 
-                <a
-                  href="https://instagram.com/thebhaktimarg_official"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
-                >
-                  <span className="font-bold text-slate-200 group-hover:text-pink-400">Instagram</span>
-                  <span className="text-slate-400 text-xs">@thebhaktimarg_official</span>
-                </a>
+                {settings.instagramUrl && (
+                  <a
+                    href={settings.instagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
+                  >
+                    <span className="font-bold text-slate-200 group-hover:text-pink-400">Instagram</span>
+                    <span className="text-slate-400 text-xs">
+                      {settings.instagramUrl.replace('https://instagram.com/', '')}
+                    </span>
+                  </a>
+                )}
 
-                <a
-                  href="https://facebook.com/sachinkumarverma2001"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
-                >
-                  <span className="font-bold text-slate-200 group-hover:text-blue-400">Facebook</span>
-                  <span className="text-slate-400 text-xs">sachinkumarverma2001</span>
-                </a>
+                {settings.facebookUrl && (
+                  <a
+                    href={settings.facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
+                  >
+                    <span className="font-bold text-slate-200 group-hover:text-blue-400">Facebook</span>
+                    <span className="text-slate-400 text-xs">
+                      {settings.facebookUrl.replace('https://facebook.com/', '')}
+                    </span>
+                  </a>
+                )}
+
+                {settings.twitterUrl && (
+                  <a
+                    href={settings.twitterUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
+                  >
+                    <span className="font-bold text-slate-200 group-hover:text-sky-400">Twitter / X</span>
+                    <span className="text-slate-400 text-xs">
+                      {settings.twitterUrl.replace(/https:\/\/(twitter|x)\.com\//, '')}
+                    </span>
+                  </a>
+                )}
               </div>
             </div>
 

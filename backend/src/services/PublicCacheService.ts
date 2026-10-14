@@ -47,6 +47,13 @@ export class PublicCacheService {
   }
 
   /**
+   * Deletes a specific key from the cache.
+   */
+  public delete(key: string): void {
+    this.cache.delete(key);
+  }
+
+  /**
    * Invalidates keys matching a given prefix or pattern.
    */
   public invalidatePrefix(prefix: string): void {

@@ -5,22 +5,11 @@ import toast from 'react-hot-toast';
 import { apiClient } from '@api/client';
 import { format } from 'date-fns';
 import { Select } from '@components/ui/Select';
-import { Settings, Save, AlertCircle, RefreshCw, UploadCloud, X, Pencil } from 'lucide-react';
-import { uploadFile } from '@api/upload';
-import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
+import { Settings, Save, AlertCircle, RefreshCw, X, Pencil } from 'lucide-react';
 import { AutoResizeTextarea } from '@components/ui/AutoResizeTextarea';
 import { CustomLoader } from '@components/common/CustomLoader';
 
-const TABS = [
-  'General',
-  'Contact',
-  'Social Media',
-  'YouTube Automation',
-  'SEO',
-  'Analytics',
-  'Advertisement',
-  'System'
-];
+const TABS = ['Contact', 'Social Media', 'YouTube Automation', 'Analytics', 'Advertisement', 'System'];
 
 // ── Shared primitives ──────────────────────────────────────────────────────
 
@@ -91,12 +80,16 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttribu
 );
 Textarea.displayName = 'Textarea';
 
-const SaveButton = ({ isPending }: { isPending: boolean }) => (
+const SaveButton = ({ isPending, isDirty }: { isPending: boolean; isDirty?: boolean }) => (
   <div className="pt-4 border-t border-gray-100 flex justify-end">
     <button
       type="submit"
-      disabled={isPending}
-      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+      disabled={isPending || !isDirty}
+      className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md font-medium transition-all text-sm ${
+        isDirty && !isPending
+          ? 'bg-saffron text-white hover:bg-saffron/90 cursor-pointer shadow-sm'
+          : 'bg-slate-200 text-slate-600 border border-slate-300 cursor-not-allowed'
+      }`}
     >
       <span className="shrink-0">
         {isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -108,7 +101,11 @@ const SaveButton = ({ isPending }: { isPending: boolean }) => (
 
 // ── Helper: create a section mutation ─────────────────────────────────────
 
-function useSectionSave(endpoint: string, queryClient: ReturnType<typeof useQueryClient>) {
+function useSectionSave(
+  endpoint: string,
+  queryClient: ReturnType<typeof useQueryClient>,
+  onSuccessCallback?: (data: any) => void
+) {
   return useMutation({
     mutationFn: async (data: any) => {
       const res = await apiClient.put(endpoint, data);
@@ -117,6 +114,9 @@ function useSectionSave(endpoint: string, queryClient: ReturnType<typeof useQuer
     onSuccess: (newData) => {
       toast.success('Settings saved!');
       queryClient.setQueryData(['admin-settings'], (old: any) => ({ ...old, ...newData }));
+      if (onSuccessCallback) {
+        onSuccessCallback(newData);
+      }
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Failed to save settings');
@@ -126,105 +126,15 @@ function useSectionSave(endpoint: string, queryClient: ReturnType<typeof useQuer
 
 // ── Section forms ──────────────────────────────────────────────────────────
 
-const GeneralSection = ({ defaults }: { defaults: any }) => {
-  const qc = useQueryClient();
-  const mutation = useSectionSave('/settings/general', qc);
-  const { register, handleSubmit, watch, setValue } = useForm({ values: defaults });
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [faviconFile, setFaviconFile] = useState<File | null>(null);
-  const [uploadingLogo, setUploadingLogo] = useState(false);
-  const [uploadingFavicon, setUploadingFavicon] = useState(false);
-
-  const onSubmit = async (data: any) => {
-    const payload = { ...data };
-    if (logoFile) {
-      setUploadingLogo(true);
-      try {
-        payload.siteLogo = await uploadFile(logoFile);
-        setLogoFile(null);
-      } catch {
-        // continue without logo upload
-      }
-      setUploadingLogo(false);
-    }
-    if (faviconFile) {
-      setUploadingFavicon(true);
-      try {
-        payload.favicon = await uploadFile(faviconFile);
-        setFaviconFile(null);
-      } catch {
-        // continue without favicon upload
-      }
-      setUploadingFavicon(false);
-    }
-    mutation.mutate(payload);
-  };
-
-  const ImageUpload = ({ field, file, setFile, uploading, label, ratio }: any) => {
-    const val = watch(field);
-    return (
-      <Field label={label}>
-        <div className="w-full max-w-sm flex flex-col">
-          <ImageUploadWithCrop
-            value={val || undefined}
-            onChange={(dataUrl, fileObj) => {
-              setFile(fileObj);
-              setValue(field, dataUrl, { shouldDirty: true });
-            }}
-            onRemove={() => {
-              setValue(field, '', { shouldDirty: true });
-              setFile(null);
-            }}
-            aspectRatio={ratio}
-            className={`w-full ${ratio === 1 ? 'max-w-[280px] aspect-square' : 'aspect-video'} rounded-md border-2 border-dashed border-gray-300 hover:border-saffron transition-colors`}
-            placeholder={`Upload ${label}`}
-          />
-        </div>
-      </Field>
-    );
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 animate-in fade-in duration-300">
-      <h3 className="text-lg font-semibold border-b pb-2">General Settings</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <Field label="Website Name">
-          <Input {...register('siteName')} />
-        </Field>
-        <Field label="Copyright Text">
-          <Input {...register('copyrightText')} />
-        </Field>
-        <div className="md:col-span-2">
-          <Field label="Website Description">
-            <Textarea {...register('siteDescription')} rows={3} />
-          </Field>
-        </div>
-        <ImageUpload
-          field="siteLogo"
-          file={logoFile}
-          setFile={setLogoFile}
-          uploading={uploadingLogo}
-          label="Logo Upload"
-          ratio={1}
-        />
-        <ImageUpload
-          field="favicon"
-          file={faviconFile}
-          setFile={setFaviconFile}
-          uploading={uploadingFavicon}
-          label="Favicon Upload"
-          ratio={1}
-        />
-      </div>
-      <SaveButton isPending={mutation.isPending} />
-    </form>
-  );
-};
-
 const ContactSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
-  const mutation = useSectionSave('/settings/contact', qc);
-  const { register, handleSubmit } = useForm({ values: defaults });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isDirty }
+  } = useForm({ values: defaults });
+  const mutation = useSectionSave('/settings/contact', qc, (saved) => reset(saved));
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">Contact Information</h3>
@@ -238,15 +148,20 @@ const ContactSection = ({ defaults }: { defaults: any }) => {
           </Field>
         </div>
       </div>
-      <SaveButton isPending={mutation.isPending} />
+      <SaveButton isPending={mutation.isPending} isDirty={isDirty} />
     </form>
   );
 };
 
 const SocialSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
-  const mutation = useSectionSave('/settings/social', qc);
-  const { register, handleSubmit } = useForm({ values: defaults });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isDirty }
+  } = useForm({ values: defaults });
+  const mutation = useSectionSave('/settings/social', qc, (saved) => reset(saved));
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">Social Profiles</h3>
@@ -264,15 +179,22 @@ const SocialSection = ({ defaults }: { defaults: any }) => {
           <Input {...register('twitterUrl')} />
         </Field>
       </div>
-      <SaveButton isPending={mutation.isPending} />
+      <SaveButton isPending={mutation.isPending} isDirty={isDirty} />
     </form>
   );
 };
 
 const YoutubeSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
-  const mutation = useSectionSave('/settings/youtube', qc);
-  const { register, handleSubmit, control, watch } = useForm({ values: defaults });
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    reset,
+    formState: { isDirty }
+  } = useForm({ values: defaults });
+  const mutation = useSectionSave('/settings/youtube', qc, (saved) => reset(saved));
 
   const lastSync = defaults?.youtubeLastSync ? new Date(defaults.youtubeLastSync) : null;
   const currentInterval = watch('youtubeSyncInterval') || defaults?.youtubeSyncInterval;
@@ -356,44 +278,20 @@ const YoutubeSection = ({ defaults }: { defaults: any }) => {
           </div>
         </div>
       </div>
-      <SaveButton isPending={mutation.isPending} />
-    </form>
-  );
-};
-
-const SeoSection = ({ defaults }: { defaults: any }) => {
-  const qc = useQueryClient();
-  const mutation = useSectionSave('/settings/seo', qc);
-  const { register, handleSubmit } = useForm({ values: defaults });
-  return (
-    <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
-      <h3 className="text-lg font-semibold border-b pb-2">Search Engine Optimization</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="md:col-span-2">
-          <Field label="Global Site Title">
-            <Input {...register('seoSiteTitle')} />
-          </Field>
-        </div>
-        <div className="md:col-span-2">
-          <Field label="Global Meta Description">
-            <Textarea {...register('seoMetaDescription')} rows={3} />
-          </Field>
-        </div>
-        <div className="md:col-span-2">
-          <Field label="Meta Keywords">
-            <Input {...register('seoMetaKeywords')} />
-          </Field>
-        </div>
-      </div>
-      <SaveButton isPending={mutation.isPending} />
+      <SaveButton isPending={mutation.isPending} isDirty={isDirty} />
     </form>
   );
 };
 
 const AnalyticsSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
-  const mutation = useSectionSave('/settings/analytics', qc);
-  const { register, handleSubmit } = useForm({ values: defaults });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isDirty }
+  } = useForm({ values: defaults });
+  const mutation = useSectionSave('/settings/analytics', qc, (saved) => reset(saved));
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">Tracking &amp; Analytics</h3>
@@ -424,15 +322,20 @@ const AnalyticsSection = ({ defaults }: { defaults: any }) => {
           />
         </Field>
       </div>
-      <SaveButton isPending={mutation.isPending} />
+      <SaveButton isPending={mutation.isPending} isDirty={isDirty} />
     </form>
   );
 };
 
 const AdvertisementSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
-  const mutation = useSectionSave('/settings/advertisement', qc);
-  const { register, handleSubmit } = useForm({ values: defaults });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isDirty }
+  } = useForm({ values: defaults });
+  const mutation = useSectionSave('/settings/advertisement', qc, (saved) => reset(saved));
   const AdTextarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(
     (props, ref) => {
       const [isLocked, setIsLocked] = useState(true);
@@ -486,32 +389,59 @@ const AdvertisementSection = ({ defaults }: { defaults: any }) => {
           <AdTextarea {...register('adFooter')} rows={3} />
         </Field>
       </div>
-      <SaveButton isPending={mutation.isPending} />
+      <SaveButton isPending={mutation.isPending} isDirty={isDirty} />
     </form>
   );
 };
 
 const SystemSection = ({ defaults }: { defaults: any }) => {
   const qc = useQueryClient();
-  const mutation = useSectionSave('/settings/system', qc);
-  const { register, handleSubmit } = useForm({ values: defaults });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { isDirty }
+  } = useForm({ values: defaults });
+  const mutation = useSectionSave('/settings/system', qc, (saved) => reset(saved));
+  const maintenanceMode = !!watch('maintenanceMode');
+
   return (
     <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5 animate-in fade-in duration-300">
       <h3 className="text-lg font-semibold border-b pb-2">System Controls</h3>
-      <div className="grid grid-cols-1 gap-4">
-        <label className="flex items-center gap-3 p-4 border bg-gray-50 rounded-md cursor-pointer">
-          <input
-            type="checkbox"
-            {...register('maintenanceMode')}
-            className="w-4 h-4 text-red-500 rounded focus:ring-red-500"
-          />
-          <div>
+      <div className="grid grid-cols-1 gap-4 max-w-xl">
+        <label className="flex items-center justify-between p-4 border bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100/60 transition-colors">
+          <div className="space-y-0.5 pr-4 select-none">
             <p className="text-sm font-bold text-gray-900">Maintenance Mode</p>
-            <p className="text-xs text-gray-500">Take the public site offline</p>
+            <p className="text-xs text-gray-500">
+              {maintenanceMode
+                ? 'The public site is currently restricted and showing the maintenance screen.'
+                : 'Take the public site offline temporarily for system updates or maintenance.'}
+            </p>
+          </div>
+
+          <div className="relative inline-flex items-center shrink-0">
+            <input
+              type="checkbox"
+              id="maintenance-mode-toggle"
+              {...register('maintenanceMode')}
+              className="sr-only peer"
+            />
+            <div
+              className={`w-12 h-7 rounded-full p-0.5 transition-colors duration-200 ease-in-out peer-focus:ring-2 peer-focus:ring-saffron/50 ${
+                maintenanceMode ? 'bg-red-600' : 'bg-gray-300'
+              }`}
+            >
+              <div
+                className={`w-6 h-6 rounded-full bg-white shadow-sm transform transition-transform duration-200 ease-in-out ${
+                  maintenanceMode ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </div>
           </div>
         </label>
       </div>
-      <SaveButton isPending={mutation.isPending} />
+      <SaveButton isPending={mutation.isPending} isDirty={isDirty} />
     </form>
   );
 };
@@ -530,11 +460,9 @@ export const AdminSettings: React.FC = () => {
   });
 
   const sectionMap: Record<string, React.ReactNode> = {
-    General: <GeneralSection defaults={data} />,
     Contact: <ContactSection defaults={data} />,
     'Social Media': <SocialSection defaults={data} />,
     'YouTube Automation': <YoutubeSection defaults={data} />,
-    SEO: <SeoSection defaults={data} />,
     Analytics: <AnalyticsSection defaults={data} />,
     Advertisement: <AdvertisementSection defaults={data} />,
     System: <SystemSection defaults={data} />

@@ -11,16 +11,6 @@ export class SeoApi {
     return response.data;
   }
 
-  static async generateSitemap() {
-    const response = await apiClient.post('/v1/seo/sitemap/generate');
-    return response.data;
-  }
-
-  static async generateRobots() {
-    const response = await apiClient.post('/v1/seo/robots/generate');
-    return response.data;
-  }
-
   static async generateBulk() {
     const response = await apiClient.post('/v1/seo/generate-bulk', {});
     return response.data;

@@ -73,21 +73,19 @@
   </head>
   <body>
     <div id="root">
-      <main class="aradhna-initial-seo" style="max-width: 1000px; margin: 0 auto; padding: 3rem 1.5rem; font-family: system-ui, -apple-system, sans-serif;">
-        <header style="text-align: center; margin-bottom: 2.5rem;">
-          <p style="color: #ea580c; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">॥ ॐ श्री गणेशाय नमः ॥</p>
-          <h1 style="font-size: 2.25rem; font-weight: 800; color: #1c1917; margin: 0.75rem 0; line-height: 1.3;">आराधना मार्ग - भजनों, आरती, चालीसा, एवं पौराणिक कथाओं का पावन संग्रह</h1>
-          <p style="color: #475569; font-size: 1.125rem; line-height: 1.6; max-width: 750px; margin: 0 auto;">आराधना मार्ग पर पाएं सम्पूर्ण सनातन भक्ति साहित्य, मधुर भजन, आरती, चालीसा, स्तोत्र, श्रीमद्भागवत व अष्टादश महापुराण और प्रमुख हिन्दू पर्वों की प्रामाणिक जानकारी।</p>
-        </header>
-        <nav aria-label="मुख्य अनुभाग" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem;">
-          <a href="/bhajans" style="padding: 0.6rem 1.2rem; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 9999px; font-weight: 600; text-decoration: none;">मधुर भजन</a>
-          <a href="/articles" style="padding: 0.6rem 1.2rem; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 9999px; font-weight: 600; text-decoration: none;">धार्मिक आलेख</a>
-          <a href="/puranas" style="padding: 0.6rem 1.2rem; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 9999px; font-weight: 600; text-decoration: none;">अष्टादश महापुराण</a>
-          <a href="/festivals" style="padding: 0.6rem 1.2rem; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 9999px; font-weight: 600; text-decoration: none;">पर्व एवं त्योहार</a>
-          <a href="/gods" style="padding: 0.6rem 1.2rem; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 9999px; font-weight: 600; text-decoration: none;">देवी-देवता दर्शन</a>
-          <a href="/categories" style="padding: 0.6rem 1.2rem; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; border-radius: 9999px; font-weight: 600; text-decoration: none;">श्रेणियां</a>
-        </nav>
-      </main>
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #F9F7F3; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+          <div style="width: 44px; height: 44px; border: 3px solid #ffedd5; border-radius: 50%; box-sizing: border-box;"></div>
+          <div style="position: absolute; width: 44px; height: 44px; border: 3px solid transparent; border-top-color: #ea580c; border-right-color: #ea580c; border-radius: 50%; animation: aradhna-spin 0.8s linear infinite; box-sizing: border-box;"></div>
+          <div style="position: absolute; width: 8px; height: 8px; background-color: #ea580c; border-radius: 50%;"></div>
+        </div>
+        <style>
+          @keyframes aradhna-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -3,7 +3,11 @@ import { Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { Navbar } from '@components/common/Navbar';
 import { Footer } from '@components/common/Footer';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { AnalyticsTracker } from '@components/common/AnalyticsTracker';
+import { AdBanner } from '@components/common/AdBanner';
+import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MaintenancePage } from '@/user/pages/common/MaintenancePage';
 
 const PageLoader = () => <CustomLoader fullScreen />;
 
@@ -19,6 +23,12 @@ export const PublicLayout: React.FC = () => {
   const navigationType = useNavigationType();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isRestoringRef = useRef(false);
+  const { settings, refetch } = usePublicSettings();
+
+  // Route Guard: whenever navigating between pages, re-verify status with the server
+  useEffect(() => {
+    refetch();
+  }, [location.pathname, refetch]);
 
   // Handle scroll restoration on navigation
   useEffect(() => {
@@ -102,8 +112,14 @@ export const PublicLayout: React.FC = () => {
     scrollPositions.set(location.pathname, { top, isBottom });
   };
 
+  // If maintenance mode is active on the public application, render the sacred maintenance screen
+  if (settings.maintenanceMode) {
+    return <MaintenancePage />;
+  }
+
   return (
     <div className="h-screen w-full flex flex-col bg-[#F9F7F3] font-sans text-darkBrown selection:bg-saffron/20 selection:text-saffron overflow-hidden">
+      <AnalyticsTracker />
       <Navbar containerRef={scrollContainerRef} />
 
       <div
@@ -111,6 +127,10 @@ export const PublicLayout: React.FC = () => {
         onScroll={handleScroll}
         className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col main-scroll-container"
       >
+        {settings.enableAds && settings.adTopBanner && (
+          <AdBanner htmlCode={settings.adTopBanner} className="bg-white/60 border-b border-orange-100/80 shadow-xs" />
+        )}
+
         <main className="flex-1 w-full relative z-0 flex flex-col">
           <AnimatePresence mode="wait">
             <motion.div
@@ -126,6 +146,10 @@ export const PublicLayout: React.FC = () => {
                   <Outlet />
                 </Suspense>
               </div>
+
+              {settings.enableAds && settings.adFooter && (
+                <AdBanner htmlCode={settings.adFooter} className="max-w-7xl mx-auto px-4 my-6" />
+              )}
 
               <Footer />
             </motion.div>

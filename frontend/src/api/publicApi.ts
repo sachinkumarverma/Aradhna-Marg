@@ -20,9 +20,41 @@ async function getCached<T>(key: string, fetcher: () => Promise<T>, ttl: number 
   }
 }
 
+export interface PublicSettings {
+  siteName?: string;
+  copyrightText?: string;
+  contactEmail?: string;
+  contactAddress?: string;
+  contactPhone?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  youtubeUrl?: string;
+  twitterUrl?: string;
+  enableAnalytics?: boolean;
+  googleAnalyticsId?: string;
+  microsoftClarity?: string;
+  enableAds?: boolean;
+  adTopBanner?: string;
+  adInline?: string;
+  adFooter?: string;
+  maintenanceMode?: boolean;
+}
+
 export class PublicApi {
   static clearCache() {
     cache.clear();
+  }
+
+  static async getSettings(): Promise<PublicSettings> {
+    try {
+      const response = await apiClient.get('/v1/public/settings', {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      return response.data?.data || {};
+    } catch (err) {
+      console.warn('Failed to load public settings:', err);
+      return {};
+    }
   }
 
   static async getHomeData() {

@@ -30,24 +30,6 @@ export class SeoController {
     }
   }
 
-  async generateSitemap(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = await seoService.generateSitemap();
-      return sendSuccess(res, 'Sitemap generated successfully', data);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async generateRobots(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = await seoService.generateRobots();
-      return sendSuccess(res, 'robots.txt generated successfully', data);
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async generateBulkSEO(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await seoService.generateBulkSEO(req.body);

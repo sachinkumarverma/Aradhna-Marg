@@ -1,7 +1,4 @@
 import { seoRepository } from './SeoRepository';
-import { sitemapGenerator } from '@/seo/generators/SitemapGenerator';
-import { robotsGenerator } from '@/seo/generators/RobotsGenerator';
-import { settingsService } from '@services/SettingsService';
 import { AiJobService } from '@admin/services/AiJobService';
 import { db } from '@common/database/DatabaseClient';
 
@@ -69,34 +66,6 @@ export class SeoService {
     }
 
     return issues;
-  }
-
-  async generateSitemap() {
-    const { count } = await sitemapGenerator.generateFullSitemapWithStats();
-    const nowIso = new Date().toISOString();
-
-    await settingsService
-      .updateSettings({
-        sitemapLastGenerated: nowIso,
-        sitemapUrlsCount: count
-      })
-      .catch(() => {});
-
-    return {
-      status: 'Generated',
-      url: '/sitemap.xml',
-      count,
-      lastGenerated: nowIso
-    };
-  }
-
-  async generateRobots() {
-    robotsGenerator.generate();
-    return {
-      status: 'Generated',
-      url: '/robots.txt',
-      lastGenerated: new Date().toISOString()
-    };
   }
 
   async generateBulkSEO(data: any) {

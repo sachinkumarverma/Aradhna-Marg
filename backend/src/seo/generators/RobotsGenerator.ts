@@ -27,7 +27,7 @@ Sitemap: ${this.baseUrl}/sitemap.xml
   }
 
   private saveToFiles(content: string): void {
-    const targetDirs = [path.join(process.cwd(), 'public'), path.join(process.cwd(), '..', 'frontend', 'public')];
+    const targetDirs = [path.join(process.cwd(), 'public')];
 
     for (const dir of targetDirs) {
       try {

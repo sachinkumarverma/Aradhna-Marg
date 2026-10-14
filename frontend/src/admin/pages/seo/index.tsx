@@ -13,7 +13,10 @@ import {
   Zap,
   ExternalLink,
   ArrowRight,
-  Bot
+  Bot,
+  Info,
+  CheckCircle2,
+  Code2
 } from 'lucide-react';
 import { SeoApi } from '@admin/features/seo/SeoApi';
 import { apiClient } from '@api/client';
@@ -21,6 +24,7 @@ import { cn } from '@utils/cn';
 import { toast } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAdminPath } from '@utils/host';
+import { DEFAULT_SEO, SITE_NAME_EN, SITE_NAME_HI, SITE_ORIGIN } from '@/constants/seo';
 
 const JumpingDots = ({ colorClass = 'text-gray-400' }: { colorClass?: string }) => (
   <div className={`flex items-center gap-1.5 h-9 mt-2 ${colorClass}`}>
@@ -35,24 +39,7 @@ export const AdminSEO = () => {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Form states for Default SEO
-  const [siteTitle, setSiteTitle] = useState('');
-  const [metaDescription, setMetaDescription] = useState('');
-  const [isSavingSeo, setIsSavingSeo] = useState(false);
-
-  // Form states for Schema toggles
-  const [schemas, setSchemas] = useState({
-    schemaOrganization: false,
-    schemaWebsite: false,
-    schemaBreadcrumb: false,
-    schemaArticle: false,
-    schemaSearchAction: false
-  });
-  const [isSavingSchema, setIsSavingSchema] = useState(false);
-
-  // Loading states for Tools
-  const [isGeneratingSitemap, setIsGeneratingSitemap] = useState(false);
-  const [isGeneratingRobots, setIsGeneratingRobots] = useState(false);
+  // Loading states
   const [isRunningAgentAudit, setIsRunningAgentAudit] = useState(false);
 
   const { data: overview, isLoading: isLoadingOverview } = useQuery({
@@ -112,84 +99,6 @@ export const AdminSEO = () => {
   const displayIssues = agentFindings.length > 0 ? agentFindings : legacyIssues;
   const isLoadingIssuesTable = isLoadingIssues || isLoadingAgentAudit;
 
-  const { data: settings, isLoading: isLoadingSettings } = useQuery({
-    queryKey: ['settings'],
-    queryFn: async () => {
-      const res = await apiClient.get('/v1/settings');
-      return res.data.data;
-    }
-  });
-
-  // Sync settings into controlled local state
-  useEffect(() => {
-    if (settings) {
-      setSiteTitle(settings.seoSiteTitle || '');
-      setMetaDescription(settings.seoMetaDescription || '');
-      setSchemas({
-        schemaOrganization: !!settings.schemaOrganization,
-        schemaWebsite: !!settings.schemaWebsite,
-        schemaBreadcrumb: !!settings.schemaBreadcrumb,
-        schemaArticle: !!settings.schemaArticle,
-        schemaSearchAction: !!settings.schemaSearchAction
-      });
-    }
-  }, [settings]);
-
-  const handleSaveDefaultSeo = async () => {
-    setIsSavingSeo(true);
-    try {
-      await apiClient.put('/v1/settings', {
-        seoSiteTitle: siteTitle,
-        seoMetaDescription: metaDescription
-      });
-      await queryClient.invalidateQueries({ queryKey: ['settings'] });
-      toast.success('Default SEO fallbacks saved successfully');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to save SEO settings');
-    } finally {
-      setIsSavingSeo(false);
-    }
-  };
-
-  const handleSaveSchemaSettings = async () => {
-    setIsSavingSchema(true);
-    try {
-      await apiClient.put('/v1/settings', schemas);
-      await queryClient.invalidateQueries({ queryKey: ['settings'] });
-      toast.success('Schema settings saved successfully');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to save schema settings');
-    } finally {
-      setIsSavingSchema(false);
-    }
-  };
-
-  const handleGenerateSitemap = async () => {
-    setIsGeneratingSitemap(true);
-    try {
-      const res = await SeoApi.generateSitemap();
-      await queryClient.invalidateQueries({ queryKey: ['settings'] });
-      const count = res.data?.count ?? 0;
-      toast.success(`XML Sitemap generated successfully (${count} URLs)`);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to generate sitemap');
-    } finally {
-      setIsGeneratingSitemap(false);
-    }
-  };
-
-  const handleGenerateRobots = async () => {
-    setIsGeneratingRobots(true);
-    try {
-      await SeoApi.generateRobots();
-      toast.success('robots.txt generated successfully');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to generate robots.txt');
-    } finally {
-      setIsGeneratingRobots(false);
-    }
-  };
-
   const handleRunAgentAudit = async () => {
     setIsRunningAgentAudit(true);
     try {
@@ -210,7 +119,7 @@ export const AdminSEO = () => {
     { id: 'overview', label: 'Overview & Audit', icon: LayoutDashboard },
     { id: 'issues', label: 'SEO Issues', icon: ShieldAlert },
     { id: 'settings', label: 'Default SEO & Schema', icon: Settings },
-    { id: 'tools', label: 'Tools (Sitemap & Robots)', icon: Globe }
+    { id: 'tools', label: 'Deployed SEO Files', icon: Globe }
   ];
 
   return (
@@ -623,154 +532,252 @@ export const AdminSEO = () => {
       )}
 
       {activeTab === 'settings' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6 space-y-5">
-            <h3 className="font-bold text-gray-900 border-b pb-3">Default SEO Fallbacks</h3>
-            <p className="text-xs text-gray-500 mb-4">
-              These values will act as fallbacks when content-specific SEO fields are empty.
-            </p>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-gray-700">Default Site Title</label>
-              <input
-                type="text"
-                value={siteTitle}
-                onChange={(e) => setSiteTitle(e.target.value)}
-                placeholder="e.g. Aradhna Marg | Devotional Bhajans, Puranas & Festivals"
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-gray-700">Default Meta Description</label>
-              <textarea
-                rows={4}
-                value={metaDescription}
-                onChange={(e) => setMetaDescription(e.target.value)}
-                placeholder="e.g. Discover authentic devotional bhajans, sacred puranas, and festival wisdom on Aradhna Marg."
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md outline-none text-sm focus:border-saffron focus:ring-1 focus:ring-saffron resize-y"
-              />
-            </div>
-            <button
-              onClick={handleSaveDefaultSeo}
-              disabled={isSavingSeo}
-              className="px-4 py-2 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 disabled:opacity-60 w-full mt-2 transition-colors flex items-center justify-center gap-2"
-            >
-              {isSavingSeo ? 'Saving Fallbacks...' : 'Save Default SEO'}
-            </button>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6 space-y-5">
-            <h3 className="font-bold text-gray-900 border-b pb-3">Structured Data (Schema.org)</h3>
-            <p className="text-xs text-gray-500 mb-4">
-              The backend will automatically determine the correct schema fields for each page type. These switches
-              simply enable or disable schema generation globally.
-            </p>
-
-            <div className="space-y-4">
-              {[
-                { key: 'schemaOrganization', label: 'Organization Schema' },
-                { key: 'schemaWebsite', label: 'Website Schema' },
-                { key: 'schemaBreadcrumb', label: 'Breadcrumb Schema' },
-                { key: 'schemaArticle', label: 'Article Schema' },
-                { key: 'schemaSearchAction', label: 'SearchAction Schema' }
-              ].map((schema) => (
-                <label key={schema.key} className="flex items-center justify-between cursor-pointer">
-                  <span className="text-sm font-medium text-gray-700">{schema.label}</span>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={schemas[schema.key as keyof typeof schemas] || false}
-                      onChange={(e) =>
-                        setSchemas((prev) => ({
-                          ...prev,
-                          [schema.key]: e.target.checked
-                        }))
-                      }
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-saffron"></div>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Default SEO Fallbacks Card */}
+            <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6 flex flex-col justify-between space-y-5">
+              <div>
+                <div className="flex items-center justify-between border-b pb-3 mb-4">
+                  <div>
+                    <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                      <Code2 className="w-4 h-4 text-saffron" />
+                      <span>Default SEO Fallbacks</span>
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Compiled in{' '}
+                      <code className="text-[11px] font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-700">
+                        constants/seo.ts
+                      </code>
+                    </p>
                   </div>
-                </label>
-              ))}
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                    Read-Only
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Hindi Defaults */}
+                  <div className="bg-slate-50 border border-slate-200/70 rounded-lg p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        Hindi (Primary Default)
+                      </span>
+                      <span className="text-[10px] bg-saffron/10 text-saffron font-bold px-1.5 py-0.5 rounded">
+                        Default
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-slate-500">Site Title</div>
+                      <p className="text-xs text-slate-900 font-hindi-body font-medium leading-relaxed mt-0.5">
+                        {DEFAULT_SEO.hi.title}
+                      </p>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-slate-500">Meta Description</div>
+                      <p className="text-xs text-slate-600 font-hindi-body leading-relaxed mt-0.5">
+                        {DEFAULT_SEO.hi.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* English Defaults */}
+                  <div className="bg-slate-50 border border-slate-200/70 rounded-lg p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        English (Fallback)
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-slate-500">Site Title</div>
+                      <p className="text-xs text-slate-900 font-medium leading-relaxed mt-0.5">
+                        {DEFAULT_SEO.en.title}
+                      </p>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-slate-500">Meta Description</div>
+                      <p className="text-xs text-slate-600 leading-relaxed mt-0.5">{DEFAULT_SEO.en.description}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-[11px] text-gray-500 italic">
+                * Note: Individual Bhajans, Articles, Festivals, and Puranas use their own specific SEO title and
+                description fields when set.
+              </p>
             </div>
-            <button
-              onClick={handleSaveSchemaSettings}
-              disabled={isSavingSchema}
-              className="px-4 py-2 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 disabled:opacity-60 w-full mt-2 transition-colors flex items-center justify-center gap-2"
-            >
-              {isSavingSchema ? 'Saving Schemas...' : 'Save Schema Settings'}
-            </button>
+
+            {/* Active Structured Data Card */}
+            <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6 flex flex-col justify-between space-y-5">
+              <div>
+                <div className="flex items-center justify-between border-b pb-3 mb-4">
+                  <div>
+                    <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-blue-500" />
+                      <span>Active Structured Data (Schema.org)</span>
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Compiled in{' '}
+                      <code className="text-[11px] font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-700">
+                        components/seo/SchemaRenderer.tsx
+                      </code>
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Active in Code
+                  </span>
+                </div>
+
+                <div className="space-y-2.5">
+                  {[
+                    {
+                      name: 'WebSite Schema',
+                      desc: 'Defines root website entity and Google SearchAction query input.',
+                      target: 'Homepage (/)'
+                    },
+                    {
+                      name: 'Organization Schema',
+                      desc: 'Official branding, logo, and social profile links.',
+                      target: 'Site-wide'
+                    },
+                    {
+                      name: 'BreadcrumbList Schema',
+                      desc: 'Hierarchical navigation trail for search results snippets.',
+                      target: 'All listing and detail pages'
+                    },
+                    {
+                      name: 'Article Schema',
+                      desc: 'Rich headline, author, datePublished, and thumbnail.',
+                      target: 'Article detail pages'
+                    },
+                    {
+                      name: 'MusicComposition Schema',
+                      desc: 'Sacred devotional lyrics metadata and composition structure.',
+                      target: 'Bhajan detail pages'
+                    },
+                    {
+                      name: 'Book / Publication Schema',
+                      desc: 'Sacred scriptures and holy purana metadata.',
+                      target: 'Purana detail pages'
+                    },
+                    {
+                      name: 'Event Schema',
+                      desc: 'Festival start/end dates and sacred observance schedule.',
+                      target: 'Festival detail pages'
+                    }
+                  ].map((item) => (
+                    <div
+                      key={item.name}
+                      className="flex items-start justify-between gap-3 p-2.5 rounded-lg border border-slate-100 bg-slate-50/70"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="text-xs font-bold text-slate-900">{item.name}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-0.5 pl-5">{item.desc}</p>
+                      </div>
+                      <span className="text-[10px] text-slate-500 font-medium px-1.5 py-0.5 bg-white border border-slate-200 rounded shrink-0">
+                        {item.target}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-[11px] text-gray-500 italic">
+                * All schemas conform strictly to Google Search Central and schema.org standard specifications.
+              </p>
+            </div>
           </div>
         </div>
       )}
 
       {activeTab === 'tools' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6 flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-              <Globe className="w-8 h-8 text-blue-500" />
-            </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">XML Sitemap</h3>
-            <p className="text-sm text-gray-500 mb-6">
-              Generate an updated XML sitemap for search engines. <br />
-              Last generated:{' '}
-              <strong>
-                {settings?.sitemapLastGenerated
-                  ? new Date(settings.sitemapLastGenerated).toLocaleString('en-IN', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })
-                  : 'Never'}
-              </strong>{' '}
-              <br />
-              URLs: <strong>{settings?.sitemapUrlsCount || 0}</strong> <br />
-              Status: <strong className="text-green-600">Available</strong>
-            </p>
-            <div className="flex gap-3 w-full">
-              <button
-                onClick={handleGenerateSitemap}
-                disabled={isGeneratingSitemap}
-                className="flex-1 px-4 py-2 bg-saffron text-white rounded-md font-medium hover:bg-saffron/90 disabled:opacity-60 transition-colors"
-              >
-                {isGeneratingSitemap ? 'Generating...' : 'Generate'}
-              </button>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Sitemap Card */}
+            <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold">
+                    <Globe className="w-6 h-6" />
+                  </div>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Build-Time Generated
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-1">Production XML Sitemap</h3>
+                <p className="text-xs text-slate-500 mb-4">
+                  Generated during frontend compilation from live published Bhajans, Articles, Festivals, Puranas,
+                  Categories, and Deities. Deployed directly to Vercel edge.
+                </p>
+                <div className="bg-slate-50 border border-slate-200/70 rounded-lg p-3 mb-6">
+                  <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                    Production URL
+                  </div>
+                  <a
+                    href="https://aradhnamarg.com/sitemap.xml"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-mono text-saffron hover:underline flex items-center gap-1.5 break-all"
+                  >
+                    https://aradhnamarg.com/sitemap.xml
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                  </a>
+                </div>
+              </div>
               <a
-                href="/sitemap.xml"
+                href="https://aradhnamarg.com/sitemap.xml"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 block text-center transition-colors"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm"
               >
-                View Sitemap
+                <span>Open Production Sitemap</span>
+                <ExternalLink className="w-4 h-4" />
               </a>
             </div>
-          </div>
 
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm p-6 flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
-              <FileText className="w-8 h-8 text-green-500" />
-            </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Robots.txt</h3>
-            <p className="text-sm text-gray-500 mb-6">
-              Automatically generate a standard robots.txt file to guide search engine crawlers properly.
-            </p>
-            <div className="flex gap-3 w-full mt-auto">
-              <button
-                onClick={handleGenerateRobots}
-                disabled={isGeneratingRobots}
-                className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 disabled:opacity-60 transition-colors"
-              >
-                {isGeneratingRobots ? 'Generating...' : 'Generate robots.txt'}
-              </button>
+            {/* Robots.txt Card */}
+            <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-bold">
+                    <FileText className="w-6 h-6" />
+                  </div>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Static Asset
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-1">Production Robots.txt</h3>
+                <p className="text-xs text-slate-500 mb-4">
+                  Static crawler directives served from frontend public files. Configured to allow all public website
+                  pages and public API rendering (
+                  <code className="text-[11px] bg-slate-100 px-1 py-0.5 rounded text-slate-700">/api/v1/public/</code>)
+                  while keeping private and admin routes blocked.
+                </p>
+                <div className="bg-slate-50 border border-slate-200/70 rounded-lg p-3 mb-6">
+                  <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                    Production URL
+                  </div>
+                  <a
+                    href="https://aradhnamarg.com/robots.txt"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-mono text-saffron hover:underline flex items-center gap-1.5 break-all"
+                  >
+                    https://aradhnamarg.com/robots.txt
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                  </a>
+                </div>
+              </div>
               <a
-                href="/robots.txt"
+                href="https://aradhnamarg.com/robots.txt"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium hover:bg-gray-200 block text-center transition-colors"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm"
               >
-                View robots.txt
+                <span>Open Production Robots.txt</span>
+                <ExternalLink className="w-4 h-4" />
               </a>
             </div>
           </div>

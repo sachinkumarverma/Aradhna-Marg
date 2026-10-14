@@ -109,7 +109,7 @@ export class SitemapGenerator {
   }
 
   private saveToFiles(xml: string): void {
-    const targetDirs = [path.join(process.cwd(), 'public'), path.join(process.cwd(), '..', 'frontend', 'public')];
+    const targetDirs = [path.join(process.cwd(), 'public')];
 
     for (const dir of targetDirs) {
       try {

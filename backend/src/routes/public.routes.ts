@@ -3,8 +3,12 @@ import { db } from '@common/database/DatabaseClient';
 import { sendSuccess } from '@/responses/apiResponse';
 import { publicController } from '@controllers/PublicController';
 import { isShortVideo } from '@utils/videoUtils';
+import { requireActiveSite } from '@/middlewares/maintenance.middleware';
 
 const router = Router();
+
+// Guard public endpoints when maintenance mode is active
+router.use(requireActiveSite);
 
 // Home payload
 router.get('/home', publicController.getHomeData);
@@ -178,5 +182,8 @@ router.post('/payments/webhook', paymentController.handleWebhook);
 import { contactController } from '@controllers/ContactController';
 router.post('/contact', contactController.submitContact);
 router.post('/subscribe', contactController.subscribeNewsletter);
+
+// Public Platform Settings
+router.get('/settings', publicController.getPublicSettings);
 
 export default router;
