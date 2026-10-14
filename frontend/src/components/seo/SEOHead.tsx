@@ -75,12 +75,12 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   if (!resolvedCanonical) {
     if (canonicalPath) {
       const cleanPath = canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`;
-      resolvedCanonical = `${SITE_ORIGIN}${cleanPath}`;
+      resolvedCanonical = `${SITE_ORIGIN}${cleanPath === '/' ? '/' : cleanPath.replace(/\/+$/, '')}`;
     } else if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      resolvedCanonical = `${SITE_ORIGIN}${path === '/' ? '' : path}`;
+      resolvedCanonical = `${SITE_ORIGIN}${path === '/' ? '/' : path.replace(/\/+$/, '')}`;
     } else {
-      resolvedCanonical = SITE_ORIGIN;
+      resolvedCanonical = `${SITE_ORIGIN}/`;
     }
   }
 

@@ -95,7 +95,7 @@ export function ImageUploadWithCrop({
                     const w = window.open('');
                     if (w)
                       w.document.write(
-                        `<img src="${value}" style="max-width: 100%; max-height: 100%; display: block; margin: auto;" />`
+                        `<img src="${value}" alt="Preview" style="max-width: 100%; max-height: 100%; display: block; margin: auto;" />`
                       );
                   } else {
                     window.open(value, '_blank');

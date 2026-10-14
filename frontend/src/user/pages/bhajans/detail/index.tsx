@@ -267,9 +267,9 @@ export const BhajanDetail: React.FC = () => {
                       {bhajan.god_name || bhajan.category_name}
                     </span>
                   )}
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-amber-50 leading-tight font-hindi-heading drop-shadow-md">
+                  <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-amber-50 leading-tight font-hindi-heading drop-shadow-md">
                     {bhajan.title}
-                  </h1>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -415,7 +415,9 @@ export const BhajanDetail: React.FC = () => {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg font-bold text-white leading-snug tracking-tight">{bhajan.title}</h3>
+                <h1 className="text-lg sm:text-xl font-bold text-white leading-snug tracking-tight font-hindi-heading">
+                  {bhajan.title}
+                </h1>
 
                 {/* Metadata Row: Views, Duration, Date */}
                 <div className="flex flex-wrap items-center gap-4 text-xs text-amber-100/80 font-medium">
