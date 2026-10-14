@@ -6,7 +6,6 @@ import { CustomLoader } from '@components/common/CustomLoader';
 import { AnalyticsTracker } from '@components/common/AnalyticsTracker';
 import { AdBanner } from '@components/common/AdBanner';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
-import { motion, AnimatePresence } from 'framer-motion';
 import { MaintenancePage } from '@/user/pages/common/MaintenancePage';
 
 const PageLoader = () => <CustomLoader fullScreen />;
@@ -127,28 +126,19 @@ export const PublicLayout: React.FC = () => {
         )}
 
         <main className="flex-1 w-full relative z-0 flex flex-col">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="flex-1 w-full flex flex-col"
-            >
-              <div className="flex-1 w-full">
-                <Suspense fallback={<PageLoader />}>
-                  <Outlet />
-                </Suspense>
-              </div>
+          <div className="flex-1 w-full flex flex-col">
+            <div className="flex-1 w-full">
+              <Suspense fallback={<PageLoader />}>
+                <Outlet key={location.pathname} />
+              </Suspense>
+            </div>
 
-              {settings.enableAds && settings.adFooter && (
-                <AdBanner htmlCode={settings.adFooter} className="max-w-7xl mx-auto px-4 my-6" />
-              )}
+            {settings.enableAds && settings.adFooter && (
+              <AdBanner htmlCode={settings.adFooter} className="max-w-7xl mx-auto px-4 my-6" />
+            )}
 
-              <Footer />
-            </motion.div>
-          </AnimatePresence>
+            <Footer />
+          </div>
         </main>
       </div>
     </div>

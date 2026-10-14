@@ -100,7 +100,11 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                     <li key={link.path}>
                       <Link
                         to={link.path}
-                        className={`text-[13px] 2xl:text-[14px] font-bold font-hindi-heading tracking-[0.2px] uppercase transition-colors py-1.5 px-2.5 rounded-lg whitespace-nowrap ${
+                        className={`${
+                          isHi
+                            ? 'text-[15.5px] 2xl:text-[16.5px] font-bold tracking-normal'
+                            : 'text-[13.5px] 2xl:text-[14.5px] font-extrabold uppercase tracking-wide'
+                        } font-hindi-heading transition-colors py-1.5 px-2.5 2xl:px-3 rounded-lg whitespace-nowrap leading-normal ${
                           isActive
                             ? 'text-saffron bg-orange-50/80 font-black'
                             : 'text-slate-800 hover:text-saffron hover:bg-orange-50/40'

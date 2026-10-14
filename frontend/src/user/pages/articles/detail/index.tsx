@@ -59,7 +59,7 @@ export const ArticleDetail: React.FC = () => {
   }, [slug, language]);
 
   if (loading) {
-    return <CustomLoader fullScreen text="धार्मिक लेख लोड हो रहा है..." />;
+    return <CustomLoader fullScreen text={language === 'hi' ? 'धार्मिक लेख लोड हो रहा है...' : 'Loading article...'} />;
   }
 
   if (!article) {

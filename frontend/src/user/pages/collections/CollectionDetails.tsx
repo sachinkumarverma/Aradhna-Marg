@@ -72,7 +72,7 @@ export const CollectionDetails: React.FC = () => {
   }, [id, collectionType, getLocalizedField]);
 
   if (loading) {
-    return <CustomLoader fullScreen text="संग्रह लोड हो रहा है..." />;
+    return <CustomLoader fullScreen text={language === 'hi' ? 'संग्रह लोड हो रहा है...' : 'Loading collection...'} />;
   }
 
   if (!data) {

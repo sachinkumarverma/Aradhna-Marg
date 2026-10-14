@@ -62,7 +62,12 @@ export const FestivalDetail: React.FC = () => {
   }, [festivalIdOrSlug, language]);
 
   if (loading) {
-    return <CustomLoader fullScreen text="त्योहार विवरण लोड हो रहा है..." />;
+    return (
+      <CustomLoader
+        fullScreen
+        text={language === 'hi' ? 'त्योहार विवरण लोड हो रहा है...' : 'Loading festival details...'}
+      />
+    );
   }
 
   if (!festival) {
