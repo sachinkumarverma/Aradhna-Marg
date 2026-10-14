@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { db } from '@common/database/DatabaseClient';
 import { sendSuccess } from '@/responses/apiResponse';
 import { puranService } from '@services/PuranService';
+import { bhajanPdfService } from '@services/BhajanPdfService';
 import { isShortVideo } from '@utils/videoUtils';
 
 export class PublicController {
@@ -245,6 +246,56 @@ export class PublicController {
       db.query(`UPDATE bhajans SET views = COALESCE(views, 0) + 1 WHERE id = $1`, [bhajan.id]).catch(() => {});
 
       return sendSuccess(res, 'Bhajan retrieved successfully', bhajan);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // 3.1. Download Bhajan Lyrics PDF Booklet
+  public downloadBhajanLyricsPdf = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { slug } = req.params;
+
+      const query = `
+        SELECT b.id, b.title, b.hindi_title, b.english_title, b.title_en, b.slug,
+               b.lyrics, b.clean_lyrics, b.updated_at,
+               d.name as god_name
+        FROM bhajans b
+        LEFT JOIN deities d ON b.god_id = d.id
+        WHERE (b.slug = $1 OR b.id::text = $1 OR b.youtube_video_id = $1) AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
+        LIMIT 1
+      `;
+      const { rows } = await db.query(query, [slug]);
+
+      if (rows.length === 0) {
+        return res.status(404).json({ success: false, error: 'Bhajan not found' });
+      }
+
+      const bhajan = rows[0];
+      const lyrics = bhajan.lyrics || bhajan.clean_lyrics || '';
+      if (!lyrics.trim()) {
+        return res.status(400).json({ success: false, error: 'Lyrics are not available for this bhajan' });
+      }
+
+      const pdfBuffer = await bhajanPdfService.generateLyricsPdf(bhajan);
+
+      const bhajanTitle = (bhajan.hindi_title || bhajan.title || 'bhajan').trim();
+      const safeTitle = bhajanTitle
+        .replace(/[/\\?%*:|"<>]/g, '')
+        .trim()
+        .replace(/\s+/g, '_');
+      const downloadFilename = `${safeTitle}_लिरिक्स.pdf`;
+      const encodedFilename = encodeURIComponent(downloadFilename);
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`
+      );
+      res.setHeader('Content-Length', pdfBuffer.length);
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+
+      return res.status(200).send(pdfBuffer);
     } catch (error) {
       next(error);
     }

@@ -73,6 +73,38 @@ export class PublicApi {
     );
   }
 
+  static async downloadBhajanLyricsPdf(slug: string, customFilename?: string): Promise<void> {
+    const response = await apiClient.get(`/v1/public/bhajans/${slug}/pdf`, {
+      responseType: 'blob'
+    });
+
+    let filename = customFilename;
+    const disposition = response.headers['content-disposition'];
+    if (disposition) {
+      const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+      if (utf8Match && utf8Match[1]) {
+        filename = decodeURIComponent(utf8Match[1]);
+      } else {
+        const match = disposition.match(/filename="?([^";]+)"?/i);
+        if (match && match[1]) {
+          filename = decodeURIComponent(match[1]);
+        }
+      }
+    }
+    if (!filename) {
+      filename = `${slug}-lyrics.pdf`;
+    }
+
+    const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  }
+
   static async getBhajanRelated(slug: string) {
     return getCached(
       `bhajan_related_${slug}`,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Download, Share2, Copy, Check } from 'lucide-react';
+import { BookOpen, Download, Share2, Copy, Check, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@utils/cn';
 
@@ -8,13 +8,17 @@ interface StickyBottomBarProps {
   isReadingMode: boolean;
   onCopy: () => void;
   hasCopied: boolean;
+  onDownloadPdf?: () => void;
+  isDownloadingPdf?: boolean;
 }
 
 export const StickyBottomBar: React.FC<StickyBottomBarProps> = ({
   onToggleReadingMode,
   isReadingMode,
   onCopy,
-  hasCopied
+  hasCopied,
+  onDownloadPdf,
+  isDownloadingPdf
 }) => {
   return (
     <AnimatePresence>
@@ -36,9 +40,17 @@ export const StickyBottomBar: React.FC<StickyBottomBarProps> = ({
             <span className="text-[10px] font-medium">Read</span>
           </button>
 
-          <button className="flex flex-col items-center gap-1 p-2 rounded-md flex-1 text-darkBrown/70 hover:bg-black/5 transition-colors">
-            <Download className="w-5 h-5" />
-            <span className="text-[10px] font-medium">PDF</span>
+          <button
+            onClick={onDownloadPdf}
+            disabled={isDownloadingPdf}
+            className="flex flex-col items-center gap-1 p-2 rounded-md flex-1 text-darkBrown/70 hover:bg-black/5 disabled:opacity-50 transition-colors cursor-pointer"
+          >
+            {isDownloadingPdf ? (
+              <Loader2 className="w-5 h-5 animate-spin text-saffron" />
+            ) : (
+              <Download className="w-5 h-5" />
+            )}
+            <span className="text-[10px] font-medium">{isDownloadingPdf ? 'Loading...' : 'PDF'}</span>
           </button>
 
           <button

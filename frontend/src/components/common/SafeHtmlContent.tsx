@@ -172,13 +172,13 @@ export const SafeHtmlContent: React.FC<SafeHtmlContentProps> = ({ content, class
         prose-h1:text-2xl md:prose-h1:text-3xl lg:prose-h1:text-4xl prose-h1:mt-8 prose-h1:mb-4
         ${
           isLyrics
-            ? 'prose-h2:text-base md:prose-h2:text-lg lg:prose-h2:text-xl prose-h2:mt-4 prose-h2:mb-1.5 prose-h2:text-darkBrown'
+            ? 'prose-h2:text-base md:prose-h2:text-lg lg:prose-h2:text-xl prose-h2:font-extrabold prose-h2:text-darkBrown prose-h2:mb-2 [&>h2:not(:first-child)]:border-t [&>h2:not(:first-child)]:border-amber-200/50 [&>h2:not(:first-child)]:pt-5 [&>h2:not(:first-child)]:mt-6'
             : 'prose-h2:text-xl md:prose-h2:text-2xl lg:prose-h2:text-[26px] prose-h2:mt-8 prose-h2:mb-3.5 prose-h2:text-darkBrown prose-h2:border-b prose-h2:border-orange-100/70 prose-h2:pb-2'
         }
         prose-h3:text-lg md:prose-h3:text-xl lg:prose-h3:text-2xl prose-h3:mt-6 prose-h3:mb-2.5 prose-h3:text-darkBrown
         ${
           isLyrics
-            ? 'prose-p:text-slate-800 prose-p:text-[15px] sm:prose-p:text-base md:prose-p:text-[17px] prose-p:leading-[1.55] md:prose-p:leading-relaxed prose-p:mb-1 md:prose-p:mb-2 prose-p:mt-0 prose-p:font-hindi-body'
+            ? 'prose-p:text-slate-800 prose-p:text-[15px] sm:prose-p:text-base md:prose-p:text-[17px] prose-p:leading-[1.7] md:prose-p:leading-[1.75] prose-p:mb-1.5 md:prose-p:mb-2 prose-p:mt-0 prose-p:font-hindi-body'
             : 'prose-p:text-slate-800 prose-p:text-[17px] md:prose-p:text-[18px] lg:prose-p:text-[19px] prose-p:leading-[1.8] md:prose-p:leading-[1.85] lg:prose-p:leading-[1.9] prose-p:mb-5 prose-p:mt-0 prose-p:font-hindi-body'
         }
         prose-a:text-saffron prose-a:font-semibold prose-a:no-underline hover:prose-a:underline 

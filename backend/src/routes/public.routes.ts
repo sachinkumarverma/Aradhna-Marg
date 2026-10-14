@@ -11,6 +11,7 @@ router.get('/home', publicController.getHomeData);
 
 // Bhajans
 router.get('/bhajans', publicController.getBhajans);
+router.get('/bhajans/:slug/pdf', publicController.downloadBhajanLyricsPdf);
 router.get('/bhajans/:slug/related', publicController.getBhajanRelated);
 router.get('/bhajans/:slug', publicController.getBhajanBySlug);
 

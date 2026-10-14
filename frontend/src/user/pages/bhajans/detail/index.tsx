@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Eye, Clock, Calendar, Music, Sparkles, Heart } from 'lucide-react';
+import { Copy, Check, Eye, Clock, Calendar, Music, Sparkles, Heart, Download, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import { YouTubePlayer } from './components/YouTubePlayer';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
@@ -27,6 +28,7 @@ export const BhajanDetail: React.FC = () => {
   const [bhajan, setBhajan] = useState<any>(null);
   const [relatedData, setRelatedData] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   const { copied, copyToClipboard } = useClipboard();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -122,6 +124,34 @@ export const BhajanDetail: React.FC = () => {
   const handleCopy = () => {
     const textToCopy = bhajan.lyrics || bhajan.clean_lyrics || bhajan.description || '';
     copyToClipboard(textToCopy);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!slug || isDownloadingPdf) return;
+    setIsDownloadingPdf(true);
+    const toastId = toast.loading(isHi ? 'लिरिक्स PDF तैयार हो रहा है...' : 'Generating Lyrics PDF...');
+    const rawTitle = bhajan?.hindi_title || bhajan?.title;
+    const safeTitle = rawTitle
+      ? rawTitle
+          .replace(/[/\\?%*:|"<>]/g, '')
+          .trim()
+          .replace(/\s+/g, '_')
+      : slug;
+    const preferredFilename = `${safeTitle}_लिरिक्स.pdf`;
+    try {
+      await PublicApi.downloadBhajanLyricsPdf(slug, preferredFilename);
+      toast.success(isHi ? 'लिरिक्स PDF डाउनलोड हो गया!' : 'Lyrics PDF downloaded successfully!', { id: toastId });
+    } catch (err: any) {
+      console.error('Failed to download lyrics PDF:', err);
+      toast.error(
+        isHi
+          ? 'लिरिक्स PDF डाउनलोड करने में समस्या आई। कृपया पुनः प्रयास करें।'
+          : 'Failed to download Lyrics PDF. Please try again.',
+        { id: toastId }
+      );
+    } finally {
+      setIsDownloadingPdf(false);
+    }
   };
 
   const dateSource = bhajan.publish_date || bhajan.published_at || bhajan.published_date || bhajan.created_at;
@@ -264,25 +294,52 @@ export const BhajanDetail: React.FC = () => {
                   className="text-base sm:text-lg md:text-xl font-bold text-darkBrown font-hindi-heading leading-tight"
                   text={t('content.lyricsAndDescription')}
                 />
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  title={copied ? t('content.lyricsCopied') : t('content.copyLyrics')}
-                  aria-label={copied ? t('content.lyricsCopied') : t('content.copyLyrics')}
-                  className="p-1 sm:px-3 sm:py-1 bg-transparent sm:bg-amber-50 hover:bg-amber-100/60 sm:hover:bg-amber-100 text-darkBrown border-0 sm:border sm:border-amber-200 text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center gap-1.5 shadow-none sm:shadow-xs cursor-pointer active:scale-95 shrink-0"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-green-600" />
-                      <span className="hidden sm:inline font-hindi-heading">{t('content.lyricsCopied')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-saffron" />
-                      <span className="hidden sm:inline font-hindi-heading">{t('content.copyLyrics')}</span>
-                    </>
-                  )}
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleDownloadPdf}
+                    disabled={isDownloadingPdf}
+                    title={isHi ? 'लिरिक्स PDF डाउनलोड करें' : 'Download Lyrics PDF'}
+                    aria-label={isHi ? 'लिरिक्स PDF डाउनलोड करें' : 'Download Lyrics PDF'}
+                    className="p-1 sm:px-3 sm:py-1 bg-transparent sm:bg-amber-50 hover:bg-amber-100/60 sm:hover:bg-amber-100 text-darkBrown border-0 sm:border sm:border-amber-200 text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center gap-1.5 shadow-none sm:shadow-xs cursor-pointer active:scale-95 disabled:opacity-50 shrink-0"
+                  >
+                    {isDownloadingPdf ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-saffron" />
+                        <span className="hidden sm:inline font-hindi-heading">
+                          {isHi ? 'डाउनलोड हो रहा है...' : 'Downloading...'}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-3.5 h-3.5 text-saffron" />
+                        <span className="hidden sm:inline font-hindi-heading">
+                          {isHi ? 'लिरिक्स PDF' : 'Download Lyrics'}
+                        </span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    title={copied ? t('content.lyricsCopied') : t('content.copyLyrics')}
+                    aria-label={copied ? t('content.lyricsCopied') : t('content.copyLyrics')}
+                    className="p-1 sm:px-3 sm:py-1 bg-transparent sm:bg-amber-50 hover:bg-amber-100/60 sm:hover:bg-amber-100 text-darkBrown border-0 sm:border sm:border-amber-200 text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center gap-1.5 shadow-none sm:shadow-xs cursor-pointer active:scale-95 shrink-0"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-green-600" />
+                        <span className="hidden sm:inline font-hindi-heading">{t('content.lyricsCopied')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-saffron" />
+                        <span className="hidden sm:inline font-hindi-heading">{t('content.copyLyrics')}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
               {bhajan.short_description && (
@@ -293,15 +350,22 @@ export const BhajanDetail: React.FC = () => {
 
               {/* Render Lyrics using SafeHtmlContent if HTML, or formatted text preserves whitespace */}
               {bhajan.lyrics ? (
-                bhajan.lyrics.includes('<') ? (
-                  <SafeHtmlContent content={bhajan.lyrics} variant="lyrics" />
-                ) : (
-                  <div className="whitespace-pre-line text-[15px] sm:text-base font-normal text-slate-800 leading-relaxed tracking-wide font-hindi-body space-y-1">
-                    {bhajan.lyrics}
-                  </div>
-                )
+                <>
+                  <SafeHtmlContent
+                    content={bhajan.lyrics}
+                    variant="lyrics"
+                    className={!isVideo ? 'text-center prose-headings:text-center prose-p:text-center' : ''}
+                  />
+                  {!isVideo && (
+                    <div className="w-[85%] max-w-[480px] h-[2px] mx-auto mt-8 mb-3 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent rounded-full" />
+                  )}
+                </>
               ) : bhajan.description ? (
-                <div className="whitespace-pre-line text-sm sm:text-base font-normal text-slate-800 leading-relaxed font-hindi-body">
+                <div
+                  className={`whitespace-pre-line text-base sm:text-lg font-normal text-slate-800 leading-relaxed font-hindi-body ${
+                    !isVideo ? 'text-center' : ''
+                  }`}
+                >
                   {bhajan.description}
                 </div>
               ) : (
