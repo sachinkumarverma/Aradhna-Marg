@@ -98,24 +98,27 @@ function buildHtml(template, options) {
   const title = options.title
     ? `${options.title}`
     : 'आराधना मार्ग - भजनों, आरती, चालीसा, एवं पौराणिक कथाओं का पावन संग्रह | Aradhna Marg';
-  html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/, `<title data-rh="true">${escapeHtml(title)}</title>`);
+  html = html.replace(
+    /<title[^>]*>[\s\S]*?<\/title>/,
+    `<title data-prerender="true" data-rh="true">${escapeHtml(title)}</title>`
+  );
 
   // Meta Description
   const description = options.description ? escapeAttribute(options.description).slice(0, 200) : '';
   html = html.replace(
     /<meta[^>]*name="description"[^>]*content="[^"]*"[^>]*\/?>/,
-    `<meta data-rh="true" name="description" content="${description}" />`
+    `<meta data-prerender="true" data-rh="true" name="description" content="${description}" />`
   );
 
   // Meta Robots & Googlebot
   if (options.robots) {
     html = html.replace(
       /<meta[^>]*name="robots"[^>]*content="[^"]*"[^>]*\/?>/,
-      `<meta data-rh="true" name="robots" content="${options.robots}" />`
+      `<meta data-prerender="true" data-rh="true" name="robots" content="${options.robots}" />`
     );
     html = html.replace(
       /<meta[^>]*name="googlebot"[^>]*content="[^"]*"[^>]*\/?>/,
-      `<meta data-rh="true" name="googlebot" content="${options.robots}" />`
+      `<meta data-prerender="true" data-rh="true" name="googlebot" content="${options.robots}" />`
     );
   }
 
@@ -126,27 +129,27 @@ function buildHtml(template, options) {
   } else {
     html = html.replace(
       /<link[^>]*rel="canonical"[^>]*href="[^"]*"[^>]*\/?>/,
-      `<link data-rh="true" rel="canonical" href="${canonicalUrl}" />`
+      `<link data-prerender="true" data-rh="true" rel="canonical" href="${canonicalUrl}" />`
     );
   }
 
   // OG tags
   html = html.replace(
     /<meta[^>]*property="og:title"[^>]*content="[^"]*"[^>]*\/?>/,
-    `<meta data-rh="true" property="og:title" content="${escapeAttribute(title)}" />`
+    `<meta data-prerender="true" data-rh="true" property="og:title" content="${escapeAttribute(title)}" />`
   );
   html = html.replace(
     /<meta[^>]*property="og:description"[^>]*content="[^"]*"[^>]*\/?>/,
-    `<meta data-rh="true" property="og:description" content="${description}" />`
+    `<meta data-prerender="true" data-rh="true" property="og:description" content="${description}" />`
   );
   html = html.replace(
     /<meta[^>]*property="og:url"[^>]*content="[^"]*"[^>]*\/?>/,
-    `<meta data-rh="true" property="og:url" content="${canonicalUrl}" />`
+    `<meta data-prerender="true" data-rh="true" property="og:url" content="${canonicalUrl}" />`
   );
   if (options.ogType) {
     html = html.replace(
       /<meta[^>]*property="og:type"[^>]*content="[^"]*"[^>]*\/?>/,
-      `<meta data-rh="true" property="og:type" content="${options.ogType}" />`
+      `<meta data-prerender="true" data-rh="true" property="og:type" content="${options.ogType}" />`
     );
   }
   if (options.ogImage) {
@@ -155,27 +158,27 @@ function buildHtml(template, options) {
       : `${BASE_URL}${options.ogImage.startsWith('/') ? '' : '/'}${options.ogImage}`;
     html = html.replace(
       /<meta[^>]*property="og:image"[^>]*content="[^"]*"[^>]*\/?>/,
-      `<meta data-rh="true" property="og:image" content="${escapeAttribute(fullImage)}" />`
+      `<meta data-prerender="true" data-rh="true" property="og:image" content="${escapeAttribute(fullImage)}" />`
     );
     html = html.replace(
       /<meta[^>]*name="twitter:image"[^>]*content="[^"]*"[^>]*\/?>/,
-      `<meta data-rh="true" name="twitter:image" content="${escapeAttribute(fullImage)}" />`
+      `<meta data-prerender="true" data-rh="true" name="twitter:image" content="${escapeAttribute(fullImage)}" />`
     );
   }
 
   // Twitter title & desc
   html = html.replace(
     /<meta[^>]*name="twitter:title"[^>]*content="[^"]*"[^>]*\/?>/,
-    `<meta data-rh="true" name="twitter:title" content="${escapeAttribute(title)}" />`
+    `<meta data-prerender="true" data-rh="true" name="twitter:title" content="${escapeAttribute(title)}" />`
   );
   html = html.replace(
     /<meta[^>]*name="twitter:description"[^>]*content="[^"]*"[^>]*\/?>/,
-    `<meta data-rh="true" name="twitter:description" content="${description}" />`
+    `<meta data-prerender="true" data-rh="true" name="twitter:description" content="${description}" />`
   );
 
   // Structured Data (JSON-LD) - Replace existing default block cleanly
   if (options.schema) {
-    const schemaScript = `<script data-rh="true" id="ld-json-schema" type="application/ld+json">\n${JSON.stringify(
+    const schemaScript = `<script data-prerender="true" data-rh="true" id="ld-json-schema" type="application/ld+json">\n${JSON.stringify(
       options.schema,
       null,
       2
@@ -793,7 +796,8 @@ async function prerenderAll() {
       canonicalUrl,
       ogImage: f.banner_image,
       schema,
-      bodyHtml
+      bodyHtml,
+      initialData: f
     });
 
     writeRoute(`festivals/${slug}`, html);
@@ -947,19 +951,19 @@ async function prerenderAll() {
   const notFoundHtml = baseTemplate
     .replace(
       /<title[^>]*>[\s\S]*?<\/title>/,
-      '<title data-rh="true">४०४ - पृष्ठ उपलब्ध नहीं है | 404 Not Found</title>'
+      '<title data-prerender="true" data-rh="true">४०४ - पृष्ठ उपलब्ध नहीं है | 404 Not Found</title>'
     )
     .replace(
       /<meta[^>]*name="description"[^>]*content="[^"]*"[^>]*\/?>/,
-      '<meta data-rh="true" name="description" content="The requested page could not be found on Aradhna Marg." />'
+      '<meta data-prerender="true" data-rh="true" name="description" content="The requested page could not be found on Aradhna Marg." />'
     )
     .replace(
       /<meta[^>]*name="robots"[^>]*content="[^"]*"[^>]*\/?>/,
-      '<meta data-rh="true" name="robots" content="noindex, nofollow" />'
+      '<meta data-prerender="true" data-rh="true" name="robots" content="noindex, nofollow" />'
     )
     .replace(
       /<meta[^>]*name="googlebot"[^>]*content="[^"]*"[^>]*\/?>/,
-      '<meta data-rh="true" name="googlebot" content="noindex, nofollow" />'
+      '<meta data-prerender="true" data-rh="true" name="googlebot" content="noindex, nofollow" />'
     )
     .replace(/<link[^>]*rel="canonical"[^>]*href="[^"]*"[^>]*\/?>\s*/, '') // Omit canonical tag on 404
     .replace(/<script[^>]*id="ld-json-schema"[^>]*>[\s\S]*?<\/script>\s*/, '') // Omit structured data on 404

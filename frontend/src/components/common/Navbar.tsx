@@ -102,11 +102,13 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                         to={link.path}
                         className={`${
                           isHi
-                            ? 'text-[17px] 2xl:text-[18.5px] font-extrabold tracking-normal px-2.5 2xl:px-3.5'
+                            ? 'text-[17px] 2xl:text-[18.5px] font-bold tracking-normal px-2.5 2xl:px-3.5'
                             : 'text-[13.5px] 2xl:text-[14.5px] font-extrabold uppercase tracking-wide px-1.5 2xl:px-2'
                         } font-hindi-heading transition-colors py-1.5 rounded-lg whitespace-nowrap leading-normal ${
                           isActive
-                            ? 'text-saffron bg-orange-50/80 font-black'
+                            ? isHi
+                              ? 'text-saffron bg-orange-50/80 font-extrabold'
+                              : 'text-saffron bg-orange-50/80 font-black'
                             : 'text-slate-800 hover:text-saffron hover:bg-orange-50/40'
                         }`}
                       >
@@ -131,8 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                   <Button
                     size="sm"
                     leftIcon={<HandHeart className="w-3.5 h-3.5 text-white" />}
-                    className="bg-saffron hover:brightness-90 text-white font-bold rounded-full px-4 shadow-sm hover:shadow-md transition-all text-xs font-hindi-heading cursor-pointer"
-                    style={{ fontFamily: '"Anek Devanagari", sans-serif' }}
+                    className="bg-saffron hover:brightness-90 text-white font-semibold rounded-full px-4 shadow-sm hover:shadow-md transition-all text-xs sm:text-[13px] font-lyrics cursor-pointer tracking-wide"
                   >
                     {t('navigation.supportUs')}
                   </Button>

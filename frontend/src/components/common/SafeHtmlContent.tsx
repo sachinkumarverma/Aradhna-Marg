@@ -105,16 +105,13 @@ export const SafeHtmlContent: React.FC<SafeHtmlContentProps> = ({ content, class
 
   // Process text if it doesn't contain HTML paragraph/heading tags
   if (!/<(p|h1|h2|h3|h4|div|ul|ol|blockquote)[^>]*>/i.test(formattedContent)) {
-    const lines = formattedContent
-      .split('\n')
-      .map((l) => l.trim())
-      .filter(Boolean);
+    const lines = formattedContent.split('\n').map((l) => l.trim());
     const htmlParts: string[] = [];
     let currentParagraph: string[] = [];
 
     const flushParagraph = () => {
       if (currentParagraph.length > 0) {
-        let pText = currentParagraph.join(' ');
+        let pText = currentParagraph.join(isLyrics ? '<br />' : ' ');
         pText = pText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         htmlParts.push(`<p>${pText}</p>`);
         currentParagraph = [];
@@ -122,6 +119,11 @@ export const SafeHtmlContent: React.FC<SafeHtmlContentProps> = ({ content, class
     };
 
     lines.forEach((line) => {
+      if (!line) {
+        flushParagraph();
+        return;
+      }
+
       const isMarkdownH1 = line.startsWith('# ');
       const isMarkdownH2 = line.startsWith('## ');
       const isMarkdownH3 = line.startsWith('### ');

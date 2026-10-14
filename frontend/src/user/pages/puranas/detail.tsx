@@ -16,6 +16,8 @@ import { CustomLoader } from '@components/common/CustomLoader';
 import { AdUnit } from '@components/common/AdUnit';
 import { SEOHead, buildBreadcrumbSchema, buildBookSchema } from '@components/seo';
 
+import { getPrerenderedData } from '@utils/prerenderData';
+
 export const PuranDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
@@ -26,6 +28,10 @@ export const PuranDetail: React.FC = () => {
     queryFn: async () => {
       const res = await apiClient.get(`/v1/puranas/${slug}`);
       return res.data.data;
+    },
+    initialData: () => {
+      const p = getPrerenderedData();
+      return p && (p.slug === slug || p.id === slug) ? p : undefined;
     },
     enabled: !!slug
   });

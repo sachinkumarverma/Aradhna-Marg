@@ -103,7 +103,7 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 font-hindi-body pt-1 pb-0.5 leading-relaxed">
+                  <h4 className="text-sm font-semibold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 font-lyrics pt-0.5 pb-0.5 leading-snug">
                     {getLocalizedField(bhajan, 'title') || bhajan.title}
                   </h4>
                   <div className="flex items-center gap-2.5 mt-1 text-[11px] text-gray-500 font-medium font-hindi-body leading-none">
@@ -153,7 +153,7 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                     />
                   </div>
                 )}
-                <h4 className="text-xs md:text-sm font-bold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 font-hindi-body pt-1.5 pb-0.5 leading-relaxed">
+                <h4 className="text-xs md:text-sm font-semibold text-darkBrown group-hover:text-saffron transition-colors line-clamp-2 font-lyrics pt-1 pb-0.5 leading-snug">
                   {getLocalizedField(article, 'title') || article.displayTitle || article.title}
                 </h4>
                 {(getLocalizedField(article, 'excerpt') || article.displayExcerpt || article.excerpt) && (
@@ -194,7 +194,7 @@ export const RelatedContentSection: React.FC<RelatedContentProps> = ({
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h4 className="text-xs font-bold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-body py-0.5 leading-relaxed">
+                  <h4 className="text-sm font-semibold text-darkBrown group-hover:text-saffron transition-colors truncate font-lyrics py-0.5 leading-snug">
                     {getLocalizedField(fest, 'name') || fest.displayName || fest.name}
                   </h4>
                   {(getLocalizedField(fest, 'short_description') || fest.short_description) && (

@@ -13,11 +13,13 @@ router.use(requireActiveSite);
 // Home payload
 router.get('/home', publicController.getHomeData);
 
-// Bhajans
+// Bhajans & Devotional Videos
 router.get('/bhajans', publicController.getBhajans);
 router.get('/bhajans/:slug/pdf', publicController.downloadBhajanLyricsPdf);
 router.get('/bhajans/:slug/related', publicController.getBhajanRelated);
 router.get('/bhajans/:slug', publicController.getBhajanBySlug);
+router.get('/videos/:slug/pdf', publicController.downloadBhajanLyricsPdf);
+router.get('/videos/:slug', publicController.getBhajanBySlug);
 
 // Articles
 router.get('/articles', publicController.getArticles);

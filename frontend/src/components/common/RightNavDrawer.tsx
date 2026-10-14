@@ -170,23 +170,29 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
           >
             {/* Header - Height and padding matched precisely to Main Navbar */}
             <div className="flex items-center justify-between px-4 sm:px-6 h-16 sm:h-20 border-b border-orange-100 bg-white shrink-0">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-0.5 sm:p-1 shadow-xs shrink-0">
+              <Link to="/" onClick={onClose} className="flex items-center gap-2 sm:gap-3 group">
+                <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-0.5 sm:p-1 group-hover:scale-105 transition-transform shadow-xs shrink-0">
                   <img
                     src="/logo.png"
-                    alt="Aradhna Marg"
+                    alt="Aradhna Marg Logo"
                     className="w-full h-full object-cover rounded-md aspect-square"
                   />
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-extrabold text-sm sm:text-base tracking-wider text-slate-900 uppercase font-hindi-heading leading-tight">
-                    {isHi ? 'मेनू' : 'MENU'}
+                <div className="flex flex-col justify-center">
+                  <span
+                    className="font-black text-[16px] sm:text-[18px] tracking-tight text-slate-900 leading-none uppercase"
+                    style={{ fontFamily: '"Rekord Antiqua", "Rekord Antiqua Semi Bold", "RekordAntiqua", Lora, serif' }}
+                  >
+                    ARADHNA <span className="text-saffron">MARG</span>
                   </span>
-                  <span className="text-[10px] sm:text-[11px] font-semibold text-saffron tracking-widest uppercase mt-0.5">
-                    ARADHNA MARG
+                  <span
+                    className="text-[7px] sm:text-[8px] font-extrabold text-slate-500 tracking-[0.3em] uppercase mt-1 ml-0.5"
+                    style={{ fontFamily: '"Rekord Antiqua", "Rekord Antiqua Semi Bold", "RekordAntiqua", Lora, serif' }}
+                  >
+                    SANATAN DHARMA
                   </span>
                 </div>
-              </div>
+              </Link>
 
               <button
                 type="button"

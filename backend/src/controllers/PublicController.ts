@@ -110,7 +110,7 @@ export class PublicController {
         featuredVideos
       };
 
-      publicCacheService.set('home_data', payload, 180);
+      publicCacheService.set('home_data', payload, 300);
 
       return sendSuccess(res, 'Home data fetched successfully', payload);
     } catch (error) {
@@ -300,10 +300,26 @@ export class PublicController {
         WHERE (b.slug = $1 OR b.id::text = $1 OR b.youtube_video_id = $1) AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
         LIMIT 1
       `;
-      const { rows } = await db.query(query, [slug]);
+      let { rows } = await db.query(query, [slug]);
 
       if (rows.length === 0) {
-        return res.status(404).json({ success: false, error: 'Bhajan not found' });
+        // Fallback to youtube_videos table for video pages (e.g. /videos/:youtube_video_id)
+        const ytQuery = `
+          SELECT y.id, y.title, y.title as hindi_title, y.youtube_video_id as slug,
+                 y.description as lyrics, y.description as clean_lyrics, y.updated_at,
+                 y.channel_name as god_name
+          FROM youtube_videos y
+          WHERE (y.youtube_video_id = $1 OR y.id::text = $1)
+          LIMIT 1
+        `;
+        const ytRes = await db.query(ytQuery, [slug]);
+        if (ytRes.rows.length > 0) {
+          rows = ytRes.rows;
+        }
+      }
+
+      if (rows.length === 0) {
+        return res.status(404).json({ success: false, error: 'Bhajan or video lyrics not found' });
       }
 
       const bhajan = rows[0];

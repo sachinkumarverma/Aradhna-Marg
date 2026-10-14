@@ -12,13 +12,21 @@ import { AdUnit } from '@components/common/AdUnit';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { SEOHead, buildBreadcrumbSchema, buildEventSchema } from '@components/seo';
 
+import { getPrerenderedData } from '@utils/prerenderData';
+
 export const FestivalDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
   const params = useParams();
   const festivalIdOrSlug = params.slug || params.id;
-  const [festival, setFestival] = useState<any>(null);
+  const [festival, setFestival] = useState<any>(() => {
+    const prerendered = getPrerenderedData();
+    if (prerendered && (prerendered.slug === festivalIdOrSlug || prerendered.id === festivalIdOrSlug)) {
+      return prerendered;
+    }
+    return null;
+  });
   const [relatedData, setRelatedData] = useState<any>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(() => !festival);
 
   useEffect(() => {
     let isMounted = true;
@@ -28,7 +36,9 @@ export const FestivalDetail: React.FC = () => {
         setLoading(false);
         return;
       }
-      setLoading(true);
+      if (!festival) {
+        setLoading(true);
+      }
       try {
         const [festRes, relatedRes] = await Promise.all([
           PublicApi.getFestivalBySlug(festivalIdOrSlug, language).catch((err) => {

@@ -83,6 +83,12 @@ app.use(
   )
 );
 
+import healthRoutes from './routes/health';
+
+// Health Check Endpoints (Root /health and /api/health aliases for Render and keepalive monitors)
+app.use('/health', healthRoutes);
+app.use('/api/health', healthRoutes);
+
 // Public SEO Files (robots.txt, sitemap.xml)
 app.use('/', seoRoutes);
 

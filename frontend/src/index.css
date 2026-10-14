@@ -88,6 +88,10 @@
     font-family: 'Tiro Devanagari Hindi', 'Lora', 'Merriweather', Georgia, serif;
   }
 
+  .font-lyrics {
+    font-family: 'Tiro Devanagari Hindi', 'Lora', Georgia, serif !important;
+  }
+
   /* Centered Icon + Text Flex Primitive Utilities */
   .icon-text-center {
     display: inline-flex;
@@ -117,6 +121,7 @@
   }
 
   @media (min-width: 768px) {
+
     .safe-html-content h2,
     .safe-html-content h1 {
       font-size: 1.85rem !important;
@@ -166,6 +171,7 @@
   }
 
   @media (min-width: 768px) {
+
     .safe-html-content.safe-html-content-lyrics h2,
     .safe-html-content.safe-html-content-lyrics h1 {
       font-size: 1.55rem !important;
@@ -182,12 +188,20 @@
     margin-bottom: 0.35rem !important;
   }
 
+  .safe-html-content.safe-html-content-lyrics p.stanza-para {
+    margin-bottom: 1.25rem !important;
+  }
+
   @media (min-width: 768px) {
     .safe-html-content.safe-html-content-lyrics p {
       font-size: 1.25rem !important;
       /* 20px on desktop (was 17px) */
       line-height: 1.85 !important;
       margin-bottom: 0.5rem !important;
+    }
+
+    .safe-html-content.safe-html-content-lyrics p.stanza-para {
+      margin-bottom: 1.5rem !important;
     }
   }
 
@@ -243,6 +257,7 @@
 
 /* Hide all scrollbars on mobile devices across elements, tabs, tables, and page edges while keeping touch scroll active */
 @media (max-width: 768px) {
+
   html,
   body,
   main,
@@ -294,6 +309,7 @@
 
 /* Desktop Custom Scrollbars */
 @media (min-width: 769px) {
+
   /* Main Page Window Custom Scrollbar */
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
