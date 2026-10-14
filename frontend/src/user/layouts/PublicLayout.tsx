@@ -23,12 +23,7 @@ export const PublicLayout: React.FC = () => {
   const navigationType = useNavigationType();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isRestoringRef = useRef(false);
-  const { settings, refetch } = usePublicSettings();
-
-  // Route Guard: whenever navigating between pages, re-verify status with the server
-  useEffect(() => {
-    refetch();
-  }, [location.pathname, refetch]);
+  const { settings } = usePublicSettings();
 
   // Handle scroll restoration on navigation
   useEffect(() => {

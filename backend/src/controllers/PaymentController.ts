@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { config } from '@/config';
 import { sendSuccess } from '@/responses/apiResponse';
 import { paymentService, PaymentService } from '@services/PaymentService';
+import { publicCacheService } from '@services/PublicCacheService';
 import { AppError } from '@/errors/appError';
 
 export class PaymentController {
@@ -9,6 +10,7 @@ export class PaymentController {
 
   public getConfig = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 3600, 86400);
       return sendSuccess(res, 'Payment config retrieved', {
         keyId: config.RAZORPAY_KEY_ID || ''
       });

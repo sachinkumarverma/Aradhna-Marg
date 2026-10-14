@@ -1183,9 +1183,7 @@ export class PublicController {
   // 17. Public Platform Settings (Safe fields for client rendering)
   public getPublicSettings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
+      publicCacheService.setCacheHeaders(res, 300, 3600);
 
       const cached = publicCacheService.get<any>('public_settings');
       if (cached) {

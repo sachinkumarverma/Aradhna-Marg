@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart,
@@ -43,23 +43,10 @@ export const DonatePage: React.FC = () => {
   const [donorPhone, setDonorPhone] = useState<string>('');
   const [donorNote, setDonorNote] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [razorpayKeyId, setRazorpayKeyId] = useState<string>(import.meta.env.VITE_RAZORPAY_KEY_ID || '');
+  const razorpayKeyId = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
   const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false);
   const [successPaymentDetails, setSuccessPaymentDetails] = useState<any>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-
-  // Fetch Gateway Config on mount
-  useEffect(() => {
-    PaymentApi.getConfig()
-      .then((cfg) => {
-        if (cfg?.keyId) {
-          setRazorpayKeyId(cfg.keyId);
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to load payment config:', err);
-      });
-  }, []);
 
   // Dynamically load Razorpay Checkout Script
   const loadRazorpayScript = (): Promise<boolean> => {

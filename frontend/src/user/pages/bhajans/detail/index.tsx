@@ -18,6 +18,7 @@ import { useFavorites } from '@hooks/useFavorites';
 
 import { CustomLoader } from '@components/common/CustomLoader';
 import { SEOHead, buildBreadcrumbSchema, buildMusicCompositionSchema } from '@components/seo';
+import { getPrerenderedData } from '@utils/prerenderData';
 
 export const BhajanDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -25,9 +26,18 @@ export const BhajanDetail: React.FC = () => {
   const location = useLocation();
   const isVideo = location.pathname.startsWith('/videos');
 
-  const [bhajan, setBhajan] = useState<any>(null);
+  const [bhajan, setBhajan] = useState<any>(() => {
+    const prerendered = getPrerenderedData();
+    if (
+      prerendered &&
+      (prerendered.slug === slug || prerendered.id === slug || prerendered.youtube_video_id === slug)
+    ) {
+      return prerendered;
+    }
+    return null;
+  });
   const [relatedData, setRelatedData] = useState<any>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(() => !bhajan);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   const { copied, copyToClipboard } = useClipboard();
@@ -36,14 +46,18 @@ export const BhajanDetail: React.FC = () => {
   useEffect(() => {
     const fetchBhajanData = async () => {
       if (!slug) return;
-      setLoading(true);
+      if (!bhajan) {
+        setLoading(true);
+      }
       try {
         const [bhajanRes, relatedRes] = await Promise.all([
           PublicApi.getBhajanBySlug(slug),
           PublicApi.getBhajanRelated(slug).catch(() => ({}))
         ]);
 
-        setBhajan(bhajanRes);
+        if (bhajanRes) {
+          setBhajan(bhajanRes);
+        }
         setRelatedData(relatedRes || {});
       } catch (error) {
         console.error('Failed to fetch bhajan detail:', error);

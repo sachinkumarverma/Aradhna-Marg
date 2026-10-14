@@ -41,10 +41,13 @@ import {
 } from '@components/common/SkeletonLoader';
 import { SEOHead, buildWebSiteSchema, buildOrganizationSchema } from '@components/seo';
 
+import { getPrerenderedData } from '@utils/prerenderData';
+
 export const Home: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const prerendered = getPrerenderedData();
+  const [data, setData] = useState<any>(() => prerendered || null);
+  const [loading, setLoading] = useState(() => !prerendered);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const fullSearchPlaceholder = t('common.searchPlaceholder');
@@ -55,9 +58,10 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const loadHomeData = async () => {
       try {
-        setLoading(true);
         const res = await PublicApi.getHomeData();
-        setData(res);
+        if (res) {
+          setData(res);
+        }
       } catch (err) {
         console.error('Failed to load homepage data:', err);
       } finally {

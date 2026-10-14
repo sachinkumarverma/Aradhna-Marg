@@ -207,6 +207,12 @@ function buildHtml(template, options) {
       `<div id="root">\n      <noscript>\n${options.bodyHtml}\n      </noscript>${loadingSpinnerHtml}\n    </div>`
     );
   }
+  if (options.initialData) {
+    const dataScript = `<script id="__PRERENDERED_DATA__" type="application/json">\n${JSON.stringify(
+      options.initialData
+    ).replace(/</g, '\\u003c')}\n</script>\n`;
+    html = html.replace('</head>', `${dataScript}</head>`);
+  }
 
   return html;
 }
@@ -235,13 +241,14 @@ async function prerenderAll() {
   console.log('[Prerender] Starting static pre-rendering...');
 
   // Fetch all published data
-  const [bhajans, articles, festivals, puranas, deities, categories] = await Promise.all([
+  const [bhajans, articles, festivals, puranas, deities, categories, homeData] = await Promise.all([
     fetchFromApi('/public/bhajans?limit=100'),
     fetchFromApi('/public/articles?limit=100'),
     fetchFromApi('/public/festivals?limit=100'),
     fetchFromApi('/public/puranas?limit=100'),
     fetchFromApi('/public/deities'),
-    fetchFromApi('/public/categories')
+    fetchFromApi('/public/categories'),
+    fetchDetailFromApi('/public/home')
   ]);
 
   let count = 0;
@@ -575,7 +582,8 @@ async function prerenderAll() {
       canonicalUrl,
       robots: page.robots,
       schema,
-      bodyHtml
+      bodyHtml,
+      initialData: page.route === '' ? homeData : null
     });
 
     writeRoute(page.route, html);
@@ -638,7 +646,8 @@ async function prerenderAll() {
       canonicalUrl,
       ogType: 'music.song',
       schema,
-      bodyHtml
+      bodyHtml,
+      initialData: detail
     });
 
     writeRoute(`bhajans/${slug}`, html);
@@ -727,7 +736,8 @@ async function prerenderAll() {
       ogType: 'article',
       ogImage: featuredImg,
       schema,
-      bodyHtml
+      bodyHtml,
+      initialData: detail
     });
 
     writeRoute(`articles/${slug}`, html);

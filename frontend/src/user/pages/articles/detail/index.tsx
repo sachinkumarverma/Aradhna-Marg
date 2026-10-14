@@ -12,17 +12,27 @@ import { AdUnit } from '@components/common/AdUnit';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { SEOHead, buildBreadcrumbSchema, buildArticleSchema } from '@components/seo';
 
+import { getPrerenderedData } from '@utils/prerenderData';
+
 export const ArticleDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
-  const [article, setArticle] = useState<any>(null);
+  const [article, setArticle] = useState<any>(() => {
+    const prerendered = getPrerenderedData();
+    if (prerendered && (prerendered.slug === slug || prerendered.id === slug)) {
+      return prerendered;
+    }
+    return null;
+  });
   const [relatedData, setRelatedData] = useState<any>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(() => !article);
 
   useEffect(() => {
     const fetchArticleData = async () => {
       if (!slug) return;
-      setLoading(true);
+      if (!article) {
+        setLoading(true);
+      }
       try {
         const [articleRes, relatedRes] = await Promise.all([
           PublicApi.getArticleBySlug(slug, language).catch((err) => {
@@ -35,7 +45,9 @@ export const ArticleDetail: React.FC = () => {
           })
         ]);
 
-        setArticle(articleRes);
+        if (articleRes) {
+          setArticle(articleRes);
+        }
         setRelatedData(relatedRes || {});
       } catch (error) {
         console.error('Failed to fetch article detail:', error);
