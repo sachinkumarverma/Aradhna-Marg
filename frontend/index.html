@@ -9,10 +9,10 @@
     <meta
       data-rh="true"
       name="description"
-      content="आराधना मार्ग पर पाएं सम्पूर्ण सनातन भक्ति साहित्य, मधुर भजन, आरती, चालीसा, स्तोत्र, श्रीमद्भागवत व अष्टादश महापुराण और प्रमुख हिन्दू पर्वों की प्रामाणिक जानकारी। Explore authentic Hindu devotional bhajans, sacred puranas, aarti, mantras, and festive wisdom."
+      content="आराधना मार्ग पर पाएं सम्पूर्ण सनातन भक्ति साहित्य, मधुर भजन, आरती, चालीसा, स्तोत्र, श्रीमद्भागवत व अष्टादश महापुराण और प्रमुख हिन्दू पर्वों की प्रामाणिक जानकारी।"
     />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
+    <meta data-rh="true" name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta data-rh="true" name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link data-rh="true" rel="canonical" href="https://aradhnamarg.com/" />
 
     <!-- Theme & Icons -->
@@ -21,7 +21,7 @@
     <link rel="apple-touch-icon" href="/logo.png" />
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:site_name" content="Aradhna Marg" />
+    <meta data-rh="true" property="og:site_name" content="Aradhna Marg" />
     <meta
       data-rh="true"
       property="og:title"
@@ -35,11 +35,12 @@
     <meta data-rh="true" property="og:type" content="website" />
     <meta data-rh="true" property="og:url" content="https://aradhnamarg.com/" />
     <meta data-rh="true" property="og:image" content="https://aradhnamarg.com/logo.png" />
-    <meta property="og:locale" content="hi_IN" />
+    <meta data-rh="true" property="og:locale" content="hi_IN" />
 
     <!-- Twitter Cards -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@AradhnaMarg" />
+    <meta data-rh="true" name="twitter:card" content="summary_large_image" />
+    <meta data-rh="true" name="twitter:site" content="@AradhnaMarg" />
+    <meta data-rh="true" name="twitter:creator" content="@AradhnaMarg" />
     <meta
       data-rh="true"
       name="twitter:title"
@@ -53,21 +54,37 @@
     <meta data-rh="true" name="twitter:image" content="https://aradhnamarg.com/logo.png" />
 
     <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
+    <script data-rh="true" id="ld-json-schema" type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Aradhna Marg",
-        "alternateName": "आराधना मार्ग",
-        "url": "https://aradhnamarg.com",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://aradhnamarg.com/search?q={search_term_string}"
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://aradhnamarg.com/#website",
+            "name": "Aradhna Marg",
+            "alternateName": "आराधना मार्ग",
+            "url": "https://aradhnamarg.com",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://aradhnamarg.com/search?q={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
           },
-          "query-input": "required name=search_term_string"
-        }
+          {
+            "@type": "Organization",
+            "@id": "https://aradhnamarg.com/#organization",
+            "name": "Aradhna Marg",
+            "alternateName": "आराधना मार्ग",
+            "url": "https://aradhnamarg.com",
+            "logo": "https://aradhnamarg.com/logo.png",
+            "sameAs": [
+              "https://www.youtube.com/@AradhnaMarg"
+            ]
+          }
+        ]
       }
     </script>
   </head>

@@ -37,11 +37,6 @@ export const ArticleDetail: React.FC = () => {
 
         setArticle(articleRes);
         setRelatedData(relatedRes || {});
-
-        const displayTitle = getLocalizedField(articleRes, 'title') || articleRes?.displayTitle || articleRes?.title;
-        if (displayTitle) {
-          document.title = articleRes.displaySeoTitle || displayTitle;
-        }
       } catch (error) {
         console.error('Failed to fetch article detail:', error);
       } finally {

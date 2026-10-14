@@ -53,6 +53,15 @@
       ]
     },
     {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -70,9 +79,22 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/donate",
+      "destination": "/support-us",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?<admin>admin\\..*|.*-admin\\..*)"
+        }
+      ],
       "destination": "/index.html"
     }
   ]

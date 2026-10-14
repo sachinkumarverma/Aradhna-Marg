@@ -44,11 +44,6 @@ export const FestivalDetail: React.FC = () => {
         if (isMounted) {
           setFestival(festRes);
           setRelatedData(relatedRes || {});
-
-          const name = getLocalizedField(festRes, 'name') || festRes?.displayName || festRes?.name;
-          if (name) {
-            document.title = festRes.seo_title || name;
-          }
         }
       } catch (error) {
         console.error('Failed to fetch festival detail:', error);

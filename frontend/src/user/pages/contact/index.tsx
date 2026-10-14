@@ -35,12 +35,6 @@ export const ContactPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => {
-    document.title = isHi
-      ? 'संपर्क एवं सुझाव (Contact & Suggestions) | आराधना मार्ग - Aradhna Marg'
-      : 'Contact & Suggestions | Aradhna Marg';
-  }, [isHi]);
-
   const categories = [
     {
       value: isHi ? 'सामान्य सुझाव' : 'General Suggestions',

@@ -108,6 +108,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 
       {/* Meta Tags */}
       <meta name="description" content={cleanDescription} />
+      {resolvedKeywords && <meta name="keywords" content={resolvedKeywords} />}
       <meta name="robots" content={robotsDirective} />
       <meta name="googlebot" content={robotsDirective} />
 
@@ -137,7 +138,24 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       <meta name="twitter:image" content={absoluteImage} />
 
       {/* Schema.org Structured Data */}
-      {schema && <script type="application/ld+json">{JSON.stringify(schema)}</script>}
+      {schema && (
+        <script id="ld-json-schema" type="application/ld+json">
+          {JSON.stringify(
+            Array.isArray(schema)
+              ? {
+                  '@context': 'https://schema.org',
+                  '@graph': schema.map((item) => {
+                    if (item && typeof item === 'object') {
+                      const { '@context': _, ...cleanItem } = item;
+                      return cleanItem;
+                    }
+                    return item;
+                  })
+                }
+              : schema
+          )}
+        </script>
+      )}
     </Helmet>
   );
 };

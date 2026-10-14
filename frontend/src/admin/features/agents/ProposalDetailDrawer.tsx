@@ -144,8 +144,6 @@ export const ProposalDetailDrawer: React.FC<ProposalDetailDrawerProps> = ({ prop
     return computeWordDiff(proposal.currentValue || '', proposal.proposedValue || '');
   }, [proposal]);
 
-  if (!proposalId) return null;
-
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '—';
     try {
@@ -242,6 +240,8 @@ export const ProposalDetailDrawer: React.FC<ProposalDetailDrawerProps> = ({ prop
     proposal?.targetEntity?.name ||
     proposal?.targetEntity?.name_en ||
     'जन्माष्टमी रथ यात्रा क्यों निकाली जाती है? जानिए भगवान जन्माष्टमी की रथ यात्रा का धार्मिक महत्व';
+
+  if (!proposalId) return null;
 
   return createPortal(
     <>

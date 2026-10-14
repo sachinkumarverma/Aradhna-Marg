@@ -34,7 +34,6 @@ const STATIC_ROUTES = [
   { path: 'about', changefreq: 'monthly', priority: '0.5' },
   { path: 'contact', changefreq: 'monthly', priority: '0.5' },
   { path: 'support-us', changefreq: 'monthly', priority: '0.4' },
-  { path: 'donate', changefreq: 'monthly', priority: '0.4' },
   { path: 'terms', changefreq: 'monthly', priority: '0.3' },
   { path: 'privacy', changefreq: 'monthly', priority: '0.3' },
   { path: 'disclaimer', changefreq: 'monthly', priority: '0.3' }

@@ -11,7 +11,9 @@ export const SchemaRenderer: React.FC<SchemaRendererProps> = ({ schema }) => {
 
   return (
     <Helmet>
-      <script type="application/ld+json">{jsonLd}</script>
+      <script id="ld-json-schema" type="application/ld+json">
+        {jsonLd}
+      </script>
     </Helmet>
   );
 };
@@ -150,5 +152,23 @@ export const buildEventSchema = (event: {
     ...(event.endDate && { endDate: event.endDate }),
     eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
     eventStatus: 'https://schema.org/EventScheduled'
+  };
+};
+
+export const buildCollectionPageSchema = (collection: {
+  name: string;
+  description?: string;
+  url: string;
+  inLanguage?: string;
+}) => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: collection.name,
+    ...(collection.description && { description: collection.description }),
+    url: collection.url.startsWith('http')
+      ? collection.url
+      : `${SITE_ORIGIN}${collection.url.startsWith('/') ? '' : '/'}${collection.url}`,
+    inLanguage: collection.inLanguage || 'hi'
   };
 };

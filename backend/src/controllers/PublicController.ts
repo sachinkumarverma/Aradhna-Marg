@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { db } from '@common/database/DatabaseClient';
-import { sendSuccess } from '@/responses/apiResponse';
+import { sendSuccess, sendResponse } from '@/responses/apiResponse';
 import { puranService } from '@services/PuranService';
 import { bhajanPdfService } from '@services/BhajanPdfService';
 import { isShortVideo } from '@utils/videoUtils';
@@ -270,7 +270,7 @@ export class PublicController {
           publicCacheService.set(cacheKey, ytData, 300);
           return sendSuccess(res, 'Video bhajan retrieved', ytData);
         }
-        return sendSuccess(res, 'Bhajan not found', null);
+        return sendResponse(res, 404, false, 'Bhajan not found', null);
       }
 
       const bhajan = rows[0];
@@ -543,7 +543,7 @@ export class PublicController {
       const { rows } = await db.query(query, [slug]);
 
       if (rows.length === 0) {
-        return sendSuccess(res, 'Article not found', null);
+        return sendResponse(res, 404, false, 'Article not found', null);
       }
 
       const article = rows[0];
@@ -735,7 +735,7 @@ export class PublicController {
       const { rows } = await db.query(query, [slug]);
 
       if (rows.length === 0) {
-        return sendSuccess(res, 'Festival not found', null);
+        return sendResponse(res, 404, false, 'Festival not found', null);
       }
 
       const festival = rows[0];
@@ -920,7 +920,7 @@ export class PublicController {
       }
 
       const data = await puranService.getBySlug(slug);
-      if (!data) return sendSuccess(res, 'Purana not found', null);
+      if (!data) return sendResponse(res, 404, false, 'Purana not found', null);
 
       const result = {
         ...data,
@@ -994,7 +994,7 @@ export class PublicController {
       );
 
       if (deityRes.rows.length === 0) {
-        return sendSuccess(res, 'Deity not found', null);
+        return sendResponse(res, 404, false, 'Deity not found', null);
       }
 
       const deity = deityRes.rows[0];
@@ -1084,7 +1084,7 @@ export class PublicController {
       const catRes = await db.query(`SELECT * FROM categories WHERE (slug = $1 OR id::text = $1) LIMIT 1`, [slug]);
 
       if (catRes.rows.length === 0) {
-        return sendSuccess(res, 'Category not found', null);
+        return sendResponse(res, 404, false, 'Category not found', null);
       }
 
       const category = catRes.rows[0];

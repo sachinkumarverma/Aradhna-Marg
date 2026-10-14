@@ -45,11 +45,6 @@ export const BhajanDetail: React.FC = () => {
 
         setBhajan(bhajanRes);
         setRelatedData(relatedRes || {});
-
-        // Dynamic Document Title for SEO
-        if (bhajanRes?.title) {
-          document.title = bhajanRes.seo_title || `${bhajanRes.title} - आराधना मार्ग`;
-        }
       } catch (error) {
         console.error('Failed to fetch bhajan detail:', error);
       } finally {

@@ -267,8 +267,8 @@ export const DonatePage: React.FC = () => {
     {
       q: isHi ? 'क्या मेरा भुगतान सुरक्षित है?' : 'Is the payment transaction secure?',
       a: isHi
-        ? 'हाँ, आपका भुगतान भारत के अग्रणी और आरबीआई-अधिकृत पेमेंट गेटवे (Razorpay) के माध्यम से 256-बिट SSL बैंक-ग्रेड एन्क्रिप्शन के साथ पूर्णतः सुरक्षित होता है।'
-        : 'Yes, your payment is processed directly via Razorpay with 256-bit bank-grade SSL encryption supporting all major UPI apps, cards, and net banking.'
+        ? 'हाँ, आपका भुगतान अधिकृत एवं सुरक्षित डिजिटल पेमेंट गेटवे के माध्यम से 256-बिट SSL बैंक-ग्रेड एन्क्रिप्शन के साथ पूर्णतः सुरक्षित होता है।'
+        : 'Yes, your payment is processed securely with 256-bit bank-grade SSL encryption supporting all major UPI apps, cards, and net banking.'
     },
     {
       q: isHi ? 'भुगतान के कौन-कौन से माध्यम उपलब्ध हैं?' : 'What payment options are available?',
@@ -394,8 +394,8 @@ export const DonatePage: React.FC = () => {
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>
               {isHi
-                ? '100% सुरक्षित भुगतान • Razorpay द्वारा संचालित • कोई छुपा शुल्क नहीं'
-                : '100% Secure Transaction • Powered by Razorpay • Zero hidden charges'}
+                ? '100% सुरक्षित भुगतान • 256-बिट SSL एन्क्रिप्टेड • कोई छुपा शुल्क नहीं'
+                : '100% Secure Transaction • 256-Bit SSL Encrypted • Zero hidden charges'}
             </span>
           </div>
         </div>
@@ -633,7 +633,7 @@ export const DonatePage: React.FC = () => {
               {isHi ? 'सुरक्षित एवं प्रामाणिक' : 'Bank-Grade Security'}
             </h4>
             <p className="text-xs text-slate-500">
-              {isHi ? 'Razorpay SSL 256-बिट सुरक्षा' : 'Encrypted official payment gateway'}
+              {isHi ? '256-बिट SSL बैंक-ग्रेड सुरक्षा' : 'Encrypted 256-Bit SSL Security'}
             </p>
           </div>
 

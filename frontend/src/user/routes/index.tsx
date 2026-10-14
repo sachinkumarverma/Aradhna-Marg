@@ -1,4 +1,4 @@
-import type { RouteObject } from 'react-router-dom';
+import { Navigate, type RouteObject } from 'react-router-dom';
 import { PublicLayout } from '@user/layouts/PublicLayout';
 import { Home } from '@user/pages/home';
 import { BhajanDetail } from '@user/pages/bhajans/detail';
@@ -128,7 +128,7 @@ export const userRoutes: RouteObject[] = [
       },
       {
         path: 'donate',
-        element: <DonatePage />
+        element: <Navigate to="/support-us" replace />
       },
       {
         path: 'favourite',
