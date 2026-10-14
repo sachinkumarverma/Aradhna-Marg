@@ -4,11 +4,19 @@ import { sendSuccess } from '@/responses/apiResponse';
 import { puranService } from '@services/PuranService';
 import { bhajanPdfService } from '@services/BhajanPdfService';
 import { isShortVideo } from '@utils/videoUtils';
+import { publicCacheService } from '@services/PublicCacheService';
 
 export class PublicController {
   // 1. Home Payload
   public getHomeData = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
+      const cached = publicCacheService.get<any>('home_data');
+      if (cached) {
+        return sendSuccess(res, 'Home data fetched successfully (cached)', cached.data);
+      }
+
       // FeaturedBhajans
       const bhajansQuery = `
         SELECT b.id, b.title, b.hindi_title, b.english_title, b.title_en, b.slug, b.short_description, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id,
@@ -70,13 +78,13 @@ export class PublicController {
         ORDER BY display_order ASC, name ASC
       `;
 
-      // Featured YouTube Videos (excluding Shorts)
+      // Featured YouTube Videos (excluding Shorts) - limited to 40 instead of 500 for high efficiency
       const videosQuery = `
         SELECT id, youtube_video_id, title, description, thumbnail, channel_name, duration, view_count, published_at
         FROM youtube_videos
         WHERE import_status != 'IGNORED'
         ORDER BY published_at DESC NULLS LAST, created_at DESC
-        LIMIT 500
+        LIMIT 40
       `;
 
       const [bhajans, articles, festivals, puranas, deities, categories, videos] = await Promise.all([
@@ -91,7 +99,7 @@ export class PublicController {
 
       const featuredVideos = (videos.rows || []).filter((v: any) => !isShortVideo(v)).slice(0, 10);
 
-      return sendSuccess(res, 'Home data fetched successfully', {
+      const payload = {
         featuredBhajans: bhajans.rows,
         featuredArticles: articles.rows,
         festivals: festivals.rows,
@@ -99,7 +107,11 @@ export class PublicController {
         deities: deities.rows,
         categories: categories.rows,
         featuredVideos
-      });
+      };
+
+      publicCacheService.set('home_data', payload, 180);
+
+      return sendSuccess(res, 'Home data fetched successfully', payload);
     } catch (error) {
       next(error);
     }
@@ -108,6 +120,8 @@ export class PublicController {
   // 2. Bhajans List
   public getBhajans = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 180);
+
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 12;
       const offset = (page - 1) * limit;
@@ -115,6 +129,12 @@ export class PublicController {
       const category = req.query.category as string;
       const deity = req.query.deity as string;
       const sort = req.query.sort as string;
+
+      const cacheKey = `bhajans_list_${page}_${limit}_${search || ''}_${category || ''}_${deity || ''}_${sort || ''}`;
+      const cached = publicCacheService.get<any[]>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Bhajans fetched successfully (cached)', cached.data, cached.meta);
+      }
 
       const whereClauses = ["b.status = 'PUBLISHED'", 'b.deleted_at IS NULL'];
       const queryParams: any[] = [];
@@ -180,13 +200,16 @@ export class PublicController {
       ]);
 
       const total = parseInt(countRes.rows[0].total, 10) || 0;
-
-      return sendSuccess(res, 'Bhajans fetched successfully', dataRes.rows, {
+      const meta = {
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit)
-      });
+      };
+
+      publicCacheService.set(cacheKey, dataRes.rows, 120, meta);
+
+      return sendSuccess(res, 'Bhajans fetched successfully', dataRes.rows, meta);
     } catch (error) {
       next(error);
     }
@@ -195,7 +218,14 @@ export class PublicController {
   // 3. Bhajan By Slug
   public getBhajanBySlug = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { slug } = req.params;
+      const cacheKey = `bhajan_detail_${slug}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Bhajan retrieved successfully (cached)', cached.data);
+      }
 
       const query = `
         SELECT b.*,
@@ -220,7 +250,7 @@ export class PublicController {
 
         if (ytRes.rows.length > 0) {
           const yt = ytRes.rows[0];
-          return sendSuccess(res, 'Video bhajan retrieved', {
+          const ytData = {
             id: yt.id,
             title: yt.title,
             hindi_title: yt.title,
@@ -235,7 +265,9 @@ export class PublicController {
             published_at: yt.published_at,
             publish_date: yt.published_at,
             created_at: yt.published_at || yt.created_at
-          });
+          };
+          publicCacheService.set(cacheKey, ytData, 300);
+          return sendSuccess(res, 'Video bhajan retrieved', ytData);
         }
         return sendSuccess(res, 'Bhajan not found', null);
       }
@@ -244,6 +276,8 @@ export class PublicController {
 
       // Async increment view count
       db.query(`UPDATE bhajans SET views = COALESCE(views, 0) + 1 WHERE id = $1`, [bhajan.id]).catch(() => {});
+
+      publicCacheService.set(cacheKey, bhajan, 300);
 
       return sendSuccess(res, 'Bhajan retrieved successfully', bhajan);
     } catch (error) {
@@ -375,6 +409,8 @@ export class PublicController {
   // 5. Articles List
   public getArticles = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 180);
+
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 9;
       const offset = (page - 1) * limit;
@@ -383,6 +419,12 @@ export class PublicController {
       const author = req.query.author as string;
       const featured = req.query.featured === 'true';
       const lang = (req.query.lang as string) || 'hi';
+
+      const cacheKey = `articles_list_${page}_${limit}_${search || ''}_${category || ''}_${author || ''}_${featured}_${lang}`;
+      const cached = publicCacheService.get<any[]>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Articles fetched successfully (cached)', cached.data, cached.meta);
+      }
 
       const whereClauses = ["a.status = 'PUBLISHED'", 'a.deleted_at IS NULL'];
       const queryParams: any[] = [];
@@ -451,12 +493,16 @@ export class PublicController {
         displayExcerpt: lang === 'en' && art.excerpt_en ? art.excerpt_en : art.excerpt
       }));
 
-      return sendSuccess(res, 'Articles fetched successfully', rows, {
+      const meta = {
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit)
-      });
+      };
+
+      publicCacheService.set(cacheKey, rows, 120, meta);
+
+      return sendSuccess(res, 'Articles fetched successfully', rows, meta);
     } catch (error) {
       next(error);
     }
@@ -465,8 +511,16 @@ export class PublicController {
   // 6. Article By Slug
   public getArticleBySlug = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { slug } = req.params;
       const lang = (req.query.lang as string) || 'hi';
+
+      const cacheKey = `article_detail_${slug}_${lang}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Article retrieved successfully (cached)', cached.data);
+      }
 
       const query = `
         SELECT a.*,
@@ -508,6 +562,8 @@ export class PublicController {
         displaySeoDescription:
           lang === 'en' && article.seo_description_en ? article.seo_description_en : article.seo_description
       };
+
+      publicCacheService.set(cacheKey, result, 300);
 
       return sendSuccess(res, 'Article retrieved successfully', result);
     } catch (error) {
@@ -586,11 +642,19 @@ export class PublicController {
   // 8. Festivals List
   public getFestivals = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 180);
+
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 12;
       const offset = (page - 1) * limit;
       const search = req.query.search as string;
       const lang = (req.query.lang as string) || 'hi';
+
+      const cacheKey = `festivals_list_${page}_${limit}_${search || ''}_${lang}`;
+      const cached = publicCacheService.get<any[]>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Festivals fetched successfully (cached)', cached.data, cached.meta);
+      }
 
       const whereClauses = ["status ILIKE 'published'"];
       const queryParams: any[] = [];
@@ -627,12 +691,16 @@ export class PublicController {
         displayDescription: lang === 'en' && f.short_description_en ? f.short_description_en : f.short_description
       }));
 
-      return sendSuccess(res, 'Festivals fetched successfully', rows, {
+      const meta = {
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit)
-      });
+      };
+
+      publicCacheService.set(cacheKey, rows, 180, meta);
+
+      return sendSuccess(res, 'Festivals fetched successfully', rows, meta);
     } catch (error) {
       next(error);
     }
@@ -641,8 +709,16 @@ export class PublicController {
   // 9. Festival By Slug
   public getFestivalBySlug = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { slug } = req.params;
       const lang = (req.query.lang as string) || 'hi';
+
+      const cacheKey = `festival_detail_${slug}_${lang}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Festival retrieved successfully (cached)', cached.data);
+      }
 
       const query = `
         SELECT f.*,
@@ -671,6 +747,8 @@ export class PublicController {
         displayContent: lang === 'en' && festival.content_en ? festival.content_en : festival.content
       };
 
+      publicCacheService.set(cacheKey, result, 300);
+
       return sendSuccess(res, 'Festival retrieved successfully', result);
     } catch (error) {
       next(error);
@@ -680,7 +758,14 @@ export class PublicController {
   // 9b. Festival Related Content
   public getFestivalRelated = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { slug } = req.params;
+      const cacheKey = `festival_related_${slug}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Related festival content fetched (cached)', cached.data);
+      }
 
       const festRes = await db.query(
         `SELECT id, deity_id, category FROM festivals WHERE (slug = $1 OR id::text = $1) LIMIT 1`,
@@ -738,11 +823,15 @@ export class PublicController {
         db.query(relatedFestivalsQuery, [id])
       ]);
 
-      return sendSuccess(res, 'Related festival content fetched', {
+      const payload = {
         relatedBhajans: bhajans.rows,
         relatedArticles: articles.rows,
         relatedFestivals: festivals.rows
-      });
+      };
+
+      publicCacheService.set(cacheKey, payload, 300);
+
+      return sendSuccess(res, 'Related festival content fetched', payload);
     } catch (error) {
       next(error);
     }
@@ -751,11 +840,19 @@ export class PublicController {
   // 10. Puranas List
   public getPuranas = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 12;
       const offset = (page - 1) * limit;
       const search = req.query.search as string;
       const lang = (req.query.lang as string) || 'hi';
+
+      const cacheKey = `puranas_list_${page}_${limit}_${search || ''}_${lang}`;
+      const cached = publicCacheService.get<any[]>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Puranas fetched successfully (cached)', cached.data, cached.meta);
+      }
 
       const whereClauses = ["status = 'PUBLISHED'", 'deleted_at IS NULL'];
       const queryParams: any[] = [];
@@ -792,12 +889,16 @@ export class PublicController {
         displayDescription: lang === 'en' && p.description_en ? p.description_en : p.short_description
       }));
 
-      return sendSuccess(res, 'Puranas fetched successfully', rows, {
+      const meta = {
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit)
-      });
+      };
+
+      publicCacheService.set(cacheKey, rows, 300, meta);
+
+      return sendSuccess(res, 'Puranas fetched successfully', rows, meta);
     } catch (error) {
       next(error);
     }
@@ -806,8 +907,16 @@ export class PublicController {
   // 11. Purana By Slug
   public getPuranBySlug = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const slug = req.params.slug as string;
       const lang = (req.query.lang as string) || 'hi';
+
+      const cacheKey = `puran_detail_${slug}_${lang}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Purana fetched successfully (cached)', cached.data);
+      }
 
       const data = await puranService.getBySlug(slug);
       if (!data) return sendSuccess(res, 'Purana not found', null);
@@ -820,6 +929,8 @@ export class PublicController {
             ? data.description_en
             : data.short_description || data.shortDescription || data.description
       };
+
+      publicCacheService.set(cacheKey, result, 300);
 
       return sendSuccess(res, 'Purana fetched successfully', result);
     } catch (error) {
@@ -841,6 +952,13 @@ export class PublicController {
   // 13. Deities List
   public getDeities = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
+      const cached = publicCacheService.get<any[]>('deities_list');
+      if (cached) {
+        return sendSuccess(res, 'Deities fetched successfully (cached)', cached.data);
+      }
+
       const query = `
         SELECT id, name, slug, short_description, image, featured, display_order
         FROM deities
@@ -848,6 +966,9 @@ export class PublicController {
         ORDER BY display_order ASC, name ASC
       `;
       const { rows } = await db.query(query);
+
+      publicCacheService.set('deities_list', rows, 300);
+
       return sendSuccess(res, 'Deities fetched successfully', rows);
     } catch (error) {
       next(error);
@@ -857,7 +978,14 @@ export class PublicController {
   // 14. Deity By Slug
   public getDeityBySlug = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { slug } = req.params;
+      const cacheKey = `deity_detail_${slug}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Deity retrieved successfully (cached)', cached.data);
+      }
 
       const deityRes = await db.query(
         `SELECT * FROM deities WHERE (slug = $1 OR id::text = $1) AND (status = 'ACTIVE' OR status IS NULL) LIMIT 1`,
@@ -899,12 +1027,16 @@ export class PublicController {
         [deity.id]
       );
 
-      return sendSuccess(res, 'Deity retrieved successfully', {
+      const payload = {
         deity,
         relatedBhajans: bhajansRes.rows,
         relatedArticles: articlesRes.rows,
         relatedFestivals: festivalsRes.rows
-      });
+      };
+
+      publicCacheService.set(cacheKey, payload, 300);
+
+      return sendSuccess(res, 'Deity retrieved successfully', payload);
     } catch (error) {
       next(error);
     }
@@ -913,6 +1045,13 @@ export class PublicController {
   // 15. Categories List
   public getCategories = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
+      const cached = publicCacheService.get<any[]>('categories_list');
+      if (cached) {
+        return sendSuccess(res, 'Categories fetched successfully (cached)', cached.data);
+      }
+
       const query = `
         SELECT id, name, slug, description, image_url, icon_url, show_in_navigation, is_featured, display_order
         FROM categories
@@ -920,6 +1059,9 @@ export class PublicController {
         ORDER BY display_order ASC, name ASC
       `;
       const { rows } = await db.query(query);
+
+      publicCacheService.set('categories_list', rows, 300);
+
       return sendSuccess(res, 'Categories fetched successfully', rows);
     } catch (error) {
       next(error);
@@ -929,7 +1071,14 @@ export class PublicController {
   // 16. Category By Slug
   public getCategoryBySlug = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { slug } = req.params;
+      const cacheKey = `category_detail_${slug}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Category retrieved successfully (cached)', cached.data);
+      }
 
       const catRes = await db.query(`SELECT * FROM categories WHERE (slug = $1 OR id::text = $1) LIMIT 1`, [slug]);
 
@@ -958,11 +1107,15 @@ export class PublicController {
         [category.id]
       );
 
-      return sendSuccess(res, 'Category retrieved successfully', {
+      const payload = {
         category,
         bhajans: bhajansRes.rows,
         articles: articlesRes.rows
-      });
+      };
+
+      publicCacheService.set(cacheKey, payload, 300);
+
+      return sendSuccess(res, 'Category retrieved successfully', payload);
     } catch (error) {
       next(error);
     }
@@ -971,9 +1124,19 @@ export class PublicController {
   // 17. Authors List & Detail
   public getAuthors = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
+      const cached = publicCacheService.get<any[]>('authors_list');
+      if (cached) {
+        return sendSuccess(res, 'Authors fetched (cached)', cached.data);
+      }
+
       const { rows } = await db.query(
         `SELECT id, name, short_description, photo, website_url FROM authors WHERE status = 'ACTIVE' AND deleted_at IS NULL ORDER BY name ASC`
       );
+
+      publicCacheService.set('authors_list', rows, 300);
+
       return sendSuccess(res, 'Authors fetched', rows);
     } catch (error) {
       next(error);
@@ -982,7 +1145,15 @@ export class PublicController {
 
   public getAuthorById = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { id } = req.params;
+      const cacheKey = `author_detail_${id}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Author fetched (cached)', cached.data);
+      }
+
       const { rows } = await db.query(
         `SELECT * FROM authors WHERE (id::text = $1 OR name ILIKE $1) AND deleted_at IS NULL LIMIT 1`,
         [id]
@@ -999,7 +1170,10 @@ export class PublicController {
         [author.id]
       );
 
-      return sendSuccess(res, 'Author fetched', { author, articles: articlesRes.rows });
+      const payload = { author, articles: articlesRes.rows };
+      publicCacheService.set(cacheKey, payload, 300);
+
+      return sendSuccess(res, 'Author fetched', payload);
     } catch (error) {
       next(error);
     }

@@ -108,7 +108,6 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 
       {/* Meta Tags */}
       <meta name="description" content={cleanDescription} />
-      {resolvedKeywords && <meta name="keywords" content={resolvedKeywords} />}
       <meta name="robots" content={robotsDirective} />
       <meta name="googlebot" content={robotsDirective} />
 

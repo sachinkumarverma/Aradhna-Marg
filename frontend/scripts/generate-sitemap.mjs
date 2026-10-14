@@ -9,6 +9,7 @@ const BASE_URL = process.env.VITE_SITE_URL || 'https://aradhnamarg.com';
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const SITEMAP_PATH = path.join(PUBLIC_DIR, 'sitemap.xml');
 const ADS_TXT_PATH = path.join(PUBLIC_DIR, 'ads.txt');
+const API_URL = process.env.VITE_API_URL || process.env.API_URL || 'https://aradhna-marg.onrender.com/api/v1';
 
 const STATIC_ROUTES = [
   { path: '', changefreq: 'daily', priority: '1.0' },
@@ -29,30 +30,24 @@ const STATIC_ROUTES = [
   { path: 'disclaimer', changefreq: 'monthly', priority: '0.3' }
 ];
 
-async function fetchDynamicItems(supabaseUrl, supabaseKey, table, select = 'slug, updated_at, created_at', filter = '') {
-  if (!supabaseUrl || !supabaseKey) return [];
+async function fetchFromApi(endpoint) {
   try {
-    const url = `${supabaseUrl}/rest/v1/${table}?select=${select}${filter ? `&${filter}` : ''}`;
-    const res = await fetch(url, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`
-      }
-    });
+    const res = await fetch(`${API_URL}${endpoint}`);
     if (!res.ok) {
-      console.warn(`[Sitemap] Supabase query for ${table} returned status ${res.status}`);
+      console.warn(`[Sitemap] API query for ${endpoint} returned status ${res.status}`);
       return [];
     }
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
+    const json = await res.json();
+    return Array.isArray(json.data) ? json.data : [];
   } catch (err) {
-    console.warn(`[Sitemap] Failed to fetch dynamic entries for ${table}:`, err.message);
+    console.warn(`[Sitemap] Failed to fetch ${endpoint}:`, err.message);
     return [];
   }
 }
 
 async function generateSitemap() {
   console.log('[Sitemap] Generating sitemap.xml for', BASE_URL);
+  console.log('[Sitemap] Fetching published content from API:', API_URL);
 
   const today = new Date().toISOString().split('T')[0];
   const urlEntries = [];
@@ -68,100 +63,97 @@ async function generateSitemap() {
   </url>`);
   }
 
-  // 2. Fetch dynamic routes from Supabase if configured
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+  // 2. Fetch dynamic published routes from Public API
+  try {
+    const [bhajans, articles, festivals, puranas, deities, categories] = await Promise.all([
+      fetchFromApi('/public/bhajans?limit=100'),
+      fetchFromApi('/public/articles?limit=100'),
+      fetchFromApi('/public/festivals?limit=100'),
+      fetchFromApi('/public/puranas?limit=100'),
+      fetchFromApi('/public/deities'),
+      fetchFromApi('/public/categories')
+    ]);
 
-  if (supabaseUrl && supabaseKey) {
-    try {
-      const [bhajans, articles, festivals, puranas, categories, deities] = await Promise.all([
-        fetchDynamicItems(supabaseUrl, supabaseKey, 'bhajans', 'slug, updated_at, created_at, status', 'status=eq.PUBLISHED'),
-        fetchDynamicItems(supabaseUrl, supabaseKey, 'articles', 'slug, updated_at, created_at, status', 'status=eq.PUBLISHED'),
-        fetchDynamicItems(supabaseUrl, supabaseKey, 'festivals', 'slug, id, updated_at, created_at, status', 'status=eq.PUBLISHED'),
-        fetchDynamicItems(supabaseUrl, supabaseKey, 'puranas', 'slug, updated_at, created_at, status', 'status=eq.PUBLISHED'),
-        fetchDynamicItems(supabaseUrl, supabaseKey, 'categories', 'slug, id, updated_at, created_at'),
-        fetchDynamicItems(supabaseUrl, supabaseKey, 'deities', 'slug, id, updated_at, created_at')
-      ]);
-
-      // Add Bhajans
-      for (const item of bhajans) {
-        if (!item.slug) continue;
-        const date = (item.updated_at || item.created_at || today).split('T')[0];
-        urlEntries.push(`  <url>
+    // Add Bhajans
+    for (const item of bhajans) {
+      if (!item.slug) continue;
+      const date = (item.updated_at || item.created_at || today).split('T')[0];
+      urlEntries.push(`  <url>
     <loc>${BASE_URL}/bhajans/${encodeURIComponent(item.slug)}</loc>
     <lastmod>${date}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`);
-      }
+    }
 
-      // Add Articles
-      for (const item of articles) {
-        if (!item.slug) continue;
-        const date = (item.updated_at || item.created_at || today).split('T')[0];
-        urlEntries.push(`  <url>
+    // Add Articles
+    for (const item of articles) {
+      if (!item.slug) continue;
+      const date = (item.updated_at || item.created_at || today).split('T')[0];
+      urlEntries.push(`  <url>
     <loc>${BASE_URL}/articles/${encodeURIComponent(item.slug)}</loc>
     <lastmod>${date}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`);
-      }
+    }
 
-      // Add Festivals
-      for (const item of festivals) {
-        const identifier = item.slug || item.id;
-        if (!identifier) continue;
-        const date = (item.updated_at || item.created_at || today).split('T')[0];
-        urlEntries.push(`  <url>
+    // Add Festivals
+    for (const item of festivals) {
+      const identifier = item.slug || item.id;
+      if (!identifier) continue;
+      const date = (item.updated_at || item.created_at || today).split('T')[0];
+      urlEntries.push(`  <url>
     <loc>${BASE_URL}/festivals/${encodeURIComponent(identifier)}</loc>
     <lastmod>${date}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`);
-      }
+    }
 
-      // Add Puranas
-      for (const item of puranas) {
-        if (!item.slug) continue;
-        const date = (item.updated_at || item.created_at || today).split('T')[0];
-        urlEntries.push(`  <url>
+    // Add Puranas
+    for (const item of puranas) {
+      if (!item.slug) continue;
+      const date = (item.updated_at || item.created_at || today).split('T')[0];
+      urlEntries.push(`  <url>
     <loc>${BASE_URL}/puranas/${encodeURIComponent(item.slug)}</loc>
     <lastmod>${date}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>`);
-      }
+    }
 
-      // Add Categories
-      for (const item of categories) {
-        const identifier = item.slug || item.id;
-        if (!identifier) continue;
-        const date = (item.updated_at || item.created_at || today).split('T')[0];
-        urlEntries.push(`  <url>
+    // Add Categories
+    for (const item of categories) {
+      const identifier = item.slug || item.id;
+      if (!identifier) continue;
+      const date = (item.updated_at || item.created_at || today).split('T')[0];
+      urlEntries.push(`  <url>
     <loc>${BASE_URL}/categories/${encodeURIComponent(identifier)}</loc>
     <lastmod>${date}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`);
-      }
+    }
 
-      // Add Deities / Gods
-      for (const item of deities) {
-        const identifier = item.slug || item.id;
-        if (!identifier) continue;
-        const date = (item.updated_at || item.created_at || today).split('T')[0];
-        urlEntries.push(`  <url>
+    // Add Deities / Gods
+    for (const item of deities) {
+      const identifier = item.slug || item.id;
+      if (!identifier) continue;
+      const date = (item.updated_at || item.created_at || today).split('T')[0];
+      urlEntries.push(`  <url>
     <loc>${BASE_URL}/gods/${encodeURIComponent(identifier)}</loc>
     <lastmod>${date}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`);
-      }
-
-      console.log(`[Sitemap] Added dynamic entries: ${bhajans.length} bhajans, ${articles.length} articles, ${festivals.length} festivals, ${puranas.length} puranas, ${categories.length} categories, ${deities.length} deities.`);
-    } catch (e) {
-      console.warn('[Sitemap] Failed to fetch dynamic entries, writing static sitemap:', e.message);
     }
+
+    console.log(
+      `[Sitemap] Added dynamic entries: ${bhajans.length} bhajans, ${articles.length} articles, ${festivals.length} festivals, ${puranas.length} puranas, ${categories.length} categories, ${deities.length} deities.`
+    );
+  } catch (e) {
+    console.warn('[Sitemap] Failed to fetch dynamic entries, writing static sitemap:', e.message);
   }
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>

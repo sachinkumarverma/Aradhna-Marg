@@ -61,6 +61,8 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
             <img
               src={thumbnailUrl}
               alt={title}
+              width="480"
+              height="270"
               loading="lazy"
               className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
             />
