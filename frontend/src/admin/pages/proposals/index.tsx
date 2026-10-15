@@ -246,7 +246,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
               <span className="truncate">AI PROPOSALS</span>
             </h1>
             <p className="hidden sm:block text-sm text-gray-500 mt-1">
-              Review, diff, approve, and execute AI-staged mutations under strict human editorial governance.
+              Review and approve AI-generated content proposals.
             </p>
           </div>
 

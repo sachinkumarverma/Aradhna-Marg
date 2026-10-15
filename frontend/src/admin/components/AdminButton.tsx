@@ -19,7 +19,7 @@ export const AdminButton = React.forwardRef<HTMLButtonElement, AdminButtonProps>
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none rounded-md select-none cursor-pointer';
+      'inline-flex items-center justify-center font-semibold whitespace-nowrap transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none rounded-md select-none cursor-pointer';
 
     const variants = {
       primary: 'bg-[#ff3b00] hover:bg-[#e03400] text-white focus:ring-[#ff3b00]/50 shadow-sm shadow-[#ff3b00]/20',

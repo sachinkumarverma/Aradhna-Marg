@@ -291,8 +291,8 @@ export const AdminSEO = () => {
           </div>
 
           <h2 className="text-lg font-bold mt-8 mb-4">SEO Audit Health</h2>
-          <div className="bg-gradient-to-br from-red-50 to-white rounded-md border border-red-100 shadow-sm overflow-hidden">
-            <table className="w-full text-left border-collapse">
+          <div className="w-full overflow-x-auto bg-gradient-to-br from-red-50 to-white rounded-md border border-red-100 shadow-sm">
+            <table className="w-full min-w-[550px] text-left border-collapse whitespace-nowrap">
               <thead>
                 <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
                   <th className="px-6 py-4">Content Type</th>
@@ -379,20 +379,20 @@ export const AdminSEO = () => {
 
       {activeTab === 'issues' && (
         <div className="space-y-6">
-          <div className="bg-gradient-to-br from-orange-50/70 via-amber-50/50 to-white p-4 sm:p-5 rounded-md border border-orange-200 shadow-sm space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-orange-100 pb-3">
+          <div className="bg-gradient-to-br from-orange-50/70 via-amber-50/50 to-white p-3.5 sm:p-5 rounded-md border border-orange-200 shadow-sm space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-orange-100 pb-2.5 sm:pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-orange-100 text-saffron rounded-md shrink-0">
-                  <Bot className="w-5 h-5" />
+                <div className="p-1.5 sm:p-2 bg-orange-100 text-saffron rounded-md shrink-0">
+                  <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-bold text-slate-900 text-sm sm:text-base">AI SEO Audit Agent Findings</h3>
-                    <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                    <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">
                       Autonomous Analysis
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="hidden sm:block text-xs text-gray-500 mt-0.5">
                     Source: <strong>SEO Audit Agent</strong> • Read & Analyze inspection • No content is modified until
                     you fix or approve changes.
                   </p>
@@ -401,7 +401,7 @@ export const AdminSEO = () => {
             </div>
 
             {latestAgentAudit?.state?.summary ? (
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                 <div className="text-gray-600">
                   Audited <strong>{latestAgentAudit.state.summary.totalAudited || 0}</strong> content items • Found{' '}
                   <strong className="text-red-600">{latestAgentAudit.state.summary.totalIssues || 0}</strong> issues
@@ -424,13 +424,15 @@ export const AdminSEO = () => {
               </div>
             ) : (
               <div className="text-xs text-gray-500 flex items-center justify-between">
-                <span>No audit snapshot available yet. Click "Run SEO Audit Agent" to analyze all public pages.</span>
+                <span>
+                  No audit snapshot available yet. Click &quot;Run SEO Audit Agent&quot; to analyze all public pages.
+                </span>
               </div>
             )}
           </div>
 
-          <div className="bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm overflow-hidden">
-            <table className="w-full text-left border-collapse">
+          <div className="w-full overflow-x-auto bg-gradient-to-br from-amber-50 to-white rounded-md border border-amber-100 shadow-sm">
+            <table className="w-full min-w-[650px] text-left border-collapse">
               <thead>
                 <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
                   <th className="px-6 py-3">Content Type</th>

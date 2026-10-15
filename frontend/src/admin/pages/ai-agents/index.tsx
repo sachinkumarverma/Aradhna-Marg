@@ -36,9 +36,8 @@ export const AdminAIAgents: React.FC<AdminAIAgentsProps> = ({ defaultTab = 'over
             <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
             <span className="truncate">AI AGENTS & GOVERNANCE</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Autonomous agents evaluate editorial quality, detect SEO gaps, and verify system integrity without modifying
-            live records. All proposed changes require human approval.
+          <p className="hidden sm:block text-sm text-gray-500 mt-1">
+            Autonomous monitoring for editorial quality, SEO gaps, and system integrity.
           </p>
         </div>
 

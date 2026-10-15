@@ -670,87 +670,90 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
                 </p>
               </div>
             ) : (
-              <>
-                <table className="w-full text-left text-sm whitespace-nowrap">
-                  <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
-                    <tr>
-                      <th className="px-6 py-4 font-bold">Agent Name</th>
-                      <th className="px-6 py-4 font-bold">Status</th>
-                      <th className="px-6 py-4 font-bold">Trigger</th>
-                      <th className="px-6 py-4 font-bold">Started At</th>
-                      <th className="px-6 py-4 font-bold">Duration</th>
-                      <th className="px-6 py-4 font-bold">Findings</th>
-                      <th className="px-6 py-4 font-bold text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {runs.map((run) => {
-                      const findingsCount = run.state?.findings?.length || 0;
-                      const isSelected = selectedRunId === run.id;
-                      return (
-                        <tr
-                          key={run.id}
-                          onClick={() => setSelectedRunId(run.id)}
-                          className={`transition-colors cursor-pointer group ${
-                            isSelected ? 'bg-orange-50/90 hover:bg-orange-100/70' : 'bg-gray-50/50 hover:bg-blue-100/60'
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
+                  <tr>
+                    <th className="px-6 py-4 font-bold">Agent Name</th>
+                    <th className="px-6 py-4 font-bold">Status</th>
+                    <th className="px-6 py-4 font-bold">Trigger</th>
+                    <th className="px-6 py-4 font-bold">Started At</th>
+                    <th className="px-6 py-4 font-bold">Duration</th>
+                    <th className="px-6 py-4 font-bold">Findings</th>
+                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {runs.map((run) => {
+                    const findingsCount = run.state?.findings?.length || 0;
+                    const isSelected = selectedRunId === run.id;
+                    return (
+                      <tr
+                        key={run.id}
+                        onClick={() => setSelectedRunId(run.id)}
+                        className={`transition-colors cursor-pointer group ${
+                          isSelected ? 'bg-orange-50/90 hover:bg-orange-100/70' : 'bg-gray-50/50 hover:bg-blue-100/60'
+                        }`}
+                      >
+                        <td
+                          className={`px-6 py-4 font-medium text-gray-900 ${
+                            isSelected ? 'border-l-4 border-l-saffron' : ''
                           }`}
                         >
-                          <td
-                            className={`px-6 py-4 font-medium text-gray-900 ${
-                              isSelected ? 'border-l-4 border-l-saffron' : ''
+                          <div className="flex items-center gap-2.5">
+                            <Activity className="w-4 h-4 text-saffron shrink-0" />
+                            <span className="font-semibold text-gray-900">{formatStandardCase(run.agentName)}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">{getStatusBadge(run.status)}</td>
+                        <td className="px-6 py-4">
+                          <span className="text-xs font-semibold text-slate-700">{run.triggerType}</span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-500">
+                          {new Date(run.startedAt || run.createdAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          })}
+                        </td>
+                        <td className="px-6 py-4 text-gray-500 font-medium">{formatDuration(run)}</td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`text-xs font-semibold ${
+                              findingsCount > 0 ? 'text-amber-600' : 'text-emerald-600'
                             }`}
                           >
-                            <div className="flex items-center gap-2.5">
-                              <Activity className="w-4 h-4 text-saffron shrink-0" />
-                              <span className="font-semibold text-gray-900">{formatStandardCase(run.agentName)}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">{getStatusBadge(run.status)}</td>
-                          <td className="px-6 py-4">
-                            <span className="text-xs font-semibold text-slate-700">{run.triggerType}</span>
-                          </td>
-                          <td className="px-6 py-4 text-gray-500">
-                            {new Date(run.startedAt || run.createdAt).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              second: '2-digit'
-                            })}
-                          </td>
-                          <td className="px-6 py-4 text-gray-500 font-medium">{formatDuration(run)}</td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`text-xs font-semibold ${
-                                findingsCount > 0 ? 'text-amber-600' : 'text-emerald-600'
-                              }`}
-                            >
-                              {findingsCount} finding(s)
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <span className="text-saffron font-bold text-xs inline-flex items-center gap-1 hover:underline">
-                              Inspect <ChevronRight className="w-3.5 h-3.5" />
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                <Pagination
-                  page={page}
-                  totalPages={totalPages}
-                  totalRecords={totalRecords}
-                  limit={limit}
-                  onPageChange={(p) => setPage(p)}
-                  onLimitChange={(l) => {
-                    setLimit(l);
-                    setPage(1);
-                  }}
-                  limitOptions={[10, 20, 50]}
-                />
-              </>
+                            {findingsCount} finding(s)
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <span className="text-saffron font-bold text-xs inline-flex items-center gap-1 hover:underline">
+                            Inspect <ChevronRight className="w-3.5 h-3.5" />
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             )}
           </div>
+
+          {!isLoadingRuns && runs.length > 0 && (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-x border-b border-blue-100 rounded-b-md -mt-2 relative z-20">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                totalRecords={totalRecords}
+                limit={limit}
+                onPageChange={(p) => setPage(p)}
+                onLimitChange={(l) => {
+                  setLimit(l);
+                  setPage(1);
+                }}
+                limitOptions={[10, 20, 50]}
+              />
+            </div>
+          )}
         </div>
       )}
 

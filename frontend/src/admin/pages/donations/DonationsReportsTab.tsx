@@ -191,7 +191,7 @@ export const DonationsReportsTab: React.FC<DonationsReportsTabProps> = ({ onSele
               disabled={isExporting}
               size="sm"
               leftIcon={<Download className="w-4 h-4 shrink-0" />}
-              className="cursor-pointer"
+              className="w-full sm:w-auto justify-center cursor-pointer"
             >
               {isExporting ? 'Exporting CSV...' : 'Export CSV'}
             </AdminButton>
@@ -399,13 +399,13 @@ export const DonationsReportsTab: React.FC<DonationsReportsTabProps> = ({ onSele
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto shrink-0">
             <AdminButton
               onClick={() => setShowAuditLogs(true)}
               variant="outline"
               size="sm"
               leftIcon={<History className="w-4 h-4 text-gray-500" />}
-              className="cursor-pointer"
+              className="w-full sm:w-auto justify-center cursor-pointer"
             >
               Audit History
             </AdminButton>
@@ -416,7 +416,7 @@ export const DonationsReportsTab: React.FC<DonationsReportsTabProps> = ({ onSele
               variant="primary"
               size="sm"
               leftIcon={<RefreshCw className={cn('w-4 h-4', isReconciling && 'animate-spin')} />}
-              className="cursor-pointer"
+              className="w-full sm:w-auto justify-center cursor-pointer"
             >
               {isReconciling ? 'Reconciling...' : 'Run Reconciliation'}
             </AdminButton>

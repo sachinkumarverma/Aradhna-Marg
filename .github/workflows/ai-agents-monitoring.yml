@@ -1,0 +1,45 @@
+name: Autonomous AI Agents Monitoring
+
+on:
+  schedule:
+    # Ping the server every hour on the hour.
+    # The backend evaluates each agent's schedule (Hourly, Every 6 Hours, Daily, Weekly)
+    # dynamically from PostgreSQL so admin UI schedule changes take effect immediately.
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Target Agent to run'
+        required: true
+        default: 'AutonomousAgentsMonitoring'
+        type: choice
+        options:
+          - AutonomousAgentsMonitoring
+          - ContentQualityAgent
+          - SeoAuditAgent
+          - SystemHealthAgent
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Autonomous AI Monitoring Agent
+        run: |
+          TARGET_JOB="${{ github.event.inputs.job || 'AutonomousAgentsMonitoring' }}"
+          echo "Triggering Autonomous Agent Monitoring ($TARGET_JOB)..."
+
+          response=$(curl -s -w "\n%{http_code}" -X GET "${{ secrets.API_URL }}/api/v1/cron/trigger/${TARGET_JOB}?secret=${{ secrets.CRON_SECRET }}")
+
+          # Extract response body and HTTP status code
+          body=$(echo "$response" | head -n -1)
+          status_code=$(echo "$response" | tail -n 1)
+
+          echo "Status Code: $status_code"
+          echo "Response Body: $body"
+
+          if [ "$status_code" -ne 200 ]; then
+            echo "Error: Autonomous agents trigger failed with HTTP status $status_code"
+            exit 1
+          fi
+
+          echo "Autonomous AI agent job '$TARGET_JOB' triggered successfully!"

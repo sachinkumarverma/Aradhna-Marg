@@ -85,13 +85,10 @@ export const PaymentDetailDrawer: React.FC<PaymentDetailDrawerProps> = ({ paymen
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
         <div className="w-screen max-w-lg bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out">
           {/* Header */}
-          <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-900 truncate">Payment Details</h2>
-                {getStatusBadge(payment.status)}
-              </div>
-              <p className="text-xs text-slate-500 font-mono mt-0.5 truncate">ID: {payment.id}</p>
+          <div className="h-16 px-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/70 shrink-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <h2 className="text-lg font-bold text-slate-900 truncate">Payment Details</h2>
+              {getStatusBadge(payment.status)}
             </div>
             <button
               onClick={onClose}
@@ -188,6 +185,15 @@ export const PaymentDetailDrawer: React.FC<PaymentDetailDrawerProps> = ({ paymen
                     <span className="text-gray-800 select-all">{payment.receiptNumber}</span>
                   </div>
                 )}
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 font-sans">Payment Ref ID:</span>
+                  <span
+                    className="text-gray-700 font-mono text-[11px] select-all truncate max-w-[200px]"
+                    title={payment.id}
+                  >
+                    {payment.id}
+                  </span>
+                </div>
                 <div className="flex justify-between items-center font-sans">
                   <span className="text-gray-500">Source:</span>
                   <span className="font-medium text-gray-800">{payment.source}</span>

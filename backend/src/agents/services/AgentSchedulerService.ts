@@ -39,35 +39,48 @@ export class AgentSchedulerService {
   /**
    * Calculates the next execution timestamp based on schedule interval.
    */
-  public calculateNextRun(interval: ScheduleInterval, fromDate: Date = new Date()): Date {
+  public calculateNextRun(interval: ScheduleInterval, fromDate: Date = new Date(), agentId?: string): Date {
     const next = new Date(fromDate);
-    next.setSeconds(0, 0);
+    next.setUTCSeconds(0, 0);
 
     switch (interval) {
-      case 'hourly':
-        next.setHours(next.getHours() + 1, 0, 0, 0);
-        break;
-      case 'every_2_hours':
-        next.setHours(next.getHours() + 2, 0, 0, 0);
-        break;
-      case 'every_6_hours':
-        next.setHours(next.getHours() + 6, 0, 0, 0);
-        break;
-      case 'every_12_hours':
-        next.setHours(next.getHours() + 12, 0, 0, 0);
-        break;
-      case 'daily':
-        next.setDate(next.getDate() + 1);
-        next.setHours(4, 0, 0, 0); // 04:00 AM UTC
-        break;
-      case 'weekly':
-        next.setDate(next.getDate() + 7);
-        next.setHours(4, 0, 0, 0); // 04:00 AM UTC
-        break;
-      default:
-        next.setHours(next.getHours() + 6, 0, 0, 0);
+      case 'hourly': {
+        next.setUTCHours(next.getUTCHours() + 1, 0, 0, 0);
+        return next;
+      }
+      case 'every_2_hours': {
+        next.setUTCHours(next.getUTCHours() + 2, 0, 0, 0);
+        return next;
+      }
+      case 'every_6_hours': {
+        next.setUTCHours(next.getUTCHours() + 6, 0, 0, 0);
+        return next;
+      }
+      case 'every_12_hours': {
+        next.setUTCHours(next.getUTCHours() + 12, 0, 0, 0);
+        return next;
+      }
+      case 'daily': {
+        // Staggered daily runs: Content Quality at 2:00 AM, SEO Audit at 3:00 AM, System Health at 4:00 AM UTC
+        const hour = agentId === 'content_quality_agent' ? 2 : agentId === 'seo_audit_agent' ? 3 : 4;
+        const target = new Date(fromDate);
+        target.setUTCHours(hour, 0, 0, 0);
+        if (target <= fromDate) {
+          target.setUTCDate(target.getUTCDate() + 1);
+        }
+        return target;
+      }
+      case 'weekly': {
+        const target = new Date(fromDate);
+        target.setUTCDate(target.getUTCDate() + 7);
+        target.setUTCHours(4, 0, 0, 0);
+        return target;
+      }
+      default: {
+        next.setUTCHours(next.getUTCHours() + 6, 0, 0, 0);
+        return next;
+      }
     }
-    return next;
   }
 
   /**
@@ -120,7 +133,8 @@ export class AgentSchedulerService {
    */
   public validateScheduleFrequency(
     interval?: string,
-    customCron?: string
+    customCron?: string,
+    agentId?: string
   ): { interval: ScheduleInterval; cron: string } {
     // If custom cron expression is passed, validate syntax and enforce minimum 1-hour frequency
     if (customCron) {
@@ -143,6 +157,10 @@ export class AgentSchedulerService {
 
     if (interval && interval in INTERVAL_TO_CRON) {
       const typedInterval = interval as ScheduleInterval;
+      if (typedInterval === 'daily' && agentId) {
+        const hour = agentId === 'content_quality_agent' ? 2 : agentId === 'seo_audit_agent' ? 3 : 4;
+        return { interval: 'daily', cron: `0 ${hour} * * *` };
+      }
       return { interval: typedInterval, cron: INTERVAL_TO_CRON[typedInterval] };
     }
 
@@ -240,7 +258,7 @@ export class AgentSchedulerService {
       });
 
       // 4. Calculate next run and release lock
-      const nextRunAt = this.calculateNextRun(locked.scheduleInterval);
+      const nextRunAt = this.calculateNextRun(locked.scheduleInterval, new Date(), agentId);
       await this.repository.releaseLock(agentId, true, undefined, nextRunAt);
 
       logger.info(
@@ -259,7 +277,7 @@ export class AgentSchedulerService {
       logger.error({ agentId, error: errorMessage }, 'Scheduled agent execution encountered failure');
 
       // Release lock with failure status
-      const nextRunAt = this.calculateNextRun(locked.scheduleInterval);
+      const nextRunAt = this.calculateNextRun(locked.scheduleInterval, new Date(), agentId);
       await this.repository.releaseLock(agentId, false, errorMessage, nextRunAt);
 
       return {
@@ -293,12 +311,12 @@ export class AgentSchedulerService {
       });
 
       // 5. Release lock
-      const nextRunAt = current ? this.calculateNextRun(current.scheduleInterval) : undefined;
+      const nextRunAt = current ? this.calculateNextRun(current.scheduleInterval, new Date(), agentId) : undefined;
       await this.repository.releaseLock(agentId, true, undefined, nextRunAt);
 
       return executionResult;
     } catch (err: any) {
-      const nextRunAt = current ? this.calculateNextRun(current.scheduleInterval) : undefined;
+      const nextRunAt = current ? this.calculateNextRun(current.scheduleInterval, new Date(), agentId) : undefined;
       await this.repository.releaseLock(agentId, false, err.message, nextRunAt);
       throw err;
     }
@@ -342,13 +360,14 @@ export class AgentSchedulerService {
     if (data.scheduleInterval || data.cronExpression) {
       const validated = this.validateScheduleFrequency(
         data.scheduleInterval || existing.scheduleInterval,
-        data.cronExpression
+        data.cronExpression,
+        agentId
       );
       interval = validated.interval;
       cronExpr = validated.cron;
     }
 
-    const nextRunAt = this.calculateNextRun(interval);
+    const nextRunAt = this.calculateNextRun(interval, new Date(), agentId);
 
     const updated = await this.repository.updateSchedule(agentId, {
       enabled: data.enabled !== undefined ? data.enabled : existing.enabled,
@@ -370,6 +389,45 @@ export class AgentSchedulerService {
     }
 
     return updated;
+  }
+
+  /**
+   * Executes all active and enabled autonomous agents that are due based on their schedule.
+   * Evaluates nextRunAt from database so intervals (hourly, every 6 hours, daily, weekly)
+   * configured by admin in the UI are respected dynamically.
+   */
+  public async runAllDueAgents(force = false): Promise<Record<string, any>> {
+    const schedules = await this.repository.findAll();
+    const results: Record<string, any> = {};
+    const now = new Date();
+
+    for (const schedule of schedules) {
+      if (schedule.enabled) {
+        // Run if forced, or if nextRunAt has arrived or was never set
+        const isDue = force || !schedule.nextRunAt || new Date(schedule.nextRunAt) <= now;
+        if (!isDue) {
+          logger.info(
+            { agentId: schedule.agentId, nextRunAt: schedule.nextRunAt, interval: schedule.scheduleInterval },
+            'Agent is not due yet, skipping'
+          );
+          results[schedule.agentId] = { skipped: true, reason: 'NOT_DUE', nextRunAt: schedule.nextRunAt };
+          continue;
+        }
+
+        try {
+          logger.info(
+            { agentId: schedule.agentId, interval: schedule.scheduleInterval },
+            'Triggering due agent via runAllDueAgents'
+          );
+          results[schedule.agentId] = await this.executeScheduledRun(schedule.agentId);
+        } catch (err: any) {
+          logger.error({ agentId: schedule.agentId, err: err.message }, 'Failed execution in runAllDueAgents');
+          results[schedule.agentId] = { success: false, error: err.message };
+        }
+      }
+    }
+
+    return results;
   }
 }
 

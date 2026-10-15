@@ -148,7 +148,7 @@ export const AdminAIJobs: React.FC = () => {
               <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
               <span className="truncate">AI JOBS & ACTIVITY</span>
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="hidden sm:block text-sm text-gray-500 mt-1">
               Unified operational monitor for background AI processing jobs, queue status, and worker logs.
             </p>
           </div>
