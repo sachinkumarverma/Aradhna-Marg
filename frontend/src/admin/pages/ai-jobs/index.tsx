@@ -186,8 +186,10 @@ export const AdminAIJobs: React.FC = () => {
           <div className="bg-gradient-to-br from-orange-50 to-white p-3.5 sm:p-5 rounded-md shadow-xs border border-orange-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Pending Queue</p>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stats?.pending || 0}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Queue / In Progress</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">
+                  {(stats?.pending || 0) + (stats?.processing || 0)}
+                </p>
               </div>
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />

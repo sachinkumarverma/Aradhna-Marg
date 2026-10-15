@@ -157,33 +157,59 @@ export class BhajanRepository {
   public async findForAiMeaning(id?: string) {
     if (id) {
       const res = await db.query(
-        `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
+        `SELECT id, title, lyrics, description, short_description, short_description_en, description_en FROM ${this.tableName} WHERE id = $1 AND deleted_at IS NULL`,
         [id]
       );
       return res.rows[0] || null;
     }
     const res = await db.query(
-      `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} 
+      `SELECT id, title, lyrics, description, short_description, short_description_en, description_en FROM ${this.tableName} 
        WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL
        ORDER BY created_at DESC LIMIT 1`
     );
     if (res.rows[0]) return res.rows[0];
     const fallback = await db.query(
-      `SELECT id, title, lyrics, description, short_description FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
+      `SELECT id, title, lyrics, description, short_description, short_description_en, description_en FROM ${this.tableName} WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 1`
     );
     return fallback.rows[0] || null;
   }
 
-  public async updateAiMeaning(id: string, meaning: string) {
-    await db.query(
-      `UPDATE ${this.tableName} 
-       SET short_description = $1, 
-           description = COALESCE(NULLIF(description, ''), $1),
-           ai_generated_flag = true,
-           updated_at = NOW() 
-       WHERE id = $2`,
-      [meaning, id]
+  public async findMissingMeanings(limit = 50) {
+    const res = await db.query(
+      `SELECT id, title, lyrics, description, short_description, short_description_en, description_en 
+       FROM ${this.tableName} 
+       WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL 
+       ORDER BY created_at DESC 
+       LIMIT $1`,
+      [limit]
     );
+    return res.rows;
+  }
+
+  public async updateAiMeaning(id: string, meaning: string, meaningEn?: string) {
+    if (meaningEn) {
+      await db.query(
+        `UPDATE ${this.tableName} 
+         SET short_description = $1, 
+             description = COALESCE(NULLIF(description, ''), $1),
+             short_description_en = $2,
+             description_en = COALESCE(NULLIF(description_en, ''), $2),
+             ai_generated_flag = true,
+             updated_at = NOW() 
+         WHERE id = $3`,
+        [meaning, meaningEn, id]
+      );
+    } else {
+      await db.query(
+        `UPDATE ${this.tableName} 
+         SET short_description = $1, 
+             description = COALESCE(NULLIF(description, ''), $1),
+             ai_generated_flag = true,
+             updated_at = NOW() 
+         WHERE id = $2`,
+        [meaning, id]
+      );
+    }
   }
 
   public async findForSeo(id?: string) {

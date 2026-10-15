@@ -7,7 +7,44 @@ import { articleRepository } from '@repositories/ArticleRepository';
 import { festivalRepository } from '@repositories/FestivalRepository';
 import { puranRepository } from '@repositories/PuranRepository';
 import { categoryRepository } from '@features/categories/CategoryRepository';
+import { translationService } from '@features/translations/TranslationService';
 import { ContentSafetyValidator } from '@/agents/utils/ContentSafetyValidator';
+
+function cleanDevotionalMeaning(raw: string): string {
+  if (!raw) return '';
+  return raw
+    .replace(/^#+\s+/gm, '') // remove heading hashes
+    .replace(/^```[a-z]*\n?/gm, '') // remove accidental code fences
+    .replace(/```$/gm, '')
+    .replace(/\r\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n') // normalize multiple newlines to clean paragraphs
+    .trim();
+}
+
+async function translateMeaningToEnglish(hindiMeaning: string, provider: any): Promise<string> {
+  try {
+    const res = await translationService.translateText(hindiMeaning, 'hi', 'en');
+    if (res?.translated && res.translated.trim().length > 10) {
+      return cleanDevotionalMeaning(res.translated);
+    }
+  } catch (err: any) {
+    logger.warn({ err: err?.message }, 'Google translate failed, falling back to AI provider for English translation');
+  }
+
+  // Fallback to AI provider
+  try {
+    const aiTranslatePrompt = {
+      systemPrompt: 'You are an enlightened scholar of Sanatan Dharma and Vedic bhakti tradition.',
+      prompt: `Translate the following devotional meaning (Bhavarth) from Hindi to English while maintaining its sacred and reverent spiritual tone. Preserve bold markdown highlighting (**word**) for key spiritual terms:\n\n${hindiMeaning}`,
+      maxTokens: 500
+    };
+    const translated = await provider.generateCompletion(aiTranslatePrompt);
+    return cleanDevotionalMeaning(translated);
+  } catch (aiErr: any) {
+    logger.warn({ err: aiErr?.message }, 'AI provider English translation also failed');
+    return '';
+  }
+}
 
 export class AiWorker {
   private isProcessing = false;
@@ -81,6 +118,10 @@ export class AiWorker {
           await this.processBhajanMeaning(job, provider);
           break;
 
+        case 'BULK_BHAJAN_MEANING':
+          await this.processBulkBhajanMeaning(job, provider);
+          break;
+
         case 'GENERATE_SUMMARY':
           await this.processArticleSummary(job, provider);
           break;
@@ -126,17 +167,48 @@ export class AiWorker {
   }
 
   /**
-   * Generates devotional meaning for Bhajans.
+   * Generates devotional meaning for Bhajans (Bilingual: Hindi & English).
    */
   private async processBhajanMeaning(job: any, provider: any): Promise<void> {
     const bhajan = await bhajanRepository.findForAiMeaning(job.content_id);
     if (!bhajan) throw new Error('No bhajan record found to process.');
 
     const promptPayload = AiPrompts.bhajanMeaning(bhajan);
-    const meaning = await provider.generateCompletion(promptPayload);
+    const rawMeaning = await provider.generateCompletion(promptPayload);
+    const cleanedHindiMeaning = cleanDevotionalMeaning(rawMeaning);
 
-    await bhajanRepository.updateAiMeaning(bhajan.id, meaning);
+    const englishMeaning = await translateMeaningToEnglish(cleanedHindiMeaning, provider);
+
+    await bhajanRepository.updateAiMeaning(bhajan.id, cleanedHindiMeaning, englishMeaning || undefined);
     await aiJobRepository.updateProgress(job.id, 1, 100);
+  }
+
+  /**
+   * Bulk Bhajan Meanings generation for bhajans missing a devotional meaning.
+   */
+  private async processBulkBhajanMeaning(job: any, provider: any): Promise<void> {
+    const bhajans = await bhajanRepository.findMissingMeanings(50);
+    const total = bhajans.length;
+    let processed = 0;
+
+    await aiJobRepository.updateProgress(job.id, 0, 0, total);
+
+    for (const b of bhajans) {
+      try {
+        const promptPayload = AiPrompts.bhajanMeaning(b);
+        const rawMeaning = await provider.generateCompletion(promptPayload);
+        const cleanedHindiMeaning = cleanDevotionalMeaning(rawMeaning);
+
+        const englishMeaning = await translateMeaningToEnglish(cleanedHindiMeaning, provider);
+
+        await bhajanRepository.updateAiMeaning(b.id, cleanedHindiMeaning, englishMeaning || undefined);
+      } catch (err: any) {
+        logger.warn({ id: b.id, err: err?.message }, 'Failed single bhajan bulk meaning item');
+      }
+      processed++;
+      const progress = total > 0 ? Math.round((processed / total) * 100) : 100;
+      await aiJobRepository.updateProgress(job.id, processed, progress);
+    }
   }
 
   /**

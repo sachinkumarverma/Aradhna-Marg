@@ -32,7 +32,7 @@ export function AdminAIProcessing() {
     queryKey: ['admin-ai-bulk-counts'],
     queryFn: async () => {
       const res = await apiClient.get('/admin/ai/bulk-counts');
-      return res.data?.data || { bulkSeo: 0, bulkExcerpt: 0, bulkFestival: 0 };
+      return res.data?.data || { bulkSeo: 0, bulkExcerpt: 0, bulkFestival: 0, bulkBhajanMeaning: 0 };
     },
     enabled: activeTab === 'bulk',
     refetchInterval: activeTab === 'bulk' ? 5000 : false
@@ -49,23 +49,7 @@ export function AdminAIProcessing() {
       await apiClient.post('/admin/ai/queue', payload);
     },
     onSuccess: (_, variables) => {
-      toast.success(
-        (t) => (
-          <div className="flex items-center justify-between gap-3 text-xs">
-            <span>Job "{variables.job_name}" added to queue!</span>
-            <button
-              onClick={() => {
-                toast.dismiss(t.id);
-                navigate(getAdminPath('/ai-jobs'));
-              }}
-              className="text-saffron font-bold underline cursor-pointer shrink-0"
-            >
-              View Jobs →
-            </button>
-          </div>
-        ),
-        { duration: 5000 }
-      );
+      toast.success(`Job "${variables.job_name}" added to queue!`);
       queryClient.invalidateQueries({ queryKey: ['admin-ai-stats'] });
       queryClient.invalidateQueries({ queryKey: ['admin-ai-bulk-counts'] });
       queryClient.invalidateQueries({ queryKey: ['admin-ai-jobs-activity'] });
@@ -229,6 +213,15 @@ export function AdminAIProcessing() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5 lg:gap-6">
               {[
                 {
+                  name: 'Generate Bhajan Meanings',
+                  desc: 'Creates devotional meaning (Bhavarth in Hindi & English) for bhajans missing a description',
+                  type: 'BULK_BHAJAN_MEANING',
+                  content: 'Bhajans',
+                  items: bulkCounts?.bulkBhajanMeaning ?? 0,
+                  redirectPath: getAdminPath('/bhajans'),
+                  redirectTooltip: 'View bhajans missing a devotional meaning'
+                },
+                {
                   name: 'Generate Missing SEO',
                   desc: 'Generates missing SEO titles and meta descriptions for Bhajans and Articles',
                   type: 'BULK_SEO',
@@ -282,16 +275,6 @@ export function AdminAIProcessing() {
                         <div className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600">
                           {isLoadingBulkCounts ? 'Auditing database...' : '0 eligible records detected'}
                         </div>
-                      )}
-
-                      {tool.items > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => navigate(tool.redirectPath)}
-                          className="text-xs font-semibold text-saffron hover:text-orange-700 underline flex items-center gap-1 cursor-pointer shrink-0"
-                        >
-                          View list →
-                        </button>
                       )}
                     </div>
                   </div>

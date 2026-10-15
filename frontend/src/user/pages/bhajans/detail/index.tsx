@@ -20,6 +20,46 @@ import { CustomLoader } from '@components/common/CustomLoader';
 import { SEOHead, buildBreadcrumbSchema, buildMusicCompositionSchema } from '@components/seo';
 import { getPrerenderedData } from '@utils/prerenderData';
 
+function formatDevotionalText(rawText: string): string[] {
+  if (!rawText) return [];
+  return rawText
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+}
+
+function renderFormattedParagraph(text: string): React.ReactNode {
+  const lines = text.split('\n');
+  return lines.map((line, lIdx) => {
+    // Matches **bold** or *italic*
+    const parts = line.split(/(\*\*[^*]+?\*\*|\*[^*]+?\*)/g);
+    return (
+      <React.Fragment key={lIdx}>
+        {parts.map((part, index) => {
+          if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+            const clean = part.slice(2, -2);
+            return (
+              <strong key={index} className="font-bold text-slate-900">
+                {clean}
+              </strong>
+            );
+          }
+          if (part.startsWith('*') && part.endsWith('*') && part.length >= 2) {
+            const clean = part.slice(1, -1);
+            return (
+              <em key={index} className="italic text-slate-800">
+                {clean}
+              </em>
+            );
+          }
+          return part;
+        })}
+        {lIdx < lines.length - 1 && <br className="my-1" />}
+      </React.Fragment>
+    );
+  });
+}
+
 export const BhajanDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
@@ -221,6 +261,11 @@ export const BhajanDetail: React.FC = () => {
         breadcrumbSchema
       ];
 
+  const hindiBhavarth = (bhajan?.short_description || (bhajan?.lyrics ? bhajan?.description : '') || '').trim();
+  const englishBhavarth = (bhajan?.short_description_en || bhajan?.description_en || '').trim();
+  const hasBhavarth = Boolean(!isVideo && (hindiBhavarth || englishBhavarth));
+  const displayedBhavarthText = isHi ? hindiBhavarth || englishBhavarth : englishBhavarth || hindiBhavarth;
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-2 sm:pt-3 md:pt-4 pb-16 sm:pb-24">
       <SEOHead
@@ -306,7 +351,7 @@ export const BhajanDetail: React.FC = () => {
                       ? isHi
                         ? 'वीडियो विवरण एवं बोल'
                         : 'Video Description & Lyrics'
-                      : t('content.lyricsAndDescription')
+                      : t('content.bhajanLyrics') || (isHi ? 'भजन बोल' : 'Bhajan Lyrics')
                   }
                 />
                 <div className="flex items-center gap-2 shrink-0">
@@ -388,12 +433,6 @@ export const BhajanDetail: React.FC = () => {
                 </div>
               </div>
 
-              {bhajan.short_description && (
-                <p className="text-slate-700 text-sm sm:text-base font-medium leading-relaxed mb-4 sm:mb-5">
-                  {bhajan.short_description}
-                </p>
-              )}
-
               {/* Video: Render description exactly as on YouTube (preserving stanzas, verses, links & hashtags, with exact devotional lyrics font) */}
               {isVideo ? (
                 (() => {
@@ -466,6 +505,39 @@ export const BhajanDetail: React.FC = () => {
                 <p className="text-gray-500 italic text-sm">बोल उपलब्ध नहीं हैं।</p>
               )}
             </motion.div>
+
+            {/* Dedicated Bhavarth (Spiritual Meaning) Card */}
+            {hasBhavarth && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] rounded-xl p-4 sm:p-7 border border-amber-200/80 shadow-xs mt-6"
+              >
+                <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-amber-200/60 mb-4 sm:mb-6">
+                  <div className="flex items-center gap-2 sm:gap-2.5">
+                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
+                    <h2 className="text-base sm:text-lg md:text-xl font-bold text-darkBrown font-hindi-heading leading-tight">
+                      {isHi ? 'भावार्थ' : 'Spiritual Meaning'}
+                    </h2>
+                    {!isHi && !englishBhavarth && (
+                      <span className="text-[11px] font-medium text-amber-800 bg-amber-100/70 border border-amber-200/60 px-2 py-0.5 rounded-md">
+                        Hindi Original
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Formatted Meaning Content */}
+                <div className="text-slate-800 text-sm sm:text-base leading-relaxed sm:leading-loose space-y-3 font-normal">
+                  {formatDevotionalText(displayedBhavarthText).map((para, pIdx) => (
+                    <p key={pIdx} className="last:mb-0">
+                      {renderFormattedParagraph(para)}
+                    </p>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
             {/* Ad Unit Placeholder */}
             <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />

@@ -11,8 +11,18 @@ export class AiJobRepository {
     let whereClause = '';
 
     if (status) {
-      params.push(status);
-      whereClause = `WHERE status = $1`;
+      if (status.includes(',')) {
+        const statuses = status
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const placeholders = statuses.map((_, i) => `$${i + 1}`).join(', ');
+        whereClause = `WHERE status IN (${placeholders})`;
+        params.push(...statuses);
+      } else {
+        params.push(status);
+        whereClause = `WHERE status = $1`;
+      }
     }
 
     const dataQuery = `
@@ -43,28 +53,24 @@ export class AiJobRepository {
     today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString();
 
-    const queries = [
-      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'PENDING'`,
-      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'PROCESSING'`,
-      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'COMPLETED'`,
-      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE status = 'FAILED'`,
-      `SELECT COUNT(*) as total FROM ${this.tableName} WHERE created_at >= $1`
-    ];
+    const query = `
+      SELECT
+        (SELECT COUNT(*) FROM ${this.tableName} WHERE status = 'PENDING') as pending,
+        (SELECT COUNT(*) FROM ${this.tableName} WHERE status = 'PROCESSING') as processing,
+        (SELECT COUNT(*) FROM ${this.tableName} WHERE status = 'COMPLETED') as completed,
+        (SELECT COUNT(*) FROM ${this.tableName} WHERE status = 'FAILED') as failed,
+        (SELECT COUNT(*) FROM ${this.tableName} WHERE created_at >= $1) as today
+    `;
 
-    const results = await Promise.all([
-      db.query(queries[0]),
-      db.query(queries[1]),
-      db.query(queries[2]),
-      db.query(queries[3]),
-      db.query(queries[4], [todayStr])
-    ]);
+    const { rows } = await db.query(query, [todayStr]);
+    const row = rows[0] || {};
 
     return {
-      pending: parseInt(results[0].rows[0].total, 10) || 0,
-      processing: parseInt(results[1].rows[0].total, 10) || 0,
-      completed: parseInt(results[2].rows[0].total, 10) || 0,
-      failed: parseInt(results[3].rows[0].total, 10) || 0,
-      today: parseInt(results[4].rows[0].total, 10) || 0
+      pending: parseInt(row.pending || '0', 10),
+      processing: parseInt(row.processing || '0', 10),
+      completed: parseInt(row.completed || '0', 10),
+      failed: parseInt(row.failed || '0', 10),
+      today: parseInt(row.today || '0', 10)
     };
   }
 
@@ -151,25 +157,29 @@ export class AiJobRepository {
     return rows[0] as AiJob;
   }
 
-  async getBulkCounts(): Promise<{ bulkSeo: number; bulkExcerpt: number; bulkFestival: number }> {
-    const [bhajanSeo, articleSeo, articleExcerpt, festivalDesc] = await Promise.all([
-      db.query(
-        `SELECT COUNT(*) FROM bhajans WHERE (seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL`
-      ),
-      db.query(
-        `SELECT COUNT(*) FROM articles WHERE (seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL`
-      ),
-      db.query(
-        `SELECT COUNT(*) FROM articles WHERE (excerpt IS NULL OR trim(excerpt) = '') AND content IS NOT NULL AND deleted_at IS NULL`
-      ),
-      db.query(`SELECT COUNT(*) FROM festivals WHERE short_description IS NULL OR trim(short_description) = ''`)
-    ]);
+  async getBulkCounts(): Promise<{
+    bulkSeo: number;
+    bulkExcerpt: number;
+    bulkFestival: number;
+    bulkBhajanMeaning: number;
+  }> {
+    const query = `
+      SELECT
+        (SELECT COUNT(*) FROM bhajans WHERE (seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL) as bhajan_seo,
+        (SELECT COUNT(*) FROM articles WHERE (seo_description IS NULL OR trim(seo_description) = '') AND deleted_at IS NULL) as article_seo,
+        (SELECT COUNT(*) FROM articles WHERE (excerpt IS NULL OR trim(excerpt) = '') AND content IS NOT NULL AND deleted_at IS NULL) as article_excerpt,
+        (SELECT COUNT(*) FROM festivals WHERE short_description IS NULL OR trim(short_description) = '') as festival_desc,
+        (SELECT COUNT(*) FROM bhajans WHERE (short_description IS NULL OR trim(short_description) = '') AND deleted_at IS NULL) as bhajan_meaning
+    `;
+    const { rows } = await db.query(query);
+    const row = rows[0] || {};
 
-    const bulkSeo = parseInt(bhajanSeo.rows[0].count, 10) + parseInt(articleSeo.rows[0].count, 10);
-    const bulkExcerpt = parseInt(articleExcerpt.rows[0].count, 10);
-    const bulkFestival = parseInt(festivalDesc.rows[0].count, 10);
+    const bulkSeo = parseInt(row.bhajan_seo || '0', 10) + parseInt(row.article_seo || '0', 10);
+    const bulkExcerpt = parseInt(row.article_excerpt || '0', 10);
+    const bulkFestival = parseInt(row.festival_desc || '0', 10);
+    const bulkBhajanMeaning = parseInt(row.bhajan_meaning || '0', 10);
 
-    return { bulkSeo, bulkExcerpt, bulkFestival };
+    return { bulkSeo, bulkExcerpt, bulkFestival, bulkBhajanMeaning };
   }
 
   async delete(id: string): Promise<void> {
