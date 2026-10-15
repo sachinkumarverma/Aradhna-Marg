@@ -355,7 +355,14 @@ export class PublicController {
   // 4. Bhajan Related Content
   public getBhajanRelated = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { slug } = req.params;
+      const cacheKey = `bhajan_related_${slug}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Related content fetched (cached)', cached.data);
+      }
 
       const bhajanRes = await db.query(
         `SELECT id, god_id, category_id, festival_id FROM bhajans WHERE slug = $1 OR id::text = $1 LIMIT 1`,
@@ -413,11 +420,15 @@ export class PublicController {
         db.query(relatedPuranasQuery)
       ]);
 
-      return sendSuccess(res, 'Related content fetched', {
+      const data = {
         relatedBhajans: bhajans.rows,
         relatedArticles: articles.rows,
         relatedPuranas: puranas.rows
-      });
+      };
+
+      publicCacheService.set(cacheKey, data, 300);
+
+      return sendSuccess(res, 'Related content fetched', data);
     } catch (error) {
       next(error);
     }
@@ -591,7 +602,14 @@ export class PublicController {
   // 7. Article Related Content
   public getArticleRelated = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      publicCacheService.setCacheHeaders(res, 60, 300);
+
       const { slug } = req.params;
+      const cacheKey = `article_related_${slug}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        return sendSuccess(res, 'Related content fetched (cached)', cached.data);
+      }
 
       const artRes = await db.query(`SELECT id, category_id FROM articles WHERE slug = $1 OR id::text = $1 LIMIT 1`, [
         slug
@@ -646,11 +664,15 @@ export class PublicController {
         db.query(relatedFestivalsQuery)
       ]);
 
-      return sendSuccess(res, 'Related content fetched', {
+      const data = {
         relatedArticles: articles.rows,
         relatedBhajans: bhajans.rows,
         relatedFestivals: festivals.rows
-      });
+      };
+
+      publicCacheService.set(cacheKey, data, 300);
+
+      return sendSuccess(res, 'Related content fetched', data);
     } catch (error) {
       next(error);
     }

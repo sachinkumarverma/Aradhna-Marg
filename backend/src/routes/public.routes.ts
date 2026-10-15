@@ -4,6 +4,7 @@ import { sendSuccess } from '@/responses/apiResponse';
 import { publicController } from '@controllers/PublicController';
 import { isShortVideo } from '@utils/videoUtils';
 import { requireActiveSite } from '@/middlewares/maintenance.middleware';
+import { publicCacheService } from '@services/PublicCacheService';
 
 const router = Router();
 
@@ -86,11 +87,19 @@ router.get('/authors/:id', publicController.getAuthorById);
 // Existing YouTube Videos endpoints
 router.get('/videos', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    publicCacheService.setCacheHeaders(res, 60, 180);
+
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const search = req.query.search as string;
     const excludeShorts = req.query.excludeShorts === 'true';
     const offset = (page - 1) * limit;
+
+    const cacheKey = `videos_list_${page}_${limit}_${search || ''}_${excludeShorts}`;
+    const cached = publicCacheService.get<any[]>(cacheKey);
+    if (cached) {
+      return sendSuccess(res, 'Videos retrieved (cached)', cached.data, cached.meta);
+    }
 
     const whereConditions = ["import_status != 'IGNORED'"];
     const queryParams: any[] = [];
@@ -105,9 +114,10 @@ router.get('/videos', async (req: Request, res: Response, next: NextFunction) =>
     const whereClause = whereConditions.join(' AND ');
 
     const query = `
-      SELECT * FROM youtube_videos
+      SELECT id, youtube_video_id, title, description, thumbnail, channel_name, duration, view_count, published_at, youtube_url, created_at
+      FROM youtube_videos
       WHERE ${whereClause}
-      ORDER BY published_at DESC
+      ORDER BY published_at DESC NULLS LAST, created_at DESC
     `;
     const { rows } = await db.query(query, queryParams);
 
@@ -120,54 +130,16 @@ router.get('/videos', async (req: Request, res: Response, next: NextFunction) =>
     const total = filtered.length;
     const paginatedRows = filtered.slice(offset, offset + limit);
 
-    return sendSuccess(res, 'Videos retrieved', paginatedRows, {
+    const meta = {
       total,
       page,
       limit,
       totalPages: Math.ceil(total / limit)
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+    };
 
-router.get('/videos/:slug', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { slug } = req.params;
+    publicCacheService.set(cacheKey, paginatedRows, 180, meta);
 
-    let query = `SELECT * FROM bhajans WHERE (slug = $1 OR id::text = $1 OR youtube_video_id = $1) AND deleted_at IS NULL LIMIT 1`;
-    let result = await db.query(query, [slug]);
-
-    if (result.rows.length === 0) {
-      query = `SELECT * FROM youtube_videos WHERE youtube_video_id = $1 OR id::text = $1 LIMIT 1`;
-      result = await db.query(query, [slug]);
-
-      if (result.rows.length > 0) {
-        const ytData = result.rows[0];
-        const data = {
-          id: ytData.id,
-          title: ytData.title,
-          description: ytData.description,
-          youtube_video_id: ytData.youtube_video_id,
-          god_id: ytData.channel_name,
-          god_name: ytData.channel_name || 'Devotional',
-          views: ytData.view_count,
-          duration: ytData.duration,
-          is_string_duration: true,
-          string_duration: ytData.duration || '00:00',
-          published_at: ytData.published_at,
-          published_date: ytData.published_at,
-          publish_date: ytData.published_at,
-          created_at: ytData.published_at || ytData.created_at,
-          lyrics: ytData.description
-        };
-        return sendSuccess(res, 'Video retrieved', data);
-      }
-
-      return sendSuccess(res, 'Not found', null);
-    }
-
-    return sendSuccess(res, 'Bhajan retrieved', result.rows[0]);
+    return sendSuccess(res, 'Videos retrieved', paginatedRows, meta);
   } catch (error) {
     next(error);
   }
