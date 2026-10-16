@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import { Select } from '@components/ui/Select';
 import { Pagination } from '@components/ui/Pagination';
 import {
@@ -374,19 +375,19 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
     return '-';
   };
 
-  const formatTimestamp = (ts?: string | null) => {
+  const formatDateTime = (ts?: string | null) => {
     if (!ts) return '-';
     try {
       const date = new Date(ts);
-      return date.toLocaleString([], {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      if (isNaN(date.getTime())) return '-';
+      return format(date, 'dd-MM-yyyy hh:mm a');
     } catch {
       return '-';
     }
+  };
+
+  const formatTimestamp = (ts?: string | null) => {
+    return formatDateTime(ts);
   };
 
   const formatIntervalLabel = (interval: string) => {
@@ -708,12 +709,8 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
                         <td className="px-6 py-4">
                           <span className="text-xs font-semibold text-slate-700">{run.triggerType}</span>
                         </td>
-                        <td className="px-6 py-4 text-gray-500">
-                          {new Date(run.startedAt || run.createdAt).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                          })}
+                        <td className="px-6 py-4 text-gray-500 font-medium" title={run.startedAt || run.createdAt}>
+                          {formatDateTime(run.startedAt || run.createdAt)}
                         </td>
                         <td className="px-6 py-4 text-gray-500 font-medium">{formatDuration(run)}</td>
                         <td className="px-6 py-4">
@@ -770,7 +767,25 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
                     <Activity className="w-4 h-4 text-saffron" />
                     {formatStandardCase(selectedDetails?.run?.agentName)} — Execution Details
                   </h4>
-                  <p className="text-xs text-gray-500 font-mono mt-0.5">Run ID: {selectedRunId}</p>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mt-0.5">
+                    <span className="font-mono">Run ID: {selectedRunId}</span>
+                    {selectedDetails?.run && (
+                      <>
+                        <span>•</span>
+                        <span>
+                          Started:{' '}
+                          <strong className="text-gray-700 font-medium">
+                            {formatDateTime(selectedDetails.run.startedAt || selectedDetails.run.createdAt)}
+                          </strong>
+                        </span>
+                        <span>•</span>
+                        <span>
+                          Duration:{' '}
+                          <strong className="text-gray-700 font-medium">{formatDuration(selectedDetails.run)}</strong>
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <button
                   type="button"
