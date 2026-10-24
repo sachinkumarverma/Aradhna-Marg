@@ -20,6 +20,7 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
+import { ENABLE_DONATIONS } from '@/constants';
 
 export const ContactPage: React.FC = () => {
   const { language } = useTranslation();
@@ -432,27 +433,29 @@ export const ContactPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Support & Donation Card */}
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 sm:p-8 border border-orange-200 shadow-sm text-center sm:text-left">
-              <div className="flex items-center justify-center sm:justify-start gap-2 text-saffron font-bold text-xs uppercase tracking-wider mb-2 font-hindi-heading">
-                <HandHeart className="w-4 h-4" />
-                <span>{isHi ? 'सहयोग एवं दक्षिणा कोष' : 'Support Our Seva'}</span>
+            {/* Support & Donation Card - Hidden until Razorpay approval */}
+            {ENABLE_DONATIONS && (
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 sm:p-8 border border-orange-200 shadow-sm text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-2 text-saffron font-bold text-xs uppercase tracking-wider mb-2 font-hindi-heading">
+                  <HandHeart className="w-4 h-4" />
+                  <span>{isHi ? 'सहयोग एवं दक्षिणा कोष' : 'Support Our Seva'}</span>
+                </div>
+                <h4 className="font-black text-darkBrown text-base sm:text-lg mb-2 font-hindi-heading">
+                  {isHi ? 'डिजिटल धर्म सेवा में सहयोग करें' : 'Support Devotional Preservation'}
+                </h4>
+                <p className="text-slate-600 text-xs sm:text-sm mb-4 leading-relaxed">
+                  {isHi
+                    ? 'महापुराणों एवं पवित्र भजनों के संरक्षण व निःशुल्क प्रसार हेतु ऐच्छिक सहयोग अर्पित करें।'
+                    : 'Offer voluntary contribution to help preserve scriptures and provide free access to all devotees.'}
+                </p>
+                <Link
+                  to="/support-us"
+                  className="inline-flex items-center justify-center w-full py-3 bg-saffron hover:bg-orange-600 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all font-hindi-heading"
+                >
+                  {isHi ? 'सहयोग पृष्ठ पर जाएं' : 'Support Us'}
+                </Link>
               </div>
-              <h4 className="font-black text-darkBrown text-base sm:text-lg mb-2 font-hindi-heading">
-                {isHi ? 'डिजिटल धर्म सेवा में सहयोग करें' : 'Support Devotional Preservation'}
-              </h4>
-              <p className="text-slate-600 text-xs sm:text-sm mb-4 leading-relaxed">
-                {isHi
-                  ? 'महापुराणों एवं पवित्र भजनों के संरक्षण व निःशुल्क प्रसार हेतु ऐच्छिक सहयोग अर्पित करें।'
-                  : 'Offer voluntary contribution to help preserve scriptures and provide free access to all devotees.'}
-              </p>
-              <Link
-                to="/support-us"
-                className="inline-flex items-center justify-center w-full py-3 bg-saffron hover:bg-orange-600 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all font-hindi-heading"
-              >
-                {isHi ? 'सहयोग पृष्ठ पर जाएं' : 'Support Us'}
-              </Link>
-            </div>
+            )}
           </div>
         </div>
       </div>

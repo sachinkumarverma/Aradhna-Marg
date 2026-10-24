@@ -23,6 +23,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { PublicApi } from '@api/publicApi';
 import { useQuery } from '@tanstack/react-query';
 import { useFavorites } from '@hooks/useFavorites';
+import { ENABLE_DONATIONS } from '@/constants';
 
 interface RightNavDrawerProps {
   isOpen: boolean;
@@ -352,27 +353,29 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                 </Link>
               </div>
 
-              {/* Support Us / Daan Card */}
-              <div className="pb-2">
-                <Link
-                  to="/support-us"
-                  onClick={onClose}
-                  className="w-full flex items-center gap-3.5 p-3.5 rounded-xl border border-amber-100 bg-amber-50/40 hover:bg-amber-50 shadow-xs hover:shadow-sm transition-all group"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-amber-100/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <HandHeart className="w-4.5 h-4.5 text-amber-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm text-slate-900 font-hindi-heading leading-tight">
-                      {t('navigation.supportUs')}
-                    </p>
-                    <p className="text-[11px] text-amber-700 truncate font-hindi-heading mt-0.5">
-                      {isHi ? 'सनातन धर्म प्रचार में सहयोग दें' : 'Contribute to Sanatan Dharma'}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-amber-400 group-hover:text-amber-600 transition-colors shrink-0" />
-                </Link>
-              </div>
+              {/* Support Us / Daan Card - Hidden until Razorpay approval */}
+              {ENABLE_DONATIONS && (
+                <div className="pb-2">
+                  <Link
+                    to="/support-us"
+                    onClick={onClose}
+                    className="w-full flex items-center gap-3.5 p-3.5 rounded-xl border border-amber-100 bg-amber-50/40 hover:bg-amber-50 shadow-xs hover:shadow-sm transition-all group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-amber-100/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <HandHeart className="w-4.5 h-4.5 text-amber-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-sm text-slate-900 font-hindi-heading leading-tight">
+                        {t('navigation.supportUs')}
+                      </p>
+                      <p className="text-[11px] text-amber-700 truncate font-hindi-heading mt-0.5">
+                        {isHi ? 'सनातन धर्म प्रचार में सहयोग दें' : 'Contribute to Sanatan Dharma'}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-amber-400 group-hover:text-amber-600 transition-colors shrink-0" />
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Footer Language Switcher Bar */}

@@ -8,6 +8,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { NavbarSearchOverlay } from '@components/search/NavbarSearchOverlay';
 import { RightNavDrawer } from './RightNavDrawer';
 import { useFavorites } from '@hooks/useFavorites';
+import { ENABLE_DONATIONS } from '@/constants';
 
 interface NavbarProps {
   containerRef?: React.RefObject<HTMLElement | null>;
@@ -127,18 +128,20 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                 <LanguageSwitcher />
               </div>
 
-              {/* Support Us / Donate Button (Desktop XL) */}
-              <div className="hidden xl:block">
-                <Link to="/support-us">
-                  <Button
-                    size="sm"
-                    leftIcon={<HandHeart className="w-3.5 h-3.5 text-white" />}
-                    className="bg-saffron hover:brightness-90 text-white font-semibold rounded-full px-4 shadow-sm hover:shadow-md transition-all text-xs sm:text-[13px] font-lyrics cursor-pointer tracking-wide"
-                  >
-                    {t('navigation.supportUs')}
-                  </Button>
-                </Link>
-              </div>
+              {/* Support Us / Donate Button (Desktop XL) - Hidden until Razorpay approval */}
+              {ENABLE_DONATIONS && (
+                <div className="hidden xl:block">
+                  <Link to="/support-us">
+                    <Button
+                      size="sm"
+                      leftIcon={<HandHeart className="w-3.5 h-3.5 text-white" />}
+                      className="bg-saffron hover:brightness-90 text-white font-semibold rounded-full px-4 shadow-sm hover:shadow-md transition-all text-xs sm:text-[13px] font-lyrics cursor-pointer tracking-wide"
+                    >
+                      {t('navigation.supportUs')}
+                    </Button>
+                  </Link>
+                </div>
+              )}
 
               {/* Favorites Heart Navigation Button */}
               <Link

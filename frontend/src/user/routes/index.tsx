@@ -20,6 +20,7 @@ import { DonatePage } from '@user/pages/donate';
 import { ContactPage } from '@user/pages/contact';
 import { FavoritesPage } from '@user/pages/favorites';
 import { NotFoundPage } from '@user/pages/common/NotFoundPage';
+import { ENABLE_DONATIONS } from '@/constants';
 
 export const userRoutes: RouteObject[] = [
   {
@@ -124,11 +125,11 @@ export const userRoutes: RouteObject[] = [
       },
       {
         path: 'support-us',
-        element: <DonatePage />
+        element: ENABLE_DONATIONS ? <DonatePage /> : <Navigate to="/" replace />
       },
       {
         path: 'donate',
-        element: <Navigate to="/support-us" replace />
+        element: <Navigate to={ENABLE_DONATIONS ? '/support-us' : '/'} replace />
       },
       {
         path: 'favourite',

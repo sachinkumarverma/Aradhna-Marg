@@ -4,6 +4,12 @@
 
 export const APP_NAME = 'Aradhna Marg';
 
+/**
+ * Feature Flags
+ * Set ENABLE_DONATIONS to true once Razorpay account approval is received.
+ */
+export const ENABLE_DONATIONS = false;
+
 export const API_ROUTES = {
   BHAJANS: '/bhajans',
   CATEGORIES: '/categories',

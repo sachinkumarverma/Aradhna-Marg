@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 
 import { PublicApi } from '@api/publicApi';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
+import { ENABLE_DONATIONS } from '@/constants';
 
 export const Footer: React.FC = () => {
   const { t, language } = useTranslation();
@@ -202,15 +203,18 @@ export const Footer: React.FC = () => {
               <span>{isHi ? 'संस्थान एवं सेवा' : 'Mission & Seva'}</span>
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-300 mb-5">
-              <li>
-                <Link
-                  to="/support-us"
-                  className="text-saffron hover:text-orange-400 font-bold transition-colors flex items-center gap-1.5 py-0.5"
-                >
-                  <HandHeart className="w-3.5 h-3.5 text-saffron shrink-0" />
-                  <span>{isHi ? 'सहयोग एवं दक्षिणा कोष' : 'Support Our Seva'}</span>
-                </Link>
-              </li>
+              {/* Support Us / Donate Link - Hidden until Razorpay approval */}
+              {ENABLE_DONATIONS && (
+                <li>
+                  <Link
+                    to="/support-us"
+                    className="text-saffron hover:text-orange-400 font-bold transition-colors flex items-center gap-1.5 py-0.5"
+                  >
+                    <HandHeart className="w-3.5 h-3.5 text-saffron shrink-0" />
+                    <span>{isHi ? 'सहयोग एवं दक्षिणा कोष' : 'Support Our Seva'}</span>
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link to="/about" className="hover:text-amber-400 transition-colors flex items-center gap-2 py-0.5">
                   <span className="text-xs text-amber-500">•</span>
