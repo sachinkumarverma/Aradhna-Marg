@@ -26,12 +26,17 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   useEffect(() => {
     const handler = setTimeout(() => {
       if (localValue !== value) {
-        onChange(localValue.trim());
+        onChange(localValue);
       }
     }, debounceMs);
 
     return () => clearTimeout(handler);
   }, [localValue, debounceMs, onChange, value]);
+
+  const handleClear = () => {
+    setLocalValue('');
+    onChange('');
+  };
 
   return (
     <div className={cn('relative group w-full sm:w-96', className)}>
@@ -45,8 +50,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       />
       {localValue && (
         <button
-          onClick={() => setLocalValue('')}
+          type="button"
+          onClick={handleClear}
           className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+          title="Clear search"
+          aria-label="Clear search"
         >
           <X className="w-4 h-4" />
         </button>
