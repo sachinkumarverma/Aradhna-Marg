@@ -25,6 +25,8 @@ import { toast } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAdminPath } from '@utils/host';
 import { DEFAULT_SEO, SITE_NAME_EN, SITE_NAME_HI, SITE_ORIGIN } from '@/constants/seo';
+import { useTableSort } from '@admin/hooks/useTableSort';
+import { SortHeader } from '@admin/components/SortHeader';
 
 const JumpingDots = ({ colorClass = 'text-gray-400' }: { colorClass?: string }) => (
   <div className={`flex items-center gap-1.5 h-9 mt-2 ${colorClass}`}>
@@ -98,6 +100,19 @@ export const AdminSEO = () => {
 
   const displayIssues = agentFindings.length > 0 ? agentFindings : legacyIssues;
   const isLoadingIssuesTable = isLoadingIssues || isLoadingAgentAudit;
+
+  const auditData = overview?.audit || [];
+  const {
+    sortedData: sortedAuditData,
+    sortConfig: auditSortConfig,
+    requestSort: requestAuditSort
+  } = useTableSort(auditData, { key: 'type', direction: 'asc' });
+
+  const {
+    sortedData: sortedIssuesData,
+    sortConfig: issuesSortConfig,
+    requestSort: requestIssuesSort
+  } = useTableSort(displayIssues, { key: 'title', direction: 'asc' });
 
   const handleRunAgentAudit = async () => {
     setIsRunningAgentAudit(true);
@@ -295,11 +310,41 @@ export const AdminSEO = () => {
             <table className="w-full min-w-[550px] text-left border-collapse whitespace-nowrap">
               <thead>
                 <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
-                  <th className="px-6 py-4">Content Type</th>
-                  <th className="px-6 py-4 font-semibold text-center">Optimized</th>
-                  <th className="px-6 py-4 font-semibold text-center">Missing Title</th>
-                  <th className="px-6 py-4 font-semibold text-center">Missing Desc</th>
-                  <th className="px-6 py-4 font-semibold text-center">Duplicate Title</th>
+                  <SortHeader
+                    columnKey="type"
+                    label="Content Type"
+                    sortConfig={auditSortConfig}
+                    onSort={requestAuditSort}
+                    className="px-6 py-4"
+                  />
+                  <SortHeader
+                    columnKey="optimized"
+                    label="Optimized"
+                    sortConfig={auditSortConfig}
+                    onSort={requestAuditSort}
+                    className="px-6 py-4 font-semibold text-center"
+                  />
+                  <SortHeader
+                    columnKey="missingTitle"
+                    label="Missing Title"
+                    sortConfig={auditSortConfig}
+                    onSort={requestAuditSort}
+                    className="px-6 py-4 font-semibold text-center"
+                  />
+                  <SortHeader
+                    columnKey="missingDesc"
+                    label="Missing Desc"
+                    sortConfig={auditSortConfig}
+                    onSort={requestAuditSort}
+                    className="px-6 py-4 font-semibold text-center"
+                  />
+                  <SortHeader
+                    columnKey="duplicateTitle"
+                    label="Duplicate Title"
+                    sortConfig={auditSortConfig}
+                    onSort={requestAuditSort}
+                    className="px-6 py-4 font-semibold text-center"
+                  />
                 </tr>
               </thead>
               <tbody className="text-sm">
@@ -315,7 +360,7 @@ export const AdminSEO = () => {
                     </td>
                   </tr>
                 ) : (
-                  overview?.audit?.map((item: any) => (
+                  sortedAuditData.map((item: any) => (
                     <tr
                       key={item.type}
                       className="border-b border-gray-100 last:border-0 bg-gray-50/50 hover:bg-blue-100/60 transition-colors"
@@ -435,9 +480,27 @@ export const AdminSEO = () => {
             <table className="w-full min-w-[650px] text-left border-collapse">
               <thead>
                 <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 text-sm font-semibold">
-                  <th className="px-6 py-3">Content Type</th>
-                  <th className="px-6 py-3 font-semibold">Title</th>
-                  <th className="px-6 py-3 font-semibold">Issue</th>
+                  <SortHeader
+                    columnKey="type"
+                    label="Content Type"
+                    sortConfig={issuesSortConfig}
+                    onSort={requestIssuesSort}
+                    className="px-6 py-3"
+                  />
+                  <SortHeader
+                    columnKey="title"
+                    label="Title"
+                    sortConfig={issuesSortConfig}
+                    onSort={requestIssuesSort}
+                    className="px-6 py-3 font-semibold"
+                  />
+                  <SortHeader
+                    columnKey="issue"
+                    label="Issue"
+                    sortConfig={issuesSortConfig}
+                    onSort={requestIssuesSort}
+                    className="px-6 py-3 font-semibold"
+                  />
                   <th className="px-6 py-3 font-semibold text-right">Action</th>
                 </tr>
               </thead>
@@ -451,7 +514,7 @@ export const AdminSEO = () => {
                       </div>
                     </td>
                   </tr>
-                ) : displayIssues.length === 0 ? (
+                ) : sortedIssuesData.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
                       <ShieldCheck className="w-12 h-12 text-green-400 mx-auto mb-3" strokeWidth={2.5} />
@@ -460,7 +523,7 @@ export const AdminSEO = () => {
                     </td>
                   </tr>
                 ) : (
-                  displayIssues.map((issue: any, i: number) => (
+                  sortedIssuesData.map((issue: any, i: number) => (
                     <tr
                       key={i}
                       className="border-b border-gray-100 last:border-0 bg-gray-50/50 hover:bg-blue-100/60 transition-colors"

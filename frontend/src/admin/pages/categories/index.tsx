@@ -32,6 +32,8 @@ import {
   Eye
 } from 'lucide-react';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
+import { SortHeader } from '@admin/components/SortHeader';
+import { useTableSort } from '@admin/hooks/useTableSort';
 
 const IconMap: Record<string, any> = {
   FolderTree,
@@ -135,6 +137,17 @@ export const AdminCategories = () => {
   };
 
   const categories = data?.data || [];
+  const {
+    sortedData: sortedCategories,
+    sortField,
+    sortDirection,
+    handleSort
+  } = useTableSort(categories, 'category', 'asc', {
+    category: (c: any) => c.name,
+    status: (c: any) => c.status,
+    bhajans: (c: any) => c.bhajanCount || 0,
+    order: (c: any) => c.displayOrder || 0
+  });
   const totalPages = Math.ceil((data?.meta?.total || 0) / 10);
 
   return (
@@ -198,7 +211,7 @@ export const AdminCategories = () => {
               </tbody>
             </table>
           </div>
-        ) : categories.length === 0 ? (
+        ) : sortedCategories.length === 0 ? (
           <div className="border border-dashed border-gray-300 rounded-md bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
               <FolderTree className="w-6 h-6 text-gray-400" />
@@ -212,15 +225,42 @@ export const AdminCategories = () => {
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                   <tr>
-                    <th className="px-6 py-4 font-bold">Category</th>
-                    <th className="px-6 py-4 font-bold text-center">Status</th>
-                    <th className="px-6 py-4 font-bold text-center">Bhajans</th>
-                    <th className="px-6 py-4 font-bold text-center">Order</th>
-                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                    <SortHeader
+                      label="Category"
+                      field="category"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                    />
+                    <SortHeader
+                      label="Status"
+                      field="status"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                      align="center"
+                    />
+                    <SortHeader
+                      label="Bhajans"
+                      field="bhajans"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                      align="center"
+                    />
+                    <SortHeader
+                      label="Order"
+                      field="order"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                      align="center"
+                    />
+                    <th className="px-6 py-4 font-bold text-right select-none">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {categories.map((category: any) => (
+                  {sortedCategories.map((category: any) => (
                     <tr key={category.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex flex-col gap-1">

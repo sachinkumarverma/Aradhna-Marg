@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Search, X, ChevronLeft, ChevronRight, History, Users } from 'lucide-react';
 import { DonationsApi, type SupporterItem, type PaymentItem } from '@admin/features/donations/DonationsApi';
 import { Pagination } from '@components/ui/Pagination';
+import { SortHeader } from '@admin/components/SortHeader';
+import { useTableSort } from '@admin/hooks/useTableSort';
 
 interface DonationsSupportersTabProps {
   onSelectPayment: (payment: PaymentItem) => void;
@@ -27,6 +29,19 @@ export const DonationsSupportersTab: React.FC<DonationsSupportersTabProps> = ({ 
   });
 
   const supporters: SupporterItem[] = data?.data || [];
+  const {
+    sortedData: sortedSupporters,
+    sortField,
+    sortDirection,
+    handleSort
+  } = useTableSort(supporters, 'total', 'desc', {
+    name: (s) => (s.isAnonymous ? 'Anonymous' : s.supporterName || ''),
+    email: (s) => s.supporterEmail || '',
+    count: (s) => s.contributionCount || 0,
+    total: (s) => s.totalContributed || 0,
+    first: (s) => s.firstContribution || '',
+    last: (s) => s.lastContribution || ''
+  });
   const total = data?.total || 0;
   const totalPages = data?.totalPages || 1;
 
@@ -83,13 +98,56 @@ export const DonationsSupportersTab: React.FC<DonationsSupportersTabProps> = ({ 
           <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
             <thead className="bg-gray-50 text-gray-700 border-b border-gray-200 uppercase text-xs font-bold tracking-wider">
               <tr>
-                <th className="px-5 py-3.5">Supporter Name</th>
-                <th className="px-5 py-3.5">Email</th>
-                <th className="px-5 py-3.5 text-center">Contributions</th>
-                <th className="px-5 py-3.5">Total Contribution</th>
-                <th className="px-5 py-3.5">First Contribution</th>
-                <th className="px-5 py-3.5">Last Contribution</th>
-                <th className="px-5 py-3.5 text-right">Action</th>
+                <SortHeader
+                  label="Supporter Name"
+                  field="name"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Email"
+                  field="email"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Contributions"
+                  field="count"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                  align="center"
+                />
+                <SortHeader
+                  label="Total Contribution"
+                  field="total"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="First Contribution"
+                  field="first"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Last Contribution"
+                  field="last"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <th className="px-5 py-3.5 text-right font-bold select-none">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -99,8 +157,8 @@ export const DonationsSupportersTab: React.FC<DonationsSupportersTabProps> = ({ 
                     Loading supporters...
                   </td>
                 </tr>
-              ) : supporters.length > 0 ? (
-                supporters.map((s) => (
+              ) : sortedSupporters.length > 0 ? (
+                sortedSupporters.map((s) => (
                   <tr
                     key={s.supporterKey}
                     onClick={() => setSelectedSupporterKey(s.supporterKey)}

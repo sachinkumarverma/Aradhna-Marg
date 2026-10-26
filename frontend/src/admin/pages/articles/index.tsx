@@ -63,6 +63,7 @@ export const AdminArticles: React.FC = () => {
   const columns = [
     {
       header: 'Title',
+      sortKey: (row: any) => row.title || row.title_en || '',
       accessor: (row: any) => (
         <div className="flex flex-col gap-1">
           <p className="font-bold text-gray-900 line-clamp-2 leading-snug">{row.title}</p>
@@ -72,6 +73,7 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Featured',
+      sortKey: 'featured',
       className: 'text-center w-24',
       accessor: (row: any) => (
         <div className="flex justify-center">
@@ -85,14 +87,17 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Category',
+      sortKey: (row: any) => row.categories?.name || '',
       accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.categories?.name || '-'}</span>
     },
     {
       header: 'Author',
+      sortKey: (row: any) => row.authors?.name || '',
       accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.authors?.name || '-'}</span>
     },
     {
       header: 'Status',
+      sortKey: 'status',
       className: 'text-center w-32',
       accessor: (row: any) => (
         <span
@@ -115,6 +120,7 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Views',
+      sortKey: (row: any) => row.view_count || 0,
       className: 'text-center w-24',
       accessor: (row: any) => (
         <div className="text-sm text-gray-600 justify-center flex">{row.view_count?.toLocaleString() || 0}</div>
@@ -122,6 +128,7 @@ export const AdminArticles: React.FC = () => {
     },
     {
       header: 'Published',
+      sortKey: (row: any) => row.publish_date || row.created_at,
       accessor: (row: any) => {
         const displayDate = row.publish_date ? new Date(row.publish_date) : new Date(row.created_at);
         return <span className="text-sm text-slate-800 font-medium">{format(displayDate, 'MMM dd, yyyy')}</span>;

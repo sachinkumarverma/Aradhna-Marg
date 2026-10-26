@@ -28,6 +28,8 @@ export class TagRepository {
 
     let orderByColumn = 'created_at';
     if (sort === 'name') orderByColumn = 'name';
+    else if (sort === 'color') orderByColumn = 'color';
+    else if (sort === 'status') orderByColumn = 'status';
 
     const orderDirection = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 

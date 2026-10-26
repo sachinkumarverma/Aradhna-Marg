@@ -84,6 +84,7 @@ export const AdminPuranas: React.FC = () => {
   const columns = [
     {
       header: 'Title',
+      sortKey: 'title',
       accessor: (row: any) => (
         <div>
           <p className="font-bold text-gray-900 flex items-center gap-2">{row.title}</p>
@@ -93,18 +94,22 @@ export const AdminPuranas: React.FC = () => {
     },
     {
       header: 'Language',
+      sortKey: 'language',
       accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.language || '-'}</span>
     },
     {
       header: 'Downloads',
+      sortKey: (row: any) => row.download_count || 0,
       accessor: (row: any) => <span className="text-sm text-gray-600">{row.download_count?.toLocaleString() || 0}</span>
     },
     {
       header: 'Views',
+      sortKey: (row: any) => row.view_count || 0,
       accessor: (row: any) => <span className="text-sm text-gray-600">{row.view_count?.toLocaleString() || 0}</span>
     },
     {
       header: 'Status',
+      sortKey: 'status',
       className: 'text-center',
       accessor: (row: any) => (
         <span
@@ -127,6 +132,7 @@ export const AdminPuranas: React.FC = () => {
     },
     {
       header: 'Updated Date',
+      sortKey: (row: any) => row.updated_at || row.created_at,
       accessor: (row: any) => (
         <span className="text-sm text-slate-800 font-medium">
           {row.updated_at ? format(new Date(row.updated_at), 'MMM dd, yyyy') : '-'}

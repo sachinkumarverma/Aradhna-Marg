@@ -17,6 +17,8 @@ import {
   AlertCircle,
   X,
   ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   History
 } from 'lucide-react';
 import { apiClient } from '@api/client';
@@ -29,6 +31,8 @@ import { Select } from '@components/ui/Select';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Pagination } from '@components/ui/Pagination';
 import { YoutubeApi } from '@admin/features/youtube/YoutubeApi';
+import { useTableSort } from '@admin/hooks/useTableSort';
+import { SortHeader } from '@admin/components/SortHeader';
 
 export const AdminYoutube = () => {
   const queryClient = useQueryClient();
@@ -90,6 +94,22 @@ export const AdminYoutube = () => {
     }
   });
 
+  const displayedVideos = React.useMemo(() => {
+    if (!videosData?.data) return [];
+    if (sortBy === 'linked_bhajan') {
+      return [...videosData.data].sort((a: any, b: any) => {
+        const titleA = a.linkedBhajan?.title || '';
+        const titleB = b.linkedBhajan?.title || '';
+        if (!titleA && !titleB) return 0;
+        if (!titleA) return 1;
+        if (!titleB) return -1;
+        const comp = titleA.localeCompare(titleB, 'hi', { numeric: true, sensitivity: 'base' });
+        return sortOrder === 'asc' ? comp : -comp;
+      });
+    }
+    return videosData.data;
+  }, [videosData?.data, sortBy, sortOrder]);
+
   const [historyPage, setHistoryPage] = useState(1);
   const [historyLimit, setHistoryLimit] = useState(10);
 
@@ -102,6 +122,11 @@ export const AdminYoutube = () => {
   });
 
   const historyData = historyResponse?.data || [];
+  const {
+    sortedData: sortedHistoryData,
+    sortConfig: historySortConfig,
+    requestSort: requestHistorySort
+  } = useTableSort(historyData, { key: 'started_at', direction: 'desc' });
 
   // Sync Mutation
   const syncMutation = useMutation({
@@ -513,9 +538,35 @@ export const AdminYoutube = () => {
               <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                   <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
-                    <th className="px-6 py-4 w-[45%]">Video</th>
                     <th
-                      className="px-6 py-4 font-bold text-center w-[10%] cursor-pointer group hover:bg-orange-100/50 transition-colors"
+                      className="px-6 py-4 font-bold w-[40%] cursor-pointer group hover:bg-orange-100/50 transition-colors select-none"
+                      onClick={() => {
+                        if (sortBy === 'title') {
+                          setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                        } else {
+                          setSortBy('title');
+                          setSortOrder('asc');
+                        }
+                        setPage(1);
+                      }}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        Video
+                        <span className="shrink-0">
+                          {sortBy === 'title' ? (
+                            sortOrder === 'asc' ? (
+                              <ArrowUp className="w-3.5 h-3.5 text-orange-900 stroke-[2.5]" />
+                            ) : (
+                              <ArrowDown className="w-3.5 h-3.5 text-orange-900 stroke-[2.5]" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="w-3.5 h-3.5 text-orange-300 group-hover:text-orange-500 transition-colors" />
+                          )}
+                        </span>
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-4 font-bold text-center w-[12%] cursor-pointer group hover:bg-orange-100/50 transition-colors select-none"
                       onClick={() => {
                         if (sortBy === 'import_status') {
                           setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -526,16 +577,49 @@ export const AdminYoutube = () => {
                         setPage(1);
                       }}
                     >
-                      <div className="flex items-center justify-center gap-1">
+                      <div className="flex items-center justify-center gap-1.5">
                         Status
-                        <ArrowUpDown
-                          className={`w-3 h-3 transition-colors ${sortBy === 'import_status' ? 'text-orange-900' : 'text-orange-300 group-hover:text-orange-400'}`}
-                        />
+                        <span className="shrink-0">
+                          {sortBy === 'import_status' ? (
+                            sortOrder === 'asc' ? (
+                              <ArrowUp className="w-3.5 h-3.5 text-orange-900 stroke-[2.5]" />
+                            ) : (
+                              <ArrowDown className="w-3.5 h-3.5 text-orange-900 stroke-[2.5]" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="w-3.5 h-3.5 text-orange-300 group-hover:text-orange-500 transition-colors" />
+                          )}
+                        </span>
                       </div>
                     </th>
-                    <th className="px-6 py-4 font-bold w-[25%]">Linked Bhajan</th>
                     <th
-                      className="px-6 py-4 font-bold w-[10%] cursor-pointer group hover:bg-orange-100/50 transition-colors"
+                      className="px-6 py-4 font-bold w-[25%] cursor-pointer group hover:bg-orange-100/50 transition-colors select-none"
+                      onClick={() => {
+                        if (sortBy === 'linked_bhajan') {
+                          setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                        } else {
+                          setSortBy('linked_bhajan');
+                          setSortOrder('asc');
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        Linked Bhajan
+                        <span className="shrink-0">
+                          {sortBy === 'linked_bhajan' ? (
+                            sortOrder === 'asc' ? (
+                              <ArrowUp className="w-3.5 h-3.5 text-orange-900 stroke-[2.5]" />
+                            ) : (
+                              <ArrowDown className="w-3.5 h-3.5 text-orange-900 stroke-[2.5]" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="w-3.5 h-3.5 text-orange-300 group-hover:text-orange-500 transition-colors" />
+                          )}
+                        </span>
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-4 font-bold w-[13%] cursor-pointer group hover:bg-orange-100/50 transition-colors select-none"
                       onClick={() => {
                         if (sortBy === 'published_at') {
                           setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -546,14 +630,22 @@ export const AdminYoutube = () => {
                         setPage(1);
                       }}
                     >
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         Published
-                        <ArrowUpDown
-                          className={`w-3 h-3 transition-colors ${sortBy === 'published_at' ? 'text-orange-900' : 'text-orange-300 group-hover:text-orange-400'}`}
-                        />
+                        <span className="shrink-0">
+                          {sortBy === 'published_at' ? (
+                            sortOrder === 'asc' ? (
+                              <ArrowUp className="w-3.5 h-3.5 text-orange-900 stroke-[2.5]" />
+                            ) : (
+                              <ArrowDown className="w-3.5 h-3.5 text-orange-900 stroke-[2.5]" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="w-3.5 h-3.5 text-orange-300 group-hover:text-orange-500 transition-colors" />
+                          )}
+                        </span>
                       </div>
                     </th>
-                    <th className="px-6 py-4 font-bold text-right w-[10%]">Actions</th>
+                    <th className="px-6 py-4 font-bold text-right w-[10%] select-none">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -567,7 +659,7 @@ export const AdminYoutube = () => {
                         ))}
                       </tr>
                     ))
-                  ) : !videosData?.data || videosData.data.length === 0 ? (
+                  ) : !displayedVideos || displayedVideos.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="p-12 text-center text-gray-500">
                         <PlaySquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -579,7 +671,7 @@ export const AdminYoutube = () => {
                       </td>
                     </tr>
                   ) : (
-                    videosData.data.map((video: any) => (
+                    displayedVideos.map((video: any) => (
                       <tr key={video.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
@@ -719,9 +811,27 @@ export const AdminYoutube = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
-                <th className="px-6 py-4">Started</th>
-                <th className="px-6 py-4 font-bold">Status</th>
-                <th className="px-6 py-4 font-bold">Details</th>
+                <SortHeader
+                  columnKey="started_at"
+                  label="Started"
+                  sortConfig={historySortConfig}
+                  onSort={requestHistorySort}
+                  className="px-6 py-4"
+                />
+                <SortHeader
+                  columnKey="status"
+                  label="Status"
+                  sortConfig={historySortConfig}
+                  onSort={requestHistorySort}
+                  className="px-6 py-4 font-bold"
+                />
+                <SortHeader
+                  columnKey="error_message"
+                  label="Details"
+                  sortConfig={historySortConfig}
+                  onSort={requestHistorySort}
+                  className="px-6 py-4 font-bold"
+                />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -735,14 +845,14 @@ export const AdminYoutube = () => {
                     ))}
                   </tr>
                 ))
-              ) : !historyData || historyData.length === 0 ? (
+              ) : !sortedHistoryData || sortedHistoryData.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="p-8 text-center text-gray-500">
                     No sync history found.
                   </td>
                 </tr>
               ) : (
-                historyData.map((log: any) => (
+                sortedHistoryData.map((log: any) => (
                   <tr key={log.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                     <td className="px-6 py-4 text-sm text-gray-900 font-medium">
                       {log.started_at ? format(new Date(log.started_at), 'dd MMM yyyy, hh:mm a') : '-'}

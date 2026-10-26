@@ -77,6 +77,7 @@ export const AdminBhajans: React.FC = () => {
   const columns = [
     {
       header: 'Title',
+      sortKey: (row: any) => row.hindi_title || row.title || row.english_title || '',
       accessor: (row: any) => {
         const primaryTitle = row.hindi_title || row.title;
         const secondaryTitle =
@@ -94,14 +95,17 @@ export const AdminBhajans: React.FC = () => {
     },
     {
       header: 'Category',
+      sortKey: (row: any) => row.categories?.name || '',
       accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.categories?.name || '-'}</span>
     },
     {
       header: 'Deity',
+      sortKey: (row: any) => row.gods?.name || '',
       accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.gods?.name || '-'}</span>
     },
     {
       header: 'Status',
+      sortKey: 'status',
       className: 'text-center w-32',
       accessor: (row: any) => (
         <span
@@ -124,6 +128,7 @@ export const AdminBhajans: React.FC = () => {
     },
     {
       header: 'Views',
+      sortKey: (row: any) => row.views || 0,
       className: 'text-center w-24',
       accessor: (row: any) => (
         <div className="text-sm text-gray-600 justify-center flex">{row.views?.toLocaleString() || 0}</div>
@@ -131,6 +136,7 @@ export const AdminBhajans: React.FC = () => {
     },
     {
       header: 'Created',
+      sortKey: 'created_at',
       accessor: (row: any) => (
         <span className="text-sm text-slate-800 font-medium">{format(new Date(row.created_at), 'MMM dd, yyyy')}</span>
       )

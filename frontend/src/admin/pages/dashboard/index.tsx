@@ -21,8 +21,8 @@ import { getAdminPath } from '@utils/host';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-  // Mocking the API fetch for UI Foundation
-  const { data: stats, isLoading } = useQuery({
+
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ['admin-dashboard-stats'],
     queryFn: async () => {
       const res = await apiClient.get('/v1/admin/dashboard/stats');
@@ -30,10 +30,10 @@ export const AdminDashboard: React.FC = () => {
     }
   });
 
-  const { data: activityData } = useQuery({
+  const { data: activityData, isLoading: isLoadingActivity } = useQuery({
     queryKey: ['admin-dashboard-activity'],
     queryFn: async () => {
-      const res = await apiClient.get('/v1/admin/dashboard/activity');
+      const res = await apiClient.get('/v1/admin/dashboard/activity?limit=5');
       return res.data.data.activity;
     }
   });
@@ -46,19 +46,21 @@ export const AdminDashboard: React.FC = () => {
     }
   });
 
-  const { data: donationsOverview } = useQuery({
+  const { data: donationsOverview, isLoading: isLoadingDonationsOverview } = useQuery({
     queryKey: ['admin-dashboard-donations-overview'],
     queryFn: () => DonationsApi.getOverview('30d')
   });
 
-  const { data: recentDonations } = useQuery({
+  const { data: recentDonations, isLoading: isLoadingRecentDonations } = useQuery({
     queryKey: ['admin-dashboard-donations-recent'],
     queryFn: () => DonationsApi.getPayments({ page: 1, limit: 4, status: 'SUCCESS' })
   });
 
-  if (isLoading) {
+  const recentBhajans = (activityData || []).slice(0, 5);
+
+  if (isLoadingStats && isLoadingActivity) {
     return (
-      <div className="space-y-6 flex flex-col min-h-full">
+      <div className="space-y-6 flex flex-col min-h-full animate-pulse">
         <div>
           <h1 className="text-lg sm:text-2xl font-bold tracking-wide text-slate-900 flex items-center gap-2 uppercase truncate">
             <LayoutDashboard className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
@@ -66,18 +68,145 @@ export const AdminDashboard: React.FC = () => {
           </h1>
           <p className="hidden sm:block text-sm text-gray-500 mt-1">Platform overview and automation status</p>
         </div>
-        <div className="space-y-6 animate-pulse flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-md border border-gray-100 shadow-sm h-32"
-              ></div>
+
+        {/* Primary Stats Grid Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-blue-50 to-white border-blue-100 flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="h-3.5 w-28 bg-blue-200/70 rounded"></div>
+              <div className="h-7 w-20 bg-slate-300 rounded"></div>
+            </div>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-blue-100/80 shrink-0"></div>
+          </div>
+
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-orange-50 to-white border-orange-100 flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="h-3.5 w-28 bg-orange-200/70 rounded"></div>
+              <div className="h-7 w-16 bg-slate-300 rounded"></div>
+            </div>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-orange-100/80 shrink-0"></div>
+          </div>
+
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-amber-50 to-white border-amber-100 flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="h-3.5 w-24 bg-amber-200/70 rounded"></div>
+              <div className="h-7 w-12 bg-slate-300 rounded"></div>
+            </div>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-100/80 shrink-0"></div>
+          </div>
+
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-purple-50 to-white border-purple-100 flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="h-3.5 w-32 bg-purple-200/70 rounded"></div>
+              <div className="h-7 w-12 bg-slate-300 rounded"></div>
+            </div>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-purple-100/80 shrink-0"></div>
+          </div>
+        </div>
+
+        {/* Middle Grid Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+          {/* Recently Added Bhajans (5 rows) */}
+          <div className="lg:col-span-2 bg-gradient-to-br from-slate-50 to-white rounded-md border border-slate-200 shadow-xs overflow-hidden">
+            <div className="px-4 py-3.5 sm:px-5 sm:py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="h-4 sm:h-5 w-44 bg-slate-200 rounded"></div>
+            </div>
+            <div className="overflow-x-auto w-full">
+              <table className="w-full min-w-[500px] sm:min-w-[520px] text-left text-xs sm:text-sm">
+                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-[11px] sm:text-xs tracking-wider font-semibold">
+                  <tr>
+                    <th className="px-4 py-3 sm:px-5 sm:py-4">Event</th>
+                    <th className="px-4 py-3 sm:px-5 sm:py-4">Target</th>
+                    <th className="px-4 py-3 sm:px-5 sm:py-4 text-center">Status</th>
+                    <th className="px-4 py-3 sm:px-5 sm:py-4">Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <tr key={i} className="bg-gray-50/50">
+                      <td className="px-4 py-2.5 sm:px-5 sm:py-3">
+                        <div className="h-3.5 w-24 bg-slate-200/70 rounded"></div>
+                      </td>
+                      <td className="px-4 py-2.5 sm:px-5 sm:py-3">
+                        <div className="h-3.5 w-40 sm:w-56 bg-slate-200/80 rounded"></div>
+                      </td>
+                      <td className="px-4 py-2.5 sm:px-5 sm:py-3 text-center">
+                        <div className="h-4 w-16 bg-slate-200/80 rounded-full mx-auto"></div>
+                      </td>
+                      <td className="px-4 py-2.5 sm:px-5 sm:py-3">
+                        <div className="h-3.5 w-28 bg-slate-200/70 rounded"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* YouTube Automation Skeleton */}
+          <div className="bg-gradient-to-br from-red-50 to-white rounded-md border border-red-100 shadow-xs p-4 sm:p-5 flex flex-col justify-between">
+            <div>
+              <div className="h-4 sm:h-5 w-36 bg-slate-200 rounded mb-4"></div>
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="h-3.5 w-12 bg-slate-200/60 rounded"></div>
+                  <div className="h-5 w-16 bg-green-100 rounded-full"></div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="h-3.5 w-16 bg-slate-200/60 rounded"></div>
+                  <div className="h-3.5 w-28 bg-slate-200/70 rounded"></div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="h-3.5 w-16 bg-slate-200/60 rounded"></div>
+                  <div className="h-3.5 w-20 bg-slate-200/70 rounded"></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <hr className="border-gray-100 my-4" />
+              <div className="h-9 sm:h-10 w-full bg-slate-100 rounded-md border border-gray-200"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Devotional Support & Donations Widget Skeleton */}
+        <div className="bg-gradient-to-br from-amber-50/60 via-orange-50/30 to-white rounded-md border border-amber-200/70 shadow-xs p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3.5 border-b border-amber-100/80">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-orange-200/70 shrink-0"></div>
+              <div className="space-y-1.5">
+                <div className="h-4 w-48 bg-slate-200 rounded"></div>
+                <div className="h-3 w-64 bg-slate-100 rounded"></div>
+              </div>
+            </div>
+            <div className="h-7 w-28 bg-orange-100/70 border border-orange-200 rounded-md"></div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white/90 p-3 rounded-md border border-amber-100 shadow-2xs space-y-2">
+                <div className="h-3 w-24 bg-slate-200/60 rounded"></div>
+                <div className="h-6 w-28 bg-slate-200/80 rounded"></div>
+              </div>
             ))}
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            <div className="lg:col-span-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 h-64"></div>
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 h-64"></div>
+
+          <div>
+            <div className="h-3.5 w-36 bg-slate-200/70 rounded mb-2.5"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-2.5 bg-white rounded-md border border-gray-100 shadow-2xs"
+                >
+                  <div className="space-y-1.5">
+                    <div className="h-3.5 w-24 bg-slate-200/70 rounded"></div>
+                    <div className="h-3 w-16 bg-slate-100 rounded"></div>
+                  </div>
+                  <div className="h-5 w-12 bg-emerald-100/60 rounded"></div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -135,10 +264,13 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-        {/* Recent Activity Table Mock */}
+        {/* Recent Activity Table (Last 5 Bhajans) */}
         <div className="lg:col-span-2 bg-gradient-to-br from-slate-50 to-white rounded-md border border-slate-200 shadow-sm overflow-hidden">
           <div className="px-4 py-3.5 sm:px-5 sm:py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-semibold text-sm sm:text-base text-gray-900">Recently Added Bhajans</h3>
+            <span className="text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+              Last 5 items
+            </span>
           </div>
           <div className="p-0 overflow-x-auto w-full scrollbar-thin">
             <table className="w-full min-w-[500px] sm:min-w-[520px] text-left text-xs sm:text-sm whitespace-nowrap">
@@ -151,8 +283,25 @@ export const AdminDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {activityData?.length > 0 ? (
-                  activityData.map((activity: any) => (
+                {isLoadingActivity ? (
+                  [1, 2, 3, 4, 5].map((i) => (
+                    <tr key={i} className="animate-pulse bg-gray-50/50">
+                      <td className="px-4 py-2.5 sm:px-5 sm:py-3">
+                        <div className="h-3.5 w-24 bg-slate-200/70 rounded"></div>
+                      </td>
+                      <td className="px-4 py-2.5 sm:px-5 sm:py-3">
+                        <div className="h-3.5 w-48 bg-slate-200/80 rounded"></div>
+                      </td>
+                      <td className="px-4 py-2.5 sm:px-5 sm:py-3 text-center">
+                        <div className="h-4 w-16 bg-slate-200/80 rounded-full mx-auto"></div>
+                      </td>
+                      <td className="px-4 py-2.5 sm:px-5 sm:py-3">
+                        <div className="h-3.5 w-28 bg-slate-200/70 rounded"></div>
+                      </td>
+                    </tr>
+                  ))
+                ) : recentBhajans.length > 0 ? (
+                  recentBhajans.map((activity: any) => (
                     <tr key={activity.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-4 py-2.5 sm:px-5 sm:py-3">Bhajan Created</td>
                       <td className="px-4 py-2.5 sm:px-5 sm:py-3 font-medium text-gray-900">{activity.title}</td>
@@ -227,7 +376,7 @@ export const AdminDashboard: React.FC = () => {
 
             <button
               onClick={() => navigate(getAdminPath('/youtube'))}
-              className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium transition-colors border border-gray-200"
+              className="w-full flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium transition-colors border border-gray-200 cursor-pointer"
             >
               <PlaySquare className="w-4 h-4 text-red-500" />
               Manage Synchronization
@@ -264,19 +413,31 @@ export const AdminDashboard: React.FC = () => {
           <div className="bg-white/90 p-3 rounded-md border border-amber-100 shadow-2xs">
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Collected</p>
             <p className="text-lg font-black text-slate-900 mt-0.5">
-              ₹{new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.totalCollected || 0)}
+              {isLoadingDonationsOverview ? (
+                <span className="inline-block h-5 w-20 bg-slate-200 rounded animate-pulse"></span>
+              ) : (
+                `₹${new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.totalCollected || 0)}`
+              )}
             </p>
           </div>
           <div className="bg-white/90 p-3 rounded-md border border-amber-100 shadow-2xs">
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">This Month</p>
             <p className="text-lg font-black text-emerald-600 mt-0.5">
-              ₹{new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.thisMonth || 0)}
+              {isLoadingDonationsOverview ? (
+                <span className="inline-block h-5 w-20 bg-slate-200 rounded animate-pulse"></span>
+              ) : (
+                `₹${new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.thisMonth || 0)}`
+              )}
             </p>
           </div>
           <div className="bg-white/90 p-3 rounded-md border border-amber-100 shadow-2xs">
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Successful Payments</p>
             <p className="text-lg font-black text-slate-900 mt-0.5">
-              {new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.successfulPayments || 0)}
+              {isLoadingDonationsOverview ? (
+                <span className="inline-block h-5 w-16 bg-slate-200 rounded animate-pulse"></span>
+              ) : (
+                new Intl.NumberFormat('en-IN').format(donationsOverview?.metrics?.successfulPayments || 0)
+              )}
             </p>
           </div>
         </div>
@@ -284,7 +445,22 @@ export const AdminDashboard: React.FC = () => {
         {/* Recent Contributions */}
         <div>
           <p className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Recent Contributions</p>
-          {recentDonations?.data && recentDonations.data.length > 0 ? (
+          {isLoadingRecentDonations ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-2.5 bg-white rounded-md border border-gray-100 shadow-2xs animate-pulse"
+                >
+                  <div className="space-y-1.5">
+                    <div className="h-3.5 w-24 bg-slate-200/70 rounded"></div>
+                    <div className="h-3 w-16 bg-slate-100 rounded"></div>
+                  </div>
+                  <div className="h-5 w-12 bg-emerald-100/60 rounded"></div>
+                </div>
+              ))}
+            </div>
+          ) : recentDonations?.data && recentDonations.data.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
               {recentDonations.data.map((payment: PaymentItem) => (
                 <div

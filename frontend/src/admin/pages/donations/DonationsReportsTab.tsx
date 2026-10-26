@@ -25,6 +25,8 @@ import { Select } from '@components/ui/Select';
 import { DatePicker } from '@components/ui/DatePicker';
 import { cn } from '@utils/cn';
 import toast from 'react-hot-toast';
+import { useTableSort } from '@admin/hooks/useTableSort';
+import { SortHeader } from '@admin/components/SortHeader';
 
 export interface DonationsReportsTabProps {
   onSelectPayment?: (payment: PaymentItem) => void;
@@ -162,6 +164,20 @@ export const DonationsReportsTab: React.FC<DonationsReportsTabProps> = ({ onSele
     failedTransactions: 0,
     periodBreakdown: []
   };
+
+  const periodData = report.periodBreakdown || [];
+  const {
+    sortedData: sortedPeriodData,
+    sortConfig: periodSortConfig,
+    requestSort: requestPeriodSort
+  } = useTableSort(periodData, { key: 'period', direction: 'desc' });
+
+  const discrepanciesData = latestRecon?.discrepancies || [];
+  const {
+    sortedData: sortedDiscrepanciesData,
+    sortConfig: discrepanciesSortConfig,
+    requestSort: requestDiscrepanciesSort
+  } = useTableSort(discrepanciesData, { key: 'type', direction: 'asc' });
 
   const isGatewayUnavailable = latestRecon && (latestRecon.status === 'UNAVAILABLE' || latestRecon.status === 'ERROR');
   const isReconClean = latestRecon && latestRecon.status === 'RECONCILED' && latestRecon.mismatchesCount === 0;
@@ -333,11 +349,41 @@ export const DonationsReportsTab: React.FC<DonationsReportsTabProps> = ({ onSele
             <table className="w-full min-w-[600px] text-left text-xs sm:text-sm">
               <thead className="bg-gray-50 text-gray-700 border-b border-gray-200 uppercase text-xs font-bold tracking-wider">
                 <tr>
-                  <th className="px-5 py-3.5">Month / Period</th>
-                  <th className="px-5 py-3.5 text-right">Transactions</th>
-                  <th className="px-5 py-3.5 text-right">Gross (₹)</th>
-                  <th className="px-5 py-3.5 text-right">Refunds (₹)</th>
-                  <th className="px-5 py-3.5 text-right">Net Collection (₹)</th>
+                  <SortHeader
+                    columnKey="period"
+                    label="Month / Period"
+                    sortConfig={periodSortConfig}
+                    onSort={requestPeriodSort}
+                    className="px-5 py-3.5"
+                  />
+                  <SortHeader
+                    columnKey="count"
+                    label="Transactions"
+                    sortConfig={periodSortConfig}
+                    onSort={requestPeriodSort}
+                    className="px-5 py-3.5 text-right"
+                  />
+                  <SortHeader
+                    columnKey="gross"
+                    label="Gross (₹)"
+                    sortConfig={periodSortConfig}
+                    onSort={requestPeriodSort}
+                    className="px-5 py-3.5 text-right"
+                  />
+                  <SortHeader
+                    columnKey="refunds"
+                    label="Refunds (₹)"
+                    sortConfig={periodSortConfig}
+                    onSort={requestPeriodSort}
+                    className="px-5 py-3.5 text-right"
+                  />
+                  <SortHeader
+                    columnKey="net"
+                    label="Net Collection (₹)"
+                    sortConfig={periodSortConfig}
+                    onSort={requestPeriodSort}
+                    className="px-5 py-3.5 text-right"
+                  />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -347,8 +393,8 @@ export const DonationsReportsTab: React.FC<DonationsReportsTabProps> = ({ onSele
                       Generating reconciliation report...
                     </td>
                   </tr>
-                ) : report.periodBreakdown && report.periodBreakdown.length > 0 ? (
-                  report.periodBreakdown.map((row) => (
+                ) : sortedPeriodData && sortedPeriodData.length > 0 ? (
+                  sortedPeriodData.map((row) => (
                     <tr key={row.period} className="hover:bg-gray-50/80 transition-colors">
                       <td className="px-5 py-3.5 font-semibold text-gray-900">{row.period}</td>
                       <td className="px-5 py-3.5 text-right font-medium text-gray-700">{row.count}</td>
@@ -589,18 +635,60 @@ export const DonationsReportsTab: React.FC<DonationsReportsTabProps> = ({ onSele
                   <table className="w-full text-left text-xs min-w-[700px]">
                     <thead className="bg-gray-50 text-gray-700 uppercase font-bold text-xs tracking-wider border-b border-gray-200">
                       <tr>
-                        <th className="px-3.5 py-2.5">Discrepancy Type</th>
-                        <th className="px-3.5 py-2.5">Gateway Reference</th>
-                        <th className="px-3.5 py-2.5">App Reference</th>
-                        <th className="px-3.5 py-2.5 text-right">App Amount</th>
-                        <th className="px-3.5 py-2.5 text-right">Gateway Amount</th>
-                        <th className="px-3.5 py-2.5 text-right">Diff</th>
-                        <th className="px-3.5 py-2.5">Explanation</th>
+                        <SortHeader
+                          columnKey="type"
+                          label="Discrepancy Type"
+                          sortConfig={discrepanciesSortConfig}
+                          onSort={requestDiscrepanciesSort}
+                          className="px-3.5 py-2.5"
+                        />
+                        <SortHeader
+                          columnKey="gatewayPaymentId"
+                          label="Gateway Reference"
+                          sortConfig={discrepanciesSortConfig}
+                          onSort={requestDiscrepanciesSort}
+                          className="px-3.5 py-2.5"
+                        />
+                        <SortHeader
+                          columnKey="localPaymentId"
+                          label="App Reference"
+                          sortConfig={discrepanciesSortConfig}
+                          onSort={requestDiscrepanciesSort}
+                          className="px-3.5 py-2.5"
+                        />
+                        <SortHeader
+                          columnKey="localAmount"
+                          label="App Amount"
+                          sortConfig={discrepanciesSortConfig}
+                          onSort={requestDiscrepanciesSort}
+                          className="px-3.5 py-2.5 text-right"
+                        />
+                        <SortHeader
+                          columnKey="gatewayAmount"
+                          label="Gateway Amount"
+                          sortConfig={discrepanciesSortConfig}
+                          onSort={requestDiscrepanciesSort}
+                          className="px-3.5 py-2.5 text-right"
+                        />
+                        <SortHeader
+                          columnKey="diff"
+                          label="Diff"
+                          sortConfig={discrepanciesSortConfig}
+                          onSort={requestDiscrepanciesSort}
+                          className="px-3.5 py-2.5 text-right"
+                        />
+                        <SortHeader
+                          columnKey="explanation"
+                          label="Explanation"
+                          sortConfig={discrepanciesSortConfig}
+                          onSort={requestDiscrepanciesSort}
+                          className="px-3.5 py-2.5"
+                        />
                         <th className="px-3.5 py-2.5 text-center">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      {latestRecon.discrepancies.map((item) => (
+                      {sortedDiscrepanciesData.map((item) => (
                         <tr key={item.id} className="hover:bg-gray-50/80 transition-colors">
                           <td className="px-3.5 py-2.5 whitespace-nowrap">
                             <span

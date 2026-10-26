@@ -197,6 +197,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
   const columns = [
     {
       header: 'TARGET ENTITY',
+      sortKey: 'targetTitle',
       accessor: (row: AgentProposalItem) => (
         <div className="min-w-0">
           <p className="font-bold text-gray-900 line-clamp-1 font-anek leading-snug text-sm">
@@ -208,6 +209,7 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
     },
     {
       header: 'FIELD',
+      sortKey: 'targetField',
       accessor: (row: AgentProposalItem) => (
         <span className="text-[11px] font-medium text-slate-600">
           {(row.targetField || 'content').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
@@ -216,17 +218,20 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
     },
     {
       header: 'GENERATING AGENT',
+      sortKey: 'agentName',
       accessor: (row: AgentProposalItem) => (
         <span className="truncate max-w-[170px] text-sm text-gray-700 font-medium block">{row.agentName}</span>
       )
     },
     {
       header: 'STATUS',
+      sortKey: 'status',
       className: 'text-center w-32',
       accessor: (row: AgentProposalItem) => getStatusBadge(row.status)
     },
     {
       header: 'CREATED',
+      sortKey: 'createdAt',
       accessor: (row: AgentProposalItem) => (
         <span className="text-sm text-slate-800 font-medium">
           {row.createdAt ? format(new Date(row.createdAt), 'MMM dd, yyyy') : '—'}

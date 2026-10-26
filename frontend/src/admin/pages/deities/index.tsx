@@ -26,6 +26,8 @@ import {
   Sparkles
 } from 'lucide-react';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
+import { SortHeader } from '@admin/components/SortHeader';
+import { useTableSort } from '@admin/hooks/useTableSort';
 
 export const AdminDeities = () => {
   const queryClient = useQueryClient();
@@ -112,6 +114,17 @@ export const AdminDeities = () => {
   };
 
   const deities = data?.data || [];
+  const {
+    sortedData: sortedDeities,
+    sortField,
+    sortDirection,
+    handleSort
+  } = useTableSort(deities, 'deity', 'asc', {
+    deity: (d: any) => d.name,
+    featured: (d: any) => (d.featured ? 1 : 0),
+    order: (d: any) => d.displayOrder || 0,
+    status: (d: any) => d.status
+  });
   const totalPages = Math.ceil((data?.meta?.total || 0) / 10);
 
   return (
@@ -175,7 +188,7 @@ export const AdminDeities = () => {
               </tbody>
             </table>
           </div>
-        ) : deities.length === 0 ? (
+        ) : sortedDeities.length === 0 ? (
           <div className="border border-dashed border-gray-300 rounded-md bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
               <Flame className="w-6 h-6 text-gray-400" />
@@ -189,15 +202,42 @@ export const AdminDeities = () => {
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                   <tr>
-                    <th className="px-6 py-4 font-bold">Deity</th>
-                    <th className="px-6 py-4 font-bold text-center">Featured</th>
-                    <th className="px-6 py-4 font-bold text-center">Order</th>
-                    <th className="px-6 py-4 font-bold text-center">Status</th>
-                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                    <SortHeader
+                      label="Deity"
+                      field="deity"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                    />
+                    <SortHeader
+                      label="Featured"
+                      field="featured"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                      align="center"
+                    />
+                    <SortHeader
+                      label="Order"
+                      field="order"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                      align="center"
+                    />
+                    <SortHeader
+                      label="Status"
+                      field="status"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                      align="center"
+                    />
+                    <th className="px-6 py-4 font-bold text-right select-none">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {deities.map((deity: any) => (
+                  {sortedDeities.map((deity: any) => (
                     <tr key={deity.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-6 py-2.5">
                         <div className="flex items-center gap-3">

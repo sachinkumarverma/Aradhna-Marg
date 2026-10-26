@@ -92,13 +92,17 @@ class DashboardController {
 
   public getRecentActivity = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { rows } = await db.query(`
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 5, 1), 50);
+      const { rows } = await db.query(
+        `
         SELECT id, title, status, created_at
         FROM bhajans
         WHERE youtube_video_id IS NULL AND deleted_at IS NULL
         ORDER BY created_at DESC
-        LIMIT 10
-      `);
+        LIMIT $1
+      `,
+        [limit]
+      );
 
       return sendSuccess(res, 'Recent activity fetched', { activity: rows });
     } catch (error) {

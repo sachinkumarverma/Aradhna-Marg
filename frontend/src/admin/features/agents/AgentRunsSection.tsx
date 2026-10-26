@@ -37,6 +37,8 @@ import { AdminButton } from '@admin/components/AdminButton';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { getAdminPath } from '@utils/host';
 import toast from 'react-hot-toast';
+import { useTableSort } from '@admin/hooks/useTableSort';
+import { SortHeader } from '@admin/components/SortHeader';
 
 export interface AgentRunsSectionProps {
   onNavigateToProposals?: () => void;
@@ -242,6 +244,26 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
   });
 
   const runs = runsData?.data || [];
+  const enrichedRuns = useMemo(() => {
+    return runs.map((run) => {
+      const findingsCount = run.state?.findings?.length || 0;
+      let durationMs = run.state?.durationMs || 0;
+      if (!durationMs && run.startedAt && run.completedAt) {
+        durationMs = new Date(run.completedAt).getTime() - new Date(run.startedAt).getTime();
+      }
+      return {
+        ...run,
+        findingsCount,
+        durationMs
+      };
+    });
+  }, [runs]);
+
+  const {
+    sortedData: sortedRuns,
+    sortConfig: runsSortConfig,
+    requestSort: requestRunsSort
+  } = useTableSort(enrichedRuns, { key: 'startedAt', direction: 'desc' });
   const totalRecords = runsData?.count || 0;
   const totalPages = Math.ceil(totalRecords / limit);
 
@@ -311,6 +333,13 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
     queryFn: () => (selectedRunId ? AgentApi.getRunDetails(selectedRunId) : null),
     enabled: !!selectedRunId
   });
+
+  const toolCalls = selectedDetails?.toolCalls || [];
+  const {
+    sortedData: sortedToolCalls,
+    sortConfig: toolCallsSortConfig,
+    requestSort: requestToolCallsSort
+  } = useTableSort(toolCalls, { key: 'toolName', direction: 'asc' });
 
   // Run Agent Mutation
   const runAgentMutation = useMutation({
@@ -674,17 +703,53 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
                   <tr>
-                    <th className="px-6 py-4 font-bold">Agent Name</th>
-                    <th className="px-6 py-4 font-bold">Status</th>
-                    <th className="px-6 py-4 font-bold">Trigger</th>
-                    <th className="px-6 py-4 font-bold">Started At</th>
-                    <th className="px-6 py-4 font-bold">Duration</th>
-                    <th className="px-6 py-4 font-bold">Findings</th>
+                    <SortHeader
+                      columnKey="agentName"
+                      label="Agent Name"
+                      sortConfig={runsSortConfig}
+                      onSort={requestRunsSort}
+                      className="px-6 py-4 font-bold"
+                    />
+                    <SortHeader
+                      columnKey="status"
+                      label="Status"
+                      sortConfig={runsSortConfig}
+                      onSort={requestRunsSort}
+                      className="px-6 py-4 font-bold"
+                    />
+                    <SortHeader
+                      columnKey="triggerType"
+                      label="Trigger"
+                      sortConfig={runsSortConfig}
+                      onSort={requestRunsSort}
+                      className="px-6 py-4 font-bold"
+                    />
+                    <SortHeader
+                      columnKey="startedAt"
+                      label="Started At"
+                      sortConfig={runsSortConfig}
+                      onSort={requestRunsSort}
+                      className="px-6 py-4 font-bold"
+                    />
+                    <SortHeader
+                      columnKey="durationMs"
+                      label="Duration"
+                      sortConfig={runsSortConfig}
+                      onSort={requestRunsSort}
+                      className="px-6 py-4 font-bold"
+                    />
+                    <SortHeader
+                      columnKey="findingsCount"
+                      label="Findings"
+                      sortConfig={runsSortConfig}
+                      onSort={requestRunsSort}
+                      className="px-6 py-4 font-bold"
+                    />
                     <th className="px-6 py-4 font-bold text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {runs.map((run) => {
+                  {sortedRuns.map((run) => {
                     const findingsCount = run.state?.findings?.length || 0;
                     const isSelected = selectedRunId === run.id;
                     return (
@@ -1098,14 +1163,38 @@ export const AgentRunsSection: React.FC<AgentRunsSectionProps> = ({
                           <table className="w-full text-left text-xs">
                             <thead className="bg-slate-100 text-gray-700 font-bold border-b border-gray-200">
                               <tr>
-                                <th className="py-2.5 px-3.5">Tool Name</th>
-                                <th className="py-2.5 px-3.5">Tier</th>
-                                <th className="py-2.5 px-3.5">Status</th>
-                                <th className="py-2.5 px-3.5 font-mono text-right">Duration</th>
+                                <SortHeader
+                                  columnKey="toolName"
+                                  label="Tool Name"
+                                  sortConfig={toolCallsSortConfig}
+                                  onSort={requestToolCallsSort}
+                                  className="py-2.5 px-3.5"
+                                />
+                                <SortHeader
+                                  columnKey="permissionTier"
+                                  label="Tier"
+                                  sortConfig={toolCallsSortConfig}
+                                  onSort={requestToolCallsSort}
+                                  className="py-2.5 px-3.5"
+                                />
+                                <SortHeader
+                                  columnKey="status"
+                                  label="Status"
+                                  sortConfig={toolCallsSortConfig}
+                                  onSort={requestToolCallsSort}
+                                  className="py-2.5 px-3.5"
+                                />
+                                <SortHeader
+                                  columnKey="durationMs"
+                                  label="Duration"
+                                  sortConfig={toolCallsSortConfig}
+                                  onSort={requestToolCallsSort}
+                                  className="py-2.5 px-3.5 font-mono text-right"
+                                />
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                              {selectedDetails.toolCalls.map((tc: AgentToolCallItem) => (
+                              {sortedToolCalls.map((tc: AgentToolCallItem) => (
                                 <tr key={tc.id} className="hover:bg-slate-50 transition-colors">
                                   <td className="py-2.5 px-3.5 font-semibold text-slate-900">
                                     {formatStandardCase(tc.toolName)}

@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import { Bot, CheckCircle2, Clock, RotateCcw, Trash2, AlertCircle, XCircle, RefreshCw } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { AdminButton } from '@admin/components/AdminButton';
+import { SortHeader } from '@admin/components/SortHeader';
+import { useTableSort } from '@admin/hooks/useTableSort';
 
 export const AdminAIJobs: React.FC = () => {
   const queryClient = useQueryClient();
@@ -55,6 +57,19 @@ export const AdminAIJobs: React.FC = () => {
   });
 
   const jobs = jobsData?.data || [];
+  const {
+    sortedData: sortedJobs,
+    sortField,
+    sortDirection,
+    handleSort
+  } = useTableSort(jobs, 'started', 'desc', {
+    name: (j: any) => j.job_name || '',
+    type: (j: any) => j.content_type || '',
+    progress: (j: any) => j.progress ?? j.processed_items ?? 0,
+    status: (j: any) => j.status || '',
+    started: (j: any) => j.created_at || '',
+    details: (j: any) => j.action_type || ''
+  });
 
   // Mutations
   const retryMutation = useMutation({
@@ -265,17 +280,53 @@ export const AdminAIJobs: React.FC = () => {
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider sticky top-0 font-semibold">
                 <tr>
-                  <th className="px-6 py-4 font-bold">Job Name</th>
-                  <th className="px-6 py-4 font-bold">Content Type</th>
-                  <th className="px-6 py-4 font-bold">Progress / Processed</th>
-                  <th className="px-6 py-4 font-bold">Status</th>
-                  <th className="px-6 py-4 font-bold">Started / Completed</th>
-                  <th className="px-6 py-4 font-bold">Details</th>
-                  <th className="px-6 py-4 font-bold text-right">Actions</th>
+                  <SortHeader
+                    label="Job Name"
+                    field="name"
+                    currentSortField={sortField}
+                    currentDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <SortHeader
+                    label="Content Type"
+                    field="type"
+                    currentSortField={sortField}
+                    currentDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <SortHeader
+                    label="Progress / Processed"
+                    field="progress"
+                    currentSortField={sortField}
+                    currentDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <SortHeader
+                    label="Status"
+                    field="status"
+                    currentSortField={sortField}
+                    currentDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <SortHeader
+                    label="Started / Completed"
+                    field="started"
+                    currentSortField={sortField}
+                    currentDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <SortHeader
+                    label="Details"
+                    field="details"
+                    currentSortField={sortField}
+                    currentDirection={sortDirection}
+                    onSort={handleSort}
+                  />
+                  <th className="px-6 py-4 font-bold text-right select-none">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {jobs.map((job: any) => (
+                {sortedJobs.map((job: any) => (
                   <tr key={job.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 font-semibold text-gray-900">{job.job_name}</td>
                     <td className="px-6 py-4 text-gray-600 font-medium">{job.content_type}</td>

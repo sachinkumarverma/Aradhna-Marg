@@ -22,6 +22,7 @@ import {
   XCircle,
   ArrowUpDown
 } from 'lucide-react';
+import { SortHeader } from '@admin/components/SortHeader';
 
 export function AdminTags() {
   const queryClient = useQueryClient();
@@ -202,28 +203,61 @@ export function AdminTags() {
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                   <tr>
-                    <th className="px-6 py-4 font-bold">Tag</th>
-                    <th className="px-6 py-4 font-bold text-center">Color</th>
-                    <th className="px-6 py-4 font-bold text-center">Status</th>
-                    <th
-                      className="px-6 py-4 font-bold cursor-pointer group hover:bg-orange-100/50 transition-colors"
-                      onClick={() => {
-                        if (sort === 'created_at') {
-                          setOrder(order === 'asc' ? 'desc' : 'asc');
-                        } else {
-                          setSort('created_at');
+                    <SortHeader
+                      label="Tag"
+                      field="name"
+                      currentSortField={sort}
+                      currentDirection={order}
+                      onSort={(f: string) => {
+                        if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
+                        else {
+                          setSort(f);
+                          setOrder('asc');
+                        }
+                      }}
+                    />
+                    <SortHeader
+                      label="Color"
+                      field="color"
+                      currentSortField={sort}
+                      currentDirection={order}
+                      align="center"
+                      onSort={(f: string) => {
+                        if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
+                        else {
+                          setSort(f);
+                          setOrder('asc');
+                        }
+                      }}
+                    />
+                    <SortHeader
+                      label="Status"
+                      field="status"
+                      currentSortField={sort}
+                      currentDirection={order}
+                      align="center"
+                      onSort={(f: string) => {
+                        if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
+                        else {
+                          setSort(f);
+                          setOrder('asc');
+                        }
+                      }}
+                    />
+                    <SortHeader
+                      label="Created At"
+                      field="created_at"
+                      currentSortField={sort}
+                      currentDirection={order}
+                      onSort={(f: string) => {
+                        if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
+                        else {
+                          setSort(f);
                           setOrder('desc');
                         }
                       }}
-                    >
-                      <div className="flex items-center gap-1">
-                        Created At
-                        <ArrowUpDown
-                          className={`w-3 h-3 transition-colors ${sort === 'created_at' ? 'text-orange-900' : 'text-orange-300 group-hover:text-orange-400'}`}
-                        />
-                      </div>
-                    </th>
-                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                    />
+                    <th className="px-6 py-4 font-bold text-right select-none">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">

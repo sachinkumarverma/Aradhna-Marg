@@ -19,6 +19,8 @@ import { Pagination } from '@components/ui/Pagination';
 import { Select } from '@components/ui/Select';
 import { DatePicker } from '@components/ui/DatePicker';
 import { cn } from '@utils/cn';
+import { SortHeader } from '@admin/components/SortHeader';
+import { useTableSort } from '@admin/hooks/useTableSort';
 
 interface DonationsPaymentsTabProps {
   initialStatusFilter?: string;
@@ -67,6 +69,21 @@ export const DonationsPaymentsTab: React.FC<DonationsPaymentsTabProps> = ({
   });
 
   const payments: PaymentItem[] = data?.data || [];
+  const {
+    sortedData: sortedPayments,
+    sortField,
+    sortDirection,
+    handleSort
+  } = useTableSort(payments, 'date', 'desc', {
+    date: (p) => p.paidAt || p.createdAt || '',
+    supporter: (p) => (p.isAnonymous ? 'Anonymous' : p.supporterName || ''),
+    amount: (p) => p.amount || 0,
+    status: (p) => p.status || '',
+    method: (p) => p.paymentMethod || '',
+    gateway: (p) => (p as any).gateway || '',
+    txId: (p) => p.gatewayPaymentId || '',
+    source: (p) => p.source || ''
+  });
   const total = data?.total || 0;
   const totalPages = data?.totalPages || 1;
 
@@ -355,15 +372,71 @@ export const DonationsPaymentsTab: React.FC<DonationsPaymentsTabProps> = ({
           <table className="w-full min-w-[850px] text-left text-xs sm:text-sm">
             <thead className="bg-gray-50 text-gray-700 border-b border-gray-200 uppercase text-xs font-bold tracking-wider">
               <tr>
-                <th className="px-5 py-3.5">Date</th>
-                <th className="px-5 py-3.5">Supporter</th>
-                <th className="px-5 py-3.5">Amount</th>
-                <th className="px-5 py-3.5">Status</th>
-                <th className="px-5 py-3.5">Method</th>
-                <th className="px-5 py-3.5">Gateway</th>
-                <th className="px-5 py-3.5 font-mono">Transaction ID</th>
-                <th className="px-5 py-3.5">Source</th>
-                <th className="px-5 py-3.5 text-right">Actions</th>
+                <SortHeader
+                  label="Date"
+                  field="date"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Supporter"
+                  field="supporter"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Amount"
+                  field="amount"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Status"
+                  field="status"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Method"
+                  field="method"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Gateway"
+                  field="gateway"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <SortHeader
+                  label="Transaction ID"
+                  field="txId"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5 font-mono"
+                />
+                <SortHeader
+                  label="Source"
+                  field="source"
+                  currentSortField={sortField}
+                  currentDirection={sortDirection}
+                  onSort={handleSort}
+                  className="px-5 py-3.5"
+                />
+                <th className="px-5 py-3.5 text-right select-none font-bold">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -373,8 +446,8 @@ export const DonationsPaymentsTab: React.FC<DonationsPaymentsTabProps> = ({
                     Loading payments...
                   </td>
                 </tr>
-              ) : payments.length > 0 ? (
-                payments.map((p) => (
+              ) : sortedPayments.length > 0 ? (
+                sortedPayments.map((p) => (
                   <tr
                     key={p.id}
                     onClick={() => onSelectPayment(p)}

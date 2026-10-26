@@ -63,6 +63,7 @@ export const AdminFestivals: React.FC = () => {
   const columns = [
     {
       header: 'Festival',
+      sortKey: (row: any) => row.name || row.name_en || '',
       accessor: (row: any) => (
         <div>
           <p className="font-bold text-gray-900">{row.name}</p>
@@ -74,6 +75,7 @@ export const AdminFestivals: React.FC = () => {
     },
     {
       header: 'Date',
+      sortKey: (row: any) => row.festivalDate || row.created_at,
       accessor: (row: any) => (
         <span className="text-sm text-slate-800 font-medium">
           {row.festivalDate ? format(new Date(row.festivalDate), 'MMM dd, yyyy') : '-'}
@@ -82,10 +84,12 @@ export const AdminFestivals: React.FC = () => {
     },
     {
       header: 'Category',
+      sortKey: (row: any) => row.category || '',
       accessor: (row: any) => <span className="text-sm font-medium text-gray-600">{row.category || '-'}</span>
     },
     {
       header: 'Featured',
+      sortKey: 'featured',
       className: 'text-center',
       accessor: (row: any) => (
         <div className="flex justify-center">
@@ -123,6 +127,7 @@ export const AdminFestivals: React.FC = () => {
     },
     {
       header: 'Status',
+      sortKey: 'status',
       className: 'text-center',
       accessor: (row: any) => (
         <span

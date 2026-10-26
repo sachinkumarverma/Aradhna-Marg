@@ -23,6 +23,8 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { ImageUploadWithCrop } from '@components/ui/ImageUploadWithCrop';
+import { SortHeader } from '@admin/components/SortHeader';
+import { useTableSort } from '@admin/hooks/useTableSort';
 
 export function AdminAuthors() {
   const queryClient = useQueryClient();
@@ -112,6 +114,15 @@ export function AdminAuthors() {
   };
 
   const authors = data?.data || [];
+  const {
+    sortedData: sortedAuthors,
+    sortField,
+    sortDirection,
+    handleSort
+  } = useTableSort(authors, 'author', 'asc', {
+    author: (a: any) => a.name,
+    status: (a: any) => a.status
+  });
   const totalPages = Math.ceil((data?.meta?.total || 0) / 10);
 
   return (
@@ -175,7 +186,7 @@ export function AdminAuthors() {
               </tbody>
             </table>
           </div>
-        ) : authors.length === 0 ? (
+        ) : sortedAuthors.length === 0 ? (
           <div className="border border-dashed border-gray-300 rounded-md bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
               <Users className="w-6 h-6 text-gray-400" />
@@ -189,13 +200,26 @@ export function AdminAuthors() {
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                   <tr>
-                    <th className="px-6 py-4 font-bold">Author</th>
-                    <th className="px-6 py-4 font-bold text-center">Status</th>
-                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                    <SortHeader
+                      label="Author"
+                      field="author"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                    />
+                    <SortHeader
+                      label="Status"
+                      field="status"
+                      currentSortField={sortField}
+                      currentDirection={sortDirection}
+                      onSort={handleSort}
+                      align="center"
+                    />
+                    <th className="px-6 py-4 font-bold text-right select-none">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {authors.map((author: any) => (
+                  {sortedAuthors.map((author: any) => (
                     <tr key={author.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
