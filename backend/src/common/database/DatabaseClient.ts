@@ -10,11 +10,11 @@ class DatabaseClient {
 
     this.pool = new Pool({
       connectionString: config.DATABASE_URL,
-      max: 10,
-      min: 2,
-      idleTimeoutMillis: 60000,
+      max: 5,
+      min: 1,
+      idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 6000,
-      // Enable TCP KeepAlive to prevent silent connection drop by cloud NAT firewalls (Render <-> Supabase)
+      // Enable TCP KeepAlive to prevent silent connection drop by cloud NAT firewalls
       keepAlive: true,
       keepAliveInitialDelayMillis: 10000,
       ssl: isLocal ? false : { rejectUnauthorized: false }
