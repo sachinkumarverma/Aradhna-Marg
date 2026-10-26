@@ -73,30 +73,39 @@ export const EntityBadgeSelector: React.FC<EntityBadgeSelectorProps> = ({
   };
 
   const handleAddCustom = (customText?: string) => {
-    const text = (customText || search).trim();
-    if (!text) return;
+    const raw = (customText || search).trim();
+    if (!raw) return;
 
-    // Check if it matches existing option
-    const existing = options.find(
-      (opt) => opt.label.toLowerCase() === text.toLowerCase() || opt.value.toLowerCase() === text.toLowerCase()
-    );
+    const parts = raw
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean);
 
-    if (existing) {
-      if (!safeValues.includes(existing.value)) {
-        onChange([...safeValues, existing.value]);
+    if (parts.length === 0) return;
+
+    const updated = [...safeValues];
+    for (const text of parts) {
+      // Check if it matches existing option
+      const existing = options.find(
+        (opt) => opt.label.toLowerCase() === text.toLowerCase() || opt.value.toLowerCase() === text.toLowerCase()
+      );
+
+      if (existing) {
+        if (!updated.includes(existing.value)) {
+          updated.push(existing.value);
+        }
+      } else if (allowCustom) {
+        if (!updated.includes(text)) {
+          updated.push(text);
+        }
       }
-      setSearch('');
-      setIsDropdownOpen(false);
-      return;
     }
 
-    if (allowCustom) {
-      if (!safeValues.includes(text)) {
-        onChange([...safeValues, text]);
-      }
-      setSearch('');
-      setIsDropdownOpen(false);
+    if (updated.length !== safeValues.length) {
+      onChange(updated);
     }
+    setSearch('');
+    setIsDropdownOpen(false);
   };
 
   const handleRemove = (valueToRemove: string) => {
@@ -157,8 +166,20 @@ export const EntityBadgeSelector: React.FC<EntityBadgeSelectorProps> = ({
             }
             value={search}
             onChange={(e) => {
-              setSearch(e.target.value);
-              setIsDropdownOpen(true);
+              const val = e.target.value;
+              if (allowCustom && val.includes(',')) {
+                handleAddCustom(val);
+              } else {
+                setSearch(val);
+                setIsDropdownOpen(true);
+              }
+            }}
+            onPaste={(e) => {
+              const pasteText = e.clipboardData.getData('text');
+              if (allowCustom && pasteText.includes(',')) {
+                e.preventDefault();
+                handleAddCustom((search + pasteText).trim());
+              }
             }}
             onFocus={() => setIsDropdownOpen(true)}
             onClick={() => setIsDropdownOpen(true)}

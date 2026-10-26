@@ -313,7 +313,9 @@ export const AdminBhajanForm = () => {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-sm font-semibold text-gray-700">Keywords (Press Enter to add)</label>
+                      <label className="text-sm font-semibold text-gray-700">
+                        Keywords (Press Enter, comma or paste list)
+                      </label>
                       <Controller
                         name="seo_keywords"
                         control={control}
