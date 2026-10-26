@@ -217,7 +217,7 @@ export function DataTable<T extends { id: string | number }>({
 
   return (
     <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm">
-      <table className="w-full text-sm text-left">
+      <table className="w-full text-sm text-left bg-white">
         <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
           <tr>
             {columns.map((col, idx) => {
@@ -229,8 +229,8 @@ export function DataTable<T extends { id: string | number }>({
                   key={idx}
                   onClick={() => isSortable && handleHeaderClick(col)}
                   className={cn(
-                    'px-6 py-4 font-bold select-none',
-                    isSortable && 'cursor-pointer group hover:bg-orange-100/70 transition-colors',
+                    'px-6 py-4 font-bold select-none bg-orange-50',
+                    isSortable && 'cursor-pointer group hover:bg-orange-100 transition-colors',
                     col.className
                   )}
                 >
@@ -259,7 +259,7 @@ export function DataTable<T extends { id: string | number }>({
                 </th>
               );
             })}
-            <th className="px-6 py-4 font-bold text-right select-none">Actions</th>
+            <th className="px-6 py-4 font-bold text-right select-none bg-orange-50">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">

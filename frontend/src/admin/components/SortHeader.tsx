@@ -40,7 +40,7 @@ export const SortHeader: React.FC<SortHeaderProps> = ({
     <th
       onClick={() => onSort?.(targetField)}
       className={cn(
-        'px-6 py-4 font-bold select-none cursor-pointer group hover:bg-orange-100/70 transition-colors',
+        'px-6 py-4 font-bold select-none cursor-pointer group bg-orange-50 hover:bg-orange-100 transition-colors',
         align === 'center' && 'text-center',
         align === 'right' && 'text-right',
         className
