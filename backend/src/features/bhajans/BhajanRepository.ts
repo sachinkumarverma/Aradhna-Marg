@@ -33,7 +33,7 @@ export class BhajanRepository {
     if (search) {
       queryParams.push(`%${search}%`);
       whereClauses.push(
-        `(b.title ILIKE $${queryParams.length} OR b.slug ILIKE $${queryParams.length} OR b.lyrics ILIKE $${queryParams.length})`
+        `(b.title ILIKE $${queryParams.length} OR b.hindi_title ILIKE $${queryParams.length} OR b.english_title ILIKE $${queryParams.length} OR b.title_en ILIKE $${queryParams.length} OR b.slug ILIKE $${queryParams.length} OR b.lyrics ILIKE $${queryParams.length})`
       );
     }
 
@@ -51,7 +51,7 @@ export class BhajanRepository {
     `;
 
     const dataQuery = `
-      SELECT b.id, b.title, b.slug, b.status, b.views, b.created_at, b.category_id, b.god_id, b.seo_title, b.seo_description,
+      SELECT b.id, b.title, b.hindi_title, b.english_title, b.title_en, b.slug, b.status, b.views, b.created_at, b.category_id, b.god_id, b.seo_title, b.seo_description,
              c.name as "categoryName", g.name as "deityName"
       FROM ${this.tableName} b
       LEFT JOIN categories c ON b.category_id = c.id

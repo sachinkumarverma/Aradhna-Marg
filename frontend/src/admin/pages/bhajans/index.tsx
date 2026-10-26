@@ -41,11 +41,11 @@ export const AdminBhajans: React.FC = () => {
 
   // Fetch bhajans
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['admin-bhajans', page, search, statusFilter, sort],
+    queryKey: ['admin-bhajans', page, limit, search, statusFilter, sort],
     queryFn: async () => {
       const res = await BhajanApi.getList({
         page,
-        limit: 10,
+        limit,
         search: search || undefined,
         status: statusFilter || undefined,
         sort: sort || undefined
@@ -77,14 +77,20 @@ export const AdminBhajans: React.FC = () => {
   const columns = [
     {
       header: 'Title',
-      accessor: (row: any) => (
-        <div className="flex flex-col gap-0.5">
-          <p className="font-bold text-gray-900 line-clamp-2 leading-snug">{row.title}</p>
-          {(row.english_title || row.title_en) && (
-            <p className="text-xs text-gray-500 font-normal line-clamp-1">{row.english_title || row.title_en}</p>
-          )}
-        </div>
-      )
+      accessor: (row: any) => {
+        const primaryTitle = row.hindi_title || row.title;
+        const secondaryTitle =
+          row.english_title ||
+          row.title_en ||
+          (row.hindi_title && row.title && row.title !== row.hindi_title ? row.title : null);
+
+        return (
+          <div className="flex flex-col gap-0.5">
+            <p className="font-bold text-gray-900 line-clamp-2 leading-snug">{primaryTitle}</p>
+            {secondaryTitle && <p className="text-xs text-gray-500 font-normal line-clamp-1">{secondaryTitle}</p>}
+          </div>
+        );
+      }
     },
     {
       header: 'Category',
@@ -196,7 +202,7 @@ export const AdminBhajans: React.FC = () => {
             searchable={false}
           />
         </div>
-        <SearchInput placeholder="Search by title, slug, lyrics..." value={search} onChange={setSearch} />
+        <SearchInput placeholder="Search bhajan..." value={search} onChange={setSearch} />
       </div>
 
       <div className="flex-1 min-h-0 relative">

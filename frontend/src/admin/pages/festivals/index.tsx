@@ -31,10 +31,10 @@ export const AdminFestivals: React.FC = () => {
 
   // Fetch festivals
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['admin-festivals', page, search, statusFilter, sort, missingFilter],
+    queryKey: ['admin-festivals', page, limit, search, statusFilter, sort, missingFilter],
     queryFn: async () => {
       const res = await apiClient.get('/admin/festivals', {
-        params: { page, limit: 10, search, status: statusFilter, sort, missing: missingFilter }
+        params: { page, limit, search, status: statusFilter, sort, missing: missingFilter }
       });
       return res.data;
     }

@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 const BASE_URL = process.env.VITE_SITE_URL || 'https://aradhnamarg.com';
 const DIST_DIR = path.resolve(__dirname, '../dist');
 const TEMPLATE_PATH = path.join(DIST_DIR, 'index.html');
-const API_URL = process.env.VITE_API_URL || process.env.API_URL || 'https://aradhna-marg.onrender.com/api/v1';
+const API_URL = process.env.VITE_API_BASE_URL || process.env.VITE_API_URL || process.env.API_URL || 'https://api.aradhnamarg.com/api/v1';
 
 function escapeHtml(str = '') {
   return String(str)

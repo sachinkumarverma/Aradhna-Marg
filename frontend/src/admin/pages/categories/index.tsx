@@ -69,7 +69,7 @@ export const AdminCategories = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-categories', page, limit, search],
     queryFn: async () => {
-      return await CategoryApi.getCategories({ page, limit: 10, search: search || undefined });
+      return await CategoryApi.getCategories({ page, limit, search: search || undefined });
     }
   });
 

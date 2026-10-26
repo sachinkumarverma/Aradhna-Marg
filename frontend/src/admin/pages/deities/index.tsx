@@ -51,7 +51,7 @@ export const AdminDeities = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-deities', page, limit, search],
     queryFn: async () => {
-      return await DeityApi.getDeities({ page, limit: 10, search: search || undefined });
+      return await DeityApi.getDeities({ page, limit, search: search || undefined });
     }
   });
 

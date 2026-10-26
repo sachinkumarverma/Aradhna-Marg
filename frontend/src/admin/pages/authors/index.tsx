@@ -50,7 +50,7 @@ export function AdminAuthors() {
     queryKey: ['admin-authors', page, limit, search],
     queryFn: async () => {
       const res = await apiClient.get('/admin/authors', {
-        params: { page, limit: 10, search: search || undefined }
+        params: { page, limit, search: search || undefined }
       });
       return res.data;
     }

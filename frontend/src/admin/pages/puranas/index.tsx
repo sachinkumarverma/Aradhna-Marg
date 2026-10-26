@@ -30,10 +30,10 @@ export const AdminPuranas: React.FC = () => {
 
   // Fetch puranas
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['admin-puranas', page, search, statusFilter, languageFilter, sort],
+    queryKey: ['admin-puranas', page, limit, search, statusFilter, languageFilter, sort],
     queryFn: async () => {
       const res = await apiClient.get('/admin/puranas', {
-        params: { page, limit: 10, search, status: statusFilter, language: languageFilter, sort }
+        params: { page, limit, search, status: statusFilter, language: languageFilter, sort }
       });
       return res.data;
     }
