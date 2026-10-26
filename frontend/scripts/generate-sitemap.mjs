@@ -19,7 +19,11 @@ const BASE_URL = process.env.VITE_SITE_URL || 'https://aradhnamarg.com';
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const SITEMAP_PATH = path.join(PUBLIC_DIR, 'sitemap.xml');
 const ADS_TXT_PATH = path.join(PUBLIC_DIR, 'ads.txt');
-const API_URL = process.env.VITE_API_BASE_URL || process.env.VITE_API_URL || process.env.API_URL || 'https://api.aradhnamarg.com/api/v1';
+const API_URL =
+  process.env.VITE_API_BASE_URL ||
+  process.env.VITE_API_URL ||
+  process.env.API_URL ||
+  'https://api.aradhnamarg.com/api/v1';
 
 const STATIC_ROUTES = [
   { path: '', changefreq: 'daily', priority: '1.0' },
