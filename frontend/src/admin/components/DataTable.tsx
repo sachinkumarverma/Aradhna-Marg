@@ -28,6 +28,7 @@ interface DataTableProps<T> {
   defaultSortField?: string | null;
   defaultSortDirection?: 'asc' | 'desc';
   onSortChange?: (field: string, direction: 'asc' | 'desc') => void;
+  skeletonRows?: number;
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -47,7 +48,8 @@ export function DataTable<T extends { id: string | number }>({
   emptySubtext,
   defaultSortField = null,
   defaultSortDirection = 'asc',
-  onSortChange
+  onSortChange,
+  skeletonRows = 8
 }: DataTableProps<T>) {
   const [sortField, setSortField] = React.useState<string | null>(defaultSortField);
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>(defaultSortDirection);
@@ -173,47 +175,7 @@ export function DataTable<T extends { id: string | number }>({
     });
   }, [data, sortField, sortDirection, columns]);
 
-  if (isLoading) {
-    return (
-      <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm animate-pulse">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>
-              {[1, 2, 3, 4, 5].map((i) => (
-                <th key={i} className="px-6 py-4">
-                  <div className="h-4 bg-gray-200 rounded w-20"></div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row) => (
-              <tr key={row} className="border-b border-gray-50">
-                {[1, 2, 3, 4, 5].map((col) => (
-                  <td key={col} className="px-6 py-4">
-                    <div className="h-4 bg-gray-100 rounded w-full"></div>
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  if (!data || data.length === 0) {
-    const EmptyIcon = emptyIcon || Inbox;
-    return (
-      <div className="w-full border border-dashed border-gray-300 rounded-md bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
-          <EmptyIcon className="w-6 h-6 text-gray-400" />
-        </div>
-        <h3 className="text-sm font-medium text-gray-900 mb-1">{emptyTitle || 'No records found.'}</h3>
-        <p className="text-sm text-gray-500">{emptySubtext || 'There is currently no data to display here.'}</p>
-      </div>
-    );
-  }
+  const EmptyIcon = emptyIcon || Inbox;
 
   return (
     <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm">
@@ -263,80 +225,121 @@ export function DataTable<T extends { id: string | number }>({
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          {sortedData.map((row) => {
-            const isSelected =
-              selectedRowId !== undefined && selectedRowId !== null ? String(row.id) === String(selectedRowId) : false;
-            const customRowClass = rowClassName?.(row) || '';
-            const isHighlighted =
-              isSelected || customRowClass.includes('border-l-') || customRowClass.includes('bg-orange-');
-
-            return (
-              <tr
-                key={row.id}
-                onClick={() => onRowClick?.(row)}
-                className={cn(
-                  'bg-gray-50/50 hover:bg-blue-100/60 transition-colors group',
-                  onRowClick && 'cursor-pointer',
-                  isSelected && 'bg-orange-50/90 hover:bg-orange-100/70',
-                  customRowClass
-                )}
-              >
-                {columns.map((col, idx) => (
-                  <td
-                    key={idx}
-                    className={cn(
-                      'px-6 py-4',
-                      col.className,
-                      idx === 0 && isHighlighted && 'border-l-4 border-l-saffron'
-                    )}
-                  >
-                    {typeof col.accessor === 'function' ? col.accessor(row) : (row[col.accessor] as React.ReactNode)}
+          {isLoading ? (
+            Array.from({ length: skeletonRows }).map((_, rIdx) => (
+              <tr key={rIdx} className="border-b border-gray-50/80 animate-pulse bg-white">
+                {columns.map((col, cIdx) => (
+                  <td key={cIdx} className={cn('px-6 py-4', col.className)}>
+                    <div
+                      className={cn(
+                        'h-4 bg-gray-200/80 rounded',
+                        col.className?.includes('text-center')
+                          ? 'mx-auto w-12'
+                          : col.className?.includes('text-right')
+                            ? 'ml-auto w-16'
+                            : cIdx === 0
+                              ? 'w-3/4'
+                              : 'w-1/2'
+                      )}
+                    />
                   </td>
                 ))}
-                <td className="px-6 py-4" onClick={(e) => (renderActions ? e.stopPropagation() : undefined)}>
-                  <div className="flex items-center justify-end gap-2 transition-opacity">
-                    {renderActions && renderActions(row)}
-                    {onPreview && (
-                      <button
-                        onClick={() => onPreview(row)}
-                        className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
-                        title="Open PDF"
-                      >
-                        <ExternalLink className="w-4 h-4" strokeWidth={2.5} />
-                      </button>
-                    )}
-                    {onEdit && (
-                      <button
-                        onClick={() => onEdit(row)}
-                        className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
-                        title="Edit"
-                      >
-                        <Edit2 className="w-4 h-4" strokeWidth={3.5} />
-                      </button>
-                    )}
-                    {onActionClick && (
-                      <button
-                        onClick={() => onActionClick('REGENERATE_AI', row)}
-                        className="p-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors cursor-pointer"
-                        title="Regenerate AI Metadata"
-                      >
-                        <Sparkles className="w-4 h-4" strokeWidth={2.5} />
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button
-                        onClick={() => onDelete(row)}
-                        className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" strokeWidth={3.5} />
-                      </button>
-                    )}
+                <td className="px-6 py-4">
+                  <div className="flex items-center justify-end gap-2">
+                    <div className="h-4 w-4 bg-gray-200/80 rounded" />
+                    <div className="h-4 w-4 bg-gray-200/80 rounded" />
                   </div>
                 </td>
               </tr>
-            );
-          })}
+            ))
+          ) : !data || data.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length + 1} className="py-12 px-4 text-center bg-white">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+                  <EmptyIcon className="w-6 h-6 text-gray-400" />
+                </div>
+                <h3 className="text-sm font-medium text-gray-900 mb-1">{emptyTitle || 'No records found.'}</h3>
+                <p className="text-sm text-gray-500">{emptySubtext || 'There is currently no data to display here.'}</p>
+              </td>
+            </tr>
+          ) : (
+            sortedData.map((row) => {
+              const isSelected =
+                selectedRowId !== undefined && selectedRowId !== null
+                  ? String(row.id) === String(selectedRowId)
+                  : false;
+              const customRowClass = rowClassName?.(row) || '';
+              const isHighlighted =
+                isSelected || customRowClass.includes('border-l-') || customRowClass.includes('bg-orange-');
+
+              return (
+                <tr
+                  key={row.id}
+                  onClick={() => onRowClick?.(row)}
+                  className={cn(
+                    'bg-gray-50/50 hover:bg-blue-100/60 transition-colors group',
+                    onRowClick && 'cursor-pointer',
+                    isSelected && 'bg-orange-50/90 hover:bg-orange-100/70',
+                    customRowClass
+                  )}
+                >
+                  {columns.map((col, idx) => (
+                    <td
+                      key={idx}
+                      className={cn(
+                        'px-6 py-4',
+                        col.className,
+                        idx === 0 && isHighlighted && 'border-l-4 border-l-saffron'
+                      )}
+                    >
+                      {typeof col.accessor === 'function' ? col.accessor(row) : (row[col.accessor] as React.ReactNode)}
+                    </td>
+                  ))}
+                  <td className="px-6 py-4" onClick={(e) => (renderActions ? e.stopPropagation() : undefined)}>
+                    <div className="flex items-center justify-end gap-2 transition-opacity">
+                      {renderActions && renderActions(row)}
+                      {onPreview && (
+                        <button
+                          onClick={() => onPreview(row)}
+                          className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
+                          title="Open PDF"
+                        >
+                          <ExternalLink className="w-4 h-4" strokeWidth={2.5} />
+                        </button>
+                      )}
+                      {onEdit && (
+                        <button
+                          onClick={() => onEdit(row)}
+                          className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
+                          title="Edit"
+                        >
+                          <Edit2 className="w-4 h-4" strokeWidth={3.5} />
+                        </button>
+                      )}
+                      {onActionClick && (
+                        <button
+                          onClick={() => onActionClick('REGENERATE_AI', row)}
+                          className="p-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors cursor-pointer"
+                          title="Regenerate AI Metadata"
+                        >
+                          <Sparkles className="w-4 h-4" strokeWidth={2.5} />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(row)}
+                          className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" strokeWidth={3.5} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>

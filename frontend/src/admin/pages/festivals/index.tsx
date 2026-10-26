@@ -242,7 +242,7 @@ export const AdminFestivals: React.FC = () => {
         <DataTable
           data={data?.data || []}
           columns={columns}
-          isLoading={isLoading}
+          isLoading={isLoading || isFetching}
           onEdit={(row) => navigate(getAdminPath(`/festivals/${row.id}/edit`))}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
           emptyIcon={Calendar}

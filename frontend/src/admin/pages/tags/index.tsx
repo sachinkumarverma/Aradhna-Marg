@@ -162,106 +162,108 @@ export function AdminTags() {
         />
       </div>
 
-      <div className="flex-1  relative flex flex-col">
-        {/* Table Container */}
-        {isLoading ? (
-          <div className="w-full overflow-x-auto bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm animate-pulse">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 border-b border-gray-100">
+      <div className="flex-1 relative flex flex-col mb-6">
+        <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm overflow-hidden flex flex-col">
+          <div className="overflow-x-auto flex-1">
+            <table className="w-full text-left text-sm whitespace-nowrap bg-white">
+              <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
                 <tr>
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <th key={i} className="px-6 py-4">
-                      <div className="h-4 bg-gray-200 rounded w-20"></div>
-                    </th>
-                  ))}
+                  <SortHeader
+                    label="Tag"
+                    field="name"
+                    currentSortField={sort}
+                    currentDirection={order}
+                    onSort={(f: string) => {
+                      if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
+                      else {
+                        setSort(f);
+                        setOrder('asc');
+                      }
+                    }}
+                  />
+                  <SortHeader
+                    label="Color"
+                    field="color"
+                    currentSortField={sort}
+                    currentDirection={order}
+                    align="center"
+                    onSort={(f: string) => {
+                      if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
+                      else {
+                        setSort(f);
+                        setOrder('asc');
+                      }
+                    }}
+                  />
+                  <SortHeader
+                    label="Status"
+                    field="status"
+                    currentSortField={sort}
+                    currentDirection={order}
+                    align="center"
+                    onSort={(f: string) => {
+                      if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
+                      else {
+                        setSort(f);
+                        setOrder('asc');
+                      }
+                    }}
+                  />
+                  <SortHeader
+                    label="Created At"
+                    field="created_at"
+                    currentSortField={sort}
+                    currentDirection={order}
+                    onSort={(f: string) => {
+                      if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
+                      else {
+                        setSort(f);
+                        setOrder('desc');
+                      }
+                    }}
+                  />
+                  <th className="px-6 py-4 font-bold text-right select-none bg-orange-50">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row) => (
-                  <tr key={row} className="border-b border-gray-50">
-                    {[1, 2, 3, 4, 5].map((col) => (
-                      <td key={col} className="px-6 py-4">
-                        <div className="h-4 bg-gray-100 rounded w-full"></div>
+              <tbody className="divide-y divide-gray-100">
+                {isLoading ? (
+                  Array.from({ length: 8 }).map((_, rIdx) => (
+                    <tr key={rIdx} className="border-b border-gray-50/80 animate-pulse bg-white">
+                      <td className="px-6 py-3">
+                        <div className="space-y-1.5">
+                          <div className="h-4 bg-gray-200/80 rounded w-28" />
+                          <div className="h-3 bg-gray-100 rounded w-44" />
+                        </div>
                       </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : tags.length === 0 ? (
-          <div className="border border-dashed border-gray-300 rounded-md bg-gray-50 flex flex-col items-center justify-center py-12 px-4 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
-              <TagIcon className="w-6 h-6 text-gray-400" />
-            </div>
-            <h3 className="text-sm font-medium text-gray-900">No records found.</h3>
-            <p className="text-xs text-gray-500 mt-1">Create your first tag.</p>
-          </div>
-        ) : (
-          <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md border border-blue-100 shadow-sm overflow-hidden flex flex-col mb-6">
-            <div className="overflow-x-auto flex-1">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-orange-50 text-orange-900 border-b border-orange-100 uppercase text-xs tracking-wider font-semibold">
+                      <td className="px-6 py-3 text-center">
+                        <div className="h-4 bg-gray-200/80 rounded-full w-8 mx-auto" />
+                      </td>
+                      <td className="px-6 py-3 text-center">
+                        <div className="h-4 bg-gray-200/80 rounded w-16 mx-auto" />
+                      </td>
+                      <td className="px-6 py-3">
+                        <div className="h-4 bg-gray-200/80 rounded w-24" />
+                      </td>
+                      <td className="px-6 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="h-4 w-4 bg-gray-200/80 rounded" />
+                          <div className="h-4 w-4 bg-gray-200/80 rounded" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : tags.length === 0 ? (
                   <tr>
-                    <SortHeader
-                      label="Tag"
-                      field="name"
-                      currentSortField={sort}
-                      currentDirection={order}
-                      onSort={(f: string) => {
-                        if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
-                        else {
-                          setSort(f);
-                          setOrder('asc');
-                        }
-                      }}
-                    />
-                    <SortHeader
-                      label="Color"
-                      field="color"
-                      currentSortField={sort}
-                      currentDirection={order}
-                      align="center"
-                      onSort={(f: string) => {
-                        if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
-                        else {
-                          setSort(f);
-                          setOrder('asc');
-                        }
-                      }}
-                    />
-                    <SortHeader
-                      label="Status"
-                      field="status"
-                      currentSortField={sort}
-                      currentDirection={order}
-                      align="center"
-                      onSort={(f: string) => {
-                        if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
-                        else {
-                          setSort(f);
-                          setOrder('asc');
-                        }
-                      }}
-                    />
-                    <SortHeader
-                      label="Created At"
-                      field="created_at"
-                      currentSortField={sort}
-                      currentDirection={order}
-                      onSort={(f: string) => {
-                        if (sort === f) setOrder(order === 'asc' ? 'desc' : 'asc');
-                        else {
-                          setSort(f);
-                          setOrder('desc');
-                        }
-                      }}
-                    />
-                    <th className="px-6 py-4 font-bold text-right select-none">Actions</th>
+                    <td colSpan={5} className="py-12 px-4 text-center bg-white">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+                        <TagIcon className="w-6 h-6 text-gray-400" />
+                      </div>
+                      <h3 className="text-sm font-medium text-gray-900 mb-1">No records found.</h3>
+                      <p className="text-sm text-gray-500">Create your first tag.</p>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {tags.map((tag: any) => (
+                ) : (
+                  tags.map((tag: any) => (
                     <tr key={tag.id} className="bg-gray-50/50 hover:bg-blue-100/60 transition-colors">
                       <td className="px-6 py-3">
                         <div>
@@ -323,23 +325,23 @@ export function AdminTags() {
                         </div>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <Pagination
-              page={page}
-              totalPages={totalPages}
-              totalRecords={totalRecords}
-              limit={limit}
-              onPageChange={setPage}
-              onLimitChange={(l) => {
-                setLimit(l);
-                setPage(1);
-              }}
-            />
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            totalRecords={totalRecords}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(l) => {
+              setLimit(l);
+              setPage(1);
+            }}
+          />
+        </div>
       </div>
 
       {/* Drawer */}

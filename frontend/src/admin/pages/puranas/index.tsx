@@ -227,7 +227,7 @@ export const AdminPuranas: React.FC = () => {
         <DataTable
           data={data?.data || []}
           columns={columns}
-          isLoading={isLoading}
+          isLoading={isLoading || isFetching}
           onPreview={handleOpenPdf}
           onEdit={(row) => navigate(getAdminPath(`/puranas/${row.id}/edit`))}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}

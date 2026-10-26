@@ -215,7 +215,7 @@ export const AdminBhajans: React.FC = () => {
         <DataTable
           data={data?.data || []}
           columns={columns}
-          isLoading={isLoading}
+          isLoading={isLoading || isFetching}
           onEdit={(row) => navigate(getAdminPath(`/bhajans/${row.id}/edit`))}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
           emptyIcon={Music2}
