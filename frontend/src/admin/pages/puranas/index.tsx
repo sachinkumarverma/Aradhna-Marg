@@ -228,6 +228,7 @@ export const AdminPuranas: React.FC = () => {
           data={data?.data || []}
           columns={columns}
           isLoading={isLoading || isFetching}
+          skeletonRows={limit}
           onPreview={handleOpenPdf}
           onEdit={(row) => navigate(getAdminPath(`/puranas/${row.id}/edit`))}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}

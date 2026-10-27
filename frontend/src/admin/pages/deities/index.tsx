@@ -204,8 +204,8 @@ export const AdminDeities = () => {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {isLoading ? (
-                  Array.from({ length: 8 }).map((_, rIdx) => (
-                    <tr key={rIdx} className="border-b border-gray-50/80 animate-pulse bg-white">
+                  Array.from({ length: limit }).map((_, rIdx) => (
+                    <tr key={rIdx} className="border-b border-gray-100/80 animate-pulse bg-white">
                       <td className="px-6 py-2.5">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-md bg-gray-200/80 shrink-0" />
@@ -226,8 +226,8 @@ export const AdminDeities = () => {
                       </td>
                       <td className="px-6 py-2.5 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <div className="h-4 w-4 bg-gray-200/80 rounded" />
-                          <div className="h-4 w-4 bg-gray-200/80 rounded" />
+                          <div className="h-7 w-7 bg-gray-100 rounded-md" />
+                          <div className="h-7 w-7 bg-gray-100 rounded-md" />
                         </div>
                       </td>
                     </tr>

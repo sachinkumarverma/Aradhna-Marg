@@ -44,6 +44,8 @@ export const AdminYoutube = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [linkDialogOpen, setLinkDialogOpen] = useState<string | null>(null);
   const [selectedBhajanId, setSelectedBhajanId] = useState<string>('');
+  const [channelId, setChannelId] = useState('');
+  const [autoSync, setAutoSync] = useState(false);
   const [syncInterval, setSyncInterval] = useState('12h');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
@@ -57,10 +59,27 @@ export const AdminYoutube = () => {
   });
 
   useEffect(() => {
-    if (settings?.youtubeSyncInterval) {
-      setSyncInterval(settings.youtubeSyncInterval);
+    if (settings) {
+      if (settings.youtubeChannelId !== undefined) {
+        setChannelId(settings.youtubeChannelId || '');
+      }
+      if (settings.youtubeAutoSync !== undefined) {
+        setAutoSync(Boolean(settings.youtubeAutoSync));
+      }
+      if (settings.youtubeSyncInterval) {
+        setSyncInterval(settings.youtubeSyncInterval);
+      }
     }
-  }, [settings?.youtubeSyncInterval]);
+  }, [settings]);
+
+  const originalChannelId = settings?.youtubeChannelId || '';
+  const originalAutoSync = Boolean(settings?.youtubeAutoSync);
+  const originalSyncInterval = settings?.youtubeSyncInterval || '12h';
+
+  const isConfigDirty =
+    channelId.trim() !== originalChannelId.trim() ||
+    autoSync !== originalAutoSync ||
+    syncInterval !== originalSyncInterval;
 
   // Fetch Stats
   const { data: stats } = useQuery({
@@ -215,10 +234,10 @@ export const AdminYoutube = () => {
 
   const handleSaveConfig = (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
+    if (!isConfigDirty || !channelId.trim()) return;
     saveSettingsMutation.mutate({
-      youtubeChannelId: formData.get('channelId'),
-      youtubeAutoSync: formData.get('autoSync') === 'true',
+      youtubeChannelId: channelId.trim(),
+      youtubeAutoSync: autoSync,
       youtubeSyncInterval: syncInterval
     });
   };
@@ -376,7 +395,8 @@ export const AdminYoutube = () => {
                 <input
                   name="channelId"
                   type="text"
-                  defaultValue={settings?.youtubeChannelId}
+                  value={channelId}
+                  onChange={(e) => setChannelId(e.target.value)}
                   placeholder="e.g. UCX6OQ3DkcsbYNE6H8uQQuVA"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all"
                   required
@@ -385,13 +405,13 @@ export const AdminYoutube = () => {
               </div>
 
               <div className="space-y-2 pt-4 border-t border-gray-100">
-                <label className="flex items-center gap-3 cursor-pointer">
+                <label className="flex items-center gap-3 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     name="autoSync"
-                    value="true"
-                    defaultChecked={settings?.youtubeAutoSync}
-                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-600"
+                    checked={autoSync}
+                    onChange={(e) => setAutoSync(e.target.checked)}
+                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-600 cursor-pointer"
                   />
                   <span className="font-bold text-gray-700">Enable Auto Sync</span>
                 </label>
@@ -415,8 +435,8 @@ export const AdminYoutube = () => {
               <div className="pt-4 flex items-center gap-3">
                 <button
                   type="submit"
-                  disabled={saveSettingsMutation.isPending}
-                  className="px-6 py-4 bg-gray-900 text-white font-bold rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                  disabled={!isConfigDirty || saveSettingsMutation.isPending || !channelId.trim()}
+                  className="px-6 py-4 bg-gray-900 text-white font-bold rounded-md hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-900 transition-all cursor-pointer shadow-xs"
                 >
                   {saveSettingsMutation.isPending ? 'Saving...' : 'Save Configuration'}
                 </button>

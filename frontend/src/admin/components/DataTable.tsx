@@ -49,8 +49,17 @@ export function DataTable<T extends { id: string | number }>({
   defaultSortField = null,
   defaultSortDirection = 'asc',
   onSortChange,
-  skeletonRows = 8
+  skeletonRows
 }: DataTableProps<T>) {
+  const prevCountRef = React.useRef(10);
+  React.useEffect(() => {
+    if (data && data.length > 0) {
+      prevCountRef.current = data.length;
+    }
+  }, [data]);
+
+  const effectiveSkeletonRows = skeletonRows ?? (prevCountRef.current || 10);
+
   const [sortField, setSortField] = React.useState<string | null>(defaultSortField);
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>(defaultSortDirection);
 
@@ -226,28 +235,28 @@ export function DataTable<T extends { id: string | number }>({
         </thead>
         <tbody className="divide-y divide-gray-100">
           {isLoading ? (
-            Array.from({ length: skeletonRows }).map((_, rIdx) => (
-              <tr key={rIdx} className="border-b border-gray-50/80 animate-pulse bg-white">
+            Array.from({ length: effectiveSkeletonRows }).map((_, rIdx) => (
+              <tr key={rIdx} className="border-b border-gray-100/80 animate-pulse bg-white">
                 {columns.map((col, cIdx) => (
                   <td key={cIdx} className={cn('px-6 py-4', col.className)}>
-                    <div
-                      className={cn(
-                        'h-4 bg-gray-200/80 rounded',
-                        col.className?.includes('text-center')
-                          ? 'mx-auto w-12'
-                          : col.className?.includes('text-right')
-                            ? 'ml-auto w-16'
-                            : cIdx === 0
-                              ? 'w-3/4'
-                              : 'w-1/2'
-                      )}
-                    />
+                    {cIdx === 0 ? (
+                      <div className="space-y-2 py-0.5">
+                        <div className="h-4 bg-gray-200/80 rounded w-4/5" />
+                        <div className="h-3 bg-gray-100 rounded w-1/2" />
+                      </div>
+                    ) : col.className?.includes('text-center') ? (
+                      <div className="h-5 bg-gray-200/70 rounded-full w-20 mx-auto" />
+                    ) : col.className?.includes('text-right') ? (
+                      <div className="h-4 bg-gray-200/70 rounded w-16 ml-auto" />
+                    ) : (
+                      <div className="h-4 bg-gray-200/70 rounded w-3/5" />
+                    )}
                   </td>
                 ))}
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-end gap-2">
-                    <div className="h-4 w-4 bg-gray-200/80 rounded" />
-                    <div className="h-4 w-4 bg-gray-200/80 rounded" />
+                    <div className="h-7 w-7 bg-gray-100 rounded-md" />
+                    <div className="h-7 w-7 bg-gray-100 rounded-md" />
                   </div>
                 </td>
               </tr>

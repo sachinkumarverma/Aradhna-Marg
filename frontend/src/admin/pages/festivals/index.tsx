@@ -243,6 +243,7 @@ export const AdminFestivals: React.FC = () => {
           data={data?.data || []}
           columns={columns}
           isLoading={isLoading || isFetching}
+          skeletonRows={limit}
           onEdit={(row) => navigate(getAdminPath(`/festivals/${row.id}/edit`))}
           onDelete={(row) => handleBulkAction('DELETE', [row.id])}
           emptyIcon={Calendar}

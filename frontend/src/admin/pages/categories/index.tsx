@@ -227,24 +227,30 @@ export const AdminCategories = () => {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {isLoading ? (
-                  Array.from({ length: 8 }).map((_, rIdx) => (
-                    <tr key={rIdx} className="border-b border-gray-50/80 animate-pulse bg-white">
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200/80 rounded w-40" />
+                  Array.from({ length: limit }).map((_, rIdx) => (
+                    <tr key={rIdx} className="border-b border-gray-100/80 animate-pulse bg-white">
+                      <td className="px-6 py-3.5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-gray-200/80 shrink-0" />
+                          <div className="space-y-1.5 flex-1">
+                            <div className="h-4 bg-gray-200/80 rounded w-32" />
+                            <div className="h-3 bg-gray-100 rounded w-20" />
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-3.5 text-center">
                         <div className="h-4 bg-gray-200/80 rounded w-16 mx-auto" />
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="h-4 bg-gray-200/80 rounded w-12 mx-auto" />
+                      <td className="px-6 py-3.5 text-center">
+                        <div className="h-5 bg-gray-200/70 rounded-full w-12 mx-auto" />
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-3.5 text-center">
                         <div className="h-4 bg-gray-200/80 rounded w-10 mx-auto" />
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-3.5 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <div className="h-4 w-4 bg-gray-200/80 rounded" />
-                          <div className="h-4 w-4 bg-gray-200/80 rounded" />
+                          <div className="h-7 w-7 bg-gray-100 rounded-md" />
+                          <div className="h-7 w-7 bg-gray-100 rounded-md" />
                         </div>
                       </td>
                     </tr>
