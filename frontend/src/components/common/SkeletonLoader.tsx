@@ -31,7 +31,7 @@ export const VideoCardSkeleton: React.FC = () => (
  */
 export const TrendingBhajanSkeleton: React.FC = () => (
   <div className="flex items-center gap-3 p-2 rounded-lg animate-pulse">
-    <div className="w-11 h-11 rounded-lg bg-gray-200 shrink-0" />
+    <div className="w-20 aspect-video rounded-lg bg-gray-200 shrink-0" />
     <div className="flex-1 min-w-0 flex flex-col gap-1.5">
       <div className="h-3.5 bg-gray-200 rounded-md w-3/4" />
       <div className="h-2.5 bg-gray-100 rounded-md w-1/2" />

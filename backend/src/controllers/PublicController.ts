@@ -79,13 +79,14 @@ export class PublicController {
         ORDER BY display_order ASC, name ASC
       `;
 
-      // Featured YouTube Videos (excluding Shorts) - limited to 40 instead of 500 for high efficiency
+      // Featured YouTube Videos (excluding Shorts) - scan enough recent records so even when many Shorts are uploaded, at least 10 full videos are found
       const videosQuery = `
         SELECT id, youtube_video_id, title, description, thumbnail, channel_name, duration, view_count, published_at
         FROM youtube_videos
         WHERE import_status != 'IGNORED'
+          AND title NOT ILIKE '%#short%'
         ORDER BY published_at DESC NULLS LAST, created_at DESC
-        LIMIT 40
+        LIMIT 250
       `;
 
       const [bhajans, articles, festivals, puranas, deities, categories, videos] = await Promise.all([

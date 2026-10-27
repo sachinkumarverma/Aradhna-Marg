@@ -405,12 +405,12 @@ export const Home: React.FC = () => {
                         to={`/bhajans/${bhajan.slug || bhajan.id}`}
                         className="group flex items-center gap-3 p-2 rounded-lg hover:bg-amber-50/70 transition-all border border-transparent hover:border-amber-200/50 cursor-pointer"
                       >
-                        {/* Thumbnail Image */}
-                        <div className="w-11 h-11 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-black/5">
+                        {/* Thumbnail Image (16:9 aspect ratio) */}
+                        <div className="w-20 aspect-video rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-black/5 shadow-2xs">
                           <img
                             src={bhajan.thumbnail_url || bhajan.image_url || '/Deities/Krishna.png'}
                             alt={hindiTitle}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
 

@@ -15,7 +15,9 @@ import {
   Layers,
   Crown,
   Heart,
-  HandHeart
+  HandHeart,
+  Download,
+  Smartphone
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
@@ -23,6 +25,8 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { PublicApi } from '@api/publicApi';
 import { useQuery } from '@tanstack/react-query';
 import { useFavorites } from '@hooks/useFavorites';
+import { usePWAInstall } from '@hooks/usePWAInstall';
+import toast from 'react-hot-toast';
 import { ENABLE_DONATIONS } from '@/constants';
 
 interface RightNavDrawerProps {
@@ -74,6 +78,40 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
   }, [isOpen]);
 
   const isHi = language === 'hi';
+  const { isInstalled, hasNativePrompt, isIOS, showIOSPrompt, setShowIOSPrompt, installApp } = usePWAInstall();
+
+  const handleInstallClick = async () => {
+    if (hasNativePrompt) {
+      await installApp();
+      onClose();
+    } else if (isIOS) {
+      setShowIOSPrompt(true);
+    } else {
+      toast(
+        isHi
+          ? 'ब्राउज़र मेनू (⋮) पर टैप करें और "Add to Home screen" चुनें।'
+          : 'Tap browser menu (⋮) and choose "Add to Home screen" or "Install app".',
+        {
+          id: 'pwa-install-instruction',
+          icon: '📲',
+          position: 'bottom-center',
+          duration: 4500,
+          style: {
+            background: '#0f172a',
+            color: '#f8fafc',
+            borderRadius: '16px',
+            padding: '12px 18px',
+            fontSize: '13.5px',
+            fontWeight: 500,
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.2)',
+            maxWidth: '92vw',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            zIndex: 99999
+          }
+        }
+      );
+    }
+  };
 
   const navItems = [
     {
@@ -172,7 +210,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
             {/* Header - Height and padding matched precisely to Main Navbar */}
             <div className="flex items-center justify-between px-4 sm:px-6 h-16 sm:h-20 border-b border-orange-100 bg-white shrink-0">
               <Link to="/" onClick={onClose} className="flex items-center gap-2 sm:gap-3 group">
-                <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-0.5 sm:p-1 group-hover:scale-105 transition-transform shadow-xs shrink-0">
+                <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#041a4b] border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs shrink-0">
                   <img
                     src="/logo.png"
                     alt="Aradhna Marg Logo"
@@ -324,6 +362,35 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
               {/* Divider */}
               <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
 
+              {/* Install App / Add to Home Screen Action */}
+              {!isInstalled && (
+                <div className="pb-2">
+                  <button
+                    type="button"
+                    onClick={handleInstallClick}
+                    className="w-full flex items-center gap-3.5 p-3.5 rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50/90 to-amber-50/90 hover:from-orange-100 hover:to-amber-100 shadow-2xs hover:shadow-xs transition-all group cursor-pointer text-left"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-saffron flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform text-white shadow-xs">
+                      <Download className="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold text-sm text-slate-900 font-hindi-heading leading-tight">
+                          {isHi ? 'ऐप इंस्टॉल करें' : 'Install App'}
+                        </p>
+                        <span className="px-1.5 py-0.2 rounded-full bg-saffron text-white font-bold text-[9px] uppercase tracking-wide">
+                          Add to Home
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-saffron-dark truncate font-hindi-heading mt-0.5 font-medium">
+                        {isHi ? 'बिना ब्राउज़र तेज़ अनुभव के लिए' : 'Fast, fullscreen offline experience'}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-saffron group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </button>
+                </div>
+              )}
+
               {/* Favorites Action Link */}
               <div className="pb-2">
                 <Link
@@ -386,6 +453,90 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
               <LanguageSwitcher />
             </div>
           </motion.div>
+        </div>
+      )}
+
+      {/* iOS Safari Installation Guide Modal */}
+      {showIOSPrompt && (
+        <div
+          className="fixed inset-0 z-[1001] flex items-end sm:items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+          onClick={() => setShowIOSPrompt(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-2xl border border-gray-100 text-slate-800"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b pb-3">
+              <h4 className="font-bold text-base text-slate-900 flex items-center gap-2 font-hindi-heading">
+                <Smartphone className="w-5 h-5 text-saffron" />
+                {isHi ? 'iPhone / iPad पर इंस्टॉल करें' : 'Install on iPhone / iPad'}
+              </h4>
+              <button
+                type="button"
+                onClick={() => setShowIOSPrompt(false)}
+                className="p-1 rounded-full text-gray-400 hover:text-gray-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="space-y-3 text-sm text-slate-600 font-hindi-body">
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-orange-100 text-saffron font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  1
+                </span>
+                <p>
+                  {isHi ? (
+                    <>
+                      Safari में नीचे मौजूद <strong>Share (शेयर)</strong> बटन पर टैप करें।
+                    </>
+                  ) : (
+                    <>
+                      Tap the <strong>Share</strong> button in Safari's bottom toolbar.
+                    </>
+                  )}
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-orange-100 text-saffron font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  2
+                </span>
+                <p>
+                  {isHi ? (
+                    <>
+                      नीचे स्क्रॉल करें और <strong>'Add to Home Screen'</strong> (होम स्क्रीन में जोड़ें) चुनें।
+                    </>
+                  ) : (
+                    <>
+                      Scroll down and select <strong>'Add to Home Screen'</strong>.
+                    </>
+                  )}
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-orange-100 text-saffron font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  3
+                </span>
+                <p>
+                  {isHi ? (
+                    <>
+                      ऊपर दाईं ओर <strong>'Add'</strong> पर टैप करें।
+                    </>
+                  ) : (
+                    <>
+                      Tap <strong>'Add'</strong> in the top right corner.
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowIOSPrompt(false)}
+              className="w-full py-2.5 bg-saffron hover:bg-saffron-dark text-white rounded-xl font-bold text-sm transition-colors cursor-pointer"
+            >
+              {isHi ? 'समझ गया' : 'Got it'}
+            </button>
+          </div>
         </div>
       )}
     </AnimatePresence>,

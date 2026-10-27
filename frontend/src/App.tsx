@@ -18,12 +18,30 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  const [isMobile, setIsMobile] = React.useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <SEOProvider>
       <QueryClientProvider client={queryClient}>
         <LanguageProvider>
           <AppRouter />
-          <Toaster position="top-right" />
+          <Toaster
+            position={isMobile ? 'bottom-center' : 'top-right'}
+            containerStyle={isMobile ? { bottom: 24, zIndex: 99999 } : { zIndex: 99999 }}
+            toastOptions={{
+              className: '!rounded-xl !shadow-lg',
+              style: {
+                fontSize: '14px',
+                maxWidth: '92vw'
+              }
+            }}
+          />
           <Analytics />
           <SpeedInsights />
         </LanguageProvider>
