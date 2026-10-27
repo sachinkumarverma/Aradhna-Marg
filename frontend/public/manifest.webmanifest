@@ -3,7 +3,7 @@
   "name": "Aradhna Marg",
   "short_name": "Aradhna Marg",
   "description": "सम्पूर्ण सनातन भक्ति साहित्य, मधुर भजन, आरती, चालीसा, स्तोत्र, श्रीमद्भागवत व अष्टादश महापुराण और प्रमुख हिन्दू पर्वों की प्रामाणिक जानकारी।",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",

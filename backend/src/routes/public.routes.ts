@@ -157,6 +157,28 @@ import { contactController } from '@controllers/ContactController';
 router.post('/contact', contactController.submitContact);
 router.post('/subscribe', contactController.subscribeNewsletter);
 
+// PWA Install Analytics
+router.post('/analytics/pwa-install', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const rawPlatform = typeof req.body?.platform === 'string' ? req.body.platform.toLowerCase() : 'android';
+    const platform = ['android', 'ios', 'desktop'].includes(rawPlatform) ? rawPlatform : 'other';
+    const userAgent = req.headers['user-agent'] || '';
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+    const crypto = await import('crypto');
+    const ipHash = crypto.createHash('sha256').update(String(ip)).digest('hex').slice(0, 16);
+
+    await db.query(`INSERT INTO pwa_installs (platform, user_agent, ip_hash) VALUES ($1, $2, $3)`, [
+      platform,
+      userAgent,
+      ipHash
+    ]);
+
+    return sendSuccess(res, 'Install recorded successfully', { recorded: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Public Platform Settings
 router.get('/settings', publicController.getPublicSettings);
 

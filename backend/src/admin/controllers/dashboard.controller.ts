@@ -30,6 +30,9 @@ class DashboardController {
         },
         {
           rows: [viewsStats]
+        },
+        {
+          rows: [pwaStats]
         }
       ] = await Promise.all([
         db.query(`SELECT COUNT(*) as total FROM bhajans WHERE youtube_video_id IS NULL AND deleted_at IS NULL`),
@@ -51,7 +54,30 @@ class DashboardController {
               COALESCE((SELECT SUM(view_count) FROM articles WHERE deleted_at IS NULL), 0) +
               COALESCE((SELECT SUM(view_count) FROM puranas WHERE deleted_at IS NULL), 0)
             ) as total_views
-        `)
+        `),
+        db
+          .query(
+            `
+          SELECT 
+            COUNT(*) as total_installs,
+            COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE) as today_installs,
+            COUNT(*) FILTER (WHERE platform = 'android') as android_installs,
+            COUNT(*) FILTER (WHERE platform = 'ios') as ios_installs,
+            COUNT(*) FILTER (WHERE platform = 'desktop') as desktop_installs
+          FROM pwa_installs
+        `
+          )
+          .catch(() => ({
+            rows: [
+              {
+                total_installs: '0',
+                today_installs: '0',
+                android_installs: '0',
+                ios_installs: '0',
+                desktop_installs: '0'
+              }
+            ]
+          }))
       ]);
 
       const tb = parseInt(totalBhajans, 10) || 0;
@@ -81,7 +107,14 @@ class DashboardController {
         monthViews: realTotalViews,
         bhajanViews,
         articleViews,
-        puranViews
+        puranViews,
+        pwaInstalls: {
+          total: parseInt(pwaStats?.total_installs || '0', 10),
+          today: parseInt(pwaStats?.today_installs || '0', 10),
+          android: parseInt(pwaStats?.android_installs || '0', 10),
+          ios: parseInt(pwaStats?.ios_installs || '0', 10),
+          desktop: parseInt(pwaStats?.desktop_installs || '0', 10)
+        }
       };
 
       return sendSuccess(res, 'Dashboard stats fetched', stats);

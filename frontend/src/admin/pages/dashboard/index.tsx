@@ -11,7 +11,8 @@ import {
   CheckCircle2,
   XCircle,
   HeartHandshake,
-  ArrowRight
+  ArrowRight,
+  Smartphone
 } from 'lucide-react';
 import { DonationsApi, type PaymentItem } from '@admin/features/donations/DonationsApi';
 
@@ -70,7 +71,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Primary Stats Grid Skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5 sm:gap-4">
           <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-blue-50 to-white border-blue-100 flex items-start justify-between">
             <div className="space-y-2">
               <div className="h-3.5 w-28 bg-blue-200/70 rounded"></div>
@@ -101,6 +102,14 @@ export const AdminDashboard: React.FC = () => {
               <div className="h-7 w-12 bg-slate-300 rounded"></div>
             </div>
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-purple-100/80 shrink-0"></div>
+          </div>
+
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-emerald-50 to-white border-emerald-100 flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="h-3.5 w-24 bg-emerald-200/70 rounded"></div>
+              <div className="h-7 w-14 bg-slate-300 rounded"></div>
+            </div>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-100/80 shrink-0"></div>
           </div>
         </div>
 
@@ -224,7 +233,7 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Primary Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5 sm:gap-4">
         <StatCard
           title="Total Content Views"
           value={new Intl.NumberFormat('en-IN').format(stats?.totalViews ?? stats?.todayViews ?? 0)}
@@ -260,6 +269,14 @@ export const AdminDashboard: React.FC = () => {
           bgClassName="bg-gradient-to-br from-purple-50 to-white"
           borderClassName="border-purple-100"
           onClick={() => navigate(getAdminPath('/ai-jobs'))}
+        />
+        <StatCard
+          title="App Installs"
+          value={new Intl.NumberFormat('en-IN').format(stats?.pwaInstalls?.total || 0)}
+          icon={Smartphone}
+          colorClassName="bg-emerald-100 text-emerald-600"
+          bgClassName="bg-gradient-to-br from-emerald-50 to-white"
+          borderClassName="border-emerald-100"
         />
       </div>
 
