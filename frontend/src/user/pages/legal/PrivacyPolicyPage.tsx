@@ -219,7 +219,10 @@ export const PrivacyPolicyPage: React.FC = () => {
           </div>
 
           {/* Section 3: Opt-Out Links & User Controls (Crucial Google Requirement) */}
-          <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
+          <div
+            id="ad-settings"
+            className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow"
+          >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
               {isHi
                 ? '3. विज्ञापनों से बाहर निकलने के विकल्प (Your Opt-Out Choices)'
@@ -314,6 +317,39 @@ export const PrivacyPolicyPage: React.FC = () => {
                   </div>
                   <span className="text-xs text-emerald-600 font-bold mt-3 block">youronlinechoices.com →</span>
                 </a>
+              </div>
+
+              <div className="p-4 sm:p-5 rounded-xl bg-orange-50/70 border border-orange-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-3">
+                <div>
+                  <p className="font-bold text-darkBrown text-base">
+                    {isHi ? 'कुकी प्राथमिकताएं बदलें (Consent Preferences)' : 'Manage Cookie Preferences (CMP)'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {isHi
+                      ? 'यूरोपीय संघ (EEA/UK/Switzerland) के उपयोगकर्ता अपनी कुकी सहमति को पुनः खोलकर बदल अथवा वापस ले सकते हैं।'
+                      : 'Visitors in the EEA, UK, and Switzerland can reopen the Google-certified CMP to review, modify, or revoke consent.'}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      const w = window as any;
+                      if (w.googlefc && typeof w.googlefc.showRevocationMessage === 'function') {
+                        w.googlefc.showRevocationMessage();
+                      } else {
+                        alert(
+                          isHi
+                            ? 'Google Consent Management बैनर आपके क्षेत्र (EEA/UK/Switzerland) या AdSense सक्रिय होने पर प्रदर्शित होता है।'
+                            : 'Google Consent Management banner displays for visitors in regions (EEA/UK/Switzerland) governed by GDPR.'
+                        );
+                      }
+                    }
+                  }}
+                  className="px-4 py-2.5 bg-saffron hover:bg-orange-600 text-white font-bold text-sm rounded-xl transition-all shadow-xs shrink-0 cursor-pointer"
+                >
+                  {isHi ? 'कुकी प्राथमिकताएं खोलें' : 'Open Cookie Settings'}
+                </button>
               </div>
 
               <p className="text-sm sm:text-base text-gray-600 pt-2">

@@ -336,6 +336,23 @@ export const Footer: React.FC = () => {
             <Link to="/privacy" className="hover:text-white transition-colors">
               {isHi ? 'गोपनीयता नीति (Privacy)' : 'Privacy Policy'}
             </Link>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  const w = window as any;
+                  if (w.googlefc && typeof w.googlefc.showRevocationMessage === 'function') {
+                    w.googlefc.showRevocationMessage();
+                  } else {
+                    window.location.href = '/privacy#ad-settings';
+                  }
+                }
+              }}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              {isHi ? 'कुकी सेटिंग्स (Cookies)' : 'Cookie Settings'}
+            </button>
             {settings.contactEmail && (
               <>
                 <span>•</span>

@@ -221,6 +221,32 @@ function buildHtml(template, options) {
     html = html.replace('</head>', `${dataScript}</head>`);
   }
 
+  // Strip Google AdSense Auto Ads script completely from non-content / policy-excluded pages
+  const normalizedRoute = (options.route || '').toLowerCase().trim();
+  const isExcludedFromAds = [
+    'privacy',
+    'terms',
+    'disclaimer',
+    'contact',
+    'support-us',
+    'donate',
+    'search',
+    'favourite',
+    'favorites',
+    'admin'
+  ].some((p) => normalizedRoute === p || normalizedRoute.startsWith(`${p}/`));
+
+  if (isExcludedFromAds) {
+    html = html.replace(
+      /\s*<!-- Google AdSense Auto Ads -->\s*<script[^>]*src="[^"]*pagead2\.googlesyndication\.com[^"]*"[^>]*><\/script>/gi,
+      ''
+    );
+    html = html.replace(
+      /\s*<script[^>]*src="[^"]*pagead2\.googlesyndication\.com[^"]*"[^>]*><\/script>/gi,
+      ''
+    );
+  }
+
   return html;
 }
 

@@ -16,6 +16,41 @@
     <meta data-prerender="true" data-rh="true" name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link data-prerender="true" data-rh="true" rel="canonical" href="https://aradhnamarg.com/" />
 
+    <!-- Google Consent Mode v2 (Default Denied for Ads until User Consent) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { window.dataLayer.push(arguments); }
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'granted',
+        'wait_for_update': 500
+      });
+      // Immediately pause ad requests on policy-excluded non-content pages
+      (function () {
+        try {
+          var p = (window.location.pathname || '').toLowerCase();
+          var excluded = [
+            '/privacy',
+            '/terms',
+            '/disclaimer',
+            '/contact',
+            '/support-us',
+            '/donate',
+            '/search',
+            '/favourite',
+            '/favorites',
+            '/admin'
+          ];
+          if (excluded.some(function (prefix) { return p === prefix || p.indexOf(prefix + '/') === 0; })) {
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.pauseAdRequests = 1;
+          }
+        } catch (_) {}
+      })();
+    </script>
+
     <!-- Google AdSense Auto Ads -->
     <script
       async
