@@ -8,7 +8,11 @@ const __dirname = path.dirname(__filename);
 const BASE_URL = process.env.VITE_SITE_URL || 'https://aradhnamarg.com';
 const DIST_DIR = path.resolve(__dirname, '../dist');
 const TEMPLATE_PATH = path.join(DIST_DIR, 'index.html');
-const API_URL = process.env.VITE_API_BASE_URL || process.env.VITE_API_URL || process.env.API_URL || 'https://api.aradhnamarg.com/api/v1';
+const API_URL =
+  process.env.VITE_API_BASE_URL ||
+  process.env.VITE_API_URL ||
+  process.env.API_URL ||
+  'https://api.aradhnamarg.com/api/v1';
 
 function escapeHtml(str = '') {
   return String(str)
@@ -467,10 +471,70 @@ async function prerenderAll() {
     },
     {
       route: 'privacy',
-      title: 'गोपनीयता नीति (Privacy Policy) | Aradhna Marg',
-      description: 'आराधना मार्ग की गोपनीयता नीति एवं डेटा सुरक्षा जानकारी।',
-      h1: 'गोपनीयता नीति (Privacy Policy)',
-      content: 'हम आपकी गोपनीयता का पूर्ण सम्मान करते हैं और आपकी व्यक्तिगत जानकारी को सुरक्षित रखते हैं।'
+      title: 'गोपनीयता नीति (Privacy Policy) & Cookie Disclosures | Aradhna Marg',
+      description:
+        'आराधना मार्ग की आधिकारिक गोपनीयता नीति। जानें कि हम आपके डेटा, कुकीज़, Google AdSense विज्ञापनों, ऑपट-आउट और उपयोगकर्ता अधिकारों की सुरक्षा कैसे करते हैं।',
+      h1: 'गोपनीयता नीति (Privacy Policy & Advertising Disclosures)',
+      contentHtml: `
+        <div style="line-height: 1.85; color: #334155; font-size: 1rem;">
+          <p style="margin-bottom: 1.5rem; font-size: 1.1rem; background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #fed7aa;">
+            <strong>आराधना मार्ग (aradhnamarg.com)</strong> सनातन धर्म का एक पावन भक्ति मंच है। हम अपने सभी पाठकों और श्रद्धालुओं की निजता का पूर्ण आदर करते हैं। यह नीति पत्र यह स्पष्ट रूप से प्रकट करता है कि जब आप हमारी वेबसाइट पर आते हैं, तो किस प्रकार की जानकारी एकत्रित की जाती है, कुकीज़ और तृतीय-पक्ष विज्ञापनदाता (विशेषकर Google AdSense) उसका क्या उपयोग करते हैं, तथा आपके पास अपनी प्राथमिकताओं को नियंत्रित करने के क्या विकल्प उपलब्ध हैं।
+          </p>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">1. एकत्रित की जाने वाली जानकारी (Information We Collect)</h2>
+            <p>हम अपनी वेबसाइट पर केवल आवश्यक एवं वैध उद्देश्यों के लिए ही जानकारी एकत्रित करते हैं:</p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; line-height: 1.8;">
+              <li><strong>स्वैच्छिक संपर्क जानकारी:</strong> जब आप संपर्क प्रपत्र (Contact Us) या प्रतिक्रिया भेजते हैं, तो आपका नाम, ईमेल पता और संदेश सुरक्षित रखा जाता है ताकि हम आपके प्रश्नों का उत्तर दे सकें।</li>
+              <li><strong>सर्वर लॉग्स एवं तकनीकी डेटा:</strong> मानक वेब सर्वर सुरक्षा हेतु आपका ब्राउज़र प्रकार, डिवाइस श्रेणी, रेफ़रिंग यूआरएल, समय-मुहर एवं एनोनिमाइज़्ड आईपी पता लॉग किया जाता है।</li>
+              <li><strong>स्थानीय प्राथमिकताएं (Local Storage):</strong> आपकी भाषा प्राथमिकता (हिंदी/अंग्रेजी), सहेजे गए पसंदीदा भजन (My Sangrah) एवं फ़ॉन्ट आकार आपके अपने ब्राउज़र में स्थानीय रूप से सुरक्षित रहते हैं।</li>
+            </ul>
+          </section>
+
+          <section style="background: #fffbeb; padding: 1.75rem; border-radius: 12px; border: 2px solid #fde68a; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #92400e; margin-bottom: 0.75rem;">2. Google AdSense एवं तृतीय-पक्ष विज्ञापन कुकीज़ (Google AdSense & Advertising Cookies)</h2>
+            <p style="margin-bottom: 0.75rem;">आराधना मार्ग अपनी निःशुल्क भक्ति सेवाओं एवं सर्वर संचालन के खर्च वहन करने के लिए Google AdSense एवं अधिकृत विज्ञापन नेटवर्कों के विज्ञापनों का प्रदर्शन कर सकता है। Google की आधिकारिक प्रकाशक नीतियों (Google Publisher Policies) के अनुसार हम निम्नलिखित तथ्यों का प्रकटीकरण करते हैं:</p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; line-height: 1.8;">
+              <li><strong>तृतीय-पक्ष विक्रेता (Third-Party Vendors):</strong> Google सहित अन्य तृतीय-पक्ष विक्रेता उपयोगकर्ता द्वारा हमारी वेबसाइट अथवा इंटरनेट पर अन्य वेबसाइटों पर पूर्व में किए गए दौरों के आधार पर विज्ञापन प्रस्तुत करने हेतु <strong>कुकीज़ (Cookies)</strong> का उपयोग करते हैं।</li>
+              <li><strong>व्यक्तिगत विज्ञापन (Personalized Ads):</strong> विज्ञापन कुकीज़ के उपयोग से Google और उसके साझेदार विज्ञापन नेटवर्कों को उपयोगकर्ता के आराधना मार्ग अथवा अन्य इंटरनेट साइटों पर भ्रमण के आधार पर प्रासंगिक विज्ञापन दिखाने की अनुमति मिलती है।</li>
+              <li><strong>गैर-सामग्री पृष्ठों पर विज्ञापन निषेध:</strong> Google के नियमों के अनुरूप हम किसी भी गैर-सामग्री पृष्ठ जैसे गोपनीयता नीति, नियम, अस्वीकरण, संपर्क, खोज परिणाम या दान पृष्ठों पर विज्ञापन प्रदर्शित नहीं करते हैं।</li>
+            </ul>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">3. व्यक्तिगत विज्ञापनों से बाहर निकलने के विकल्प (Your Opt-Out Choices)</h2>
+            <p style="margin-bottom: 0.75rem;">उपयोगकर्ता किसी भी समय व्यक्तिगत विज्ञापनों और ट्रैकिंग कुकीज़ से बाहर निकल सकते हैं। इसके लिए निम्नलिखित आधिकारिक टूल्स उपलब्ध हैं:</p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; line-height: 1.8;">
+              <li><strong>Google Ads Settings:</strong> उपयोगकर्ता अपनी विज्ञापन प्राथमिकताओं को प्रबंधित करने अथवा व्यक्तिगत विज्ञापन से बाहर निकलने हेतु <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" style="color: #ea580c; font-weight: 600;">Google Ads Settings (adssettings.google.com)</a> पर जा सकते हैं।</li>
+              <li><strong>AboutAds.info (DAA):</strong> उपयोगकर्ता डिजिटल एडवरटाइजिंग एलायंस के माध्यम से तृतीय-पक्ष कुकीज़ से बाहर निकलने हेतु <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" style="color: #ea580c; font-weight: 600;">www.aboutads.info/choices</a> का उपयोग कर सकते हैं।</li>
+              <li><strong>Network Advertising Initiative (NAI):</strong> भाग लेने वाले विज्ञापन नेटवर्कों से बाहर निकलने हेतु <a href="https://optout.networkadvertising.org/" target="_blank" rel="noopener noreferrer" style="color: #ea580c; font-weight: 600;">optout.networkadvertising.org</a> पर जाएं।</li>
+              <li><strong>Your Online Choices (Europe):</strong> यूरोपीय संघ एवं यूके के उपयोगकर्ता <a href="https://www.youronlinechoices.com/" target="_blank" rel="noopener noreferrer" style="color: #ea580c; font-weight: 600;">www.youronlinechoices.com</a> के माध्यम से विज्ञापन कुकीज़ प्रबंधित कर सकते हैं।</li>
+              <li><strong>ब्राउज़र सेटिंग्स:</strong> इसके अतिरिक्त आप अपने वेब ब्राउज़र की सेटिंग्स में जाकर भी किसी भी समय सभी कुकीज़ को मिटा अथवा ब्लॉक कर सकते हैं।</li>
+            </ul>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">4. तृतीय-पक्ष विक्रेता एवं विज्ञापन नेटवर्क (Third-Party Ad Networks)</h2>
+            <p style="margin-bottom: 0.75rem;">Google AdSense कार्यक्रम के तहत अधिकृत तृतीय-पक्ष विक्रेता और विज्ञापन नेटवर्क भी विज्ञापन प्रदर्शित कर सकते हैं। आप Google द्वारा प्रमाणित अधिकृत विज्ञापन प्रौद्योगिकी प्रदाताओं की आधिकारिक सूची निम्नलिखित लिंक पर देख सकते हैं:</p>
+            <p><a href="https://support.google.com/adsense/answer/9012903" target="_blank" rel="noopener noreferrer" style="color: #ea580c; font-weight: 600;">Google Ad Technology Providers List (Google Help) →</a></p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">5. यूरोपीय संघ (EEA), यूके एवं स्विट्ज़रलैंड हेतु सहमति (Consent Handling for EEA, UK & Switzerland)</h2>
+            <p style="margin-bottom: 0.75rem;">यूरोपीय आर्थिक क्षेत्र (EEA), यूके और स्विट्ज़रलैंड के उपयोगकर्ताओं के लिए हम <strong>GDPR</strong> एवं Google की <strong>EU User Consent Policy</strong> का कड़ाई से पालन करते हैं:</p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; line-height: 1.8;">
+              <li>विज्ञापन कुकीज़ एवं व्यक्तिगत डेटा केवल Google-प्रमाणित सहमति प्रबंधन प्लेटफ़ॉर्म (CMP) के माध्यम से उपयोगकर्ता की पूर्व, संसूचित सहमति प्राप्त करने के उपरांत ही सक्रिय किए जाते हैं।</li>
+              <li>हम Google Consent Mode v2 एवं IAB Europe Transparency & Consent Framework (TCF v2.2) मानकों का पूर्ण अनुपालन करते हैं।</li>
+              <li>उपयोगकर्ताओं को किसी भी समय अपनी सहमति वापस लेने अथवा बदलने का पूर्ण अधिकार है।</li>
+            </ul>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">6. डेटा सुरक्षा एवं संपर्क सूत्र (Data Security & Contact)</h2>
+            <p>आराधना मार्ग किसी भी स्थिति में आपकी व्यक्तिगत जानकारी को व्यावसायिक लाभ अथवा डेटा ब्रोकरों को नहीं बेचता है। संपूर्ण वेबसाइट 256-बिट SSL/TLS एन्क्रिप्शन द्वारा सुरक्षित है। यदि आपके पास हमारी गोपनीयता नीति अथवा विज्ञापन नीतियों के संबंध में कोई प्रश्न है, तो कृपया हमसे <a href="/contact" style="color: #ea580c; font-weight: 600;">संपर्क प्रपत्र (/contact)</a> के माध्यम से संपर्क करें।</p>
+          </section>
+        </div>
+      `
     },
     {
       route: 'disclaimer',
@@ -529,7 +593,7 @@ async function prerenderAll() {
           <h1 style="font-size: 2rem; font-weight: 800; color: #1c1917; margin-bottom: 0.5rem;">${escapeHtml(page.h1)}</h1>
           <p style="color: #475569; font-size: 1.1rem; line-height: 1.6;">${escapeHtml(page.description)}</p>
         </header>
-        ${page.content ? `<div style="line-height: 1.8; color: #334155; margin-bottom: 1.5rem;">${escapeHtml(page.content)}</div>` : ''}
+        ${page.contentHtml ? page.contentHtml : page.content ? `<div style="line-height: 1.8; color: #334155; margin-bottom: 1.5rem;">${escapeHtml(page.content)}</div>` : ''}
         ${sectionsHtml}
         ${itemsHtml}
       </main>

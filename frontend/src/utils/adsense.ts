@@ -67,3 +67,49 @@ export function loadAdSenseScript(publisherId: string): Promise<void> {
     document.head.appendChild(script);
   });
 }
+
+/**
+ * Pages that MUST be strictly excluded from ad serving per Google AdSense policies.
+ * Google prohibits ads on non-content, utility, legal, search, donation, or transaction pages.
+ */
+export const AD_EXCLUDED_PATH_PREFIXES = [
+  '/support-us',
+  '/donate',
+  '/privacy',
+  '/terms',
+  '/disclaimer',
+  '/contact',
+  '/search',
+  '/favourite',
+  '/favorites',
+  '/admin'
+];
+
+/**
+ * Checks whether a given route/pathname should be excluded from ad serving.
+ */
+export function isAdExcludedPath(pathname: string): boolean {
+  if (!pathname) return false;
+  const normalized = pathname.toLowerCase().trim();
+  return AD_EXCLUDED_PATH_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`));
+}
+
+/**
+ * Dynamically pauses or resumes Google AdSense Auto Ads requests during SPA navigation.
+ * Uses Google's official (adsbygoogle.pauseAdRequests = 1) mechanism for non-content pages.
+ */
+export function setAdSenseAutoAdsState(pathname: string): void {
+  if (typeof window === 'undefined') return;
+  const isExcluded = isAdExcludedPath(pathname);
+  try {
+    const w = window as any;
+    w.adsbygoogle = w.adsbygoogle || [];
+    if (isExcluded) {
+      w.adsbygoogle.pauseAdRequests = 1;
+    } else {
+      w.adsbygoogle.pauseAdRequests = 0;
+    }
+  } catch {
+    // Non-blocking if script is not yet initialized
+  }
+}

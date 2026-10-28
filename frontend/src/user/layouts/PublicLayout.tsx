@@ -7,6 +7,7 @@ import { AnalyticsTracker } from '@components/common/AnalyticsTracker';
 import { AdBanner } from '@components/common/AdBanner';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { MaintenancePage } from '@/user/pages/common/MaintenancePage';
+import { isAdExcludedPath, setAdSenseAutoAdsState } from '@/utils/adsense';
 
 const PageLoader = () => <CustomLoader fullScreen />;
 
@@ -23,6 +24,12 @@ export const PublicLayout: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isRestoringRef = useRef(false);
   const { settings } = usePublicSettings();
+  const isExcludedFromAds = isAdExcludedPath(location.pathname);
+
+  // Sync Google AdSense Auto Ads state with current route (pause on non-content / policy-excluded pages)
+  useEffect(() => {
+    setAdSenseAutoAdsState(location.pathname);
+  }, [location.pathname]);
 
   // Handle scroll restoration on navigation
   useEffect(() => {
@@ -121,7 +128,7 @@ export const PublicLayout: React.FC = () => {
         onScroll={handleScroll}
         className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col main-scroll-container"
       >
-        {settings.enableAds && settings.adTopBanner && (
+        {settings.enableAds && !isExcludedFromAds && settings.adTopBanner && (
           <AdBanner htmlCode={settings.adTopBanner} className="bg-white/60 border-b border-orange-100/80 shadow-xs" />
         )}
 
@@ -133,7 +140,7 @@ export const PublicLayout: React.FC = () => {
               </Suspense>
             </div>
 
-            {settings.enableAds && settings.adFooter && (
+            {settings.enableAds && !isExcludedFromAds && settings.adFooter && (
               <AdBanner htmlCode={settings.adFooter} className="max-w-7xl mx-auto px-4 my-6" />
             )}
 

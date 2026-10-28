@@ -263,10 +263,12 @@ export const CollectionDetails: React.FC = () => {
           </div>
         )}
 
-        {/* Ad Unit Placeholder */}
-        <div className="pt-0">
-          <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
-        </div>
+        {/* Ad Unit (served strictly on collections with active content) */}
+        {((data.bhajans?.length || 0) > 0 || (data.articles?.length || 0) > 0 || (data.festivals?.length || 0) > 0) && (
+          <div className="pt-0">
+            <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
+          </div>
+        )}
       </div>
     </div>
   );
