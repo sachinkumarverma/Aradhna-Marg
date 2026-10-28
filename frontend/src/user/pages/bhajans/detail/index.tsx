@@ -108,6 +108,16 @@ export const BhajanDetail: React.FC = () => {
     fetchBhajanData();
   }, [slug]);
 
+  // Track genuine user view (deduplicated per browser session so refreshes don't spam counts)
+  useEffect(() => {
+    if (!bhajan?.id || typeof window === 'undefined') return;
+    const sessionKey = `am_view_bhajan_${bhajan.id}`;
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, '1');
+      PublicApi.trackBhajanView(bhajan.id);
+    }
+  }, [bhajan?.id]);
+
   const isHi = language === 'hi';
 
   if (loading) {

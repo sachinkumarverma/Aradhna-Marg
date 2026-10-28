@@ -58,6 +58,16 @@ export const ArticleDetail: React.FC = () => {
     fetchArticleData();
   }, [slug, language]);
 
+  // Track genuine user view (deduplicated per browser session so refreshes don't spam counts)
+  useEffect(() => {
+    if (!article?.id || typeof window === 'undefined') return;
+    const sessionKey = `am_view_article_${article.id}`;
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, '1');
+      PublicApi.trackArticleView(article.id);
+    }
+  }, [article?.id]);
+
   if (loading) {
     return <CustomLoader fullScreen text={language === 'hi' ? 'धार्मिक लेख लोड हो रहा है...' : 'Loading article...'} />;
   }

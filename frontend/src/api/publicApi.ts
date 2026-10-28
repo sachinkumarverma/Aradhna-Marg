@@ -317,4 +317,20 @@ export class PublicApi {
     const response = await apiClient.post('/v1/public/subscribe', data);
     return response.data;
   }
+
+  static async trackBhajanView(idOrSlug: string) {
+    try {
+      await apiClient.post(`/v1/public/bhajans/${encodeURIComponent(idOrSlug)}/view`);
+    } catch {
+      // Non-blocking view tracking
+    }
+  }
+
+  static async trackArticleView(idOrSlug: string) {
+    try {
+      await apiClient.post(`/v1/public/articles/${encodeURIComponent(idOrSlug)}/view`);
+    } catch {
+      // Non-blocking view tracking
+    }
+  }
 }

@@ -16,6 +16,7 @@ router.get('/home', publicController.getHomeData);
 
 // Bhajans & Devotional Videos
 router.get('/bhajans', publicController.getBhajans);
+router.post('/bhajans/:id/view', publicController.trackBhajanView);
 router.get('/bhajans/:slug/pdf', publicController.downloadBhajanLyricsPdf);
 router.get('/bhajans/:slug/related', publicController.getBhajanRelated);
 router.get('/bhajans/:slug', publicController.getBhajanBySlug);
@@ -24,6 +25,7 @@ router.get('/videos/:slug', publicController.getBhajanBySlug);
 
 // Articles
 router.get('/articles', publicController.getArticles);
+router.post('/articles/:id/view', publicController.trackArticleView);
 router.get('/articles/:slug/related', publicController.getArticleRelated);
 router.get('/articles/:slug', publicController.getArticleBySlug);
 

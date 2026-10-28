@@ -276,9 +276,6 @@ export class PublicController {
 
       const bhajan = rows[0];
 
-      // Async increment view count
-      db.query(`UPDATE bhajans SET views = COALESCE(views, 0) + 1 WHERE id = $1`, [bhajan.id]).catch(() => {});
-
       publicCacheService.set(cacheKey, bhajan, 300);
 
       return sendSuccess(res, 'Bhajan retrieved successfully', bhajan);
@@ -575,11 +572,6 @@ export class PublicController {
       }
 
       const article = rows[0];
-
-      // Increment view count
-      db.query(`UPDATE articles SET view_count = COALESCE(view_count, 0) + 1 WHERE id = $1`, [article.id]).catch(
-        () => {}
-      );
 
       // Apply language translation fallback (Rule 23: Fallback)
       const result = {
@@ -1257,6 +1249,39 @@ export class PublicController {
 
       publicCacheService.set('public_settings', publicData, 300);
       return sendSuccess(res, 'Settings fetched', publicData);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // Dedicated view tracking endpoints (invoked only by client-side browser user visits)
+  public trackBhajanView = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return sendResponse(res, 400, false, 'Bhajan ID is required', null);
+      }
+      await db.query(
+        `UPDATE bhajans SET views = COALESCE(views, 0) + 1 WHERE (id::text = $1 OR slug = $1) AND status = 'PUBLISHED' AND deleted_at IS NULL`,
+        [id]
+      );
+      return sendSuccess(res, 'Bhajan view tracked', null);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public trackArticleView = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return sendResponse(res, 400, false, 'Article ID is required', null);
+      }
+      await db.query(
+        `UPDATE articles SET view_count = COALESCE(view_count, 0) + 1 WHERE (id::text = $1 OR slug = $1) AND status = 'PUBLISHED' AND deleted_at IS NULL`,
+        [id]
+      );
+      return sendSuccess(res, 'Article view tracked', null);
     } catch (error) {
       next(error);
     }
