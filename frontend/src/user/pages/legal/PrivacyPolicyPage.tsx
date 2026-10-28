@@ -1,18 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  ShieldCheck,
-  Lock,
-  Eye,
-  Cookie,
-  Mail,
-  ArrowRight,
-  Sparkles,
-  ExternalLink,
-  SlidersHorizontal,
-  CheckCircle2,
-  Globe2
-} from 'lucide-react';
+import { Mail, ArrowRight, Sparkles, ExternalLink } from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { useTranslation } from '@i18n/LanguageContext';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
@@ -108,11 +96,8 @@ export const PrivacyPolicyPage: React.FC = () => {
         <div className="space-y-8">
           {/* Section 1 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-center gap-3">
-              <Eye className="w-7 h-7 sm:w-8 sm:h-8 text-saffron shrink-0" />
-              <span>
-                {isHi ? '1. एकत्रित की जाने वाली जानकारी (Information We Collect)' : '1. Information We Collect'}
-              </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+              {isHi ? '1. एकत्रित की जाने वाली जानकारी (Information We Collect)' : '1. Information We Collect'}
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -153,13 +138,10 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 2: Google AdSense & Third-Party Advertising Cookies (Crucial Google Requirement) */}
           <div className="bg-gradient-to-br from-amber-50/80 via-white to-orange-50/60 rounded-2xl p-6 sm:p-10 border-2 border-amber-200/90 shadow-md">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-center gap-3">
-              <Cookie className="w-7 h-7 sm:w-8 sm:h-8 text-amber-600 shrink-0" />
-              <span>
-                {isHi
-                  ? '2. Google AdSense एवं तृतीय-पक्ष विज्ञापन कुकीज़ (Advertising Cookies)'
-                  : '2. Google AdSense & Third-Party Advertising Cookies'}
-              </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+              {isHi
+                ? '2. Google AdSense एवं तृतीय-पक्ष विज्ञापन कुकीज़ (Advertising Cookies)'
+                : '2. Google AdSense & Third-Party Advertising Cookies'}
             </h2>
             <div
               className={`text-gray-800 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -180,75 +162,68 @@ export const PrivacyPolicyPage: React.FC = () => {
                 )}
               </p>
 
-              <div className="bg-white p-5 sm:p-6 rounded-xl border border-amber-200 space-y-3">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-1" />
-                  <p className="text-[17px] sm:text-[18px] md:text-[19px] leading-[1.75]">
-                    {isHi ? (
-                      <>
-                        <strong>तृतीय-पक्ष विक्रेता (Third-Party Vendors):</strong> Google सहित अन्य तृतीय-पक्ष विक्रेता
-                        उपयोगकर्ता द्वारा हमारी वेबसाइट अथवा इंटरनेट पर अन्य वेबसाइटों पर पूर्व में किए गए दौरों के आधार
-                        पर विज्ञापन प्रस्तुत करने हेतु <strong>कुकीज़ (Cookies)</strong> का उपयोग करते हैं।
-                      </>
-                    ) : (
-                      <>
-                        <strong>Third-party vendors, including Google, use cookies</strong> to serve ads based on a
-                        user&apos;s prior visits to this website or other websites across the Internet.
-                      </>
-                    )}
-                  </p>
-                </div>
+              <ul className="list-disc pl-6 space-y-3.5 marker:text-amber-600 text-[17px] sm:text-[18px] md:text-[19px] text-gray-800 leading-[1.8]">
+                <li>
+                  {isHi ? (
+                    <>
+                      <strong className="text-darkBrown font-bold">तृतीय-पक्ष विक्रेता (Third-Party Vendors):</strong>{' '}
+                      Google सहित अन्य तृतीय-पक्ष विक्रेता उपयोगकर्ता द्वारा हमारी वेबसाइट अथवा इंटरनेट पर अन्य
+                      वेबसाइटों पर पूर्व में किए गए दौरों के आधार पर विज्ञापन प्रस्तुत करने हेतु{' '}
+                      <strong>कुकीज़ (Cookies)</strong> का उपयोग करते हैं।
+                    </>
+                  ) : (
+                    <>
+                      <strong className="text-darkBrown font-bold">
+                        Third-party vendors, including Google, use cookies
+                      </strong>{' '}
+                      to serve ads based on a user&apos;s prior visits to this website or other websites across the
+                      Internet.
+                    </>
+                  )}
+                </li>
 
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-1" />
-                  <p className="text-[17px] sm:text-[18px] md:text-[19px] leading-[1.75]">
-                    {isHi ? (
-                      <>
-                        <strong>व्यक्तिगत विज्ञापन (Personalized Ads):</strong> विज्ञापन कुकीज़ के उपयोग से Google और
-                        उसके भागीदारों को उपयोगकर्ता के आराधना मार्ग अथवा अन्य इंटरनेट साइटों पर भ्रमण के आधार पर
-                        प्रासंगिक विज्ञापन दिखाने की अनुमति मिलती है।
-                      </>
-                    ) : (
-                      <>
-                        <strong>Personalized Advertising:</strong> Google&apos;s use of advertising cookies enables it
-                        and its partners to serve relevant ads to our users based on their visits to our site and/or
-                        other sites on the Internet.
-                      </>
-                    )}
-                  </p>
-                </div>
+                <li>
+                  {isHi ? (
+                    <>
+                      <strong className="text-darkBrown font-bold">व्यक्तिगत विज्ञापन (Personalized Ads):</strong>{' '}
+                      विज्ञापन कुकीज़ के उपयोग से Google और उसके भागीदारों को उपयोगकर्ता के आराधना मार्ग अथवा अन्य
+                      इंटरनेट साइटों पर भ्रमण के आधार पर प्रासंगिक विज्ञापन दिखाने की अनुमति मिलती है।
+                    </>
+                  ) : (
+                    <>
+                      <strong className="text-darkBrown font-bold">Personalized Advertising:</strong> Google&apos;s use
+                      of advertising cookies enables it and its partners to serve relevant ads to our users based on
+                      their visits to our site and/or other sites on the Internet.
+                    </>
+                  )}
+                </li>
 
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-1" />
-                  <p className="text-[17px] sm:text-[18px] md:text-[19px] leading-[1.75]">
-                    {isHi ? (
-                      <>
-                        <strong>गैर-सामग्री पृष्ठों पर विज्ञापन निषेध:</strong> Google के नियमों के अनुरूप हम किसी भी
-                        गैर-सामग्री पृष्ठ जैसे गोपनीयता नीति, नियम, अस्वीकरण, संपर्क, खोज परिणाम या दान पृष्ठों पर
-                        विज्ञापन प्रदर्शित नहीं करते हैं।
-                      </>
-                    ) : (
-                      <>
-                        <strong>Strict Exclusion on Non-Content Pages:</strong> In compliance with Google policies,
-                        advertisements are strictly prohibited and paused on non-content, utility, search, legal, and
-                        donation pages (/privacy, /terms, /disclaimer, /contact, /support-us, /search, /favorites).
-                      </>
-                    )}
-                  </p>
-                </div>
-              </div>
+                <li>
+                  {isHi ? (
+                    <>
+                      <strong className="text-darkBrown font-bold">गैर-सामग्री पृष्ठों पर विज्ञापन निषेध:</strong>{' '}
+                      Google के नियमों के अनुरूप हम किसी भी गैर-सामग्री पृष्ठ जैसे गोपनीयता नीति, नियम, अस्वीकरण,
+                      संपर्क, खोज परिणाम या दान पृष्ठों पर विज्ञापन प्रदर्शित नहीं करते हैं।
+                    </>
+                  ) : (
+                    <>
+                      <strong className="text-darkBrown font-bold">Strict Exclusion on Non-Content Pages:</strong> In
+                      compliance with Google policies, advertisements are strictly prohibited and paused on non-content,
+                      utility, search, legal, and donation pages (/privacy, /terms, /disclaimer, /contact, /support-us,
+                      /search, /favorites).
+                    </>
+                  )}
+                </li>
+              </ul>
             </div>
           </div>
 
           {/* Section 3: Opt-Out Links & User Controls (Crucial Google Requirement) */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-center gap-3">
-              <SlidersHorizontal className="w-7 h-7 sm:w-8 sm:h-8 text-saffron shrink-0" />
-              <span>
-                {isHi
-                  ? '3. विज्ञापनों से बाहर निकलने के विकल्प (Your Opt-Out Choices)'
-                  : '3. Your Opt-Out Choices & Ad Settings'}
-              </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+              {isHi
+                ? '3. विज्ञापनों से बाहर निकलने के विकल्प (Your Opt-Out Choices)'
+                : '3. Your Opt-Out Choices & Ad Settings'}
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -351,13 +326,10 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 4: Third-Party Vendors & Ad Networks */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-center gap-3">
-              <Globe2 className="w-7 h-7 sm:w-8 sm:h-8 text-saffron shrink-0" />
-              <span>
-                {isHi
-                  ? '4. तृतीय-पक्ष विक्रेता एवं विज्ञापन नेटवर्क (Third-Party Ad Networks)'
-                  : '4. Third-Party Vendors & Ad Networks'}
-              </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+              {isHi
+                ? '4. तृतीय-पक्ष विक्रेता एवं विज्ञापन नेटवर्क (Third-Party Ad Networks)'
+                : '4. Third-Party Vendors & Ad Networks'}
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -383,13 +355,10 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 5: EEA, UK & Switzerland Consent Handling (GDPR Compliance) */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-center gap-3">
-              <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-600 shrink-0" />
-              <span>
-                {isHi
-                  ? '5. यूरोपीय संघ (EEA), यूके एवं स्विट्ज़रलैंड हेतु सहमति (EU User Consent)'
-                  : '5. Consent Handling for EEA, UK & Switzerland (GDPR)'}
-              </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+              {isHi
+                ? '5. यूरोपीय संघ (EEA), यूके एवं स्विट्ज़रलैंड हेतु सहमति (EU User Consent)'
+                : '5. Consent Handling for EEA, UK & Switzerland (GDPR)'}
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -431,13 +400,10 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 6: Analytics & Embedded Devotional Media */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-center gap-3">
-              <Lock className="w-7 h-7 sm:w-8 sm:h-8 text-saffron shrink-0" />
-              <span>
-                {isHi
-                  ? '6. एनालिटिक्स एवं एम्बेडेड भक्ति मीडिया (Analytics & Media)'
-                  : '6. Analytics & Embedded Devotional Media'}
-              </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+              {isHi
+                ? '6. एनालिटिक्स एवं एम्बेडेड भक्ति मीडिया (Analytics & Media)'
+                : '6. Analytics & Embedded Devotional Media'}
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -466,13 +432,10 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 7: Data Security & Storage */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-center gap-3">
-              <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-600 shrink-0" />
-              <span>
-                {isHi
-                  ? '7. डेटा सुरक्षा एवं गोपनीयता प्रतिबद्धता (Data Security)'
-                  : '7. Data Security & Sacred Commitment'}
-              </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+              {isHi
+                ? '7. डेटा सुरक्षा एवं गोपनीयता प्रतिबद्धता (Data Security)'
+                : '7. Data Security & Sacred Commitment'}
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
