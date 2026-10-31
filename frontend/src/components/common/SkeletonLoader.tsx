@@ -4,23 +4,23 @@ import React from 'react';
  * Shimmer pulse placeholder for Home Page & List Page Videos
  */
 export const VideoCardSkeleton: React.FC = () => (
-  <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-xs flex flex-col md:flex-row gap-5 items-stretch animate-pulse">
-    <div className="aspect-video w-full md:w-72 lg:w-80 rounded-lg bg-gray-200 shrink-0 self-start md:self-center" />
-    <div className="flex-1 flex flex-col justify-between py-1 gap-3 min-w-0">
+  <div className="bg-white rounded-xl p-3 sm:p-5 border border-gray-100 shadow-xs flex flex-row gap-3 sm:gap-5 items-stretch animate-pulse">
+    <div className="aspect-video w-[125px] xs:w-[150px] sm:w-60 md:w-72 lg:w-80 rounded-lg bg-gray-200 shrink-0 self-center" />
+    <div className="flex-1 flex flex-col justify-between py-0.5 sm:py-1 gap-2 sm:gap-3 min-w-0">
       <div>
-        <div className="h-5 bg-gray-200 rounded-md w-3/4 mb-2.5" />
-        <div className="h-3 bg-gray-100 rounded-md w-1/3 mb-3" />
-        <div className="h-10 bg-amber-50/70 border-l-2 border-amber-200 rounded-r-lg p-2 flex flex-col gap-1.5">
-          <div className="h-2.5 bg-gray-200/80 rounded w-full" />
-          <div className="h-2.5 bg-gray-200/80 rounded w-4/5" />
+        <div className="h-4 sm:h-5 bg-gray-200 rounded-md w-3/4 mb-1.5 sm:mb-2.5" />
+        <div className="h-2.5 sm:h-3 bg-gray-100 rounded-md w-1/3 mb-2 sm:mb-3" />
+        <div className="h-8 sm:h-10 bg-amber-50/70 border-l-2 border-amber-200 rounded-r-lg p-1.5 sm:p-2 flex flex-col gap-1 sm:gap-1.5">
+          <div className="h-2 sm:h-2.5 bg-gray-200/80 rounded w-full" />
+          <div className="h-2 sm:h-2.5 bg-gray-200/80 rounded w-4/5" />
         </div>
       </div>
-      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-1.5 sm:pt-2 border-t border-gray-100">
         <div className="flex gap-2">
-          <div className="h-5 bg-gray-200 rounded-md w-16" />
-          <div className="h-5 bg-gray-100 rounded-md w-12" />
+          <div className="h-4 sm:h-5 bg-gray-200 rounded-md w-12 sm:w-16" />
+          <div className="h-4 sm:h-5 bg-gray-100 rounded-md w-10 sm:w-12" />
         </div>
-        <div className="h-4 bg-gray-200 rounded w-16" />
+        <div className="h-3.5 sm:h-4 bg-gray-200 rounded w-12 sm:w-16" />
       </div>
     </div>
   </div>

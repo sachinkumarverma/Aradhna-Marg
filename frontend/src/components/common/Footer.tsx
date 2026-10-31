@@ -99,7 +99,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* 2. Main Navigation Grid - Balanced Responsive Columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8 mb-12 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-x-14 md:gap-x-20 lg:gap-8 mb-12 w-full">
           {/* Column 1: Brand & Identity */}
           <div className="flex flex-col max-w-sm">
             <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
@@ -131,8 +131,8 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Column 2: शास्त्र एवं ग्रंथालय (Aligned right on 2-col tablet) */}
-          <div className="sm:justify-self-end sm:w-fit sm:min-w-[200px] lg:w-full lg:justify-self-auto">
+          {/* Column 2: शास्त्र एवं ग्रंथालय */}
+          <div className="flex flex-col max-w-sm">
             <h4 className="font-bold text-white mb-4 text-base flex items-center gap-2 font-hindi-heading">
               <BookOpen className="w-4 h-4 text-saffron shrink-0" />
               <span>{isHi ? 'शास्त्र एवं ग्रंथालय' : 'Scriptures & Library'}</span>
@@ -196,8 +196,8 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Column 4: संस्थान एवं सेवा + Social Media (Aligned right on 2-col tablet) */}
-          <div className="sm:justify-self-end sm:w-fit sm:min-w-[200px] lg:w-full lg:justify-self-auto">
+          {/* Column 4: संस्थान एवं सेवा + Social Media */}
+          <div className="flex flex-col max-w-sm">
             <h4 className="font-bold text-white mb-4 text-base flex items-center gap-2 font-hindi-heading">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{isHi ? 'संस्थान एवं सेवा' : 'Mission & Seva'}</span>

@@ -276,6 +276,70 @@ export const BhajanDetail: React.FC = () => {
   const hasBhavarth = Boolean(!isVideo && (hindiBhavarth || englishBhavarth));
   const displayedBhavarthText = isHi ? hindiBhavarth || englishBhavarth : englishBhavarth || hindiBhavarth;
 
+  const renderTitleInfoCard = (HeadingTag: 'h1' | 'h2' = 'h1') => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-[#3D261C] rounded-xl p-5 sm:p-6 text-white shadow-lg border border-amber-900/40 relative overflow-hidden flex flex-col gap-4"
+    >
+      {/* Category / God Badge & Favorite Button */}
+      <div className="flex items-center justify-between gap-2">
+        {bhajan.god_name || bhajan.category_name ? (
+          <div className="inline-flex items-center px-3 py-0.5 rounded-md bg-white/10 text-saffron font-bold text-xs uppercase tracking-wider self-start border border-white/10">
+            {bhajan.god_name || bhajan.category_name}
+          </div>
+        ) : (
+          <div />
+        )}
+
+        {favoriteItem && (
+          <button
+            type="button"
+            onClick={(e) => toggleFavorite(favoriteItem, e)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold font-hindi-heading flex items-center gap-1.5 transition-all cursor-pointer ${
+              hearted
+                ? 'bg-rose-500 text-white shadow-sm'
+                : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+            }`}
+            title={hearted ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Heart className={`w-3.5 h-3.5 ${hearted ? 'fill-white text-white' : 'text-rose-400'}`} />
+            <span>{hearted ? (isHi ? 'सहेजा गया' : 'Favorited') : isHi ? 'पसंदीदा' : 'Favorite'}</span>
+          </button>
+        )}
+      </div>
+
+      {/* Title */}
+      <HeadingTag className="text-lg sm:text-xl font-bold text-white leading-snug tracking-tight font-hindi-heading">
+        {bhajan.title}
+      </HeadingTag>
+
+      {/* Metadata Row: Views, Duration, Date */}
+      <div className="flex flex-wrap items-center gap-4 text-xs text-amber-100/80 font-medium">
+        {bhajan.views > 0 && (
+          <span className="flex items-center gap-1.5">
+            <Eye className="w-3.5 h-3.5 text-saffron" /> {bhajan.views} views
+          </span>
+        )}
+        {bhajan.duration && (
+          <span className="flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-saffron" /> {bhajan.duration}
+          </span>
+        )}
+        {formattedDate && (
+          <span className="flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-saffron" /> {formattedDate}
+          </span>
+        )}
+      </div>
+
+      {/* Action Row: Social Share */}
+      <div className="pt-3 border-t border-white/15 mt-1">
+        <SocialShareButtons title={bhajan.title} excerpt={bhajan.short_description || bhajan.god_name} url={itemUrl} />
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="w-full min-h-screen bg-[#F9F7F3] pt-2 sm:pt-3 md:pt-4 pb-16 sm:pb-24">
       <SEOHead
@@ -342,6 +406,9 @@ export const BhajanDetail: React.FC = () => {
                 </div>
               </motion.div>
             )}
+
+            {/* Mobile & Tablet Title Info Card (Directly below video player/preview) */}
+            <div className="block lg:hidden">{renderTitleInfoCard('h1')}</div>
 
             {/* Description & Lyrics Card */}
             <motion.div
@@ -562,72 +629,8 @@ export const BhajanDetail: React.FC = () => {
           {/* Right Column (4 Columns): Sidebar */}
           <div className="lg:col-span-4 flex flex-col gap-6">
             <div className="sticky top-28 flex flex-col gap-6">
-              {/* 1. Dark Brown Title Info Card (Placed at TOP of sidebar) */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-[#3D261C] rounded-xl p-5 sm:p-6 text-white shadow-lg border border-amber-900/40 relative overflow-hidden flex flex-col gap-4"
-              >
-                {/* Category / God Badge & Favorite Button */}
-                <div className="flex items-center justify-between gap-2">
-                  {bhajan.god_name || bhajan.category_name ? (
-                    <div className="inline-flex items-center px-3 py-0.5 rounded-md bg-white/10 text-saffron font-bold text-xs uppercase tracking-wider self-start border border-white/10">
-                      {bhajan.god_name || bhajan.category_name}
-                    </div>
-                  ) : (
-                    <div />
-                  )}
-
-                  {favoriteItem && (
-                    <button
-                      type="button"
-                      onClick={(e) => toggleFavorite(favoriteItem, e)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold font-hindi-heading flex items-center gap-1.5 transition-all cursor-pointer ${
-                        hearted
-                          ? 'bg-rose-500 text-white shadow-sm'
-                          : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
-                      }`}
-                      title={hearted ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      <Heart className={`w-3.5 h-3.5 ${hearted ? 'fill-white text-white' : 'text-rose-400'}`} />
-                      <span>{hearted ? (isHi ? 'सहेजा गया' : 'Favorited') : isHi ? 'पसंदीदा' : 'Favorite'}</span>
-                    </button>
-                  )}
-                </div>
-
-                {/* Title */}
-                <h1 className="text-lg sm:text-xl font-bold text-white leading-snug tracking-tight font-hindi-heading">
-                  {bhajan.title}
-                </h1>
-
-                {/* Metadata Row: Views, Duration, Date */}
-                <div className="flex flex-wrap items-center gap-4 text-xs text-amber-100/80 font-medium">
-                  {bhajan.views > 0 && (
-                    <span className="flex items-center gap-1.5">
-                      <Eye className="w-3.5 h-3.5 text-saffron" /> {bhajan.views} views
-                    </span>
-                  )}
-                  {bhajan.duration && (
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-saffron" /> {bhajan.duration}
-                    </span>
-                  )}
-                  {formattedDate && (
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-saffron" /> {formattedDate}
-                    </span>
-                  )}
-                </div>
-
-                {/* Action Row: Social Share */}
-                <div className="pt-3 border-t border-white/15 mt-1">
-                  <SocialShareButtons
-                    title={bhajan.title}
-                    excerpt={bhajan.short_description || bhajan.god_name}
-                    url={itemUrl}
-                  />
-                </div>
-              </motion.div>
+              {/* 1. Dark Brown Title Info Card (Desktop: Placed at TOP of sidebar) */}
+              <div className="hidden lg:block">{renderTitleInfoCard('h2')}</div>
 
               {/* 2. Explore Deity Card (Rendered below Dark Brown Card if deity info exists) */}
               {bhajan.god_name && (

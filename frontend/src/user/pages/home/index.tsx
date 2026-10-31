@@ -229,7 +229,7 @@ export const Home: React.FC = () => {
                 </p>
               </div>
               <Link to="/videos">
-                <Button className="hidden sm:flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-4 py-2 text-xs font-hindi-heading">
+                <Button className="flex bg-saffron hover:brightness-90 text-white font-semibold rounded-md shadow-md px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-hindi-heading shrink-0">
                   {t('common.viewAll')} <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </Button>
               </Link>
@@ -276,18 +276,18 @@ export const Home: React.FC = () => {
                     >
                       <Link
                         to={videoUrl}
-                        className="group block bg-white rounded-xl p-4 sm:p-5 border border-gray-100 shadow-xs hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex flex-col md:flex-row gap-5 items-stretch relative cursor-pointer"
+                        className="group block bg-white rounded-xl p-3 sm:p-5 border border-gray-100 shadow-xs hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex flex-row gap-3 sm:gap-5 items-stretch relative cursor-pointer"
                       >
                         {/* Left Column: Video Thumbnail with Play Button in strict 16:9 widescreen format */}
-                        <div className="relative aspect-video w-full md:w-72 lg:w-80 rounded-lg overflow-hidden bg-black shrink-0 self-start md:self-center border border-black/5">
+                        <div className="relative aspect-video w-[125px] xs:w-[150px] sm:w-60 md:w-72 lg:w-80 rounded-lg overflow-hidden bg-black shrink-0 self-center border border-black/5">
                           <img
                             src={thumb}
                             alt={title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/35 transition-colors flex items-center justify-center">
-                            <div className="w-12 h-12 rounded-full bg-white/95 text-saffron flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                              <Play className="w-5 h-5 ml-1 fill-current text-saffron" />
+                            <div className="w-7 h-7 sm:w-12 sm:h-12 rounded-full bg-white/95 text-saffron flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                              <Play className="w-3.5 h-3.5 sm:w-5 sm:h-5 ml-0.5 sm:ml-1 fill-current text-saffron" />
                             </div>
                           </div>
                         </div>
@@ -296,22 +296,22 @@ export const Home: React.FC = () => {
                         <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                           <div>
                             {/* Top Row: Title & Heart Favorite */}
-                            <div className="flex items-start justify-between gap-3 pt-0.5">
-                              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-darkBrown leading-normal line-clamp-2 group-hover:text-saffron transition-colors font-hindi-heading pt-0.5 pb-0.5">
+                            <div className="flex items-start justify-between gap-2 sm:gap-3 pt-0.5">
+                              <h3 className="text-xs xs:text-sm sm:text-lg md:text-xl font-semibold text-darkBrown leading-snug sm:leading-normal line-clamp-2 group-hover:text-saffron transition-colors font-hindi-heading pt-0.5 pb-0.5">
                                 {title}
                               </h3>
                               <button
                                 type="button"
                                 onClick={(e) => toggleFavorite(favoriteItem, e)}
                                 title={isHearted ? 'Remove from favorites' : 'Add to favorites'}
-                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 relative z-10 cursor-pointer ${
+                                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all shrink-0 relative z-10 cursor-pointer ${
                                   isHearted
                                     ? 'bg-rose-50 text-rose-500 hover:bg-rose-100 shadow-xs'
                                     : 'bg-gray-50 text-gray-400 group-hover:text-rose-500 hover:bg-rose-50'
                                 }`}
                               >
                                 <Heart
-                                  className={`w-4 h-4 transition-transform active:scale-125 ${
+                                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform active:scale-125 ${
                                     isHearted ? 'fill-rose-500 text-rose-500' : ''
                                   }`}
                                 />
@@ -319,36 +319,36 @@ export const Home: React.FC = () => {
                             </div>
 
                             {/* Subtitle / Channel Name */}
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1 line-clamp-1">
+                            <p className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5 sm:mt-1 line-clamp-1">
                               {subtitle}
                             </p>
 
-                            {/* Quote / Short Snippet - Clean isolated clamp so line 3 never bleeds into padding */}
-                            <div className="border-l-2 border-saffron/40 pl-3 pr-2 py-2 my-2 bg-amber-50/40 rounded-r-lg overflow-hidden">
-                              <p className="text-xs md:text-sm text-slate-600 italic line-clamp-2 leading-normal font-serif m-0 p-0">
+                            {/* Quote / Short Snippet - Clean isolated clamp */}
+                            <div className="border-l-2 border-saffron/40 pl-2 sm:pl-3 pr-2 py-1 sm:py-2 my-1 sm:my-2 bg-amber-50/40 rounded-r-lg overflow-hidden">
+                              <p className="text-[11px] sm:text-xs md:text-sm text-slate-600 italic line-clamp-1 sm:line-clamp-2 leading-tight sm:leading-normal font-serif m-0 p-0">
                                 "{snippet}"
                               </p>
                             </div>
                           </div>
 
                           {/* Bottom Row: Badges on left, Social & Watch Link on right */}
-                          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-2">
-                            <div className="flex flex-wrap items-center gap-2">
+                          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 sm:gap-3 pt-2 sm:pt-3 border-t border-gray-100 mt-1 sm:mt-2">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                               {(video.god_name || video.category_name) && (
-                                <span className="px-2.5 py-0.5 bg-amber-50 text-saffron text-[11px] font-bold rounded-md uppercase tracking-wider border border-amber-200/60 font-hindi-heading">
+                                <span className="px-2 sm:px-2.5 py-0.5 bg-amber-50 text-saffron text-[10px] sm:text-[11px] font-bold rounded-md uppercase tracking-wider border border-amber-200/60 font-hindi-heading">
                                   {video.god_name || video.category_name}
                                 </span>
                               )}
                               {video.duration && (
-                                <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 text-[11px] font-bold rounded-md uppercase tracking-wider">
+                                <span className="px-2 sm:px-2.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] sm:text-[11px] font-bold rounded-md uppercase tracking-wider">
                                   {video.duration}
                                 </span>
                               )}
                             </div>
 
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                               <SocialShareButtons title={title} excerpt={snippet} url={videoUrl} />
-                              <div className="inline-flex items-center gap-1 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link font-hindi-heading translate-y-[1.5px]">
+                              <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link font-hindi-heading translate-y-[1.5px]">
                                 <span>{t('common.watch')} &rarr;</span>
                               </div>
                             </div>

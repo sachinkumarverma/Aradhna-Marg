@@ -210,7 +210,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
             {/* Header - Height and padding matched precisely to Main Navbar */}
             <div className="flex items-center justify-between px-4 sm:px-6 h-16 sm:h-20 border-b border-orange-100 bg-white shrink-0">
               <Link to="/" onClick={onClose} className="flex items-center gap-2 sm:gap-3 group">
-                <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-[#041a4b] border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs shrink-0">
+                <div className="w-[36px] h-[36px] sm:w-[40px] sm:h-[40px] aspect-square rounded-xl overflow-hidden bg-[#041a4b] border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs shrink-0">
                   <img
                     src="/logo.png"
                     alt="Aradhna Marg Logo"
