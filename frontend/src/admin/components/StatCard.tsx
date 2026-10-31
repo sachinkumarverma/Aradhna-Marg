@@ -44,7 +44,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           : undefined
       }
       className={cn(
-        'rounded-md border p-4 sm:p-5 shadow-sm',
+        'rounded-md border p-4 sm:p-5 shadow-sm flex flex-col justify-between h-full',
         bgClassName,
         borderClassName,
         onClick &&
@@ -52,15 +52,11 @@ export const StatCard: React.FC<StatCardProps> = ({
         className
       )}
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1 group-hover:text-gray-700 transition-colors">
-            {title}
-          </p>
-          <h4 className="text-[22px] sm:text-2xl font-bold text-gray-900 tracking-tight group-hover:text-black transition-colors">
-            {value}
-          </h4>
-        </div>
+      {/* Top Section: Title & Icon */}
+      <div className="flex items-start justify-between gap-2.5 mb-2 sm:mb-3">
+        <p className="text-xs sm:text-sm font-medium text-gray-500 group-hover:text-gray-700 transition-colors leading-snug">
+          {title}
+        </p>
         <div
           className={cn(
             'w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105',
@@ -71,15 +67,22 @@ export const StatCard: React.FC<StatCardProps> = ({
         </div>
       </div>
 
-      {trend && (
-        <div className="mt-3 sm:mt-4 flex items-center text-xs sm:text-sm">
-          <span className={cn('font-semibold', trend.isPositive ? 'text-green-600' : 'text-red-600')}>
-            {trend.isPositive ? '+' : '-'}
-            {trend.value}%
-          </span>
-          <span className="text-gray-500 ml-2">from last month</span>
-        </div>
-      )}
+      {/* Bottom Section: Number (Value) & Optional Trend */}
+      <div className="mt-auto">
+        <h4 className="text-[22px] sm:text-2xl font-bold text-gray-900 tracking-tight group-hover:text-black transition-colors leading-tight">
+          {value}
+        </h4>
+
+        {trend && (
+          <div className="mt-2 flex items-center text-xs sm:text-sm">
+            <span className={cn('font-semibold', trend.isPositive ? 'text-green-600' : 'text-red-600')}>
+              {trend.isPositive ? '+' : '-'}
+              {trend.value}%
+            </span>
+            <span className="text-gray-500 ml-2">from last month</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

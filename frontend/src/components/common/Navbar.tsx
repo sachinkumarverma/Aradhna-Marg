@@ -93,8 +93,8 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
             </Link>
 
             {/* Desktop Navigation Links (Visible on xl and above when space allows) */}
-            <div className="hidden xl:flex items-center gap-1.5 2xl:gap-3">
-              <ul className={`flex items-center ${isHi ? 'gap-1 2xl:gap-2' : 'gap-0.5 2xl:gap-1.5'}`}>
+            <div className="hidden xl:flex items-center gap-2 2xl:gap-4">
+              <ul className={`flex items-center ${isHi ? 'gap-1.5 2xl:gap-3' : 'gap-1.5 2xl:gap-3'}`}>
                 {navLinks.map((link) => {
                   const isActive = location.pathname === link.path;
                   return (
@@ -103,8 +103,8 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                         to={link.path}
                         className={`${
                           isHi
-                            ? 'text-[17px] 2xl:text-[18.5px] font-bold tracking-normal px-2.5 2xl:px-3.5'
-                            : 'text-[13.5px] 2xl:text-[14.5px] font-extrabold uppercase tracking-wide px-1.5 2xl:px-2'
+                            ? 'text-[17px] 2xl:text-[18.5px] font-bold tracking-normal px-3 2xl:px-4'
+                            : 'text-[13.5px] 2xl:text-[14.5px] font-extrabold uppercase tracking-wide px-2 2xl:px-3'
                         } font-hindi-heading transition-colors py-1.5 rounded-lg whitespace-nowrap leading-normal ${
                           isActive
                             ? isHi

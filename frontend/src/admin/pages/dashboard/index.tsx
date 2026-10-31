@@ -72,44 +72,54 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Primary Stats Grid Skeleton */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5 sm:gap-4">
-          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-blue-50 to-white border-blue-100 flex items-start justify-between">
-            <div className="space-y-2">
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-blue-50 to-white border-blue-100 flex flex-col justify-between h-full">
+            <div className="flex items-start justify-between gap-2.5 mb-3">
               <div className="h-3.5 w-28 bg-blue-200/70 rounded"></div>
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-blue-100/80 shrink-0"></div>
+            </div>
+            <div className="mt-auto">
               <div className="h-7 w-20 bg-slate-300 rounded"></div>
             </div>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-blue-100/80 shrink-0"></div>
           </div>
 
-          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-orange-50 to-white border-orange-100 flex items-start justify-between">
-            <div className="space-y-2">
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-orange-50 to-white border-orange-100 flex flex-col justify-between h-full">
+            <div className="flex items-start justify-between gap-2.5 mb-3">
               <div className="h-3.5 w-28 bg-orange-200/70 rounded"></div>
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-orange-100/80 shrink-0"></div>
+            </div>
+            <div className="mt-auto">
               <div className="h-7 w-16 bg-slate-300 rounded"></div>
             </div>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-orange-100/80 shrink-0"></div>
           </div>
 
-          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-amber-50 to-white border-amber-100 flex items-start justify-between">
-            <div className="space-y-2">
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-amber-50 to-white border-amber-100 flex flex-col justify-between h-full">
+            <div className="flex items-start justify-between gap-2.5 mb-3">
               <div className="h-3.5 w-24 bg-amber-200/70 rounded"></div>
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-100/80 shrink-0"></div>
+            </div>
+            <div className="mt-auto">
               <div className="h-7 w-12 bg-slate-300 rounded"></div>
             </div>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-100/80 shrink-0"></div>
           </div>
 
-          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-purple-50 to-white border-purple-100 flex items-start justify-between">
-            <div className="space-y-2">
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-purple-50 to-white border-purple-100 flex flex-col justify-between h-full">
+            <div className="flex items-start justify-between gap-2.5 mb-3">
               <div className="h-3.5 w-32 bg-purple-200/70 rounded"></div>
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-purple-100/80 shrink-0"></div>
+            </div>
+            <div className="mt-auto">
               <div className="h-7 w-12 bg-slate-300 rounded"></div>
             </div>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-purple-100/80 shrink-0"></div>
           </div>
 
-          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-emerald-50 to-white border-emerald-100 flex items-start justify-between">
-            <div className="space-y-2">
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-emerald-50 to-white border-emerald-100 flex flex-col justify-between h-full">
+            <div className="flex items-start justify-between gap-2.5 mb-3">
               <div className="h-3.5 w-24 bg-emerald-200/70 rounded"></div>
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-100/80 shrink-0"></div>
+            </div>
+            <div className="mt-auto">
               <div className="h-7 w-14 bg-slate-300 rounded"></div>
             </div>
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-100/80 shrink-0"></div>
           </div>
         </div>
 
