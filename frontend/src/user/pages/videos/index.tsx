@@ -7,6 +7,7 @@ import { VideoCard } from '@components/cards/VideoCard';
 import { VideoGridCardSkeleton } from '@components/common/SkeletonLoader';
 import { useTranslation } from '@i18n/LanguageContext';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
+import { SimplePagination } from '@components/common/SimplePagination';
 
 export const VideosList = () => {
   const { language, t } = useTranslation();
@@ -113,14 +114,14 @@ export const VideosList = () => {
         </div>
 
         {/* Grid Section */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-              <VideoGridCardSkeleton key={n} />
-            ))}
-          </div>
-        ) : videos.length > 0 ? (
-          <>
+        <div id="videos-grid" className="scroll-mt-24 min-h-[500px]">
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {Array.from({ length: 12 }).map((_, n) => (
+                <VideoGridCardSkeleton key={n} />
+              ))}
+            </div>
+          ) : videos.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               {videos.map((video, i) => (
                 <motion.div
@@ -144,36 +145,29 @@ export const VideosList = () => {
                 </motion.div>
               ))}
             </div>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8 mb-12">
+              <VideoIcon className="w-12 h-12 text-saffron mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noVideos')}</h3>
+              <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noResultsDesc')}</p>
+            </div>
+          )}
+        </div>
 
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
-                >
-                  {t('common.previous')}
-                </button>
-                <span className="text-sm font-bold text-slate-600 px-3 font-hindi-body">
-                  {t('common.page')} {page} / {totalPages}
-                </span>
-                <button
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
-                >
-                  {t('common.next')}
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8">
-            <VideoIcon className="w-12 h-12 text-saffron mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noVideos')}</h3>
-            <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noResultsDesc')}</p>
-          </div>
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <SimplePagination
+            currentPage={page}
+            totalPages={totalPages}
+            disabled={loading}
+            onPageChange={(newPage) => {
+              setPage(newPage);
+              const grid = document.getElementById('videos-grid');
+              if (grid) {
+                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+          />
         )}
       </div>
     </div>

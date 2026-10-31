@@ -9,6 +9,7 @@ import { PublicApi } from '@api/publicApi';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { SimplePagination } from '@components/common/SimplePagination';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const BhajansList: React.FC = () => {
@@ -17,6 +18,8 @@ export const BhajansList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [bhajans, setBhajans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
   const [search, setSearch] = useState('');
   const [categories, setCategories] = useState<any[]>([]);
   const [deities, setDeities] = useState<any[]>([]);
@@ -54,6 +57,7 @@ export const BhajansList: React.FC = () => {
   useEffect(() => {
     const fetchBhajans = async () => {
       setLoading(true);
+      setIsError(false);
       try {
         const res = await PublicApi.getBhajans({
           page,
@@ -67,12 +71,13 @@ export const BhajansList: React.FC = () => {
         setTotalPages(res.meta?.totalPages || 1);
       } catch (err) {
         console.error('Failed to fetch bhajans:', err);
+        setIsError(true);
       } finally {
         setLoading(false);
       }
     };
     fetchBhajans();
-  }, [page, search, selectedCategory, selectedDeity, sort]);
+  }, [page, search, selectedCategory, selectedDeity, sort, retryKey]);
 
   const getDeityFallbackImage = (name: string = '') => {
     const lower = name.toLowerCase();
@@ -242,21 +247,38 @@ export const BhajansList: React.FC = () => {
         </div>
 
         {/* Bhajans Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-              <BhajanCardSkeleton key={n} />
-            ))}
-          </div>
-        ) : bhajans.length > 0 ? (
-          <>
+        <div id="bhajans-grid" className="scroll-mt-24 min-h-[500px]">
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+              {Array.from({ length: 12 }).map((_, n) => (
+                <BhajanCardSkeleton key={n} />
+              ))}
+            </div>
+          ) : isError ? (
+            <div className="text-center py-16 bg-white rounded-3xl border border-red-100 p-8 max-w-xl mx-auto shadow-xs mb-12">
+              <div className="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">
+                !
+              </div>
+              <h3 className="text-lg font-bold text-darkBrown mb-1 font-hindi-heading">{t('errors.failedToLoad')}</h3>
+              <p className="text-slate-500 text-xs mb-4 font-hindi-body">
+                {isHi ? 'कृपया पुनः प्रयास करें।' : 'Please try again.'}
+              </p>
+              <button
+                type="button"
+                onClick={() => setRetryKey((k) => k + 1)}
+                className="px-4 py-2 bg-saffron text-white rounded-xl text-xs font-bold font-hindi-heading shadow-xs hover:bg-orange-600 transition-colors cursor-pointer"
+              >
+                {t('common.retry')}
+              </button>
+            </div>
+          ) : bhajans.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
               {bhajans.map((bhajan, i) => (
                 <motion.div
                   key={bhajan.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
+                  transition={{ delay: i * 0.02, duration: 0.2 }}
                 >
                   <Link to={`/bhajans/${bhajan.slug || bhajan.id}`} className="block h-full">
                     <BhajanCard
@@ -278,38 +300,31 @@ export const BhajansList: React.FC = () => {
                 </motion.div>
               ))}
             </div>
-
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white hover:border-saffron transition-colors shadow-xs"
-                >
-                  {t('common.previous')}
-                </button>
-                <span className="text-sm font-bold text-slate-600 px-3">
-                  {t('common.page')} {page} / {totalPages}
-                </span>
-                <button
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white hover:border-saffron transition-colors shadow-xs"
-                >
-                  {t('common.next')}
-                </button>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-3xl border border-amber-100 p-8 shadow-xs mb-12">
+              <div className="w-16 h-16 bg-amber-100/70 rounded-full flex items-center justify-center mx-auto mb-4 text-saffron">
+                <Music className="w-8 h-8" />
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-amber-100 p-8 shadow-xs">
-            <div className="w-16 h-16 bg-amber-100/70 rounded-full flex items-center justify-center mx-auto mb-4 text-saffron">
-              <Music className="w-8 h-8" />
+              <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noBhajans')}</h3>
+              <p className="text-slate-500 text-sm max-w-md mx-auto font-hindi-body">{t('empty.noBhajansDesc')}</p>
             </div>
-            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noBhajans')}</h3>
-            <p className="text-slate-500 text-sm max-w-md mx-auto font-hindi-body">{t('empty.noBhajansDesc')}</p>
-          </div>
+          )}
+        </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <SimplePagination
+            currentPage={page}
+            totalPages={totalPages}
+            disabled={loading}
+            onPageChange={(newPage) => {
+              setPage(newPage);
+              const grid = document.getElementById('bhajans-grid');
+              if (grid) {
+                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+          />
         )}
       </div>
     </div>

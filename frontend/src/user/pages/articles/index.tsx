@@ -8,6 +8,7 @@ import { ArticleCardSkeleton } from '@components/common/SkeletonLoader';
 import { AdUnit } from '@components/common/AdUnit';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
+import { SimplePagination } from '@components/common/SimplePagination';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
 export const ArticlesList: React.FC = () => {
@@ -123,69 +124,64 @@ export const ArticlesList: React.FC = () => {
         </div>
 
         {/* Articles Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {[1, 2, 3, 4, 5, 6].map((n) => (
-              <ArticleCardSkeleton key={n} />
-            ))}
-          </div>
-        ) : articles.length > 0 ? (
-          <>
+        <div id="articles-grid" className="scroll-mt-24 min-h-[500px]">
+          {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {articles.map((art, i) => (
-                <motion.div
-                  key={art.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                  className="h-full"
-                >
-                  <ArticleCard
-                    id={art.id}
-                    slug={art.slug}
-                    title={getLocalizedField(art, 'title') || art.displayTitle || art.title}
-                    featuredImageUrl={art.featured_image_url}
-                    excerpt={getLocalizedField(art, 'excerpt') || art.displayExcerpt || art.excerpt}
-                    categoryName={getLocalizedField(art, 'category_name') || art.category_name}
-                  />
-                </motion.div>
+              {Array.from({ length: 9 }).map((_, n) => (
+                <ArticleCardSkeleton key={n} />
               ))}
             </div>
-
-            {/* Banner Ad Unit Placeholder */}
-            <div className="mb-12">
-              <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
-            </div>
-
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
-                >
-                  {t('common.previous')}
-                </button>
-                <span className="text-sm font-bold text-slate-600 px-3 font-hindi-body">
-                  {t('common.page')} {page} / {totalPages}
-                </span>
-                <button
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer"
-                >
-                  {t('common.next')}
-                </button>
+          ) : articles.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                {articles.map((art, i) => (
+                  <motion.div
+                    key={art.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.04 }}
+                    className="h-full"
+                  >
+                    <ArticleCard
+                      id={art.id}
+                      slug={art.slug}
+                      title={getLocalizedField(art, 'title') || art.displayTitle || art.title}
+                      featuredImageUrl={art.featured_image_url}
+                      excerpt={getLocalizedField(art, 'excerpt') || art.displayExcerpt || art.excerpt}
+                      categoryName={getLocalizedField(art, 'category_name') || art.category_name}
+                    />
+                  </motion.div>
+                ))}
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8">
-            <BookOpen className="w-12 h-12 text-saffron mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noArticles')}</h3>
-            <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noArticlesDesc')}</p>
-          </div>
+
+              {/* Banner Ad Unit Placeholder */}
+              <div className="mb-12">
+                <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8 mb-12">
+              <BookOpen className="w-12 h-12 text-saffron mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noArticles')}</h3>
+              <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noArticlesDesc')}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <SimplePagination
+            currentPage={page}
+            totalPages={totalPages}
+            disabled={loading}
+            onPageChange={(newPage) => {
+              setPage(newPage);
+              const grid = document.getElementById('articles-grid');
+              if (grid) {
+                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+          />
         )}
       </div>
     </div>

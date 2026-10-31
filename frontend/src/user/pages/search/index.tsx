@@ -10,6 +10,7 @@ import { useSearch, useTrendingSearches } from '@hooks/useSearch';
 import { useTranslation } from '@i18n/LanguageContext';
 import { motion } from 'framer-motion';
 import { SEOHead } from '@components/seo';
+import { SimplePagination } from '@components/common/SimplePagination';
 
 export const SearchPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -212,44 +213,44 @@ export const SearchPage: React.FC = () => {
                 </div>
               </div>
 
-              {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <div
-                      key={n}
-                      className="bg-white rounded-xl p-5 border border-gray-100 shadow-xs animate-pulse flex flex-col justify-between h-56"
-                    >
-                      <div>
-                        <div className="h-4 bg-amber-100 rounded w-24 mb-3" />
-                        <div className="h-6 bg-gray-200 rounded w-4/5 mb-2" />
-                        <div className="h-3 bg-gray-100 rounded w-full mb-1" />
-                        <div className="h-3 bg-gray-100 rounded w-2/3" />
+              <div id="search-grid" className="scroll-mt-24 min-h-[500px]">
+                {isLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+                    {Array.from({ length: 12 }).map((_, n) => (
+                      <div
+                        key={n}
+                        className="bg-white rounded-xl p-5 border border-gray-100 shadow-xs animate-pulse flex flex-col justify-between h-56"
+                      >
+                        <div>
+                          <div className="h-4 bg-amber-100 rounded w-24 mb-3" />
+                          <div className="h-6 bg-gray-200 rounded w-4/5 mb-2" />
+                          <div className="h-3 bg-gray-100 rounded w-full mb-1" />
+                          <div className="h-3 bg-gray-100 rounded w-2/3" />
+                        </div>
+                        <div className="h-4 bg-gray-200 rounded w-20" />
                       </div>
-                      <div className="h-4 bg-gray-200 rounded w-20" />
-                    </div>
-                  ))}
-                </div>
-              ) : isError ? (
-                <div className="text-center py-16 bg-white rounded-2xl border border-red-100 p-8 max-w-xl mx-auto shadow-xs">
-                  <div className="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">
-                    !
+                    ))}
                   </div>
-                  <h3 className="text-lg font-bold text-darkBrown mb-1 font-hindi-heading">
-                    {t('errors.failedToLoad')}
-                  </h3>
-                  <p className="text-slate-500 text-xs mb-4 font-hindi-body">
-                    {isHi ? 'कृपया पुनः प्रयास करें।' : 'Please try again.'}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => window.location.reload()}
-                    className="px-4 py-2 bg-saffron text-white rounded-xl text-xs font-bold font-hindi-heading shadow-xs hover:bg-orange-600 transition-colors cursor-pointer"
-                  >
-                    {t('common.retry')}
-                  </button>
-                </div>
-              ) : items.length > 0 ? (
-                <>
+                ) : isError ? (
+                  <div className="text-center py-16 bg-white rounded-2xl border border-red-100 p-8 max-w-xl mx-auto shadow-xs mb-12">
+                    <div className="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">
+                      !
+                    </div>
+                    <h3 className="text-lg font-bold text-darkBrown mb-1 font-hindi-heading">
+                      {t('errors.failedToLoad')}
+                    </h3>
+                    <p className="text-slate-500 text-xs mb-4 font-hindi-body">
+                      {isHi ? 'कृपया पुनः प्रयास करें।' : 'Please try again.'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => window.location.reload()}
+                      className="px-4 py-2 bg-saffron text-white rounded-xl text-xs font-bold font-hindi-heading shadow-xs hover:bg-orange-600 transition-colors cursor-pointer"
+                    >
+                      {t('common.retry')}
+                    </button>
+                  </div>
+                ) : items.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
                     {items.map((item: any, i: number) => (
                       <motion.div
@@ -263,62 +264,57 @@ export const SearchPage: React.FC = () => {
                       </motion.div>
                     ))}
                   </div>
-
-                  {/* Pagination Controls */}
-                  {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-3">
-                      <button
-                        disabled={page <= 1}
-                        onClick={() => setPage((p) => p - 1)}
-                        className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer shadow-xs font-hindi-heading"
-                      >
-                        {t('common.previous')}
-                      </button>
-                      <span className="text-sm font-bold text-slate-600 px-3 font-hindi-body">
-                        {t('common.page')} {page} / {totalPages}
-                      </span>
-                      <button
-                        disabled={page >= totalPages}
-                        onClick={() => setPage((p) => p + 1)}
-                        className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-bold text-darkBrown disabled:opacity-50 hover:bg-saffron hover:text-white transition-colors cursor-pointer shadow-xs font-hindi-heading"
-                      >
-                        {t('common.next')}
-                      </button>
+                ) : (
+                  <div className="text-center py-16 bg-white rounded-3xl border border-orange-100/80 p-8 max-w-2xl mx-auto shadow-xs mb-12">
+                    <div className="w-16 h-16 bg-amber-100/70 rounded-full flex items-center justify-center mx-auto mb-4 text-saffron">
+                      <SearchIcon className="w-8 h-8" />
                     </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-center py-16 bg-white rounded-3xl border border-orange-100/80 p-8 max-w-2xl mx-auto shadow-xs">
-                  <div className="w-16 h-16 bg-amber-100/70 rounded-full flex items-center justify-center mx-auto mb-4 text-saffron">
-                    <SearchIcon className="w-8 h-8" />
+                    <h3 className="text-2xl font-bold text-darkBrown mb-2 font-hindi-heading">
+                      {t('empty.noResults')}
+                    </h3>
+                    <p className="text-slate-500 text-sm mb-6 font-hindi-body max-w-md mx-auto">
+                      "{query}" के लिए कोई सामग्री उपलब्ध नहीं मिली। कृपया दूसरे शब्दों या नीचे दिए गए लोकप्रिय विषयों
+                      से खोजें:
+                    </p>
+
+                    {/* Quick Search Chips */}
+                    {trending.length > 0 && (
+                      <div className="pt-4 border-t border-gray-100">
+                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 font-hindi-heading">
+                          लोकप्रिय खोजें / Popular Searches
+                        </div>
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                          {trending.map((trend: string, i: number) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => navigate(`/search?q=${encodeURIComponent(trend)}`)}
+                              className="px-3.5 py-1.5 bg-amber-50 hover:bg-saffron hover:text-white text-darkBrown rounded-full text-xs font-semibold transition-colors border border-amber-200/60 font-hindi-heading cursor-pointer"
+                            >
+                              {trend}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <h3 className="text-2xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noResults')}</h3>
-                  <p className="text-slate-500 text-sm mb-6 font-hindi-body max-w-md mx-auto">
-                    "{query}" के लिए कोई सामग्री उपलब्ध नहीं मिली। कृपया दूसरे शब्दों या नीचे दिए गए लोकप्रिय विषयों से
-                    खोजें:
-                  </p>
+                )}
+              </div>
 
-                  {/* Quick Search Chips */}
-                  {trending.length > 0 && (
-                    <div className="pt-4 border-t border-gray-100">
-                      <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 font-hindi-heading">
-                        लोकप्रिय खोजें / Popular Searches
-                      </div>
-                      <div className="flex flex-wrap items-center justify-center gap-2">
-                        {trending.map((trend: string, i: number) => (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => navigate(`/search?q=${encodeURIComponent(trend)}`)}
-                            className="px-3.5 py-1.5 bg-amber-50 hover:bg-saffron hover:text-white text-darkBrown rounded-full text-xs font-semibold transition-colors border border-amber-200/60 font-hindi-heading cursor-pointer"
-                          >
-                            {trend}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <SimplePagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  disabled={isLoading}
+                  onPageChange={(newPage) => {
+                    setPage(newPage);
+                    const grid = document.getElementById('search-grid');
+                    if (grid) {
+                      grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }}
+                />
               )}
             </>
           )}

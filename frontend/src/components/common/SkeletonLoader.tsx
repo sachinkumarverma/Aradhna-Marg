@@ -43,8 +43,8 @@ export const TrendingBhajanSkeleton: React.FC = () => (
  * Shimmer pulse for Spiritual Articles Cards
  */
 export const ArticleCardSkeleton: React.FC = () => (
-  <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-xs flex flex-col h-full animate-pulse">
-    <div className="aspect-[16/10] w-full bg-gray-200" />
+  <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-xs flex flex-col h-full animate-pulse">
+    <div className="aspect-video w-full bg-gray-200" />
     <div className="p-5 flex-1 flex flex-col justify-between gap-4">
       <div>
         <div className="h-4 bg-amber-100 rounded-md w-20 mb-3" />
@@ -64,8 +64,8 @@ export const ArticleCardSkeleton: React.FC = () => (
  * Shimmer pulse for Purana / Scripture Cards
  */
 export const PuranaCardSkeleton: React.FC = () => (
-  <div className="bg-white rounded-2xl p-3 border border-gray-100 shadow-xs flex flex-col h-full animate-pulse">
-    <div className="aspect-[3/4] w-full rounded-xl bg-gray-200 mb-3" />
+  <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-xs flex flex-col h-full animate-pulse">
+    <div className="aspect-[3/4] w-full rounded-lg bg-gray-200 mb-3" />
     <div className="h-4 bg-gray-200 rounded-md w-3/4 mb-2" />
     <div className="h-2.5 bg-gray-100 rounded-md w-full mb-1" />
     <div className="h-2.5 bg-gray-100 rounded-md w-2/3" />
@@ -90,17 +90,20 @@ export const FestivalCardSkeleton: React.FC = () => (
  * Shimmer pulse for Bhajan Grid Cards
  */
 export const BhajanCardSkeleton: React.FC = () => (
-  <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-xs flex flex-col h-full animate-pulse">
-    <div className="aspect-[16/10] w-full bg-gray-200" />
-    <div className="p-4 flex flex-col gap-2.5 flex-1 justify-between">
+  <div className="bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] rounded-xl overflow-hidden border border-amber-100/90 shadow-xs flex flex-col h-full animate-pulse">
+    <div className="aspect-video w-full bg-amber-100/50" />
+    <div className="p-4 flex flex-col flex-1 justify-between gap-4">
       <div>
-        <div className="h-3 bg-amber-100 rounded w-20 mb-2" />
-        <div className="h-4 bg-gray-200 rounded w-5/6 mb-1.5" />
-        <div className="h-3 bg-gray-100 rounded w-1/2" />
+        <div className="h-5 bg-amber-200/50 rounded-md w-5/6 mb-2" />
+        <div className="h-3.5 bg-gray-200/70 rounded-md w-1/2" />
       </div>
-      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-        <div className="h-3 bg-gray-200 rounded w-12" />
-        <div className="h-3 bg-gray-200 rounded w-14" />
+      <div className="pt-3 border-t border-amber-100/70 flex items-center justify-between gap-2">
+        <div className="flex gap-1.5">
+          <div className="w-6 h-6 rounded-full bg-amber-100/60" />
+          <div className="w-6 h-6 rounded-full bg-amber-100/60" />
+          <div className="w-6 h-6 rounded-full bg-amber-100/60" />
+        </div>
+        <div className="h-4 bg-amber-200/60 rounded-md w-24" />
       </div>
     </div>
   </div>

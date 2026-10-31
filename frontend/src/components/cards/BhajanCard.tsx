@@ -1,5 +1,5 @@
 import React from 'react';
-import { Music, Disc, ChevronRight, Heart, Calendar, FileText, Sparkles } from 'lucide-react';
+import { Music, Disc, ChevronRight, Heart, Calendar, FileText } from 'lucide-react';
 import { Card } from '@components/ui/Card';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -135,14 +135,6 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
         {/* Devotional Content Area */}
         <div className="p-4 flex flex-col flex-1 justify-between">
           <div>
-            {/* Subtle Devotional Lyrics Indicator */}
-            <IconText
-              icon={<Sparkles className="w-3 h-3 text-saffron" />}
-              gap="gap-1.5"
-              className="text-[11px] font-bold text-saffron mb-1 tracking-wide"
-              text={t('common.listenAndRead')}
-            />
-
             <h3 className="font-bold text-darkBrown text-base line-clamp-2 pt-0.5 pb-0.5 leading-snug group-hover:text-saffron transition-colors font-hindi-heading">
               {title}
             </h3>
