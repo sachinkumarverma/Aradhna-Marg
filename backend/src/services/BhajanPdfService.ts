@@ -43,12 +43,54 @@ export class BhajanPdfService {
   }
 
   /**
+   * Detects whether a line represents a devotional or musical structural section heading
+   * (e.g. दोहा, चौपाई, अंतरा, मुखड़ा, श्लोक, छंद, सोरठा, Chorus, Verse, etc.)
+   */
+  public isHeading(text: string): boolean {
+    if (!text) return false;
+    const trimmed = text.trim();
+    if (trimmed.length === 0 || trimmed.length > 60) return false;
+
+    // Enclosed in danda: ॥ ... ॥ or || ... || (short title or invocation)
+    if (
+      (trimmed.startsWith('॥') && (trimmed.endsWith('॥') || trimmed.length < 35)) ||
+      (trimmed.startsWith('||') && (trimmed.endsWith('||') || trimmed.length < 35))
+    ) {
+      return true;
+    }
+
+    // Enclosed in square brackets or parentheses: [Chorus], [Verse 1], (दोहा)
+    if ((trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('(') && trimmed.endsWith(')'))) {
+      return true;
+    }
+
+    // Known structural / devotional section headings with optional numbering, colons, or dashes
+    const headingPattern =
+      /^(?:॥|\|\||\[|\(|\b)?\s*(?:श्लोक|प्रारंभिक\s*श्लोक|प्रारंभिक|मुखड़ा|अंतरा|स्थाई|दोहा|चौपाई|छंद|सोरठा|टेक|समापन|सवैया|कवित्त|पद्य|पद|स्तुति|आरती|ध्रुपद|Chorus|Verse|Strophe|Intro|Outro|Bridge)(?:\s*(?:\d+|[०-९]+|[A-Za-z]))?(?:\s*[:\-–॥\])])?$/i;
+
+    if (headingPattern.test(trimmed)) {
+      return true;
+    }
+
+    // Keyword at start with short length (< 40) and without regular sentence danda
+    const startsWithKeyword =
+      /^(?:॥|\|\||\[|\(|\b)?\s*(?:श्लोक|प्रारंभिक\s*श्लोक|प्रारंभिक|मुखड़ा|अंतरा|स्थाई|दोहा|चौपाई|छंद|सोरठा|टेक|समापन|सवैया|कवित्त|पद्य|पद|स्तुति|आरती|ध्रुपद|Chorus|Verse|Strophe|Intro|Outro|Bridge)\b/i;
+
+    if (startsWithKeyword.test(trimmed) && trimmed.length < 40 && !trimmed.includes('।')) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Intelligently parses raw lyrics or rich HTML text into structured devotional sections.
    * Preserves exact words, punctuation, danda (॥), and formatting without mutation.
    */
   public parseLyrics(raw: string): LyricSection[] {
     if (!raw) return [];
     const cleanRaw = raw.trim();
+    const rawLines: string[] = [];
 
     if (cleanRaw.includes('<')) {
       const normalized = cleanRaw
@@ -59,65 +101,42 @@ export class BhajanPdfService {
         .replace(/<br\s*\/?>/gi, '\n');
 
       const blocks = normalized
-        .split(/<\/?(?:h[1-6]|p|div)[^>]*>/gi)
+        .split(/<\/?(?:h[1-6]|p|div|li)[^>]*>/gi)
         .map((b) => b.replace(/<[^>]*>/g, '').trim())
         .filter(Boolean);
 
-      const sections: LyricSection[] = [];
-      let currentSection: LyricSection = { heading: null, lines: [] };
-
       for (const block of blocks) {
-        const isHeading =
-          (block.startsWith('॥') && block.endsWith('॥') && block.length < 50) ||
-          (block.startsWith('॥') && block.length < 35) ||
-          /^॥\s*(?:मुखड़ा|अंतरा|प्रारंभिक|समापन|दोहा|चौपाई)/i.test(block);
-
-        if (isHeading) {
-          if (currentSection.lines.length > 0 || currentSection.heading) {
-            sections.push(currentSection);
-          }
-          currentSection = { heading: block, lines: [] };
-        } else {
-          block.split('\n').forEach((line) => {
-            const trimmed = line.trim();
-            if (trimmed) currentSection.lines.push(trimmed);
-          });
-        }
+        block.split('\n').forEach((l) => {
+          const trimmed = l.trim();
+          if (trimmed) rawLines.push(trimmed);
+        });
       }
-
-      if (currentSection.lines.length > 0 || currentSection.heading) {
-        sections.push(currentSection);
-      }
-      return sections;
     } else {
-      const lines = cleanRaw
-        .split('\n')
-        .map((l) => l.trim())
-        .filter(Boolean);
-      const sections: LyricSection[] = [];
-      let currentSection: LyricSection = { heading: null, lines: [] };
-
-      for (const line of lines) {
-        const isHeading =
-          (line.startsWith('॥') && line.endsWith('॥') && line.length < 50) ||
-          (line.startsWith('॥') && line.length < 35) ||
-          /^॥\s*(?:मुखड़ा|अंतरा|प्रारंभिक|समापन|दोहा|चौपाई)/i.test(line);
-
-        if (isHeading) {
-          if (currentSection.lines.length > 0 || currentSection.heading) {
-            sections.push(currentSection);
-          }
-          currentSection = { heading: line, lines: [] };
-        } else {
-          currentSection.lines.push(line);
-        }
-      }
-
-      if (currentSection.lines.length > 0 || currentSection.heading) {
-        sections.push(currentSection);
-      }
-      return sections;
+      cleanRaw.split('\n').forEach((l) => {
+        const trimmed = l.trim();
+        if (trimmed) rawLines.push(trimmed);
+      });
     }
+
+    const sections: LyricSection[] = [];
+    let currentSection: LyricSection = { heading: null, lines: [] };
+
+    for (const line of rawLines) {
+      if (this.isHeading(line)) {
+        if (currentSection.lines.length > 0 || currentSection.heading) {
+          sections.push(currentSection);
+        }
+        currentSection = { heading: line, lines: [] };
+      } else {
+        currentSection.lines.push(line);
+      }
+    }
+
+    if (currentSection.lines.length > 0 || currentSection.heading) {
+      sections.push(currentSection);
+    }
+
+    return sections;
   }
 
   /**
@@ -167,7 +186,7 @@ export class BhajanPdfService {
       throw new Error('No lyrics available to generate PDF booklet');
     }
 
-    const versionKey = `${bhajan.id}_${bhajan.updated_at || ''}_${rawLyrics.length}`;
+    const versionKey = `${bhajan.id}_${bhajan.updated_at || ''}_${rawLyrics.length}_v4`;
     const cached = this.pdfCache.get(bhajan.slug);
     if (cached && cached.versionKey === versionKey) {
       return cached.buffer;
@@ -310,7 +329,7 @@ export class BhajanPdfService {
   <meta name="creator" content="Aradhna Marg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
   <style>
     @page {
       size: A4 portrait;
@@ -579,10 +598,10 @@ export class BhajanPdfService {
       margin-bottom: 4mm;
     }
     .section-title {
-      font-family: 'Rozha One', 'Anek Devanagari', serif;
+      font-family: 'Anek Devanagari', 'Outfit', sans-serif;
       font-size: 25px;
-      color: #C2410C;
-      font-weight: 700;
+      color: #3B1D0C;
+      font-weight: 800;
       text-align: center;
       margin-top: 18px;
       margin-bottom: 10px;
@@ -602,12 +621,15 @@ export class BhajanPdfService {
       width: 100%;
     }
     .antra-divider {
-      width: 80%;
+      width: 82%;
       max-width: 480px;
       height: 2px;
       margin: 22px auto 16px auto;
-      background: linear-gradient(90deg, transparent 0%, rgba(245, 158, 11, 0.45) 20%, #F59E0B 50%, rgba(245, 158, 11, 0.45) 80%, transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, rgba(245, 158, 11, 0.45) 15%, #F59E0B 50%, rgba(245, 158, 11, 0.45) 85%, transparent 100%);
       border-radius: 9999px;
+    }
+    .antra-divider + .section-title {
+      margin-top: 8px;
     }
 
     /* Page Footer */
