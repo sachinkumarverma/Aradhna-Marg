@@ -84,13 +84,13 @@ export const Select: React.FC<SelectProps> = ({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 min-w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden font-hindi-heading',
+            'absolute z-50 w-full left-0 right-0 max-w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden font-hindi-heading',
             menuPlacement === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
           )}
         >
           {searchable && (
             <div className="flex items-center px-3 py-2 border-b border-gray-100 bg-white">
-              <Search className="w-4 h-4 text-gray-400 mr-2" />
+              <Search className="w-4 h-4 text-gray-400 mr-2 shrink-0" />
               <input
                 type="text"
                 className="w-full bg-transparent outline-none text-sm placeholder-gray-400 pt-0.5 font-hindi-heading"
@@ -113,6 +113,7 @@ export const Select: React.FC<SelectProps> = ({
               filteredOptions.map((opt) => (
                 <div
                   key={opt.value}
+                  title={opt.label}
                   className={cn(
                     'flex items-center justify-between px-3 py-2 cursor-pointer transition-colors hover:bg-gray-50 font-hindi-heading',
                     value === opt.value && 'bg-saffron/5 text-saffron font-medium'
@@ -123,20 +124,20 @@ export const Select: React.FC<SelectProps> = ({
                     setSearch('');
                   }}
                 >
-                  <div className="flex items-center gap-2 whitespace-nowrap pr-4">
+                  <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
                     {opt.icon && (
                       <span
                         className={cn(
-                          'w-4 h-4 flex items-center justify-center min-w-4',
+                          'w-4 h-4 flex items-center justify-center min-w-4 shrink-0',
                           value === opt.value ? 'text-saffron' : 'text-gray-500'
                         )}
                       >
                         {opt.icon}
                       </span>
                     )}
-                    <span>{opt.label}</span>
+                    <span className="truncate">{opt.label}</span>
                   </div>
-                  {value === opt.value && <Check className="w-4 h-4 min-w-4" />}
+                  {value === opt.value && <Check className="w-4 h-4 min-w-4 shrink-0 text-saffron ml-1" />}
                 </div>
               ))
             )}

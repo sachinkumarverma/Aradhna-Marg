@@ -35,8 +35,9 @@ function App() {
             position={isMobile ? 'bottom-center' : 'top-right'}
             containerStyle={isMobile ? { bottom: 24, zIndex: 99999 } : { zIndex: 99999 }}
             toastOptions={{
-              className: '!rounded-xl !shadow-lg',
+              className: '!rounded-md !shadow-lg',
               style: {
+                borderRadius: '6px',
                 fontSize: '14px',
                 maxWidth: '92vw'
               }

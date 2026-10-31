@@ -59,6 +59,30 @@ export const AdminDashboard: React.FC = () => {
 
   const recentBhajans = (activityData || []).slice(0, 5);
 
+  const nextSyncFormatted = (() => {
+    if (settings?.youtubeAutoSync === false) {
+      return 'Disabled';
+    }
+
+    if (settings?.youtubeNextSync) {
+      const nextDate = new Date(settings.youtubeNextSync);
+      if (!isNaN(nextDate.getTime())) {
+        return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(nextDate);
+      }
+    }
+
+    if (settings?.youtubeLastSync) {
+      const lastDate = new Date(settings.youtubeLastSync);
+      if (!isNaN(lastDate.getTime())) {
+        const intervalHours = parseInt(settings.youtubeSyncInterval || '24', 10) || 24;
+        const calculatedNext = new Date(lastDate.getTime() + intervalHours * 60 * 60 * 1000);
+        return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(calculatedNext);
+      }
+    }
+
+    return 'Pending Initial Sync';
+  })();
+
   if (isLoadingStats && isLoadingActivity) {
     return (
       <div className="space-y-6 flex flex-col min-h-full animate-pulse">
@@ -170,6 +194,10 @@ export const AdminDashboard: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="h-3.5 w-12 bg-slate-200/60 rounded"></div>
                   <div className="h-5 w-16 bg-green-100 rounded-full"></div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="h-3.5 w-16 bg-slate-200/60 rounded"></div>
+                  <div className="h-3.5 w-28 bg-slate-200/70 rounded"></div>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="h-3.5 w-16 bg-slate-200/60 rounded"></div>
@@ -376,9 +404,15 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-500 text-xs sm:text-sm">Status</span>
-              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-green-600 bg-green-50 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
-                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500"></span> Active
-              </span>
+              {settings?.youtubeAutoSync !== false ? (
+                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-green-600 bg-green-50 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
+                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500"></span> Active
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-amber-600 bg-amber-50 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
+                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-500"></span> Paused
+                </span>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
@@ -390,6 +424,11 @@ export const AdminDashboard: React.FC = () => {
                     )
                   : 'Never'}
               </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-gray-500 text-xs sm:text-sm">Next Sync</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-900">{nextSyncFormatted}</span>
             </div>
 
             <div className="flex items-center justify-between">

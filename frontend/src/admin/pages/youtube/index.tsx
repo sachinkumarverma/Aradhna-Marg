@@ -19,7 +19,9 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  History
+  History,
+  Loader2,
+  Music
 } from 'lucide-react';
 import { apiClient } from '@api/client';
 import { format } from 'date-fns';
@@ -173,12 +175,26 @@ export const AdminYoutube = () => {
     }
   });
 
-  // Init selected bhajan when dialog opens
+  // Init selected bhajan and manage modal body lock/escape key
   useEffect(() => {
     if (linkDialogOpen && videosData?.data) {
       const video = videosData.data.find((v: any) => v.id === linkDialogOpen);
       setSelectedBhajanId(video?.linkedBhajan?.id || '');
     }
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLinkDialogOpen(null);
+    };
+
+    if (linkDialogOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
   }, [linkDialogOpen, videosData]);
 
   // Link Mutation
@@ -911,48 +927,185 @@ export const AdminYoutube = () => {
         </div>
       )}
 
-      {/* Link Dialog */}
+      {/* Modern Link Bhajan Dialog */}
       {linkDialogOpen &&
-        createPortal(
-          <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4">
-            <div className="bg-white rounded-md shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="font-bold text-gray-900">Link Bhajan</h3>
-                <button onClick={() => setLinkDialogOpen(null)} className="text-gray-600 hover:text-gray-700">
-                  <XCircle className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="p-6 pb-48 flex flex-col">
-                <label className="text-sm font-bold text-gray-700 mb-2">Search Bhajans</label>
-                <Select
-                  options={[
-                    { label: 'None (Unlink)', value: '' },
-                    ...(bhajansList || []).map((b: any) => ({
-                      label: b.title,
-                      value: b.id
-                    }))
-                  ]}
-                  value={selectedBhajanId}
-                  onChange={(val) => setSelectedBhajanId(val)}
-                  placeholder="Search bhajans..."
-                  searchable={true}
-                />
-                <p className="text-xs text-gray-500 mt-4 mb-6">
-                  Select a Bhajan from your database to link this YouTube video directly to its page.
-                </p>
+        (() => {
+          const targetVideo = (videosData?.data || []).find((v: any) => v.id === linkDialogOpen);
+          const selectedBhajan = (bhajansList || []).find((b: any) => b.id === selectedBhajanId);
 
-                <button
-                  onClick={() => linkMutation.mutate({ videoId: linkDialogOpen, bhajanId: selectedBhajanId || null })}
-                  disabled={linkMutation.isPending}
-                  className="w-full py-2.5 bg-saffron text-white rounded-md font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
-                >
-                  {linkMutation.isPending ? 'Saving...' : 'Save Link'}
-                </button>
+          return createPortal(
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+                onClick={() => setLinkDialogOpen(null)}
+              />
+
+              {/* Modal Dialog Card */}
+              <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-100 flex flex-col z-10 animate-in zoom-in-95 duration-200 my-auto">
+                {/* Header */}
+                <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200/60 text-saffron flex items-center justify-center shrink-0 shadow-xs">
+                      <LinkIcon className="w-5 h-5 text-saffron" strokeWidth={2.2} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-base sm:text-lg text-gray-900 leading-snug">Link to Bhajan</h3>
+                      <p className="text-xs text-gray-500 font-medium">
+                        Connect this YouTube upload with a catalog bhajan
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setLinkDialogOpen(null)}
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                    title="Close"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Body */}
+                <div className="p-6 space-y-4">
+                  {/* Target Video Information Card */}
+                  {targetVideo &&
+                    (() => {
+                      const videoThumb =
+                        targetVideo.thumbnail ||
+                        targetVideo.thumbnailUrl ||
+                        (targetVideo.youtubeVideoId
+                          ? `https://i.ytimg.com/vi/${targetVideo.youtubeVideoId}/hqdefault.jpg`
+                          : '/Deities/Krishna.png');
+
+                      return (
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-start gap-3">
+                          <div className="relative aspect-video w-24 rounded-lg overflow-hidden bg-black shrink-0 border border-black/10">
+                            <img
+                              src={videoThumb}
+                              alt={targetVideo.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                if (targetVideo.youtubeVideoId) {
+                                  (e.target as HTMLImageElement).src =
+                                    `https://i.ytimg.com/vi/${targetVideo.youtubeVideoId}/hqdefault.jpg`;
+                                }
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                              <PlaySquare className="w-5 h-5 text-white/90" />
+                            </div>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4
+                              className="text-xs sm:text-sm font-semibold text-gray-900 line-clamp-2 font-hindi-heading leading-tight"
+                              title={targetVideo.title}
+                            >
+                              {targetVideo.title}
+                            </h4>
+                            <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                              <span className="text-[10px] text-gray-500 font-mono">
+                                ID: {targetVideo.youtubeVideoId}
+                              </span>
+                              {targetVideo.duration && (
+                                <span className="text-[10px] bg-slate-200/70 text-slate-700 px-1.5 py-0.5 rounded font-medium">
+                                  {targetVideo.duration}
+                                </span>
+                              )}
+                              {targetVideo.linkedBhajan && (
+                                <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-semibold flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3" /> Linked: {targetVideo.linkedBhajan.title}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                  {/* Form Controls */}
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                      Select Bhajan to Link
+                    </label>
+                    <Select
+                      options={[
+                        { label: 'None (Unlink Video)', value: '' },
+                        ...(bhajansList || []).map((b: any) => {
+                          const displayLabel =
+                            b.hindi_title && b.title && b.hindi_title !== b.title
+                              ? `${b.hindi_title} (${b.title})`
+                              : b.hindi_title || b.title || 'Untitled Bhajan';
+
+                          return {
+                            label: displayLabel,
+                            value: b.id
+                          };
+                        })
+                      ]}
+                      value={selectedBhajanId}
+                      onChange={(val) => setSelectedBhajanId(val)}
+                      placeholder="Search bhajans by title..."
+                      searchable={true}
+                    />
+                    <p className="text-[11px] text-gray-500 mt-2">
+                      Linking assigns this YouTube video directly to the Bhajan's public page for audio & video
+                      playback.
+                    </p>
+                  </div>
+
+                  {/* Selected feedback pill */}
+                  {selectedBhajanId && selectedBhajan && (
+                    <div className="p-2.5 bg-amber-50/70 rounded-lg border border-amber-200/60 flex items-center justify-between text-xs font-hindi-heading">
+                      <span className="text-darkBrown font-medium flex items-center gap-1.5 truncate">
+                        <Music className="w-4 h-4 text-saffron shrink-0" />
+                        <span className="truncate">
+                          Selected: <strong>{selectedBhajan.hindi_title || selectedBhajan.title}</strong>
+                        </span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedBhajanId('')}
+                        className="text-xs text-rose-500 hover:text-rose-700 font-medium ml-2 shrink-0 cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="px-6 py-4 bg-slate-50/80 border-t border-gray-100 rounded-b-2xl flex items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setLinkDialogOpen(null)}
+                    className="px-4 py-2 text-xs sm:text-sm font-semibold text-gray-600 hover:text-gray-800 hover:bg-gray-200/60 rounded-lg transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => linkMutation.mutate({ videoId: linkDialogOpen, bhajanId: selectedBhajanId || null })}
+                    disabled={linkMutation.isPending}
+                    className="px-5 py-2 bg-gradient-to-r from-saffron to-[#ff5500] hover:from-saffron/90 hover:to-[#ff5500]/90 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-md shadow-saffron/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {linkMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <LinkIcon className="w-4 h-4 shrink-0" strokeWidth={2.2} />
+                        <span>{selectedBhajanId ? 'Save Link' : 'Unlink Video'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>,
-          document.body
-        )}
+            </div>,
+            document.body
+          );
+        })()}
 
       <ConfirmDialog
         isOpen={!!deleteConfirmId}

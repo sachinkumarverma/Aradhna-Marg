@@ -131,9 +131,16 @@ export class YoutubeService {
         }
       } while (pageToken && pagesFetched < MAX_PAGES);
 
-      // 4. Update last sync time
+      // 4. Update last sync time and next scheduled sync time
       if (settings.id) {
-        await db.query(`UPDATE settings SET youtube_last_sync = NOW() WHERE id = $1`, [settings.id]);
+        const intervalHours = parseInt(settings.youtube_sync_interval, 10) || 24;
+        await db.query(
+          `UPDATE settings 
+           SET youtube_last_sync = NOW(),
+               youtube_next_sync = NOW() + ($2 || ' hours')::interval 
+           WHERE id = $1`,
+          [settings.id, intervalHours]
+        );
       }
 
       await youtubeVideoRepository.logSync(
@@ -162,7 +169,16 @@ export class YoutubeService {
   }
 
   async getBhajansForLink() {
-    const result = await db.query(`SELECT id, title FROM bhajans ORDER BY title ASC`);
+    const result = await db.query(`
+      SELECT 
+        id, 
+        title, 
+        hindi_title 
+      FROM bhajans 
+      WHERE youtube_video_id IS NULL 
+        AND deleted_at IS NULL 
+      ORDER BY COALESCE(NULLIF(hindi_title, ''), NULLIF(title, '')) ASC
+    `);
     return result.rows;
   }
 }
