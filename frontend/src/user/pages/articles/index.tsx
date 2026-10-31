@@ -176,10 +176,6 @@ export const ArticlesList: React.FC = () => {
             disabled={loading}
             onPageChange={(newPage) => {
               setPage(newPage);
-              const grid = document.getElementById('articles-grid');
-              if (grid) {
-                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
             }}
           />
         )}

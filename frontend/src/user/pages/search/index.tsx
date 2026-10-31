@@ -309,10 +309,6 @@ export const SearchPage: React.FC = () => {
                   disabled={isLoading}
                   onPageChange={(newPage) => {
                     setPage(newPage);
-                    const grid = document.getElementById('search-grid');
-                    if (grid) {
-                      grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
                   }}
                 />
               )}

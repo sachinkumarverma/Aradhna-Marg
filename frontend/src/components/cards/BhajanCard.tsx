@@ -135,12 +135,12 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
         {/* Devotional Content Area */}
         <div className="p-4 flex flex-col flex-1 justify-between">
           <div>
-            <h3 className="font-bold text-darkBrown text-base line-clamp-2 pt-0.5 pb-0.5 leading-snug group-hover:text-saffron transition-colors font-hindi-heading">
+            <h3 className="font-bold text-darkBrown text-base line-clamp-2 pt-0.5 pb-0.5 leading-snug group-hover:text-saffron transition-colors font-hindi-heading min-h-[44px]">
               {title}
             </h3>
-            {showEnglish && (
-              <p className="text-xs text-slate-500 font-sans line-clamp-1 mt-0.5 font-medium">{subtitle}</p>
-            )}
+            <p className="text-xs text-slate-500 font-sans line-clamp-1 mt-0.5 font-medium h-[16px]">
+              {showEnglish ? subtitle : '\u00A0'}
+            </p>
           </div>
 
           {/* Devotional Footer */}

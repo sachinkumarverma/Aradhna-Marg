@@ -162,10 +162,6 @@ export const VideosList = () => {
             disabled={loading}
             onPageChange={(newPage) => {
               setPage(newPage);
-              const grid = document.getElementById('videos-grid');
-              if (grid) {
-                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
             }}
           />
         )}

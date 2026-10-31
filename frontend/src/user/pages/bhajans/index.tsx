@@ -276,9 +276,9 @@ export const BhajansList: React.FC = () => {
               {bhajans.map((bhajan, i) => (
                 <motion.div
                   key={bhajan.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.02, duration: 0.2 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.15 }}
                 >
                   <Link to={`/bhajans/${bhajan.slug || bhajan.id}`} className="block h-full">
                     <BhajanCard
@@ -319,10 +319,6 @@ export const BhajansList: React.FC = () => {
             disabled={loading}
             onPageChange={(newPage) => {
               setPage(newPage);
-              const grid = document.getElementById('bhajans-grid');
-              if (grid) {
-                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
             }}
           />
         )}

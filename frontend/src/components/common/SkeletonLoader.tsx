@@ -91,19 +91,29 @@ export const FestivalCardSkeleton: React.FC = () => (
  */
 export const BhajanCardSkeleton: React.FC = () => (
   <div className="bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] rounded-xl overflow-hidden border border-amber-100/90 shadow-xs flex flex-col h-full animate-pulse">
-    <div className="aspect-video w-full bg-amber-100/50" />
-    <div className="p-4 flex flex-col flex-1 justify-between gap-4">
+    {/* Devotional Thumbnail Header */}
+    <div className="aspect-video w-full bg-amber-100/50 border-b border-amber-100/40" />
+
+    {/* Devotional Content Area */}
+    <div className="p-4 flex flex-col flex-1 justify-between">
       <div>
-        <div className="h-5 bg-amber-200/50 rounded-md w-5/6 mb-2" />
-        <div className="h-3.5 bg-gray-200/70 rounded-md w-1/2" />
-      </div>
-      <div className="pt-3 border-t border-amber-100/70 flex items-center justify-between gap-2">
-        <div className="flex gap-1.5">
-          <div className="w-6 h-6 rounded-full bg-amber-100/60" />
-          <div className="w-6 h-6 rounded-full bg-amber-100/60" />
-          <div className="w-6 h-6 rounded-full bg-amber-100/60" />
+        <div className="pt-0.5 pb-0.5 min-h-[44px] flex flex-col justify-center gap-1.5">
+          <div className="h-4 bg-amber-200/50 rounded-md w-5/6" />
+          <div className="h-4 bg-amber-200/40 rounded-md w-2/3" />
         </div>
-        <div className="h-4 bg-amber-200/60 rounded-md w-24" />
+        <div className="h-[16px] mt-0.5 flex items-center">
+          <div className="h-3 bg-gray-200/70 rounded-md w-1/2" />
+        </div>
+      </div>
+
+      {/* Devotional Footer */}
+      <div className="mt-4 pt-3 border-t border-amber-100/70 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          <div className="w-7 h-7 rounded-full bg-amber-100/60" />
+          <div className="w-7 h-7 rounded-full bg-amber-100/60" />
+          <div className="w-7 h-7 rounded-full bg-amber-100/60" />
+        </div>
+        <div className="h-6 bg-amber-200/60 rounded-full w-24" />
       </div>
     </div>
   </div>

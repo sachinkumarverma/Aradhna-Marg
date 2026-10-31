@@ -187,10 +187,6 @@ export const FestivalsList: React.FC = () => {
             disabled={loading}
             onPageChange={(newPage) => {
               setPage(newPage);
-              const grid = document.getElementById('festivals-grid');
-              if (grid) {
-                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
             }}
           />
         )}

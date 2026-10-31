@@ -77,7 +77,7 @@ export const Footer: React.FC = () => {
               placeholder={isHi ? 'अपना ईमेल पता दर्ज करें...' : 'Enter your email...'}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 text-sm outline-none focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all"
+              className="flex-1 px-4 pt-3.5 pb-2.5 rounded-2xl bg-white/5 border border-white/15 text-white placeholder:text-slate-500 text-sm outline-none focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all"
             />
             <button
               type="submit"

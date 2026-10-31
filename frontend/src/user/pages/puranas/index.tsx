@@ -132,10 +132,6 @@ export const PuranasList: React.FC = () => {
             disabled={loading}
             onPageChange={(newPage) => {
               setPage(newPage);
-              const grid = document.getElementById('puranas-grid');
-              if (grid) {
-                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
             }}
           />
         )}
