@@ -18,21 +18,30 @@ const breadcrumbsKeyMap: Record<string, string> = {
   होम: 'breadcrumbs.home',
   Home: 'breadcrumbs.home',
   'भजन संग्रह': 'breadcrumbs.bhajans',
+  भजन: 'breadcrumbs.bhajans',
   Bhajans: 'breadcrumbs.bhajans',
   'धार्मिक लेख': 'breadcrumbs.articles',
+  लेख: 'breadcrumbs.articles',
   Articles: 'breadcrumbs.articles',
   'पावन त्योहार': 'breadcrumbs.festivals',
+  त्योहार: 'breadcrumbs.festivals',
   Festivals: 'breadcrumbs.festivals',
   'पुराण संग्रह': 'breadcrumbs.puranas',
+  पुराण: 'breadcrumbs.puranas',
   Puranas: 'breadcrumbs.puranas',
   'Sacred Texts': 'breadcrumbs.puranas',
   'देवी-देवता': 'breadcrumbs.gods',
   Deities: 'breadcrumbs.gods',
+  Gods: 'breadcrumbs.gods',
   श्रेणियाँ: 'breadcrumbs.categories',
+  श्रेणियां: 'breadcrumbs.categories',
   Categories: 'breadcrumbs.categories',
   'दिव्य वीडियो': 'breadcrumbs.videos',
+  वीडियो: 'breadcrumbs.videos',
   Videos: 'breadcrumbs.videos',
   'खोज परिणाम': 'breadcrumbs.search',
+  Search: 'breadcrumbs.search',
+  खोजें: 'breadcrumbs.explore',
   'खोजें (Explore)': 'breadcrumbs.explore',
   Explore: 'breadcrumbs.explore',
   'नियम व शर्तें': 'breadcrumbs.terms',
@@ -55,6 +64,11 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
     return key ? t(key) : label;
   };
 
+  // Filter out any redundant 'Home'/'/' item since the Home icon is already rendered as the root
+  const filteredItems = items.filter(
+    (item) => item.to !== '/' && item.label !== 'Home' && item.label !== 'होम' && item.label !== t('breadcrumbs.home')
+  );
+
   return (
     <nav
       aria-label="Breadcrumb"
@@ -71,8 +85,8 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '', v
         <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
       </Link>
 
-      {items.map((item, idx) => {
-        const isLast = idx === items.length - 1;
+      {filteredItems.map((item, idx) => {
+        const isLast = idx === filteredItems.length - 1;
         const displayLabel = getTranslatedLabel(item.label);
 
         return (

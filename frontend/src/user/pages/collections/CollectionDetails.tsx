@@ -30,9 +30,12 @@ export const CollectionDetails: React.FC = () => {
           const res = await PublicApi.getDeityBySlug(id);
           const deity = res.deity;
           setData({
-            title: getLocalizedField(deity, 'name') || 'Deity',
+            title: getLocalizedField(deity, 'name') || (language === 'hi' ? 'देवी-देवता' : 'Deity'),
             description:
-              getLocalizedField(deity, 'short_description') || 'पावन देवी-देवता के समस्त भजन, लेख एवं त्योहार संग्रह',
+              getLocalizedField(deity, 'short_description') ||
+              (language === 'hi'
+                ? 'पावन देवी-देवता के समस्त भजन, लेख एवं त्योहार संग्रह'
+                : 'Devotional bhajans, articles, and festivals for this deity'),
             image: deity?.image,
             bhajans: res.relatedBhajans || [],
             articles: res.relatedArticles || [],
@@ -42,8 +45,10 @@ export const CollectionDetails: React.FC = () => {
           const res = await PublicApi.getCategoryBySlug(id);
           const cat = res.category;
           setData({
-            title: getLocalizedField(cat, 'name') || 'Category',
-            description: getLocalizedField(cat, 'description') || 'श्रेणी से संबंधित पावन सामग्री',
+            title: getLocalizedField(cat, 'name') || (language === 'hi' ? 'श्रेणी' : 'Category'),
+            description:
+              getLocalizedField(cat, 'description') ||
+              (language === 'hi' ? 'श्रेणी से संबंधित पावन सामग्री' : 'Devotional content for this category'),
             image: cat?.image_url || cat?.icon_url,
             bhajans: res.bhajans || [],
             articles: res.articles || []
@@ -124,7 +129,20 @@ export const CollectionDetails: React.FC = () => {
         title={data.title}
         description={data.description}
         breadcrumbs={[
-          { label: t('breadcrumbs.explore'), path: '/explore' },
+          {
+            label:
+              collectionType === 'gods' || collectionType === 'deities'
+                ? t('breadcrumbs.gods')
+                : collectionType === 'categories'
+                  ? t('breadcrumbs.categories')
+                  : t('breadcrumbs.explore'),
+            path:
+              collectionType === 'gods' || collectionType === 'deities'
+                ? `/${collectionType}`
+                : collectionType === 'categories'
+                  ? '/categories'
+                  : '/explore'
+          },
           { label: data.title, path: '#' }
         ]}
         stats={[

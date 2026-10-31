@@ -99,7 +99,7 @@ export const hi = {
     categories: 'श्रेणियाँ',
     videos: 'दिव्य वीडियो',
     search: 'खोज परिणाम',
-    explore: 'खोजें (Explore)',
+    explore: 'खोजें',
     about: 'हमारे बारे में',
     terms: 'नियम व शर्तें',
     disclaimer: 'अस्वीकरण',

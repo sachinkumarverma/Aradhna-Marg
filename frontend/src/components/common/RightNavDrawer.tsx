@@ -378,7 +378,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                         <p className="font-bold text-sm text-slate-900 font-hindi-heading leading-tight">
                           {isHi ? 'ऐप इंस्टॉल करें' : 'Install App'}
                         </p>
-                        <span className="px-1.5 py-0.2 rounded-full bg-saffron text-white font-bold text-[9px] uppercase tracking-wide">
+                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-saffron text-white font-bold text-[9px] uppercase tracking-wide font-sans leading-none">
                           Add to Home
                         </span>
                       </div>
@@ -407,7 +407,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                         {isHi ? 'पसंदीदा संग्रह' : 'Saved Favorites'}
                       </p>
                       {favoritesCount > 0 && (
-                        <span className="px-1.5 py-0.2 rounded-full bg-rose-500 text-white font-bold text-[10px]">
+                        <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] font-sans leading-none">
                           {favoritesCount}
                         </span>
                       )}

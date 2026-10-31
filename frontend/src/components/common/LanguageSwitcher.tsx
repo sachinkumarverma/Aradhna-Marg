@@ -2,7 +2,10 @@ import React from 'react';
 import { Globe } from 'lucide-react';
 import { useTranslation } from '@i18n/LanguageContext';
 
-export const LanguageSwitcher: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const LanguageSwitcher: React.FC<{ className?: string; textClassName?: string }> = ({
+  className = '',
+  textClassName = ''
+}) => {
   const { language, setLanguage } = useTranslation();
 
   return (
@@ -13,7 +16,7 @@ export const LanguageSwitcher: React.FC<{ className?: string }> = ({ className =
       title={language === 'hi' ? 'Switch to English' : 'हिंदी भाषा चुनें'}
     >
       <Globe className="w-3.5 h-3.5 text-saffron shrink-0" />
-      <span className={`inline-flex items-center leading-none ${language === 'hi' ? 'translate-y-[1.5px]' : ''}`}>
+      <span className={`inline-flex items-center leading-none ${textClassName}`}>
         {language === 'hi' ? 'हिंदी' : 'English'}
       </span>
     </button>

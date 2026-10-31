@@ -97,7 +97,7 @@ export const en: TranslationKeys = {
     bhajans: 'Bhajans',
     articles: 'Articles',
     festivals: 'Festivals',
-    puranas: 'Sacred Texts',
+    puranas: 'Puranas',
     gods: 'Deities',
     categories: 'Categories',
     videos: 'Videos',
