@@ -71,9 +71,10 @@ export class AgentSchedulerService {
         return target;
       }
       case 'weekly': {
+        const hour = agentId === 'content_quality_agent' ? 2 : agentId === 'seo_audit_agent' ? 3 : 4;
         const target = new Date(fromDate);
         target.setUTCDate(target.getUTCDate() + 7);
-        target.setUTCHours(4, 0, 0, 0);
+        target.setUTCHours(hour, 0, 0, 0);
         return target;
       }
       default: {
@@ -161,6 +162,10 @@ export class AgentSchedulerService {
         const hour = agentId === 'content_quality_agent' ? 2 : agentId === 'seo_audit_agent' ? 3 : 4;
         return { interval: 'daily', cron: `0 ${hour} * * *` };
       }
+      if (typedInterval === 'weekly' && agentId) {
+        const hour = agentId === 'content_quality_agent' ? 2 : agentId === 'seo_audit_agent' ? 3 : 4;
+        return { interval: 'weekly', cron: `0 ${hour} * * 0` };
+      }
       return { interval: typedInterval, cron: INTERVAL_TO_CRON[typedInterval] };
     }
 
@@ -229,12 +234,47 @@ export class AgentSchedulerService {
    * Core scheduled execution orchestrator with distributed locking and duplicate-run protection.
    */
   public async executeScheduledRun(
-    agentId: string
-  ): Promise<{ success: boolean; skipped?: boolean; reason?: string; runId?: string; run?: any; state?: any }> {
+    agentId: string,
+    force = false
+  ): Promise<{
+    success: boolean;
+    skipped?: boolean;
+    reason?: string;
+    runId?: string;
+    run?: any;
+    state?: any;
+    nextRunAt?: string | null;
+  }> {
     // 1. Server-side policy verification
     this.validateSchedulableAgent(agentId);
 
-    // 2. Distributed Concurrency Lock
+    // 2. Fetch current schedule to verify enabled and due status according to DB configuration
+    const schedule = await this.repository.findByAgentId(agentId);
+    if (!schedule) {
+      throw new NotFoundError(`Schedule for agent '${agentId}' not found.`);
+    }
+
+    if (!schedule.enabled) {
+      logger.info({ agentId }, 'Scheduled execution skipped: agent schedule is disabled in settings');
+      return { success: true, skipped: true, reason: 'DISABLED' };
+    }
+
+    const now = new Date();
+    const isDue = force || !schedule.nextRunAt || new Date(schedule.nextRunAt) <= now;
+    if (!isDue) {
+      logger.info(
+        { agentId, nextRunAt: schedule.nextRunAt, interval: schedule.scheduleInterval },
+        'Scheduled execution skipped: agent is not due yet according to its configured schedule'
+      );
+      return {
+        success: true,
+        skipped: true,
+        reason: 'NOT_DUE',
+        nextRunAt: schedule.nextRunAt
+      };
+    }
+
+    // 3. Distributed Concurrency Lock
     const locked = await this.repository.acquireLock(agentId);
     if (!locked) {
       logger.warn(
@@ -419,7 +459,7 @@ export class AgentSchedulerService {
             { agentId: schedule.agentId, interval: schedule.scheduleInterval },
             'Triggering due agent via runAllDueAgents'
           );
-          results[schedule.agentId] = await this.executeScheduledRun(schedule.agentId);
+          results[schedule.agentId] = await this.executeScheduledRun(schedule.agentId, true);
         } catch (err: any) {
           logger.error({ agentId: schedule.agentId, err: err.message }, 'Failed execution in runAllDueAgents');
           results[schedule.agentId] = { success: false, error: err.message };
