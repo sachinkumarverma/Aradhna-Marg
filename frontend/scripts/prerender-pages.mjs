@@ -241,10 +241,7 @@ function buildHtml(template, options) {
       /\s*<!-- Google AdSense Auto Ads -->\s*<script[^>]*src="[^"]*pagead2\.googlesyndication\.com[^"]*"[^>]*><\/script>/gi,
       ''
     );
-    html = html.replace(
-      /\s*<script[^>]*src="[^"]*pagead2\.googlesyndication\.com[^"]*"[^>]*><\/script>/gi,
-      ''
-    );
+    html = html.replace(/\s*<script[^>]*src="[^"]*pagead2\.googlesyndication\.com[^"]*"[^>]*><\/script>/gi, '');
   }
 
   return html;
