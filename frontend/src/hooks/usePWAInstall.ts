@@ -39,14 +39,30 @@ export function usePWAInstall() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Check if already running in standalone mode (installed PWA)
+    // Check if already running in standalone mode (installed PWA) or marked installed
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true ||
       document.referrer.includes('android-app://') ||
-      window.location.search.includes('source=pwa');
+      window.location.search.includes('source=pwa') ||
+      localStorage.getItem('am_pwa_is_installed') === 'true';
 
     setIsInstalled(isStandalone);
+
+    // Query browser's native installed app registry if supported
+    if ('getInstalledRelatedApps' in window.navigator) {
+      (window.navigator as any)
+        .getInstalledRelatedApps()
+        .then((apps: any[]) => {
+          if (apps && apps.length > 0) {
+            setIsInstalled(true);
+            localStorage.setItem('am_pwa_is_installed', 'true');
+          }
+        })
+        .catch(() => {
+          // Ignore unsupported browser errors
+        });
+    }
 
     // Detect iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -55,6 +71,7 @@ export function usePWAInstall() {
 
     // If opened in standalone mode for the first time, record install
     if (isStandalone) {
+      localStorage.setItem('am_pwa_is_installed', 'true');
       const platform = isIOSDevice ? 'ios' : window.innerWidth < 768 ? 'android' : 'desktop';
       recordInstallOnBackend(platform);
     }
@@ -67,6 +84,7 @@ export function usePWAInstall() {
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
+      localStorage.setItem('am_pwa_is_installed', 'true');
       const platform = isIOSDevice ? 'ios' : window.innerWidth < 768 ? 'android' : 'desktop';
       recordInstallOnBackend(platform);
     };
@@ -87,6 +105,7 @@ export function usePWAInstall() {
         const choiceResult = await deferredPrompt.userChoice;
         if (choiceResult.outcome === 'accepted') {
           setIsInstalled(true);
+          localStorage.setItem('am_pwa_is_installed', 'true');
           const platform = isIOS ? 'ios' : window.innerWidth < 768 ? 'android' : 'desktop';
           recordInstallOnBackend(platform);
         }
