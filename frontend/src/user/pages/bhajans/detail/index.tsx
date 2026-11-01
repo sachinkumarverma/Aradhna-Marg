@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Copy, Check, Eye, Clock, Calendar, Music, Sparkles, Heart, Download, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Copy,
+  Check,
+  Eye,
+  Clock,
+  Calendar,
+  Music,
+  Sparkles,
+  Heart,
+  Download,
+  Loader2,
+  ChevronDown,
+  Languages
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import { YouTubePlayer } from './components/YouTubePlayer';
@@ -79,6 +92,8 @@ export const BhajanDetail: React.FC = () => {
   const [relatedData, setRelatedData] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(() => !bhajan);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [isEnglishLyricsExpanded, setIsEnglishLyricsExpanded] = useState(false);
+  const [englishCopied, setEnglishCopied] = useState(false);
 
   const { copied, copyToClipboard } = useClipboard();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -418,19 +433,21 @@ export const BhajanDetail: React.FC = () => {
               className="bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] rounded-xl p-4 sm:p-7 border border-amber-200/80 shadow-xs"
             >
               <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-amber-200/60 mb-4 sm:mb-6">
-                <IconText
-                  icon={<Music className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />}
-                  gap="gap-2 sm:gap-2.5"
-                  as="h2"
-                  className="text-base sm:text-lg md:text-xl font-bold text-darkBrown font-hindi-heading leading-tight"
-                  text={
-                    isVideo
+                <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                  <Music className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-darkBrown font-hindi-heading leading-tight">
+                    {isVideo
                       ? isHi
                         ? 'वीडियो विवरण एवं बोल'
                         : 'Video Description & Lyrics'
-                      : t('content.bhajanLyrics') || (isHi ? 'भजन बोल' : 'Bhajan Lyrics')
-                  }
-                />
+                      : t('content.bhajanLyrics') || (isHi ? 'भजन बोल' : 'Bhajan Lyrics')}
+                  </h2>
+                  {!isVideo && bhajan?.lyrics_english && (
+                    <span className="text-[11px] font-semibold text-amber-800 bg-amber-100/70 border border-amber-200/60 px-2 py-0.5 rounded-md">
+                      {isHi ? 'हिन्दी' : 'Hindi'}
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {/* Download PDF button is strictly reserved for Bhajans, never shown on YouTube Videos */}
                   {!isVideo && (
@@ -582,6 +599,130 @@ export const BhajanDetail: React.FC = () => {
                 <p className="text-gray-500 italic text-sm">बोल उपलब्ध नहीं हैं।</p>
               )}
             </motion.div>
+
+            {/* Expandable English / Romanized Lyrics Card */}
+            {!isVideo && Boolean(bhajan?.lyrics_english) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.12 }}
+                className="bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] rounded-xl border border-amber-200/80 shadow-xs mt-6 overflow-hidden"
+              >
+                {/* Expand / Collapse Header */}
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setIsEnglishLyricsExpanded((prev) => !prev)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setIsEnglishLyricsExpanded((prev) => !prev);
+                    }
+                  }}
+                  className="group w-full p-4 sm:px-7 sm:py-5 flex items-center justify-between gap-3 text-left hover:bg-amber-50/50 transition-colors cursor-pointer select-none"
+                  aria-expanded={isEnglishLyricsExpanded}
+                >
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                    <Languages className="w-5 h-5 sm:w-6 sm:h-6 text-saffron shrink-0" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className="text-base sm:text-lg font-bold text-darkBrown font-hindi-heading leading-tight">
+                          {isHi ? 'अंग्रेजी बोल' : 'English Lyrics'}
+                        </h2>
+                      </div>
+                      <p className="text-xs text-slate-500 font-sans mt-0.5">
+                        {isEnglishLyricsExpanded
+                          ? isHi
+                            ? 'छिपाने के लिए क्लिक करें'
+                            : 'Click to collapse'
+                          : isHi
+                            ? 'अंग्रेजी / रोमन लिपि में बोल पढ़ने के लिए क्लिक करें'
+                            : 'Click to view lyrics in English'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {isEnglishLyricsExpanded && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const cleanText = (bhajan.lyrics_english || '')
+                            .replace(/<[^>]*>/g, '')
+                            .replace(/&nbsp;/g, ' ')
+                            .trim();
+                          copyToClipboard(cleanText);
+                          setEnglishCopied(true);
+                          setTimeout(() => setEnglishCopied(false), 2000);
+                        }}
+                        title={
+                          englishCopied
+                            ? isHi
+                              ? 'अंग्रेजी बोल कॉपी हो गया'
+                              : 'English Lyrics Copied'
+                            : isHi
+                              ? 'अंग्रेजी बोल कॉपी करें'
+                              : 'Copy English Lyrics'
+                        }
+                        aria-label={
+                          englishCopied
+                            ? isHi
+                              ? 'अंग्रेजी बोल कॉपी हो गया'
+                              : 'English Lyrics Copied'
+                            : isHi
+                              ? 'अंग्रेजी बोल कॉपी करें'
+                              : 'Copy English Lyrics'
+                        }
+                        className="p-1 sm:px-3 sm:py-1 bg-amber-50 hover:bg-amber-100 text-darkBrown border border-amber-200 text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95 shrink-0"
+                      >
+                        {englishCopied ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-green-600" />
+                            <span className="hidden sm:inline font-hindi-heading">
+                              {isHi ? 'कॉपी हो गया' : 'Copied'}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5 text-saffron" />
+                            <span className="hidden sm:inline font-hindi-heading">{isHi ? 'कॉपी करें' : 'Copy'}</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                    <ChevronDown
+                      className={`w-5 h-5 text-slate-400 group-hover:text-saffron transition-transform duration-200 shrink-0 ${
+                        isEnglishLyricsExpanded ? 'rotate-180 text-saffron' : ''
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Collapsible Lyrics Content */}
+                <AnimatePresence initial={false}>
+                  {isEnglishLyricsExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-4 pb-6 sm:px-7 sm:pb-8 pt-3 border-t border-amber-200/60">
+                        <SafeHtmlContent
+                          content={bhajan.lyrics_english}
+                          variant="lyrics"
+                          className="text-center prose-headings:text-center prose-p:text-center"
+                        />
+                        <div className="w-[85%] max-w-[480px] h-[2px] mx-auto mt-8 mb-2 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent rounded-full" />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
 
             {/* Dedicated Bhavarth (Spiritual Meaning) Card */}
             {hasBhavarth && (

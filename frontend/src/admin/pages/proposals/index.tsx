@@ -148,38 +148,38 @@ export const AdminProposals: React.FC<AdminProposalsProps> = ({ showHeader = tru
     switch (status) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-green-600 text-white">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap bg-green-600 text-white">
             COMPLETED
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-red-600 text-white">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap bg-red-600 text-white">
             FAILED
           </span>
         );
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-blue-600 text-white">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap bg-blue-600 text-white">
             APPROVED
           </span>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-amber-600 text-white">
-            NEEDS REVIEW
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-amber-600 text-white whitespace-nowrap">
+            PENDING
           </span>
         );
       case 'EXECUTING':
         return (
-          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-purple-600 text-white animate-pulse">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap bg-purple-600 text-white animate-pulse">
             EXECUTING
           </span>
         );
       case 'REJECTED':
       default:
         return (
-          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-gray-500 text-white">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap bg-gray-500 text-white">
             REJECTED
           </span>
         );
