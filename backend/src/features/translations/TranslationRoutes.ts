@@ -4,6 +4,7 @@ import { translationController } from './TranslationController';
 
 const router = Router();
 
+router.get('/stats', translationController.getStats);
 router.post('/generate', translationController.generateTranslation);
 router.post('/generate-live', translationController.generateLiveTranslation);
 router.post('/upsert', translationController.upsertTranslation);

@@ -1,10 +1,22 @@
 import axios from 'axios';
-import * as cheerio from 'cheerio';
 import { TranslationProvider } from './TranslationProvider';
 import { AppError } from '@/errors/appError';
+import { config } from '@/config';
+import { logger } from '@utils/logger';
 
 export class GoogleTranslateProvider implements TranslationProvider {
   name = 'google';
+  private readonly maxRetries = 3;
+  private readonly initialBackoffMs = 1000;
+
+  private getApiKey(): string | undefined {
+    return (
+      config.GOOGLE_TRANSLATE_API_KEY ||
+      config.GOOGLE_CLOUD_TRANSLATE_API_KEY ||
+      process.env.GOOGLE_TRANSLATE_API_KEY ||
+      process.env.GOOGLE_CLOUD_TRANSLATE_API_KEY
+    );
+  }
 
   async translate(
     text: string,
@@ -12,16 +24,38 @@ export class GoogleTranslateProvider implements TranslationProvider {
     targetLang: string,
     format: 'text' | 'html' = 'text'
   ): Promise<string> {
-    const isEnabled = process.env.GOOGLE_TRANSLATE_ENABLED !== 'false'; // Default to true now
+    const isEnabled = config.GOOGLE_TRANSLATE_ENABLED !== 'false' && process.env.GOOGLE_TRANSLATE_ENABLED !== 'false';
     if (!isEnabled) {
-      throw new AppError('Google Translate is disabled in configuration.', 500);
+      throw new AppError('Google Cloud Translation is disabled in configuration.', 503);
     }
 
-    const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
+    const apiKey = this.getApiKey();
+    if (!apiKey) {
+      throw new AppError(
+        'Google Cloud Translation API key is not configured. Please configure GOOGLE_TRANSLATE_API_KEY on the backend.',
+        503
+      );
+    }
 
-    try {
-      if (apiKey) {
-        // Use official API if key is provided
+    if (!text || text.trim() === '') {
+      return '';
+    }
+
+    // Call official Google Cloud Translation API v2 with exponential backoff on HTTP 429
+    return this.translateWithRetry(text, sourceLang, targetLang, format, apiKey);
+  }
+
+  private async translateWithRetry(
+    text: string,
+    sourceLang: string,
+    targetLang: string,
+    format: 'text' | 'html',
+    apiKey: string
+  ): Promise<string> {
+    let attempt = 0;
+
+    while (true) {
+      try {
         const response = await axios.post(
           `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
           {
@@ -32,109 +66,52 @@ export class GoogleTranslateProvider implements TranslationProvider {
           },
           {
             headers: { 'Content-Type': 'application/json' },
-            timeout: 10000
+            timeout: 15000
           }
         );
 
-        if (response.data?.data?.translations && response.data.data.translations.length > 0) {
-          return response.data.data.translations[0].translatedText;
+        const translations = response.data?.data?.translations;
+        if (translations && translations.length > 0 && typeof translations[0].translatedText === 'string') {
+          return translations[0].translatedText;
         }
-      } else {
-        // Fallback to free GTX endpoint if no API key
-        if (format === 'html') {
-          return await this.translateHtmlFree(text, sourceLang, targetLang);
-        } else {
-          return await this.translateTextFree(text, sourceLang, targetLang);
+
+        throw new Error('Unexpected response format from Google Cloud Translation API');
+      } catch (error: any) {
+        attempt++;
+        const status = error?.response?.status;
+        const errorData = error?.response?.data?.error;
+        const errorMessage = errorData?.message || error?.message || String(error);
+
+        const isRateLimit =
+          status === 429 ||
+          (status === 403 && typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('rate limit'));
+        const isTransient = status === 503 || status === 502;
+
+        if ((isRateLimit || isTransient) && attempt <= this.maxRetries) {
+          // Exponential backoff with jitter: 1s, 2s, 4s (+ 0-500ms jitter)
+          const delay = this.initialBackoffMs * Math.pow(2, attempt - 1) + Math.random() * 500;
+          logger.warn(
+            { status, attempt, maxRetries: this.maxRetries, delayMs: Math.round(delay), error: errorMessage },
+            `[GoogleTranslateProvider] Rate limit / transient error (HTTP ${status}). Retrying translation in ${Math.round(delay)}ms...`
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
         }
-      }
 
-      throw new Error('Invalid response format');
-    } catch (error: any) {
-      console.error('RAW GOOGLE TRANSLATE ERROR:', error);
-      const msg = error?.response?.data?.message || error?.response?.statusText || error?.message || String(error);
-      throw new AppError(`Google Translate failed: ${msg}`, 502);
-    }
-  }
+        logger.error({ status, attempt, error: errorMessage }, '[GoogleTranslateProvider] Translation request failed');
 
-  private async translateTextFree(text: string, sourceLang: string, targetLang: string): Promise<string> {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t`;
-
-    const MAX_CHUNK_LENGTH = 4000;
-    const chunks: string[] = [];
-    let i = 0;
-    while (i < text.length) {
-      let end = i + MAX_CHUNK_LENGTH;
-      if (end < text.length) {
-        const delimIndex = text.lastIndexOf('[###]', end);
-        if (delimIndex > i) {
-          end = delimIndex + 5;
-        } else {
-          const spaceIndex = text.lastIndexOf(' ', end);
-          if (spaceIndex > i) end = spaceIndex;
+        if (status === 429) {
+          throw new AppError(
+            'Google Cloud Translation rate limit reached (HTTP 429). Maximum retries exhausted. Please try again shortly.',
+            429
+          );
         }
-      }
-      chunks.push(text.slice(i, end));
-      i = end;
-    }
 
-    let finalTranslatedText = '';
-    for (const chunk of chunks) {
-      const data = new URLSearchParams();
-      data.append('q', chunk);
-
-      const response = await axios.post(url, data, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        timeout: 10000
-      });
-
-      if (response.data && response.data[0]) {
-        finalTranslatedText += response.data[0].map((item: any) => item[0]).join('');
-      } else {
-        throw new Error('Invalid response format from GTX API');
+        throw new AppError(
+          `Google Cloud Translation failed: ${errorMessage}`,
+          status && status >= 400 && status < 500 ? status : 502
+        );
       }
     }
-
-    return finalTranslatedText;
-  }
-
-  private async translateHtmlFree(html: string, sourceLang: string, targetLang: string): Promise<string> {
-    // Parse the HTML using Cheerio
-    const $ = cheerio.load(html, null, false);
-    const textNodes: any[] = [];
-
-    // Recursively find text nodes that contain actual text
-    function extractText(node: any) {
-      if (node.type === 'text') {
-        const text = node.data.trim();
-        if (text.length > 0) {
-          textNodes.push(node);
-        }
-      } else if (node.type === 'tag' && node.children) {
-        node.children.forEach(extractText);
-      }
-    }
-
-    $.root()
-      .children()
-      .each((_, el) => extractText(el));
-
-    if (textNodes.length === 0) {
-      return html;
-    }
-
-    const texts = textNodes.map((n) => (n as any).data);
-    const DELIMITER = ' \n\n[###]\n\n ';
-    const combinedText = texts.join(DELIMITER);
-
-    const translatedText = await this.translateTextFree(combinedText, sourceLang, targetLang);
-
-    const translatedParts = translatedText.split(/\s*\[###\]\s*/);
-
-    // Reconstruct the HTML
-    for (let i = 0; i < Math.min(textNodes.length, translatedParts.length); i++) {
-      (textNodes[i] as any).data = translatedParts[i] || (textNodes[i] as any).data;
-    }
-
-    return $.html();
   }
 }

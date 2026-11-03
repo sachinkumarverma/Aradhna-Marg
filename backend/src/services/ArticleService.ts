@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { articleRepository } from '@repositories/ArticleRepository';
+import { translationService } from '@features/translations';
 import { slugify } from '@utils/slugify';
 
 export class ArticleService {
@@ -76,6 +77,8 @@ export class ArticleService {
       articleData.publish_date = null;
     }
 
+    await translationService.translateRecordOnAdminSave('ARTICLE', articleData);
+
     const created = await articleRepository.create(articleData);
 
     await this.updateRelations(created.id, deities, festivals, globalTagIds, bhajans, related_articles);
@@ -126,6 +129,9 @@ export class ArticleService {
     } else {
       delete articleData.publish_date; // Keep existing publish_date
     }
+
+    await translationService.translateRecordOnAdminSave('ARTICLE', articleData);
+
     const updated = await articleRepository.update(id, articleData);
 
     await this.updateRelations(id, deities, festivals, globalTagIds, bhajans, related_articles);

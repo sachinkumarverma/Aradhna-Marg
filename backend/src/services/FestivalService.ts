@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { festivalRepository } from '@repositories/FestivalRepository';
 import { CreateFestivalDTO, UpdateFestivalDTO, Festival } from '@models/Festival';
+import { translationService } from '@features/translations';
 import { slugify } from '@utils/slugify';
 
 export class FestivalService {
@@ -32,6 +33,7 @@ export class FestivalService {
     if (!data.slug) {
       data.slug = this.generateSlug();
     }
+    await translationService.translateRecordOnAdminSave('FESTIVAL', data);
     return festivalRepository.create(data);
   }
 
@@ -39,6 +41,7 @@ export class FestivalService {
     if (data.name && !data.slug) {
       data.slug = this.generateSlug();
     }
+    await translationService.translateRecordOnAdminSave('FESTIVAL', data);
     return festivalRepository.update(id, data);
   }
 

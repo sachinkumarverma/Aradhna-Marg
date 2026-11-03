@@ -1,10 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import { translationService } from './TranslationService';
 import { translationRepository } from './TranslationRepository';
+import { translationQuotaService } from './TranslationQuotaService';
 import { ContentType } from './TranslationTypes';
 import { sendSuccess } from '@/responses/apiResponse';
 
 export class TranslationController {
+  async getStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const stats = await translationQuotaService.getStats();
+      return sendSuccess(res, 'Translation quota and statistics retrieved successfully', stats);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async generateTranslation(req: Request, res: Response, next: NextFunction) {
     try {
       const { contentType, contentId, sourceLang, targetLang } = req.body;

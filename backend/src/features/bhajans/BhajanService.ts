@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { bhajanRepository } from './BhajanRepository';
+import { translationService } from '@features/translations';
 import { slugify } from '@utils/slugify';
 
 export class BhajanService {
@@ -61,6 +62,8 @@ export class BhajanService {
       bhajanData.slug = randomUUID();
     }
 
+    await translationService.translateRecordOnAdminSave('BHAJAN', bhajanData);
+
     const created = await bhajanRepository.create(bhajanData);
 
     if (additionalDeities && Array.isArray(additionalDeities)) {
@@ -72,6 +75,8 @@ export class BhajanService {
 
   public async update(id: string, data: any) {
     const { additionalDeities, bhajanData } = this.sanitizeData(data);
+
+    await translationService.translateRecordOnAdminSave('BHAJAN', bhajanData);
 
     const updated = await bhajanRepository.update(id, bhajanData);
 

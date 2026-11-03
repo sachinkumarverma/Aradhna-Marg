@@ -28,7 +28,13 @@ const envSchema = z.object({
   BREVO_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default('Aradhna Marg <sachinv1410@gmail.com>'),
   EMAIL_FROM_ADDRESS: z.string().default('sachinv1410@gmail.com'),
-  ADMIN_EMAIL: z.string().default('sachinv1410@gmail.com')
+  ADMIN_EMAIL: z.string().default('sachinv1410@gmail.com'),
+  GOOGLE_TRANSLATE_API_KEY: z.string().optional(),
+  GOOGLE_CLOUD_TRANSLATE_API_KEY: z.string().optional(),
+  GOOGLE_TRANSLATE_ENABLED: z.string().default('true'),
+  TRANSLATION_PROVIDER: z.enum(['google', 'libretranslate']).default('google'),
+  TRANSLATION_MONTHLY_CHAR_LIMIT: z.coerce.number().default(500000),
+  AUTO_TRANSLATE_ON_SAVE: z.string().default('false')
 });
 
 const _env = envSchema.safeParse(process.env);

@@ -1,6 +1,6 @@
 export type TranslationStatus = 'NOT_TRANSLATED' | 'GENERATING' | 'NEEDS_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'FAILED';
 
-export type ContentType = 'ARTICLE' | 'PURAN' | 'FESTIVAL';
+export type ContentType = 'ARTICLE' | 'PURAN' | 'FESTIVAL' | 'BHAJAN';
 
 export interface ContentTranslation {
   id: string;

@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { puranRepository } from '@repositories/PuranRepository';
 import { backblazeStorageService } from '@services/storage/BackblazeStorageService';
+import { translationService } from '@features/translations';
 import { slugify } from '@utils/slugify';
 export class PuranService {
   public async getList(query: any) {
@@ -22,6 +23,7 @@ export class PuranService {
     if (!data.slug && data.title) {
       data.slug = randomUUID();
     }
+    await translationService.translateRecordOnAdminSave('PURAN', data);
     return puranRepository.create(data);
   }
 
@@ -29,6 +31,8 @@ export class PuranService {
     if (data.title && !data.slug) {
       data.slug = randomUUID();
     }
+
+    await translationService.translateRecordOnAdminSave('PURAN', data);
 
     let oldPdf = null;
     if (data.pdf_file) {
