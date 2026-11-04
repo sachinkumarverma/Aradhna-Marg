@@ -10,6 +10,7 @@
     "install:all": "npm run frontend:install && npm run backend:install",
     "dev": "npx concurrently \"npm run backend\" \"npm run frontend\"",
     "format": "npm run format --prefix frontend && npm run format --prefix backend",
+    "db:backup": "npm run db:backup --prefix backend",
     "prepare": "husky"
   },
   "private": true,
