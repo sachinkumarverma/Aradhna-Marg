@@ -14,6 +14,8 @@ class DatabaseClient {
       min: 1,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 15000,
+      statement_timeout: 30000,
+      query_timeout: 30000,
       // Enable TCP KeepAlive to prevent silent connection drop by cloud NAT firewalls
       keepAlive: true,
       keepAliveInitialDelayMillis: 10000,

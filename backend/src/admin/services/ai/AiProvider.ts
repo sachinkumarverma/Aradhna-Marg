@@ -15,6 +15,18 @@ export interface AiProvider {
   generateCompletion(options: AiCompletionOptions): Promise<string>;
 }
 
+export class AiRateLimitError extends Error {
+  public isDailyLimit: boolean;
+  public retryAfterSeconds: number;
+
+  constructor(message: string, isDailyLimit = false, retryAfterSeconds = 0) {
+    super(message);
+    this.name = 'AiRateLimitError';
+    this.isDailyLimit = isDailyLimit;
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
 class GroqProvider implements AiProvider {
   private client: Groq;
   private primaryModel: string;
@@ -70,12 +82,43 @@ class GroqProvider implements AiProvider {
           }
         }
 
-        const text = res.choices[0]?.message?.content?.trim() || '';
+        const choice = res.choices[0];
+        if (choice?.finish_reason === 'length') {
+          logger.warn(
+            { model, maxTokens: options.maxTokens },
+            'AI provider response reached max_tokens limit before natural completion'
+          );
+        }
+        const text = choice?.message?.content?.trim() || '';
         if (text) {
           return text;
         }
       } catch (err: any) {
         lastError = err;
+        const errMsg = err?.message || '';
+        const isRateLimit =
+          err?.status === 429 || errMsg.includes('Rate limit reached') || errMsg.includes('rate_limit_exceeded');
+        const isDailyLimit = errMsg.includes('tokens per day (TPD)') || errMsg.includes('requests per day (RPD)');
+
+        // Extract retry seconds if available (e.g. "Please try again in 5m46.032s")
+        let retrySeconds = 0;
+        const matchMinSec = errMsg.match(/try again in (?:(\d+)m)?(\d+(?:\.\d+)?)s/i);
+        if (matchMinSec) {
+          const mins = parseInt(matchMinSec[1] || '0', 10);
+          const secs = parseFloat(matchMinSec[2] || '0');
+          retrySeconds = Math.ceil(mins * 60 + secs);
+        }
+
+        if (isDailyLimit) {
+          logger.error({ model, retrySeconds }, 'Groq daily token limit reached (TPD/RPD). Halting fallback attempts.');
+          throw new AiRateLimitError(errMsg, true, retrySeconds);
+        }
+
+        if (isRateLimit && retrySeconds > 30) {
+          logger.warn({ model, retrySeconds }, 'Groq extended cooldown rate limit reached.');
+          throw new AiRateLimitError(errMsg, false, retrySeconds);
+        }
+
         logger.warn({ model, error: err.message }, 'Groq model attempt failed, trying fallback model if available');
       }
     }
@@ -110,7 +153,14 @@ class OpenAiProvider implements AiProvider {
     }
 
     const res = await this.client.chat.completions.create(params);
-    return res.choices[0]?.message?.content?.trim() || '';
+    const choice = res.choices[0];
+    if (choice?.finish_reason === 'length') {
+      logger.warn(
+        { model: 'gpt-4o-mini', maxTokens: options.maxTokens },
+        'OpenAI response reached max_tokens limit before natural completion'
+      );
+    }
+    return choice?.message?.content?.trim() || '';
   }
 }
 

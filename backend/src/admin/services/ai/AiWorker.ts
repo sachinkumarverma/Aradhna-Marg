@@ -10,18 +10,31 @@ import { categoryRepository } from '@features/categories/CategoryRepository';
 import { translationService } from '@features/translations/TranslationService';
 import { ContentSafetyValidator } from '@/agents/utils/ContentSafetyValidator';
 
-function cleanDevotionalMeaning(raw: string): string {
+export function cleanDevotionalMeaning(raw: string): string {
   if (!raw) return '';
-  return raw
+  let cleaned = raw
     .replace(/^#+\s+/gm, '') // remove heading hashes
     .replace(/^```[a-z]*\n?/gm, '') // remove accidental code fences
     .replace(/```$/gm, '')
     .replace(/\r\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n') // normalize multiple newlines to clean paragraphs
     .trim();
+
+  // Fix hanging/unclosed markdown bold syntax if truncated
+  const boldCount = (cleaned.match(/\*\*/g) || []).length;
+  if (boldCount % 2 !== 0) {
+    // If it ends with an opening "**", remove the trailing "**" or close it
+    if (cleaned.endsWith('**')) {
+      cleaned = cleaned.slice(0, -2).trim();
+    } else {
+      cleaned = `${cleaned}**`;
+    }
+  }
+
+  return cleaned;
 }
 
-async function translateMeaningToEnglish(hindiMeaning: string, provider: any): Promise<string> {
+export async function translateMeaningToEnglish(hindiMeaning: string, provider: any): Promise<string> {
   try {
     const res = await translationService.translateText(hindiMeaning, 'hi', 'en');
     if (res?.translated && res.translated.trim().length > 10) {
@@ -31,12 +44,12 @@ async function translateMeaningToEnglish(hindiMeaning: string, provider: any): P
     logger.warn({ err: err?.message }, 'Google translate failed, falling back to AI provider for English translation');
   }
 
-  // Fallback to AI provider
+  // Fallback to AI provider with generous token allowance
   try {
     const aiTranslatePrompt = {
       systemPrompt: 'You are an enlightened scholar of Sanatan Dharma and Vedic bhakti tradition.',
-      prompt: `Translate the following devotional meaning (Bhavarth) from Hindi to English while maintaining its sacred and reverent spiritual tone. Preserve bold markdown highlighting (**word**) for key spiritual terms:\n\n${hindiMeaning}`,
-      maxTokens: 500
+      prompt: `Translate the following devotional meaning (Bhavarth) from Hindi to English while maintaining its sacred and reverent spiritual tone. Preserve bold markdown highlighting (**word**) for key spiritual terms. Ensure all sentences are complete, grammatically sound, and end with proper punctuation:\n\n${hindiMeaning}`,
+      maxTokens: 1500
     };
     const translated = await provider.generateCompletion(aiTranslatePrompt);
     return cleanDevotionalMeaning(translated);
@@ -51,7 +64,12 @@ export class AiWorker {
   private intervalTimer: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.recoverStuckJobs().catch((err) => {
+    // Note: Do not auto-start background intervals or queries in constructor
+    // to prevent unwanted background polling when imported as a library/utility.
+  }
+
+  public async start(): Promise<void> {
+    await this.recoverStuckJobs().catch((err) => {
       logger.error({ error: err.message }, 'Error in AiWorker startup stuck job recovery');
     });
     this.startPeriodicCheck();
@@ -81,6 +99,9 @@ export class AiWorker {
         logger.error({ error: err.message }, 'Error in periodic AiWorker trigger');
       });
     }, intervalMs);
+    if (this.intervalTimer.unref) {
+      this.intervalTimer.unref();
+    }
   }
 
   public stopPeriodicCheck(): void {

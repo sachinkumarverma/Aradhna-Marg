@@ -2,6 +2,7 @@ import app from './app';
 import { config } from './config';
 import { logger } from './utils/logger';
 import { db } from './common/database/DatabaseClient';
+import { aiWorker } from './admin/services/ai/AiWorker';
 
 const PORT = parseInt(config.PORT, 10);
 
@@ -11,11 +12,15 @@ const server = app.listen(PORT, () => {
   db.warmup().catch((err) => {
     logger.warn({ err }, 'Database pre-warm failed, will connect on-demand');
   });
+  aiWorker.start().catch((err) => {
+    logger.warn({ err }, 'AiWorker startup failed, will trigger on demand');
+  });
 });
 
 // Graceful Shutdown
 const gracefulShutdown = () => {
   logger.info('Received shutdown signal. Closing HTTP server and database pool...');
+  aiWorker.stopPeriodicCheck();
   db.close().catch(() => {});
   server.close(() => {
     logger.info('HTTP server closed. Process will exit now.');

@@ -191,9 +191,9 @@ export class BhajanRepository {
       await db.query(
         `UPDATE ${this.tableName} 
          SET short_description = $1, 
-             description = COALESCE(NULLIF(description, ''), $1),
+             description = $1,
              short_description_en = $2,
-             description_en = COALESCE(NULLIF(description_en, ''), $2),
+             description_en = $2,
              ai_generated_flag = true,
              updated_at = NOW() 
          WHERE id = $3`,
@@ -203,7 +203,7 @@ export class BhajanRepository {
       await db.query(
         `UPDATE ${this.tableName} 
          SET short_description = $1, 
-             description = COALESCE(NULLIF(description, ''), $1),
+             description = $1,
              ai_generated_flag = true,
              updated_at = NOW() 
          WHERE id = $2`,
