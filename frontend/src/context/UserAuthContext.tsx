@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { UserAuthApi, type UserProfile } from '@api/userAuth';
+import { UserAuthApi, USER_SESSION_EXPIRED_EVENT, type UserProfile } from '@api/userAuth';
 import { StorageService, type FavoriteItem } from '@common/storage/StorageService';
 import { useTranslation } from '@i18n/LanguageContext';
 import toast from 'react-hot-toast';
@@ -17,9 +17,9 @@ interface UserAuthContextType {
   openAuthModal: (reason?: string, mode?: AuthModalMode) => void;
   closeAuthModal: () => void;
   setAuthModalMode: (mode: AuthModalMode) => void;
-  login: (email: string, password?: string) => Promise<void>;
-  signup: (name: string, email: string, password?: string) => Promise<void>;
-  googleAuth: (credential: string, mode: 'login' | 'signup') => Promise<void>;
+  login: (email: string, password?: string) => Promise<any>;
+  signup: (name: string, email: string, password?: string) => Promise<any>;
+  googleAuth: (credential: string, mode: 'login' | 'signup') => Promise<any>;
   setDirectToken: (token: string) => Promise<void>;
   logout: () => void;
   syncLocalFavoritesToCloud: () => Promise<void>;
@@ -39,6 +39,38 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<AuthModalMode>('login');
   const [authModalReason, setAuthModalReason] = useState<string>('');
+
+  const handleForcedLogout = useCallback((message?: string) => {
+    const hadSession = Boolean(UserAuthApi.getUserToken());
+    UserAuthApi.clearSession();
+    setUser(null);
+    setToken(null);
+
+    if (!hadSession) return;
+
+    const reason = message || 'Your session is no longer active. Please sign in again.';
+    toast.error(reason, { id: 'user-session-expired', duration: 5000 });
+
+    if (typeof window !== 'undefined' && window.location.pathname !== '/auth') {
+      const currentPath = window.location.pathname + window.location.search;
+      const params = new URLSearchParams({
+        redirect: currentPath,
+        reason
+      });
+      window.location.assign(`/auth?${params.toString()}`);
+    }
+  }, []);
+
+  // A deactivated account is revoked globally when any protected request returns 401.
+  useEffect(() => {
+    const onUserSessionExpired = (event: Event) => {
+      const message = (event as CustomEvent<{ message?: string }>).detail?.message;
+      handleForcedLogout(message);
+    };
+
+    window.addEventListener(USER_SESSION_EXPIRED_EVENT, onUserSessionExpired);
+    return () => window.removeEventListener(USER_SESSION_EXPIRED_EVENT, onUserSessionExpired);
+  }, [handleForcedLogout]);
 
   const syncLocalFavoritesToCloud = useCallback(async () => {
     try {
@@ -182,7 +214,6 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const res = await UserAuthApi.login({ email, password });
       handlePostAuth(res.data.user, res.data.token);
-      toast.success('Successfully signed in! 🙏');
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || 'Sign in failed.';
       toast.error(msg);
@@ -193,8 +224,10 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const signup = async (name: string, email: string, password?: string) => {
     try {
       const res = await UserAuthApi.signup({ name, email, password });
-      handlePostAuth(res.data.user, res.data.token);
-      toast.success('Welcome to Aradhna Marg! 🙏');
+      if (res.data?.token) {
+        handlePostAuth(res.data.user, res.data.token);
+      }
+      return res;
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || 'Sign up failed.';
       toast.error(msg);
@@ -205,10 +238,10 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const googleAuth = async (credential: string, mode: 'login' | 'signup') => {
     try {
       const res = await UserAuthApi.googleAuth(credential, mode);
-      handlePostAuth(res.data.user, res.data.token);
-      toast.success(
-        mode === 'signup' ? 'Account registered with Google! 🙏' : 'Signed in with Google successfully! 🙏'
-      );
+      if (res.data?.token) {
+        handlePostAuth(res.data.user, res.data.token);
+      }
+      return res;
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || 'Google authentication failed.';
       toast.error(msg);
@@ -220,7 +253,6 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     UserAuthApi.clearSession();
     setUser(null);
     setToken(null);
-    toast.success('You have been signed out.');
   };
 
   return (

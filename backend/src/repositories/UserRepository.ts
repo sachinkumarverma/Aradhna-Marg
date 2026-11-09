@@ -42,11 +42,12 @@ export class UserRepository {
     avatar_url?: string | null;
     is_verified?: boolean;
     verification_token?: string | null;
+    verification_token_expires_at?: Date | null;
   }): Promise<UserEntity> {
     const res = await db.query(
       `INSERT INTO users (
-        name, email, password_hash, google_id, avatar_url, is_verified, verification_token
-      ) VALUES ($1, LOWER($2), $3, $4, $5, $6, $7)
+        name, email, password_hash, google_id, avatar_url, is_verified, verification_token, verification_token_expires_at
+      ) VALUES ($1, LOWER($2), $3, $4, $5, $6, $7, $8)
       RETURNING *`,
       [
         userData.name.trim(),
@@ -55,7 +56,8 @@ export class UserRepository {
         userData.google_id || null,
         userData.avatar_url || null,
         userData.is_verified ?? false,
-        userData.verification_token || null
+        userData.verification_token || null,
+        userData.verification_token_expires_at || null
       ]
     );
     return res.rows[0];
@@ -66,13 +68,48 @@ export class UserRepository {
       `UPDATE users 
        SET google_id = $1, 
            avatar_url = COALESCE($2, avatar_url),
-           is_verified = true,
            updated_at = NOW()
        WHERE id = $3
        RETURNING *`,
       [googleId, avatarUrl || null, id]
     );
     return res.rows[0];
+  }
+
+  async findByVerificationToken(token: string): Promise<UserEntity | null> {
+    const res = await db.query(
+      `SELECT * FROM users 
+       WHERE verification_token = $1 
+         AND (verification_token_expires_at IS NULL OR verification_token_expires_at > NOW()) 
+       LIMIT 1`,
+      [token]
+    );
+    return res.rows[0] || null;
+  }
+
+  async verifyUser(id: string): Promise<UserEntity> {
+    const res = await db.query(
+      `UPDATE users 
+       SET is_verified = true, 
+           verification_token = NULL, 
+           verification_token_expires_at = NULL,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [id]
+    );
+    return res.rows[0];
+  }
+
+  async setVerificationToken(id: string, token: string, expiresAt: Date): Promise<void> {
+    await db.query(
+      `UPDATE users 
+       SET verification_token = $1,
+           verification_token_expires_at = $2,
+           updated_at = NOW()
+       WHERE id = $3`,
+      [token, expiresAt, id]
+    );
   }
 
   async setResetPasswordToken(id: string, token: string, expiresAt: Date): Promise<void> {

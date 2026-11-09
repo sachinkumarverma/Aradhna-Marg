@@ -251,51 +251,21 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-200">
               {/* User Account / Login Box in Drawer */}
               {isAuthenticated && user ? (
-                <div className="p-3.5 bg-gradient-to-r from-orange-50 to-amber-50/70 border border-amber-200/80 rounded-2xl shadow-2xs space-y-3">
-                  <div className="flex items-center gap-3">
-                    {user.avatar_url ? (
-                      <img
-                        src={user.avatar_url}
-                        alt={user.name}
-                        className="w-10 h-10 rounded-full object-cover border border-amber-300 shrink-0"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-saffron text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
-                        {user.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="font-bold text-sm text-slate-900 font-hindi-heading truncate">{user.name}</p>
-                      <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                <div className="p-3.5 bg-gradient-to-r from-orange-50 to-amber-50/70 border border-amber-200/80 rounded-2xl shadow-2xs flex items-center gap-3">
+                  {user.avatar_url ? (
+                    <img
+                      src={user.avatar_url}
+                      alt={user.name}
+                      className="w-10 h-10 rounded-full object-cover border border-amber-300 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-saffron text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+                      {user.name.charAt(0).toUpperCase()}
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-1 border-t border-amber-200/60">
-                    <Link
-                      to="/favourite"
-                      onClick={onClose}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-600 rounded-xl text-xs font-semibold border border-gray-200/80 transition-colors shadow-2xs"
-                    >
-                      <Heart className="w-3.5 h-3.5 text-rose-500" />
-                      <span>{isHi ? 'मेरी पसंद' : 'Wishlist'}</span>
-                      {favoritesCount > 0 && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-100 text-rose-700 font-bold">
-                          {favoritesCount}
-                        </span>
-                      )}
-                    </Link>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        logout();
-                        onClose();
-                      }}
-                      className="flex items-center justify-center gap-1 py-1.5 px-3 bg-white hover:bg-red-50 text-red-600 rounded-xl text-xs font-semibold border border-red-200 transition-colors shadow-2xs cursor-pointer"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      <span>{isHi ? 'लॉग आउट' : 'Logout'}</span>
-                    </button>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-sm text-slate-900 font-hindi-heading truncate">{user.name}</p>
+                    <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
                   </div>
                 </div>
               ) : (
@@ -526,11 +496,25 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
               )}
             </div>
 
-            {/* Footer Language Switcher Bar */}
+            {/* Footer Language Switcher & Logout Bar */}
             <div className="px-6 py-3.5 border-t border-gray-100 bg-[#fffdfa] flex items-center justify-between shrink-0">
-              <span className="text-xs font-semibold text-slate-500 font-hindi-heading">
-                {isHi ? 'भाषा चुनें:' : 'Language:'}
-              </span>
+              {isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    onClose();
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 transition-colors cursor-pointer font-hindi-heading"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>{isHi ? 'लॉग आउट' : 'Logout'}</span>
+                </button>
+              ) : (
+                <span className="text-xs font-semibold text-slate-500 font-hindi-heading">
+                  {isHi ? 'भाषा चुनें:' : 'Language:'}
+                </span>
+              )}
               <LanguageSwitcher />
             </div>
           </motion.div>

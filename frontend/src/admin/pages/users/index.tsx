@@ -98,12 +98,12 @@ export function AdminUsers() {
     toggleMutation.mutate({ id: confirmTarget.user.id, isActive: confirmTarget.targetActive });
   };
 
-  const formatDateSafe = (dateString?: string | null) => {
+  const formatDateSafe = (dateString?: string | null, includeTime = true) => {
     if (!dateString) return 'Never';
     try {
       const d = new Date(dateString);
       if (isNaN(d.getTime())) return 'Never';
-      return format(d, 'MMM dd, yyyy, hh:mm a');
+      return format(d, includeTime ? 'MMM dd, yyyy, hh:mm a' : 'MMM dd, yyyy');
     } catch {
       return 'Never';
     }
@@ -196,9 +196,9 @@ export function AdminUsers() {
       sortKey: 'created_at',
       className: 'w-44',
       accessor: (row: AdminUserItem) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-800 font-medium">
+        <div className="flex items-center gap-2 text-xs text-slate-800 font-medium">
           <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-          <span>{formatDateSafe(row.created_at)}</span>
+          <span>{formatDateSafe(row.created_at, false)}</span>
         </div>
       )
     },
@@ -207,7 +207,7 @@ export function AdminUsers() {
       sortKey: (row: AdminUserItem) => row.last_login_at || '',
       className: 'w-44',
       accessor: (row: AdminUserItem) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-800 font-medium">
+        <div className="flex items-center gap-2 text-xs text-slate-800 font-medium">
           <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
           {row.last_login_at ? (
             <span className="text-gray-900 font-semibold">{formatDateSafe(row.last_login_at)}</span>

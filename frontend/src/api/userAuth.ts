@@ -3,6 +3,9 @@ import axios from 'axios';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const USER_TOKEN_KEY = 'aradhnamarg_user_token';
 const USER_DATA_KEY = 'aradhnamarg_user_data';
+export const USER_SESSION_EXPIRED_EVENT = 'user-session-expired';
+
+const protectedUserEndpoints = ['/me', '/wishlist', '/wishlist/toggle', '/wishlist/sync'];
 
 export interface UserProfile {
   id: string;
@@ -48,6 +51,26 @@ userApi.interceptors.request.use((req) => {
   req.headers['Accept-Language'] = 'en';
   return req;
 });
+
+userApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const endpoint = error.config?.url || '';
+    const isProtectedRequest = protectedUserEndpoints.some((path) => endpoint.endsWith(path));
+
+    if (error.response?.status === 401 && isProtectedRequest && localStorage.getItem(USER_TOKEN_KEY)) {
+      window.dispatchEvent(
+        new CustomEvent(USER_SESSION_EXPIRED_EVENT, {
+          detail: {
+            message: error.response.data?.message || 'Your session is no longer active. Please sign in again.'
+          }
+        })
+      );
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export const UserAuthApi = {
   getUserToken(): string | null {
@@ -105,6 +128,16 @@ export const UserAuthApi = {
 
   async resetPassword(token: string, password?: string): Promise<{ success: boolean; message: string }> {
     const res = await userApi.post('/reset-password', { token, password });
+    return res.data;
+  },
+
+  async verifyEmail(token: string): Promise<{ success: boolean; message: string }> {
+    const res = await userApi.post('/verify-email', { token });
+    return res.data;
+  },
+
+  async resendVerification(email: string): Promise<{ success: boolean; message: string }> {
+    const res = await userApi.post('/resend-verification', { email });
     return res.data;
   },
 

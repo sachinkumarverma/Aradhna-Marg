@@ -67,6 +67,12 @@ export class EmailService {
     fromEmail?: string;
     fromName?: string;
   }): Promise<boolean> {
+    // 0. Suppress live emails during test runs or when NODE_ENV === 'test'
+    if (process.env.NODE_ENV === 'test') {
+      logger.info(`🧪 [TEST MODE] Suppressed live email to: ${options.to} | Subject: "${options.subject}"`);
+      return true;
+    }
+
     const fromAddress = options.fromEmail || config.EMAIL_FROM_ADDRESS || 'support@aradhnamarg.com';
     const fromName = options.fromName || 'Aradhna Marg';
     const fromSender = {
@@ -656,6 +662,96 @@ export class EmailService {
                   </td>
                 </tr>
               </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background-color: #0e0703; color: #94a3b8; padding: 22px 18px; font-size: 12px; line-height: 1.6;">
+              <div style="color: #e2e8f0; font-weight: bold; margin-bottom: 4px;">Authentic Digital Collection of Vedas, 18 Maha Puranas & Sacred Bhajans</div>
+              <div style="margin-top: 6px; color: #64748b;">© ${new Date().getFullYear()} Aradhna Marg. All Rights Reserved.</div>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    return this.sendMail({
+      to: data.email,
+      toName: data.name,
+      subject,
+      html,
+      fromEmail: config.EMAIL_INFO_ADDRESS || 'info@aradhnamarg.com',
+      fromName: 'Aradhna Marg',
+      replyTo: config.EMAIL_SUPPORT_ADDRESS || 'support@aradhnamarg.com'
+    });
+  }
+
+  /**
+   * 5b. Send Devotional Email Verification Link (Valid for 24 Hours)
+   */
+  public async sendVerificationEmail(data: { name: string; email: string; verificationUrl: string }): Promise<boolean> {
+    const subject = `Verify Your Email Address | Aradhna Marg (आराधना मार्ग)`;
+
+    const html = `
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Verify Your Email - Aradhna Marg</title>
+      </head>
+      <body style="margin: 0; padding: 20px 10px; background-color: #FAF7F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #fed7aa; box-shadow: 0 6px 24px rgba(0,0,0,0.06);">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #1A0D07 0%, #3B1B09 100%); background-color: #1A0D07; padding: 36px 20px;">
+              <div style="font-size: 42px; color: #FF9933; margin-bottom: 8px; font-weight: bold;">ॐ</div>
+              <h1 style="margin: 0; font-size: 26px; color: #ffffff; letter-spacing: 1.5px; font-weight: 800;">ARADHNA MARG</h1>
+              <p style="margin: 6px 0 0 0; font-size: 13px; color: #fde68a;">Sanatan Dharma • Sacred Knowledge • Devotional Sanctuary</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 34px 26px;">
+              <h2 style="font-size: 20px; font-weight: bold; color: #1e293b; margin: 0 0 16px 0;">
+                Hello ${data.name}, 🙏
+              </h2>
+              <p style="font-size: 14.5px; line-height: 1.7; color: #475569; margin: 0 0 16px 0;">
+                Thank you for joining <strong>Aradhna Marg</strong>! To activate your account and verify your identity, please confirm your email address below.
+              </p>
+
+              <!-- Notice Callout -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 14px 18px;">
+                    <div style="color: #c2410c; font-weight: bold; font-size: 13.5px; margin-bottom: 4px;">
+                      ✉️ Account Activation Required:
+                    </div>
+                    <div style="color: #9a3412; font-size: 13px; line-height: 1.5;">
+                      Your email must be verified before you can sign in to save your favorite sacred bhajans, read scriptures, and sync your personalized Wishlist.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Action Button -->
+              <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 20px auto;">
+                <tr>
+                  <td align="center" style="border-radius: 9999px; background: linear-gradient(to right, #FF9933, #EA580C); background-color: #EA580C;">
+                    <a href="${data.verificationUrl}" target="_blank" style="display: inline-block; padding: 14px 38px; font-size: 15px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 9999px; letter-spacing: 0.5px;">
+                      Verify Email Address ➜
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size: 12.5px; line-height: 1.6; color: #94a3b8; margin: 16px 0 0 0; text-align: center;">
+                If the button above does not work, copy and paste this link into your browser:<br />
+                <a href="${data.verificationUrl}" target="_blank" style="color: #ea580c; word-break: break-all;">${data.verificationUrl}</a>
+              </p>
             </td>
           </tr>
 

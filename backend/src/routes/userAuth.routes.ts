@@ -9,6 +9,9 @@ router.post('/signup', userAuthController.signup);
 router.post('/login', userAuthController.login);
 router.post('/google', userAuthController.googleAuth);
 router.post('/google/callback', userAuthController.googleRedirectCallback);
+router.get('/verify-email', userAuthController.verifyEmail);
+router.post('/verify-email', userAuthController.verifyEmail);
+router.post('/resend-verification', userAuthController.resendVerification);
 router.post('/forgot-password', userAuthController.forgotPassword);
 router.post('/reset-password', userAuthController.resetPassword);
 

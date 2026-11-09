@@ -51,11 +51,13 @@ export const AuthPage: React.FC = () => {
 
   // Handle Google OAuth redirect callback params
   const handledTokenRef = useRef(false);
+  const handledErrorRef = useRef<string | null>(null);
   useEffect(() => {
     const tokenParam = searchParams.get('token');
     const errorParam = searchParams.get('error');
 
-    if (errorParam) {
+    if (errorParam && handledErrorRef.current !== errorParam) {
+      handledErrorRef.current = errorParam;
       toast.error(decodeURIComponent(errorParam), { id: 'google-auth-error' });
       return;
     }
@@ -63,7 +65,6 @@ export const AuthPage: React.FC = () => {
     if (tokenParam && !handledTokenRef.current) {
       handledTokenRef.current = true;
       setDirectToken(tokenParam).then(() => {
-        toast.success('Signed in with Google successfully! 🙏', { id: 'google-auth-success' });
         navigate(redirectUrl, { replace: true });
       });
     }
@@ -78,8 +79,47 @@ export const AuthPage: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
+  const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
+
+  // Query parameters remain in the URL when switching between auth modes. Keep
+  // these notices idempotent so a tab switch does not replay a one-time toast.
+  const handledVerifiedNoticeRef = useRef<string | null>(null);
+  const handledVerificationSentNoticeRef = useRef<string | null>(null);
+
+  // Read URL query parameters for verification actions
+  useEffect(() => {
+    const verifiedParam = searchParams.get('verified');
+    const verificationSentParam = searchParams.get('verificationSent');
+    const emailParam = searchParams.get('email');
+
+    const verifiedNoticeKey = verifiedParam === 'true' ? `${verifiedParam}:${emailParam || ''}` : null;
+    if (verifiedNoticeKey && handledVerifiedNoticeRef.current !== verifiedNoticeKey) {
+      handledVerifiedNoticeRef.current = verifiedNoticeKey;
+      setPendingVerificationEmail(null);
+      toast.success('Email verified successfully! You can now sign in. 🙏', {
+        id: 'email-verified-success',
+        duration: 6000
+      });
+    }
+
+    const verificationSentNoticeKey =
+      verificationSentParam === 'true' && emailParam ? `${verificationSentParam}:${emailParam}` : null;
+    if (verificationSentNoticeKey && handledVerificationSentNoticeRef.current !== verificationSentNoticeKey) {
+      handledVerificationSentNoticeRef.current = verificationSentNoticeKey;
+      setPendingVerificationEmail(decodeURIComponent(emailParam));
+      toast.success('Verification link sent! Please verify your email before signing in.', {
+        id: 'verification-sent-notice',
+        duration: 8000
+      });
+    }
+  }, [searchParams]);
 
   const switchMode = (newMode: 'login' | 'signup' | 'forgot') => {
+    if (newMode !== 'login') {
+      toast.dismiss('verification-sent-notice');
+    }
+
     setMode(newMode);
     const newParams = new URLSearchParams(searchParams);
     newParams.set('mode', newMode);
@@ -97,8 +137,11 @@ export const AuthPage: React.FC = () => {
     try {
       await login(email, password);
       navigate(redirectUrl, { replace: true });
-    } catch {
-      // toast shown in context
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || '';
+      if (msg.toLowerCase().includes('verif') || msg.toLowerCase().includes('सत्याप')) {
+        setPendingVerificationEmail(email);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -125,8 +168,13 @@ export const AuthPage: React.FC = () => {
 
     setSubmitting(true);
     try {
-      await signup(name, email, password);
-      navigate(redirectUrl, { replace: true });
+      const res: any = await signup(name, email, password);
+      // Strictly DO NOT log user in! Switch to login tab and display activation alert
+      switchMode('login');
+      setPendingVerificationEmail(email);
+      toast.success(res?.message || 'Account created! Please check your email to verify before signing in. 🙏', {
+        duration: 8000
+      });
     } catch {
       // toast handled in context
     } finally {
@@ -137,12 +185,43 @@ export const AuthPage: React.FC = () => {
   const handleGoogleSuccess = async (credential: string, gMode: 'login' | 'signup') => {
     setSubmitting(true);
     try {
-      await googleAuth(credential, gMode);
-      navigate(redirectUrl, { replace: true });
-    } catch {
-      // toast handled in context
+      const res: any = await googleAuth(credential, gMode);
+      if (res?.data?.token) {
+        navigate(redirectUrl, { replace: true });
+      } else {
+        // Sign-up flow requiring verification
+        switchMode('login');
+        if (res?.data?.email) {
+          setPendingVerificationEmail(res.data.email);
+        }
+        toast.success(res?.message || 'Account registered! Please check your email to verify before signing in. 🙏', {
+          duration: 8000
+        });
+      }
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || '';
+      if (msg.toLowerCase().includes('verif') || msg.toLowerCase().includes('सत्याप')) {
+        switchMode('login');
+      }
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    const targetEmail = pendingVerificationEmail || email;
+    if (!targetEmail) {
+      toast.error('Please enter your registered email address.');
+      return;
+    }
+    setResending(true);
+    try {
+      const res = await UserAuthApi.resendVerification(targetEmail);
+      toast.success(res.message || 'Fresh verification link sent to your email.');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to resend verification email.');
+    } finally {
+      setResending(false);
     }
   };
 
@@ -168,10 +247,7 @@ export const AuthPage: React.FC = () => {
   const pageTitle = mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Sign Up' : 'Reset Password';
 
   return (
-    <div
-      className="auth-page min-h-screen lg:h-screen lg:max-h-screen w-full bg-[#0a0f26] lg:bg-[url('/assets/auth/krishna-canvas-backdrop.webp')] bg-cover bg-left-bottom bg-local bg-no-repeat text-white flex flex-col justify-between relative overflow-x-hidden lg:overflow-hidden selection:bg-amber-500 selection:text-white"
-      style={{ backgroundPosition: 'left bottom', backgroundAttachment: 'local' }}
-    >
+    <div className="auth-page min-h-screen lg:h-screen lg:max-h-screen w-full bg-[#0a0f26] lg:bg-[url('/assets/auth/krishna-canvas-backdrop.webp')] bg-cover bg-left-bottom bg-local bg-no-repeat text-white flex flex-col justify-between relative overflow-x-hidden lg:overflow-hidden selection:bg-amber-500 selection:text-white">
       <SEOHead
         title={`${pageTitle} - Aradhna Marg`}
         description="Sign in or create an account on Aradhna Marg to sync your favorite devotional songs and scriptures."
@@ -313,10 +389,34 @@ export const AuthPage: React.FC = () => {
               {/* 1. LOGIN FORM */}
               {mode === 'login' && (
                 <form onSubmit={handleLoginSubmit} className="auth-card-form space-y-3.5 sm:space-y-4 pt-1">
+                  {/* Verification Pending Notice Banner */}
+                  {pendingVerificationEmail && (
+                    <div className="p-2 sm:p-2.5 bg-amber-50 border border-amber-200/90 rounded-xl flex items-start gap-2 text-[11px] text-amber-900 animate-in fade-in">
+                      <Mail className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold leading-tight">Account Verification Required</p>
+                        <p className="text-[10px] text-amber-800 mt-0.5 leading-snug">
+                          We've sent an activation link to{' '}
+                          <strong className="font-semibold break-all">{pendingVerificationEmail}</strong>. Please verify
+                          your email before signing in.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleResendVerification}
+                          disabled={resending}
+                          className="mt-1.5 text-[10px] font-bold text-amber-900 hover:text-amber-950 underline cursor-pointer disabled:opacity-50"
+                        >
+                          {resending ? 'Sending fresh link...' : 'Resend verification link ➜'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Google Sign-in Button */}
                   <GoogleAuthButton
                     label="Sign in with Google"
                     text="signin_with"
+                    mode="login"
                     onSuccess={(cred) => handleGoogleSuccess(cred, 'login')}
                     disabled={submitting}
                   />
@@ -406,6 +506,7 @@ export const AuthPage: React.FC = () => {
                   <GoogleAuthButton
                     label="Sign up with Google"
                     text="signup_with"
+                    mode="signup"
                     onSuccess={(cred) => handleGoogleSuccess(cred, 'signup')}
                     disabled={submitting}
                   />

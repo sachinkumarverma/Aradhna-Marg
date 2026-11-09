@@ -7,7 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc && tsc-alias",
     "start": "node dist/server.js",
-    "test": "tsx --test src/tests/**/*.test.ts",
+    "test": "NODE_ENV=test tsx --test src/tests/**/*.test.ts",
     "db:backup": "tsx src/scripts/backup-database.ts",
     "db:repair-meanings": "tsx src/scripts/repair-truncated-bhajan-meanings.ts",
     "format": "prettier --write \"src/**/*.ts\"",

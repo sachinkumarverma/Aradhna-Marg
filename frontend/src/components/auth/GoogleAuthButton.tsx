@@ -10,6 +10,7 @@ interface GoogleAuthButtonProps {
   className?: string;
   disabled?: boolean;
   isAdmin?: boolean;
+  mode?: 'login' | 'signup';
 }
 
 declare global {
@@ -55,6 +56,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   onSuccess,
   onError,
   text = 'signin_with',
+  mode,
   label,
   className = '',
   disabled = false,
@@ -65,6 +67,8 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   const [loading, setLoading] = useState(false);
   const lastRenderedWidthRef = useRef<number | null>(null);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
+  const authMode: 'login' | 'signup' = mode || (text === 'signup_with' ? 'signup' : 'login');
 
   // Stable callback references to prevent GSI re-initialization on state updates
   const onSuccessRef = useRef(onSuccess);
@@ -117,14 +121,18 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
         text,
         shape: 'pill',
         width: targetWidth,
-        logo_alignment: 'center'
+        logo_alignment: 'center',
+        state: authMode,
+        click_listener: () => {
+          document.cookie = `google_auth_mode=${authMode}; path=/; max-age=300; SameSite=Lax`;
+        }
       });
 
       lastRenderedWidthRef.current = targetWidth;
     } catch (e) {
       if (onErrorRef.current) onErrorRef.current(e);
     }
-  }, [clientId, text, isAdmin]);
+  }, [clientId, text, isAdmin, authMode]);
 
   // Initial script load & render
   useEffect(() => {
@@ -162,6 +170,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
 
   const handleFallbackClick = () => {
     if (disabled || loading) return;
+    document.cookie = `google_auth_mode=${authMode}; path=/; max-age=300; SameSite=Lax`;
 
     if (window.google?.accounts?.id && clientId) {
       window.google.accounts.id.prompt();

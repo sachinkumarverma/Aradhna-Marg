@@ -448,6 +448,26 @@ body.admin-body {
   }
 }
 
+/* Keep the right side of the auth artwork visible on laptop-width screens.
+   The left devotional copy is the part that can safely clip when the viewport
+   is narrower than the artwork. */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .auth-page {
+    background-position: right bottom !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 800px) {
+  .auth-page {
+    overflow-y: auto !important;
+  }
+
+  /* Keep the card visually balanced below the header on short laptop screens. */
+  .auth-page .auth-card {
+    top: -1.5rem;
+  }
+}
+
 @media (min-width: 1024px) and (max-height: 700px) {
   .auth-page .auth-card-signup {
     top: -1.5rem;

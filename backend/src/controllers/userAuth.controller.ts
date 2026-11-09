@@ -59,22 +59,76 @@ export class UserAuthController {
       process.env.FRONTEND_URL ||
       (config.NODE_ENV === 'production' ? 'https://aradhnamarg.com' : 'http://localhost:5173');
 
+    // Extract auth mode from state body param, cookie, or query param
+    const cookieHeader = req.headers.cookie || '';
+    const cookieMatch = cookieHeader.match(/google_auth_mode=([^;]+)/);
+    const cookieMode = cookieMatch ? cookieMatch[1] : undefined;
+    const rawMode = (req.body?.state as string) || cookieMode || (req.query?.mode as string);
+    const mode: 'login' | 'signup' = rawMode === 'signup' ? 'signup' : 'login';
+
     try {
       const credential = req.body?.credential;
       if (!credential) {
         return res.redirect(
-          `${frontendBaseUrl}/auth?error=${encodeURIComponent('No credential received from Google')}`
+          `${frontendBaseUrl}/auth?error=${encodeURIComponent('No credential received from Google')}&mode=${mode}`
         );
       }
 
       const lang = this.getLang(req);
-      const result = await userService.handleGoogleRedirect(credential, lang);
-      return res.redirect(`${frontendBaseUrl}/auth?token=${encodeURIComponent(result.token)}&authSuccess=true`);
+      const result = await userService.handleGoogleRedirect(credential, mode, lang);
+      if ((result as any).requiresVerification) {
+        return res.redirect(
+          `${frontendBaseUrl}/auth?verificationSent=true&email=${encodeURIComponent((result as any).email)}&mode=login`
+        );
+      }
+      return res.redirect(
+        `${frontendBaseUrl}/auth?token=${encodeURIComponent((result as any).token)}&authSuccess=true`
+      );
     } catch (err: any) {
       return res.redirect(
-        `${frontendBaseUrl}/auth?error=${encodeURIComponent(err?.message || 'Google authentication failed')}`
+        `${frontendBaseUrl}/auth?error=${encodeURIComponent(err?.message || 'Google authentication failed')}&mode=${mode}`
       );
     }
+  };
+
+  verifyEmail = async (req: AuthenticatedUserRequest, res: Response) => {
+    const frontendBaseUrl =
+      process.env.FRONTEND_URL ||
+      (config.NODE_ENV === 'production' ? 'https://aradhnamarg.com' : 'http://localhost:5173');
+
+    const token = (req.query?.token as string) || (req.body?.token as string);
+    const lang = this.getLang(req);
+
+    if (!token) {
+      if (req.method === 'POST') {
+        return res.status(400).json({ success: false, message: 'Verification token is required.' });
+      }
+      return res.redirect(
+        `${frontendBaseUrl}/auth?error=${encodeURIComponent('Verification token is required.')}&mode=login`
+      );
+    }
+
+    try {
+      const result = await userService.verifyEmail(token, lang);
+      if (req.method === 'POST') {
+        return res.status(200).json({ success: true, message: result.message });
+      }
+      return res.redirect(`${frontendBaseUrl}/auth?verified=true&mode=login`);
+    } catch (err: any) {
+      if (req.method === 'POST') {
+        return res.status(400).json({ success: false, message: err?.message || 'Verification failed.' });
+      }
+      return res.redirect(
+        `${frontendBaseUrl}/auth?error=${encodeURIComponent(err?.message || 'Verification failed.')}&mode=login`
+      );
+    }
+  };
+
+  resendVerification = async (req: AuthenticatedUserRequest, res: Response) => {
+    const { email } = req.body;
+    const lang = this.getLang(req);
+    const result = await userService.resendVerification(email, lang);
+    return res.status(200).json(result);
   };
 
   forgotPassword = async (req: AuthenticatedUserRequest, res: Response) => {

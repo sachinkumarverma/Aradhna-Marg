@@ -4,6 +4,7 @@ import { hashPassword, verifyPassword, generateUserToken, verifyGoogleToken } fr
 import { emailService } from '@services/EmailService';
 import { AppError } from '@/errors/appError';
 import { config } from '@/config';
+import { logger } from '@utils/logger';
 
 export class UserService {
   private sanitizeUser(user: UserEntity) {
@@ -50,28 +51,41 @@ export class UserService {
 
     const passwordHash = hashPassword(data.password);
     const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     const newUser = await userRepository.create({
       name,
       email,
       password_hash: passwordHash,
-      is_verified: true, // Auto-verified for frictionless onboarding
-      verification_token: verificationToken
+      is_verified: false, // Strict Rule: Devotee must verify email before being permitted to sign in
+      verification_token: verificationToken,
+      verification_token_expires_at: verificationExpiresAt
     });
 
-    // Send beautiful devotional welcome email asynchronously
+    const apiBaseUrl =
+      process.env.API_BASE_URL ||
+      (config.NODE_ENV === 'production' ? 'https://api.aradhnamarg.com/api' : 'http://localhost:5000/api');
+    const verificationUrl = `${apiBaseUrl}/v1/auth/verify-email?token=${verificationToken}`;
+
+    // Send devotional verification email asynchronously
     emailService
-      .sendWelcomeEmail({
+      .sendVerificationEmail({
         name: newUser.name,
         email: newUser.email,
-        verificationUrl: 'https://aradhnamarg.com/bhajans'
+        verificationUrl
       })
-      .catch(() => {});
+      .catch((err) => {
+        logger.error('Failed to send verification email for signup:', err);
+      });
 
-    const token = generateUserToken(newUser);
+    // Explicitly DO NOT return session token — sign-in is forbidden until email is verified!
     return {
-      token,
-      user: this.sanitizeUser(newUser)
+      requiresVerification: true,
+      email: newUser.email,
+      message:
+        lang === 'hi'
+          ? 'पंजीकरण सफल रहा! कृपया लॉग इन करने से पहले अपने ईमेल पर भेजे गए सत्यापन लिंक की पुष्टि करें।'
+          : 'Registration successful! Please check your email and verify your account before signing in.'
     };
   }
 
@@ -101,6 +115,16 @@ export class UserService {
       );
     }
 
+    // Strict Rule: Devotee must be verified before sign-in is granted
+    if (user.is_verified === false) {
+      throw new AppError(
+        lang === 'hi'
+          ? 'आपका ईमेल अभी सत्यापित नहीं हुआ है। कृपया अपने इनबॉक्स में भेजा गया सत्यापन लिंक देखें।'
+          : 'Your email has not been verified yet. Please check your inbox for the activation link.',
+        403
+      );
+    }
+
     if (user.is_active === false) {
       throw new AppError(
         lang === 'hi'
@@ -122,6 +146,7 @@ export class UserService {
   /**
    * Google OAuth for public user authentication.
    * Strict Rule: Mode 'login' rejects users who haven't signed up yet.
+   * Strict Rule: Both login and signup require email verification before sign-in is allowed.
    */
   async googleAuth(idToken: string, mode: 'login' | 'signup' = 'login', lang: 'hi' | 'en' = 'en') {
     if (!idToken) {
@@ -144,6 +169,16 @@ export class UserService {
         );
       }
 
+      // Strict Rule: Unverified user cannot sign in with Google
+      if (user.is_verified === false) {
+        throw new AppError(
+          lang === 'hi'
+            ? 'आपका ईमेल अभी सत्यापित नहीं हुआ है। कृपया अपने इनबॉक्स में भेजा गया सत्यापन लिंक देखें।'
+            : 'Your email has not been verified yet. Please check your inbox for the activation link.',
+          403
+        );
+      }
+
       if (user.is_active === false) {
         throw new AppError(
           lang === 'hi'
@@ -160,23 +195,51 @@ export class UserService {
     } else {
       // mode === 'signup'
       if (!user) {
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
         user = await userRepository.create({
-          name: googleUser.name,
+          name: googleUser.name || 'Devotee',
           email: googleUser.email,
           google_id: googleUser.sub,
           avatar_url: googleUser.picture,
-          is_verified: true
+          is_verified: false, // Strict Rule: Devotee must verify email before being permitted to sign in
+          verification_token: verificationToken,
+          verification_token_expires_at: verificationExpiresAt
         });
 
-        // Send welcome email on new Google sign up
+        const apiBaseUrl =
+          process.env.API_BASE_URL ||
+          (config.NODE_ENV === 'production' ? 'https://api.aradhnamarg.com/api' : 'http://localhost:5000/api');
+        const verificationUrl = `${apiBaseUrl}/v1/auth/verify-email?token=${verificationToken}`;
+
         emailService
-          .sendWelcomeEmail({
-            name: user.name,
+          .sendVerificationEmail({
+            name: user.name || 'Devotee',
             email: user.email,
-            verificationUrl: 'https://aradhnamarg.com/bhajans'
+            verificationUrl
           })
-          .catch(() => {});
+          .catch((err) => {
+            logger.error('Failed to send verification email for Google sign-up:', err);
+          });
+
+        return {
+          requiresVerification: true,
+          email: user.email,
+          message:
+            lang === 'hi'
+              ? 'Google द्वारा पंजीकरण सफल! कृपया लॉग इन करने से पहले अपने ईमेल पर भेजे गए सत्यापन लिंक की पुष्टि करें।'
+              : 'Google registration successful! Please verify your email via the link sent to your inbox before signing in.'
+        };
       } else {
+        if (user.is_verified === false) {
+          throw new AppError(
+            lang === 'hi'
+              ? 'आपका ईमेल अभी सत्यापित नहीं हुआ है। कृपया अपने इनबॉक्स में भेजा गया सत्यापन लिंक देखें।'
+              : 'Your email has not been verified yet. Please check your inbox for the activation link.',
+            403
+          );
+        }
         if (user.is_active === false) {
           throw new AppError(
             lang === 'hi'
@@ -185,7 +248,7 @@ export class UserService {
             403
           );
         }
-        if (!user.google_id) {
+        if (!user.google_id || !user.avatar_url) {
           user = await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
         }
       }
@@ -201,56 +264,106 @@ export class UserService {
   }
 
   /**
-   * Handle Google Redirect Flow (automatically signs in or creates account for new devotee)
+   * Verify User Email via One-Time Cryptographic Token
    */
-  async handleGoogleRedirect(idToken: string, lang: 'hi' | 'en' = 'en') {
-    if (!idToken) {
+  async verifyEmail(token: string, lang: 'hi' | 'en' = 'en') {
+    if (!token) {
+      throw new AppError(lang === 'hi' ? 'सत्यापन टोकन आवश्यक है।' : 'Verification token is required.', 400);
+    }
+
+    const user = await userRepository.findByVerificationToken(token);
+    if (!user) {
       throw new AppError(
-        lang === 'hi' ? 'Google प्रमाणीकरण विवरण आवश्यक है।' : 'Google authentication credential is required.',
+        lang === 'hi'
+          ? 'अमान्य या समाप्त सत्यापन लिंक। कृपया नया सत्यापन ईमेल मंगवाएं।'
+          : 'Invalid or expired verification link. Please request a new verification email.',
         400
       );
     }
 
-    const googleUser = await verifyGoogleToken(idToken);
-    let user = await userRepository.findByEmail(googleUser.email);
+    const verifiedUser = await userRepository.verifyUser(user.id);
 
-    if (!user) {
-      user = await userRepository.create({
-        name: googleUser.name || 'Devotee',
-        email: googleUser.email,
-        google_id: googleUser.sub,
-        avatar_url: googleUser.picture,
-        is_verified: true
-      });
+    // Send devotional welcome email asynchronously now that devotee is verified
+    emailService
+      .sendWelcomeEmail({
+        name: verifiedUser.name,
+        email: verifiedUser.email,
+        verificationUrl: 'https://aradhnamarg.com/bhajans'
+      })
+      .catch(() => {});
 
-      // Send welcome email on new sign-up
-      emailService
-        .sendWelcomeEmail({
-          name: user.name,
-          email: user.email,
-          verificationUrl: 'https://aradhnamarg.com/bhajans'
-        })
-        .catch(() => {});
-    } else {
-      if (user.is_active === false) {
-        throw new AppError(
-          lang === 'hi'
-            ? 'आपका खाता निष्क्रिय कर दिया गया है। कृपया सहायता से संपर्क करें।'
-            : 'Your account has been deactivated. Please contact support.',
-          403
-        );
-      }
-      if (!user.google_id || !user.avatar_url) {
-        user = await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
-      }
+    return {
+      success: true,
+      message:
+        lang === 'hi'
+          ? 'ईमेल सफलतापूर्वक सत्यापित हो गया है! अब आप लॉग इन कर सकते हैं। 🙏'
+          : 'Email verified successfully! You can now sign in to your account. 🙏'
+    };
+  }
+
+  /**
+   * Resend Account Verification Email
+   */
+  async resendVerification(emailInput: string, lang: 'hi' | 'en' = 'en') {
+    const email = (emailInput || '').trim().toLowerCase();
+    if (!email) {
+      throw new AppError(lang === 'hi' ? 'ईमेल पता आवश्यक है।' : 'Email address is required.', 400);
     }
 
-    await userRepository.updateLastLogin(user.id);
-    const token = generateUserToken(user);
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      return {
+        success: true,
+        message:
+          lang === 'hi'
+            ? 'यदि यह ईमेल पंजीकृत है, तो एक नया सत्यापन लिंक भेज दिया गया है।'
+            : 'If this email is registered, a new verification link has been dispatched.'
+      };
+    }
+
+    if (user.is_verified) {
+      throw new AppError(
+        lang === 'hi'
+          ? 'यह ईमेल पहले से ही सत्यापित है। कृपया सीधे लॉग इन करें।'
+          : 'This email is already verified. Please sign in directly.',
+        400
+      );
+    }
+
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await userRepository.setVerificationToken(user.id, verificationToken, verificationExpiresAt);
+
+    const apiBaseUrl =
+      process.env.API_BASE_URL ||
+      (config.NODE_ENV === 'production' ? 'https://api.aradhnamarg.com/api' : 'http://localhost:5000/api');
+    const verificationUrl = `${apiBaseUrl}/v1/auth/verify-email?token=${verificationToken}`;
+
+    emailService
+      .sendVerificationEmail({
+        name: user.name,
+        email: user.email,
+        verificationUrl
+      })
+      .catch((err) => {
+        logger.error('Failed to resend verification email:', err);
+      });
+
     return {
-      token,
-      user: this.sanitizeUser(user)
+      success: true,
+      message:
+        lang === 'hi'
+          ? 'एक नया सत्यापन लिंक आपके ईमेल पर भेज दिया गया है।'
+          : 'A fresh verification link has been sent to your email.'
     };
+  }
+
+  /**
+   * Handle Google Redirect Flow
+   * Strict Rule: Mode 'login' rejects users who haven't signed up yet.
+   */
+  async handleGoogleRedirect(idToken: string, mode: 'login' | 'signup' = 'login', lang: 'hi' | 'en' = 'en') {
+    return this.googleAuth(idToken, mode, lang);
   }
 
   /**
