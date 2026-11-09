@@ -5,6 +5,7 @@ import { UnauthorizedError } from '@/errors/appError';
 import { config } from '@/config';
 import { logger } from '@utils/logger';
 import { verifyGoogleToken } from '@utils/auth';
+import { userRepository } from '@repositories/UserRepository';
 
 class AuthController {
   /**
@@ -53,20 +54,42 @@ class AuthController {
       const googleUser = await verifyGoogleToken(credential);
       const email = googleUser.email.toLowerCase();
 
-      // Check against allowed admin emails in env
-      const allowedEmails = (process.env.ADMIN_ALLOWED_EMAILS || process.env.ADMIN_EMAIL || config.ADMIN_USERNAME || '')
+      // Check against allowed admin emails in env (ADMIN_ALLOWED_EMAILS strictly takes priority)
+      const rawAllowed = (config.ADMIN_ALLOWED_EMAILS || process.env.ADMIN_ALLOWED_EMAILS || '').trim();
+      const allowedEmails = (rawAllowed ? rawAllowed : config.ADMIN_EMAIL || config.ADMIN_USERNAME || '')
         .toLowerCase()
         .split(',')
         .map((e) => e.trim())
         .filter(Boolean);
 
-      const isAllowed = allowedEmails.some(
-        (allowed) => allowed === email || (allowed.includes('@') && allowed === email)
-      );
+      const isAllowed = allowedEmails.some((allowed) => allowed === email);
 
       if (!isAllowed) {
         logger.warn({ email }, 'Unauthorized admin Google login attempt');
         throw new UnauthorizedError(`ईमेल ${email} एडमिन के रूप में अधिकृत नहीं है। (Unauthorized admin email)`);
+      }
+
+      // Check if user exists in database and ensure active status
+      const user = await userRepository.findByEmail(email);
+      if (user && user.is_active === false) {
+        logger.warn({ email }, 'Deactivated admin Google login attempt');
+        throw new UnauthorizedError('आपका खाता निष्क्रिय कर दिया गया है। (Account has been deactivated)');
+      }
+
+      // Sync Google profile data and update last login in users table
+      if (user) {
+        if (!user.google_id || !user.avatar_url) {
+          await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
+        }
+        await userRepository.updateLastLogin(user.id);
+      } else {
+        await userRepository.create({
+          name: googleUser.name || 'Admin',
+          email,
+          google_id: googleUser.sub,
+          avatar_url: googleUser.picture,
+          is_verified: true
+        });
       }
 
       // Sign Admin JWT valid for 24 hours

@@ -14,6 +14,7 @@ import { agentController } from '@admin/controllers/agent.controller';
 import { translationRoutes } from '@features/translations';
 import { requireAdmin } from '@middlewares/auth';
 import { authController } from '@admin/controllers/auth.controller';
+import { adminUserController } from '@admin/controllers/user.controller';
 import mediaRoutes from '@/routes/media.routes';
 
 const router = Router();
@@ -73,6 +74,11 @@ router.post('/authors', adminAuthorController.create);
 router.get('/authors/:id', adminAuthorController.getById);
 router.put('/authors/:id', adminAuthorController.update);
 router.delete('/authors/:id', adminAuthorController.delete);
+
+// Registered Users Management
+router.get('/users', adminUserController.list);
+router.get('/users/stats', adminUserController.getStats);
+router.patch('/users/:id/status', adminUserController.toggleStatus);
 
 // Deities Management
 router.use('/deities', deityRoutes);

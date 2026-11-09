@@ -35,6 +35,7 @@ const AdminSystemHealth = lazy(() =>
   import('@admin/pages/system-health').then((m) => ({ default: m.AdminSystemHealth }))
 );
 const AdminDonations = lazy(() => import('@admin/pages/donations').then((m) => ({ default: m.AdminDonations })));
+const AdminUsers = lazy(() => import('@admin/pages/users').then((m) => ({ default: m.AdminUsers })));
 
 export const AdminNotFoundPage = () => (
   <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -153,6 +154,10 @@ const adminChildRoutes: RouteObject[] = [
   {
     path: 'donations',
     element: <AdminDonations />
+  },
+  {
+    path: 'users',
+    element: <AdminUsers />
   },
   {
     path: 'settings',

@@ -8,6 +8,8 @@ export interface UserEntity {
   google_id: string | null;
   avatar_url: string | null;
   is_verified: boolean;
+  is_active: boolean;
+  last_login_at: Date | null;
   verification_token: string | null;
   verification_token_expires_at: Date | null;
   reset_password_token: string | null;
@@ -105,6 +107,105 @@ export class UserRepository {
        WHERE id = $2`,
       [passwordHash, id]
     );
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    await db.query(
+      `UPDATE users 
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $1`,
+      [id]
+    );
+  }
+
+  async updateStatus(id: string, isActive: boolean): Promise<UserEntity | null> {
+    const res = await db.query(
+      `UPDATE users 
+       SET is_active = $1,
+           updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [isActive, id]
+    );
+    return res.rows[0] || null;
+  }
+
+  async findAll(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: 'active' | 'inactive' | 'all';
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<{ users: UserEntity[]; total: number }> {
+    const page = Math.max(1, Number(params.page) || 1);
+    const limit = Math.max(1, Math.min(100, Number(params.limit) || 10));
+    const offset = (page - 1) * limit;
+
+    const conditions: string[] = [];
+    const values: any[] = [];
+    let idx = 1;
+
+    if (params.search && params.search.trim()) {
+      conditions.push(`(name ILIKE $${idx} OR email ILIKE $${idx})`);
+      values.push(`%${params.search.trim()}%`);
+      idx++;
+    }
+
+    if (params.status === 'active') {
+      conditions.push(`is_active = TRUE`);
+    } else if (params.status === 'inactive') {
+      conditions.push(`is_active = FALSE`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const allowedSortFields: Record<string, string> = {
+      name: 'name',
+      email: 'email',
+      created_at: 'created_at',
+      last_login_at: 'last_login_at',
+      is_active: 'is_active'
+    };
+    const sortField = (params.sortBy && allowedSortFields[params.sortBy]) || 'created_at';
+    const sortDir = params.sortOrder?.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+
+    const countQuery = `SELECT COUNT(*) FROM users ${whereClause}`;
+    const countRes = await db.query(countQuery, values);
+    const total = parseInt(countRes.rows[0].count, 10);
+
+    const query = `
+      SELECT id, name, email, google_id, avatar_url, is_verified, is_active, last_login_at, created_at, updated_at
+      FROM users
+      ${whereClause}
+      ORDER BY ${sortField} ${sortDir}
+      LIMIT $${idx} OFFSET $${idx + 1}
+    `;
+    const res = await db.query(query, [...values, limit, offset]);
+
+    return {
+      users: res.rows,
+      total
+    };
+  }
+
+  async getStats(): Promise<{ total: number; active: number; inactive: number; googleUsers: number }> {
+    const res = await db.query(`
+      SELECT 
+        COUNT(*) AS total,
+        COUNT(*) FILTER (WHERE is_active = TRUE) AS active,
+        COUNT(*) FILTER (WHERE is_active = FALSE) AS inactive,
+        COUNT(*) FILTER (WHERE google_id IS NOT NULL) AS google_users
+      FROM users
+    `);
+    const row = res.rows[0] || {};
+    return {
+      total: parseInt(row.total || '0', 10),
+      active: parseInt(row.active || '0', 10),
+      inactive: parseInt(row.inactive || '0', 10),
+      googleUsers: parseInt(row.google_users || '0', 10)
+    };
   }
 }
 

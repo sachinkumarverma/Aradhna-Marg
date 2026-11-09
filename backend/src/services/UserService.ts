@@ -101,6 +101,17 @@ export class UserService {
       );
     }
 
+    if (user.is_active === false) {
+      throw new AppError(
+        lang === 'hi'
+          ? 'आपका खाता निष्क्रिय कर दिया गया है। कृपया सहायता से संपर्क करें।'
+          : 'Your account has been deactivated. Please contact support.',
+        403
+      );
+    }
+
+    await userRepository.updateLastLogin(user.id);
+
     const token = generateUserToken(user);
     return {
       token,
@@ -133,6 +144,15 @@ export class UserService {
         );
       }
 
+      if (user.is_active === false) {
+        throw new AppError(
+          lang === 'hi'
+            ? 'आपका खाता निष्क्रिय कर दिया गया है। कृपया सहायता से संपर्क करें।'
+            : 'Your account has been deactivated. Please contact support.',
+          403
+        );
+      }
+
       // Link google_id if user originally created with email/password
       if (!user.google_id || !user.avatar_url) {
         user = await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
@@ -156,10 +176,22 @@ export class UserService {
             verificationUrl: 'https://aradhnamarg.com/bhajans'
           })
           .catch(() => {});
-      } else if (!user.google_id) {
-        user = await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
+      } else {
+        if (user.is_active === false) {
+          throw new AppError(
+            lang === 'hi'
+              ? 'आपका खाता निष्क्रिय कर दिया गया है। कृपया सहायता से संपर्क करें।'
+              : 'Your account has been deactivated. Please contact support.',
+            403
+          );
+        }
+        if (!user.google_id) {
+          user = await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
+        }
       }
     }
+
+    await userRepository.updateLastLogin(user.id);
 
     const token = generateUserToken(user);
     return {

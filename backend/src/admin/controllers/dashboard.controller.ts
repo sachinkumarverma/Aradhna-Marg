@@ -33,6 +33,9 @@ class DashboardController {
         },
         {
           rows: [pwaStats]
+        },
+        {
+          rows: [{ total: totalUsers }]
         }
       ] = await Promise.all([
         db.query(`SELECT COUNT(*) as total FROM bhajans WHERE youtube_video_id IS NULL AND deleted_at IS NULL`),
@@ -77,7 +80,8 @@ class DashboardController {
                 desktop_installs: '0'
               }
             ]
-          }))
+          })),
+        db.query(`SELECT COUNT(*) as total FROM users`).catch(() => ({ rows: [{ total: '0' }] }))
       ]);
 
       const tb = parseInt(totalBhajans, 10) || 0;
@@ -87,6 +91,7 @@ class DashboardController {
       const tc = parseInt(totalCategories, 10) || 0;
       const tf = parseInt(totalFestivals, 10) || 0;
       const tg = parseInt(totalGods, 10) || 0;
+      const tu = parseInt(totalUsers, 10) || 0;
       const realTotalViews = parseInt(viewsStats?.total_views || '0', 10);
       const bhajanViews = parseInt(viewsStats?.bhajan_views || '0', 10);
       const articleViews = parseInt(viewsStats?.article_views || '0', 10);
@@ -96,6 +101,7 @@ class DashboardController {
         totalBhajans: tb,
         published: pb,
         draft: tb - pb,
+        totalUsers: tu,
         pendingAi: pa,
         failedAi: fa,
         pendingPdfs: 0,

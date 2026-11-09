@@ -12,7 +12,8 @@ import {
   XCircle,
   HeartHandshake,
   ArrowRight,
-  Smartphone
+  Smartphone,
+  Users
 } from 'lucide-react';
 import { DonationsApi, type PaymentItem } from '@admin/features/donations/DonationsApi';
 
@@ -116,13 +117,13 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-amber-50 to-white border-amber-100 flex flex-col justify-between h-full">
+          <div className="rounded-md border p-4 sm:p-5 shadow-xs bg-gradient-to-br from-indigo-50 to-white border-indigo-100 flex flex-col justify-between h-full">
             <div className="flex items-start justify-between gap-2.5 mb-3">
-              <div className="h-3.5 w-24 bg-amber-200/70 rounded"></div>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-100/80 shrink-0"></div>
+              <div className="h-3.5 w-28 bg-indigo-200/70 rounded"></div>
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-indigo-100/80 shrink-0"></div>
             </div>
             <div className="mt-auto">
-              <div className="h-7 w-12 bg-slate-300 rounded"></div>
+              <div className="h-7 w-16 bg-slate-300 rounded"></div>
             </div>
           </div>
 
@@ -291,13 +292,13 @@ export const AdminDashboard: React.FC = () => {
           onClick={() => navigate(getAdminPath('/bhajans?status=PUBLISHED'))}
         />
         <StatCard
-          title="Draft Bhajans"
-          value={new Intl.NumberFormat('en-IN').format(stats?.draft || 0)}
-          icon={FileText}
-          colorClassName="bg-yellow-100 text-yellow-600"
-          bgClassName="bg-gradient-to-br from-amber-50 to-white"
-          borderClassName="border-amber-100"
-          onClick={() => navigate(getAdminPath('/bhajans?status=DRAFT'))}
+          title="Registered Users"
+          value={new Intl.NumberFormat('en-IN').format(stats?.totalUsers || 0)}
+          icon={Users}
+          colorClassName="bg-indigo-100 text-indigo-600"
+          bgClassName="bg-gradient-to-br from-indigo-50 to-white"
+          borderClassName="border-indigo-100"
+          onClick={() => navigate(getAdminPath('/users'))}
         />
         <StatCard
           title="Pending AI Processing"

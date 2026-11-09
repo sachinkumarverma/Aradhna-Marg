@@ -29,6 +29,7 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().default('Aradhna Marg <support@aradhnamarg.com>'),
   EMAIL_FROM_ADDRESS: z.string().default('support@aradhnamarg.com'),
   ADMIN_EMAIL: z.string().default('support@aradhnamarg.com'),
+  ADMIN_ALLOWED_EMAILS: z.string().optional(),
   GOOGLE_TRANSLATE_API_KEY: z.string().optional(),
   GOOGLE_CLOUD_TRANSLATE_API_KEY: z.string().optional(),
   GOOGLE_TRANSLATE_ENABLED: z.string().default('true'),
