@@ -319,6 +319,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === 'hi' || saved === 'en') return saved;
+      // Intelligently detect browser language
+      if (typeof navigator !== 'undefined' && navigator.language && navigator.language.toLowerCase().startsWith('hi')) {
+        return 'hi';
+      }
     } catch {
       // Fallback
     }

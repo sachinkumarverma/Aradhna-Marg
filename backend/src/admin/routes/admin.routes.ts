@@ -20,6 +20,7 @@ const router = Router();
 
 // Public auth routes — no JWT required
 router.post('/auth/login', authController.login);
+router.post('/auth/google', authController.googleLogin);
 router.post('/auth/logout', authController.logout);
 
 // ALL routes below this line are protected by JWT

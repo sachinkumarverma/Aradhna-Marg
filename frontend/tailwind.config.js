@@ -27,6 +27,7 @@ export default {
         hindiDisplay: ['"Rozha One"', '"Tiro Devanagari Hindi"', 'serif'],
         hindi: ['"Anek Devanagari"', 'Hind', 'sans-serif'],
         hindiSans: ['"Anek Devanagari"', 'Hind', 'sans-serif'],
+        playfair: ['"Playfair Display"', 'Georgia', 'serif'],
         logo: ['"Rekord Antiqua"', 'Lora', 'serif']
       },
       spacing: {

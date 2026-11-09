@@ -19,10 +19,30 @@ import { TermsPage, DisclaimerPage, PrivacyPolicyPage, AboutPage } from '@user/p
 import { DonatePage } from '@user/pages/donate';
 import { ContactPage } from '@user/pages/contact';
 import { FavoritesPage } from '@user/pages/favorites';
+import { AuthPage } from '@user/pages/auth/AuthPage';
+import { ResetPasswordPage } from '@user/pages/auth/ResetPasswordPage';
 import { NotFoundPage } from '@user/pages/common/NotFoundPage';
 import { ENABLE_DONATIONS } from '@/constants';
 
 export const userRoutes: RouteObject[] = [
+  // Standalone Auth & Account Recovery Pages (rendered WITHOUT PublicLayout / Navbar / Footer)
+  {
+    path: '/auth',
+    element: <AuthPage />
+  },
+  {
+    path: '/login',
+    element: <Navigate to="/auth?mode=login" replace />
+  },
+  {
+    path: '/signup',
+    element: <Navigate to="/auth?mode=signup" replace />
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />
+  },
+  // Main Public Application Layout (includes Navbar, AdBanner, Public Content, and Footer)
   {
     path: '/',
     element: <PublicLayout />,

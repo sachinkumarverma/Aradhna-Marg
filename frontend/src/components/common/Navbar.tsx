@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
-import { Search, Menu, Heart, HandHeart } from 'lucide-react';
+import { Search, Menu, Heart, HandHeart, User, LogOut, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@components/ui/Button';
 import { useTranslation } from '@i18n/LanguageContext';
@@ -9,6 +9,7 @@ import { NavbarSearchOverlay } from '@components/search/NavbarSearchOverlay';
 import { RightNavDrawer } from './RightNavDrawer';
 import { TopInstallBar } from './TopInstallBar';
 import { useFavorites } from '@hooks/useFavorites';
+import { useUserAuth } from '@/context/UserAuthContext';
 import { ENABLE_DONATIONS } from '@/constants';
 
 interface NavbarProps {
@@ -21,12 +22,26 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { favoritesCount } = useFavorites();
+  const { user, isAuthenticated, openAuthModal, logout } = useUserAuth();
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll(containerRef ? { container: containerRef as any } : undefined);
   const location = useLocation();
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setIsScrolled(latest > 50);
   });
+
+  // Handle outside click to close user dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Global Ctrl+K / Cmd+K shortcut
   useEffect(() => {
@@ -40,10 +55,11 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Close drawer on route change
+  // Close drawer and dropdown on route change
   useEffect(() => {
     setDrawerOpen(false);
     setSearchOpen(false);
+    setUserDropdownOpen(false);
   }, [location.pathname]);
 
   const navLinks = [
@@ -178,6 +194,92 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                     </span>
                   )}
                 </Link>
+
+                {/* User Auth Section */}
+                {isAuthenticated && user ? (
+                  <div className="relative" ref={userDropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() => setUserDropdownOpen((prev) => !prev)}
+                      className="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1 rounded-full bg-orange-50/80 hover:bg-orange-100 border border-amber-200/80 transition-all cursor-pointer"
+                      title={user.name}
+                    >
+                      {user.avatar_url ? (
+                        <img
+                          src={user.avatar_url}
+                          alt={user.name}
+                          className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-amber-300"
+                        />
+                      ) : (
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-saffron text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="hidden md:inline font-bold text-xs text-slate-800 font-hindi-heading max-w-[90px] truncate">
+                        {user.name.split(' ')[0]}
+                      </span>
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-500 hidden sm:block" />
+                    </button>
+
+                    {userDropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                        <div className="px-4 py-2 border-b border-gray-100">
+                          <p className="text-xs font-bold text-slate-900 truncate font-hindi-heading">{user.name}</p>
+                          <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                        </div>
+
+                        <div className="py-1">
+                          <Link
+                            to="/favourite"
+                            onClick={() => setUserDropdownOpen(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-orange-50 hover:text-saffron transition-colors"
+                          >
+                            <Heart className="w-3.5 h-3.5 text-rose-500" />
+                            <span>{isHi ? 'मेरी पसंद सूची' : 'My Wishlist'}</span>
+                            {favoritesCount > 0 && (
+                              <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold">
+                                {favoritesCount}
+                              </span>
+                            )}
+                          </Link>
+                        </div>
+
+                        <div className="border-t border-gray-100 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              logout();
+                            }}
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer text-left"
+                          >
+                            <LogOut className="w-3.5 h-3.5" />
+                            <span>{isHi ? 'लॉग आउट' : 'Sign Out'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      to={`/auth?redirect=${encodeURIComponent(location.pathname + location.search)}`}
+                      className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-saffron/40 bg-orange-50/70 hover:bg-orange-100 text-saffron hover:text-saffron-dark text-xs font-bold transition-all shadow-2xs font-hindi-heading cursor-pointer active:scale-95"
+                      title={isHi ? 'लॉग इन' : 'Sign In'}
+                    >
+                      <User className="w-3.5 h-3.5" />
+                      <span>{isHi ? 'लॉग इन' : 'Sign In'}</span>
+                    </Link>
+                    <Link
+                      to={`/auth?redirect=${encodeURIComponent(location.pathname + location.search)}`}
+                      className="sm:hidden w-8 h-8 rounded-full bg-slate-50 hover:bg-orange-50 hover:text-saffron text-slate-700 flex items-center justify-center transition-colors border border-gray-200/80 shadow-2xs cursor-pointer shrink-0"
+                      title={isHi ? 'लॉग इन' : 'Sign In'}
+                      aria-label="User Login"
+                    >
+                      <User className="w-3.5 h-3.5" />
+                    </Link>
+                  </>
+                )}
 
                 {/* Search Trigger Icon */}
                 <button

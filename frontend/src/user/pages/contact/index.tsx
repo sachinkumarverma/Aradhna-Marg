@@ -20,12 +20,14 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
+import { useUserAuth } from '@/context/UserAuthContext';
 import { ENABLE_DONATIONS } from '@/constants';
 
 export const ContactPage: React.FC = () => {
   const { language } = useTranslation();
   const isHi = language === 'hi';
   const { settings } = usePublicSettings();
+  const { user, isAuthenticated } = useUserAuth();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -35,6 +37,14 @@ export const ContactPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Auto-fill from authenticated user profile
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.name) setName(user.name);
+      if (user.email) setEmail(user.email);
+    }
+  }, [isAuthenticated, user]);
 
   const categories = [
     {
@@ -194,10 +204,30 @@ export const ContactPage: React.FC = () => {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="flex items-center gap-2 text-saffron font-bold text-sm mb-2 font-hindi-heading">
-                  <MessageSquare className="w-4 h-4" />
-                  <span>{isHi ? 'हमें संदेश भेजें' : 'Send Us a Message'}</span>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2 text-saffron font-bold text-sm font-hindi-heading">
+                    <MessageSquare className="w-4 h-4" />
+                    <span>{isHi ? 'हमें संदेश भेजें' : 'Send Us a Message'}</span>
+                  </div>
+
+                  {isAuthenticated && user && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      {isHi ? `खाता: ${user.name}` : `Signed in: ${user.name}`}
+                    </span>
+                  )}
                 </div>
+
+                {isAuthenticated && user && (
+                  <div className="p-2.5 bg-amber-50/70 border border-amber-200/60 rounded-xl text-xs text-amber-900 flex items-center justify-between">
+                    <span>
+                      ✍️{' '}
+                      {isHi
+                        ? 'आपके खाते का नाम व ईमेल स्वतः भर दिया गया है।'
+                        : 'Your account details have been auto-filled.'}
+                    </span>
+                  </div>
+                )}
 
                 {/* Name & Phone Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

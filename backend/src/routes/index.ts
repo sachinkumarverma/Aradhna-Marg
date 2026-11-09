@@ -11,8 +11,13 @@ import { seoRoutes } from '@features/seo';
 import publicRoutes from './public.routes';
 import cronRoutes from './cron.routes';
 import { paymentController } from '@controllers/PaymentController';
+import userAuthRoutes from './userAuth.routes';
 
 const router = Router();
+
+// Public User Authentication & Wishlist
+router.use('/v1/auth', userAuthRoutes);
+router.use('/auth', userAuthRoutes);
 
 // API Version 1
 router.use('/v1/health', healthRoutes);

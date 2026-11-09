@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login, isAuthenticated } from '@api/auth';
+import { login, adminGoogleLogin, isAuthenticated } from '@api/auth';
+import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
 import { AdminButton } from '@admin/components/AdminButton';
 import { Loader2, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
@@ -37,6 +38,19 @@ export const AdminLogin: React.FC = () => {
       navigate(getAdminPath('/dashboard'), { replace: true });
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'Invalid credentials');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credential: string) => {
+    setLoading(true);
+    setError('');
+    try {
+      await adminGoogleLogin(credential);
+      navigate(getAdminPath('/dashboard'), { replace: true });
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || 'Google authorization failed');
     } finally {
       setLoading(false);
     }
@@ -126,6 +140,24 @@ export const AdminLogin: React.FC = () => {
               Secure Login
             </AdminButton>
           </form>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-400 font-semibold text-[11px]">Or sign in with</span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleAuthButton
+              onSuccess={handleGoogleSuccess}
+              onError={(err) => setError(err)}
+              text="signin_with"
+              disabled={loading}
+            />
+          </div>
 
           <div className="mt-3 pt-2 sm:mt-4 sm:pt-3 border-t border-gray-100 text-center">
             {isAdminHost() ? (

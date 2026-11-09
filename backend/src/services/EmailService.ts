@@ -132,7 +132,7 @@ export class EmailService {
    * 1. Send Contact / Suggestion Notification to Admin
    */
   public async sendContactNotificationToAdmin(data: ContactSubmissionPayload): Promise<boolean> {
-    const adminEmail = config.ADMIN_EMAIL || 'sachinv1410@gmail.com';
+    const adminEmail = config.ADMIN_EMAIL || 'support@aradhnamarg.com';
     const subject = `[Aradhna Marg] नया संदेश / New Message from ${data.name} (${data.category || data.subject || 'General'})`;
 
     const html = `
@@ -486,7 +486,7 @@ export class EmailService {
             <td align="center" style="background-color: #0e0703; color: #94a3b8; padding: 22px 18px; font-size: 12px; line-height: 1.6;">
               <div style="color: #ffffff; font-weight: bold; font-size: 13px; margin-bottom: 4px;">॥ धर्मो रक्षति रक्षितः ॥</div>
               <div style="margin-bottom: 4px;">यह इलेक्ट्रॉनिक रसीद Aradhna Marg द्वारा स्वतः उत्पन्न की गई है।</div>
-              <div>संपर्क: <a href="mailto:sachinv1410@gmail.com" style="color: #fde68a; text-decoration: none;">sachinv1410@gmail.com</a></div>
+              <div>संपर्क: <a href="mailto:support@aradhnamarg.com" style="color: #fde68a; text-decoration: none;">support@aradhnamarg.com</a></div>
             </td>
           </tr>
         </table>
@@ -506,7 +506,7 @@ export class EmailService {
    * 4. Send Donation Alert to Admin
    */
   public async sendDonationAlertToAdmin(data: DonationReceiptPayload): Promise<boolean> {
-    const adminEmail = config.ADMIN_EMAIL || 'sachinv1410@gmail.com';
+    const adminEmail = config.ADMIN_EMAIL || 'support@aradhnamarg.com';
     const subject = `💰 [नया सहयोग] ₹${data.amount} received from ${data.donorName || 'Devotee'}`;
 
     const html = `
@@ -577,6 +577,247 @@ export class EmailService {
 
     return this.sendMail({
       to: adminEmail,
+      subject,
+      html
+    });
+  }
+
+  /**
+   * 4. Send Welcome & Onboarding Email to New User
+   */
+  public async sendWelcomeEmail(data: { name: string; email: string; verificationUrl?: string }): Promise<boolean> {
+    const subject = `हार्दिक स्वागत! आराधना मार्ग परिवार से जुड़ने के लिए धन्यवाद | Aradhna Marg`;
+
+    const html = `
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>आराधना मार्ग परिवार में आपका स्वागत है</title>
+      </head>
+      <body style="margin: 0; padding: 20px 10px; background-color: #FAF7F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #fed7aa; box-shadow: 0 6px 24px rgba(0,0,0,0.06);">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #1A0D07 0%, #3B1B09 100%); background-color: #1A0D07; padding: 36px 20px;">
+              <div style="font-size: 42px; color: #FF9933; margin-bottom: 8px; font-weight: bold;">ॐ</div>
+              <h1 style="margin: 0; font-size: 26px; color: #ffffff; letter-spacing: 1.5px; font-weight: 800;">ARADHNA MARG</h1>
+              <p style="margin: 6px 0 0 0; font-size: 13px; color: #fde68a;">सनातन धर्म • ज्ञान-मंदिर • भक्ति-संग्रह</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 34px 26px;">
+              <h2 style="font-size: 20px; font-weight: bold; color: #1e293b; margin: 0 0 16px 0;">
+                नमस्ते ${data.name} जी, 🙏
+              </h2>
+              <p style="font-size: 14.5px; line-height: 1.7; color: #475569; margin: 0 0 16px 0;">
+                <strong>आराधना मार्ग (Aradhna Marg)</strong> परिवार में आपका अत्यंत आत्मीय एवं हार्दिक स्वागत है! आपका डिजिटल खाता सफलतापूर्वक पंजीकृत हो चुका है।
+              </p>
+              <p style="font-size: 14px; line-height: 1.7; color: #475569; margin: 0 0 22px 0;">
+                अब आप अपने पसंदीदा भजनों को अपनी निजी <strong>पसंद सूची (Wishlist)</strong> में सुरक्षित कर सकते हैं, 18 महापुराणों के दुर्लभ अध्यायों का अध्ययन कर सकते हैं, तथा किसी भी समय भक्ति-रस का आनंद ले सकते हैं।
+              </p>
+
+              <!-- Features Box -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; margin-bottom: 26px;">
+                <tr>
+                  <td style="padding: 18px 20px;">
+                    <div style="font-size: 12px; text-transform: uppercase; color: #ea580c; font-weight: bold; margin-bottom: 8px;">आपके खाते के मुख्य लाभ:</div>
+                    <ul style="margin: 0; padding-left: 20px; color: #7c2d12; font-size: 13.5px; line-height: 1.8;">
+                      <li><strong>पसंदीदा संग्रह (Wishlist):</strong> अपने प्रिय भजनों व आरतियों को एक क्लिक में सहेजें।</li>
+                      <li><strong>त्वरित संपर्क:</strong> सहायता या सुझाव के लिए आपकी जानकारी स्वतः प्रेषित होगी।</li>
+                      <li><strong>सत्यापित एवं शुद्ध सामग्री:</strong> संतों व प्रामाणिक परंपराओं द्वारा संकलित पाठ।</li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Action Button -->
+              <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 12px auto;">
+                <tr>
+                  <td align="center" style="border-radius: 9999px; background: linear-gradient(to right, #FF9933, #EA580C); background-color: #EA580C;">
+                    <a href="${data.verificationUrl || 'https://aradhnamarg.com'}" target="_blank" style="display: inline-block; padding: 13px 36px; font-size: 14.5px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 9999px;">
+                      आराधना मार्ग का अन्वेषण करें ➜
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background-color: #0e0703; color: #94a3b8; padding: 22px 18px; font-size: 12px; line-height: 1.6;">
+              <div style="color: #e2e8f0; font-weight: bold; margin-bottom: 4px;">॥ धर्मो रक्षति रक्षितः ॥</div>
+              <div>वेदों, 18 महापुराणों, स्तोत्रों एवं भजनों का प्रामाणिक डिजिटल संकलन।</div>
+              <div style="margin-top: 6px; color: #64748b;">© ${new Date().getFullYear()} Aradhna Marg. All Rights Reserved.</div>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    return this.sendMail({
+      to: data.email,
+      toName: data.name,
+      subject,
+      html
+    });
+  }
+
+  /**
+   * 5. Send Password Reset Link (Strict 15-Minute Timeline)
+   */
+  public async sendPasswordResetEmail(data: {
+    name: string;
+    email: string;
+    resetUrl: string;
+    expiresMinutes?: number;
+  }): Promise<boolean> {
+    const minutes = data.expiresMinutes || 15;
+    const subject = `पासवर्ड रीसेट लिंक (मान्यता: ${minutes} मिनट) | Aradhna Marg`;
+
+    const html = `
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>पासवर्ड रीसेट - आराधना मार्ग</title>
+      </head>
+      <body style="margin: 0; padding: 20px 10px; background-color: #FAF7F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #fed7aa; box-shadow: 0 6px 24px rgba(0,0,0,0.06);">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #1A0D07 0%, #3B1B09 100%); background-color: #1A0D07; padding: 34px 20px;">
+              <div style="font-size: 38px; color: #FF9933; margin-bottom: 6px; font-weight: bold;">ॐ</div>
+              <h1 style="margin: 0; font-size: 24px; color: #ffffff; letter-spacing: 1.5px; font-weight: 800;">ARADHNA MARG</h1>
+              <p style="margin: 6px 0 0 0; font-size: 13px; color: #fde68a;">खाता सुरक्षा एवं पासवर्ड रीसेट</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 34px 26px;">
+              <h2 style="font-size: 19px; font-weight: bold; color: #1e293b; margin: 0 0 16px 0;">
+                नमस्ते ${data.name} जी, 🙏
+              </h2>
+              <p style="font-size: 14.5px; line-height: 1.7; color: #475569; margin: 0 0 16px 0;">
+                हमें आपके आराधना मार्ग खाते के लिए पासवर्ड रीसेट करने का अनुरोध प्राप्त हुआ है।
+              </p>
+
+              <!-- Expiry Alert Callout -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 14px 18px;">
+                    <div style="color: #991b1b; font-weight: bold; font-size: 13.5px; margin-bottom: 4px;">
+                      ⏱️ महत्वपूर्ण सुरक्षा समय-सीमा (Timeline):
+                    </div>
+                    <div style="color: #b91c1c; font-size: 13px; line-height: 1.5;">
+                      यह पासवर्ड रीसेट लिंक केवल <strong>${minutes} मिनट</strong> के लिए सक्रिय है। सुरक्षा कारणों से ${minutes} मिनट उपरांत यह लिंक स्वतः अमान्य हो जाएगा।
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Action Button -->
+              <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 26px auto 26px auto;">
+                <tr>
+                  <td align="center" style="border-radius: 9999px; background: linear-gradient(to right, #FF9933, #EA580C); background-color: #EA580C;">
+                    <a href="${data.resetUrl}" target="_blank" style="display: inline-block; padding: 14px 38px; font-size: 14.5px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 9999px;">
+                      नया पासवर्ड सेट करें (Reset Password) ➜
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size: 12.5px; line-height: 1.6; color: #64748b; margin: 20px 0 0 0;">
+                यदि बटन कार्य न करे, तो कृपया नीचे दिए गए लिंक को अपने ब्राउज़र में कॉपी करके खोलें:<br />
+                <a href="${data.resetUrl}" style="color: #ea580c; word-break: break-all; font-size: 11.5px;">${data.resetUrl}</a>
+              </p>
+
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+
+              <p style="font-size: 12px; line-height: 1.6; color: #94a3b8; margin: 0;">
+                🔒 यदि आपने पासवर्ड रीसेट का अनुरोध नहीं किया था, तो कृपया इस ईमेल को अनदेखा करें। आपका खाता पूरी तरह सुरक्षित है।
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background-color: #0e0703; color: #94a3b8; padding: 20px 18px; font-size: 12px;">
+              <div style="color: #e2e8f0; font-weight: bold; margin-bottom: 4px;">॥ धर्मो रक्षति रक्षितः ॥</div>
+              <div style="color: #64748b;">© ${new Date().getFullYear()} Aradhna Marg. All Rights Reserved.</div>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    return this.sendMail({
+      to: data.email,
+      toName: data.name,
+      subject,
+      html
+    });
+  }
+
+  /**
+   * 6. Send Password Changed Security Notification
+   */
+  public async sendPasswordChangedEmail(data: { name: string; email: string }): Promise<boolean> {
+    const subject = `सुरक्षा सूचना: आपका पासवर्ड बदल दिया गया है | Aradhna Marg`;
+
+    const html = `
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>पासवर्ड परिवर्तन सूचना - आराधना मार्ग</title>
+      </head>
+      <body style="margin: 0; padding: 20px 10px; background-color: #FAF7F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #fed7aa; box-shadow: 0 6px 24px rgba(0,0,0,0.06);">
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #1A0D07 0%, #3B1B09 100%); background-color: #1A0D07; padding: 30px 20px;">
+              <div style="font-size: 34px; color: #FF9933; margin-bottom: 6px; font-weight: bold;">ॐ</div>
+              <h1 style="margin: 0; font-size: 22px; color: #ffffff; letter-spacing: 1.5px; font-weight: 800;">ARADHNA MARG</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px 24px;">
+              <h2 style="font-size: 18px; font-weight: bold; color: #1e293b; margin: 0 0 14px 0;">
+                नमस्ते ${data.name} जी, 🙏
+              </h2>
+              <p style="font-size: 14px; line-height: 1.7; color: #475569; margin: 0 0 16px 0;">
+                यह एक सुरक्षा सूचना है कि आपके आराधना मार्ग खाते का पासवर्ड आज <strong>${new Date().toLocaleString('hi-IN')}</strong> को सफलतापूर्वक बदल दिया गया है।
+              </p>
+              <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; color: #166534; font-size: 13.5px;">
+                ✅ आपका खाता नए पासवर्ड के साथ सुरक्षित है।
+              </div>
+              <p style="font-size: 13px; line-height: 1.6; color: #b91c1c; margin: 0;">
+                ⚠️ यदि यह परिवर्तन आपने नहीं किया है, तो कृपया तत्काल support@aradhnamarg.com पर संपर्क करें।
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="background-color: #0e0703; color: #94a3b8; padding: 18px; font-size: 12px;">
+              © ${new Date().getFullYear()} Aradhna Marg. All Rights Reserved.
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    return this.sendMail({
+      to: data.email,
+      toName: data.name,
       subject,
       html
     });

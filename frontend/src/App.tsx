@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppRouter } from './routes';
 import { Toaster } from 'react-hot-toast';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { UserAuthProvider } from './context/UserAuthContext';
 import { SEOProvider } from './providers/SEOProvider';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -30,21 +31,23 @@ function App() {
     <SEOProvider>
       <QueryClientProvider client={queryClient}>
         <LanguageProvider>
-          <AppRouter />
-          <Toaster
-            position={isMobile ? 'bottom-center' : 'top-right'}
-            containerStyle={isMobile ? { bottom: 24, zIndex: 99999 } : { zIndex: 99999 }}
-            toastOptions={{
-              className: '!rounded-md !shadow-lg',
-              style: {
-                borderRadius: '6px',
-                fontSize: '14px',
-                maxWidth: '92vw'
-              }
-            }}
-          />
-          <Analytics />
-          <SpeedInsights />
+          <UserAuthProvider>
+            <AppRouter />
+            <Toaster
+              position={isMobile ? 'bottom-center' : 'top-right'}
+              containerStyle={isMobile ? { bottom: 24, zIndex: 99999 } : { zIndex: 99999 }}
+              toastOptions={{
+                className: '!rounded-md !shadow-lg',
+                style: {
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  maxWidth: '92vw'
+                }
+              }}
+            />
+            <Analytics />
+            <SpeedInsights />
+          </UserAuthProvider>
         </LanguageProvider>
       </QueryClientProvider>
     </SEOProvider>

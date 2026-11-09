@@ -38,6 +38,13 @@ export const login = async (username: string, password: string): Promise<{ token
   return { token, user };
 };
 
+export const adminGoogleLogin = async (credential: string): Promise<{ token: string; user: AdminUser }> => {
+  const response = await axios.post(`${API_BASE}/admin/auth/google`, { credential });
+  const { token, user } = response.data.data;
+  saveSession(token, user);
+  return { token, user };
+};
+
 export const logout = async (): Promise<void> => {
   try {
     const token = getToken();

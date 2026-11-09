@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFavorites, type FavoriteItem } from '@hooks/useFavorites';
+import { useUserAuth } from '@/context/UserAuthContext';
 import { useTranslation } from '@i18n/LanguageContext';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { Button } from '@components/ui/Button';
@@ -212,6 +213,7 @@ export const FavoritesPage: React.FC = () => {
   const isHi = language === 'hi';
   const navigate = useNavigate();
   const { favorites, removeFavorite, clearAllFavorites, favoritesCount } = useFavorites();
+  const { isAuthenticated, user, openAuthModal } = useUserAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Section Configurations
@@ -439,6 +441,47 @@ export const FavoritesPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Sync / Login Prompt for Guests */}
+      {!isAuthenticated && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+          <div className="bg-gradient-to-r from-amber-50 via-orange-50/50 to-amber-50 border border-amber-200/90 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-saffron/15 text-saffron flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-darkBrown text-sm sm:text-base font-hindi-heading">
+                  {isHi ? 'अपनी पसंद सूची को सभी डिवाइस पर सिंक करें' : 'Sync & Protect Your Wishlist'}
+                </h3>
+                <p className="text-xs text-slate-600 font-hindi-body">
+                  {isHi
+                    ? 'खाता बनाने या लॉग इन करने पर आपके पसंदीदा भजन हमेशा सुरक्षित रहेंगे।'
+                    : 'Log in to securely save and access your favorite devotional bhajans across all your devices.'}
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/auth?mode=login&redirect=/favorites"
+              className="px-5 py-2.5 bg-saffron hover:bg-saffron-dark text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs hover:shadow-sm transition-all shrink-0 cursor-pointer font-hindi-heading inline-block text-center"
+            >
+              {isHi ? 'लॉग इन / साइन अप करें ➜' : 'Sign In / Sign Up ➜'}
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Logged in Welcome */}
+      {isAuthenticated && user && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+          <div className="flex items-center justify-between text-xs text-amber-800 bg-amber-50/70 border border-amber-200/60 px-4 py-2 rounded-xl">
+            <span>
+              🙏 <strong>{user.name}</strong>, आपकी पसंद सूची क्लाउड खाते (<strong>{user.email}</strong>) से सुरक्षित
+              रूप से जुड़ी है।
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* 2. SEARCH BAR & CONTROLS */}
       {favoritesCount > 2 && (

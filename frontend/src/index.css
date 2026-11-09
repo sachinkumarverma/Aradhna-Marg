@@ -49,9 +49,24 @@
     overflow: hidden !important;
     white-space: nowrap !important;
   }
+
+  /* Browser autofill override to maintain pristine white input backgrounds */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    -webkit-text-fill-color: #0f172a !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 @layer utilities {
+  .font-playfair-bold {
+    font-family: 'Playfair Display', Georgia, serif !important;
+    font-weight: 700 !important;
+  }
+
   .font-devotional-title {
     font-family: 'Playfair Display', 'Lora', 'Tiro Devanagari Hindi', 'Rozha One', Georgia, serif !important;
   }
@@ -428,4 +443,54 @@ body.admin-body,
 body.admin-body {
   overflow: hidden;
   height: 100%;
+}
+
+/* Auth page: center each card in the available viewport and compact the taller
+   sign-up form when browser chrome leaves a short desktop viewport. */
+@media (min-width: 1024px) {
+  .auth-page .auth-card {
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 700px) {
+  .auth-page .auth-card-signup {
+    top: -1.5rem;
+  }
+
+  .auth-page .auth-card {
+    padding: 1rem 1.25rem;
+  }
+
+  .auth-page .auth-card-title {
+    font-size: 1.75rem;
+    line-height: 1.1;
+  }
+
+  .auth-page .auth-card-tabs {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .auth-page .auth-card-signup .auth-card-form> :not([hidden])~ :not([hidden]) {
+    margin-top: 0.375rem;
+  }
+
+  .auth-page .auth-card-signup .auth-card-form input {
+    height: 2.5rem;
+  }
+
+  .auth-page .auth-card-signup .auth-card-form label {
+    margin-bottom: 0.25rem;
+  }
+
+  .auth-page .auth-card-signup .auth-card-form>div:first-child,
+  .auth-page .auth-card-signup .auth-card-form>div:first-child button {
+    min-height: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .auth-page .auth-card-signup .auth-card-form button[type='submit'] {
+    height: 2.5rem;
+  }
 }

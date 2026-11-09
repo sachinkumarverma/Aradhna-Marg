@@ -17,7 +17,9 @@ import {
   Heart,
   HandHeart,
   Download,
-  Smartphone
+  Smartphone,
+  User,
+  LogOut
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '@i18n/LanguageContext';
@@ -25,6 +27,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { PublicApi } from '@api/publicApi';
 import { useQuery } from '@tanstack/react-query';
 import { useFavorites } from '@hooks/useFavorites';
+import { useUserAuth } from '@/context/UserAuthContext';
 import { usePWAInstall } from '@hooks/usePWAInstall';
 import toast from 'react-hot-toast';
 import { ENABLE_DONATIONS } from '@/constants';
@@ -39,6 +42,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
   const { language, t, getLocalizedField } = useTranslation();
   const location = useLocation();
   const { favoritesCount } = useFavorites();
+  const { user, isAuthenticated, openAuthModal, logout } = useUserAuth();
 
   // Accordion states for dropdown items
   const [openAccordion, setOpenAccordion] = useState<'deities' | 'categories' | null>(null);
@@ -245,6 +249,80 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
 
             {/* Scrollable Content Body */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-200">
+              {/* User Account / Login Box in Drawer */}
+              {isAuthenticated && user ? (
+                <div className="p-3.5 bg-gradient-to-r from-orange-50 to-amber-50/70 border border-amber-200/80 rounded-2xl shadow-2xs space-y-3">
+                  <div className="flex items-center gap-3">
+                    {user.avatar_url ? (
+                      <img
+                        src={user.avatar_url}
+                        alt={user.name}
+                        className="w-10 h-10 rounded-full object-cover border border-amber-300 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-saffron text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-sm text-slate-900 font-hindi-heading truncate">{user.name}</p>
+                      <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1 border-t border-amber-200/60">
+                    <Link
+                      to="/favourite"
+                      onClick={onClose}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-600 rounded-xl text-xs font-semibold border border-gray-200/80 transition-colors shadow-2xs"
+                    >
+                      <Heart className="w-3.5 h-3.5 text-rose-500" />
+                      <span>{isHi ? 'मेरी पसंद' : 'Wishlist'}</span>
+                      {favoritesCount > 0 && (
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-100 text-rose-700 font-bold">
+                          {favoritesCount}
+                        </span>
+                      )}
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        logout();
+                        onClose();
+                      }}
+                      className="flex items-center justify-center gap-1 py-1.5 px-3 bg-white hover:bg-red-50 text-red-600 rounded-xl text-xs font-semibold border border-red-200 transition-colors shadow-2xs cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>{isHi ? 'लॉग आउट' : 'Logout'}</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3.5 bg-gradient-to-r from-orange-50/80 to-amber-50/50 border border-orange-200/80 rounded-2xl shadow-2xs flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-saffron/15 text-saffron flex items-center justify-center shrink-0">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-slate-900 font-hindi-heading truncate">
+                        {isHi ? 'आपका खाता' : 'Your Account'}
+                      </p>
+                      <p className="text-[10.5px] text-slate-500 font-hindi-body truncate">
+                        {isHi ? 'पसंद सूची सिंक करने हेतु' : 'Save & sync favorites'}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    to={`/auth?redirect=${encodeURIComponent(location.pathname + location.search)}`}
+                    onClick={onClose}
+                    className="px-3.5 py-1.5 bg-saffron hover:bg-saffron-dark text-white text-xs font-bold rounded-xl shadow-2xs transition-all shrink-0 cursor-pointer font-hindi-heading"
+                  >
+                    {isHi ? 'लॉग इन' : 'Login'}
+                  </Link>
+                </div>
+              )}
+
               {/* Quick Search Card Trigger */}
               <button
                 type="button"
