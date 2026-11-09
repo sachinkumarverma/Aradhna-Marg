@@ -28,6 +28,7 @@ router.post('/auth/logout', authController.logout);
 // ALL routes below this line are protected by JWT
 router.use(requireAdmin);
 router.get('/auth/me', authController.me);
+router.post('/auth/refresh', authController.refresh);
 
 // Dashboard
 router.get('/dashboard/stats', dashboardController.getStats);

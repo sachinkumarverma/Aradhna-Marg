@@ -156,7 +156,7 @@ Aradhna Marg separates public audience consumption from back-office management:
 - **Single-Tenant Stateless Admin Authentication:**
   - Authentication is single-tenant and validates credentials against environment variables `ADMIN_USERNAME` and `ADMIN_PASSWORD`.
   - The login endpoint (`POST /api/admin/auth/login`) validates the submitted username and password against these environment values.
-  - Successful authentication signs a JSON Web Token (JWT) valid for 24 hours using `JWT_SECRET`.
+  - Successful authentication signs a JSON Web Token (JWT) valid for 1 hour using `JWT_SECRET` (configurable via `JWT_ADMIN_EXPIRES_IN`).
   - Token validity is verified in middleware (`requireAdmin`) via `jwt.verify(token, config.JWT_SECRET)`.
   - **No active database user lookup is performed.**
   - **No active sessions-table validation is performed.**

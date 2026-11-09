@@ -86,6 +86,19 @@ class CronManager {
     this.tasks.forEach((task) => task.stop());
     logger.info('All cron jobs stopped.');
   }
+
+  public getHealthSummary() {
+    const jobs = Array.from(this.jobs.values()).map((job) => ({
+      name: job.name,
+      status: job.status,
+      lastRun: job.lastRun?.toISOString() ?? null
+    }));
+
+    return {
+      status: jobs.some((job) => job.status === 'FAILED') ? ('ERROR' as const) : ('OK' as const),
+      jobs
+    };
+  }
 }
 
 export const cronManager = new CronManager();

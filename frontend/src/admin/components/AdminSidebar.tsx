@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@utils/cn';
 import { getAdminPath } from '@utils/host';
+import { getUser } from '@api/auth';
 
 interface AdminSidebarProps {
   isMobileOpen: boolean;
@@ -31,6 +32,13 @@ interface AdminSidebarProps {
 }
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClose }) => {
+  const user = getUser();
+  const displayName = user?.name || user?.username || 'Admin User';
+  const displayEmail = user?.email || (user?.username?.includes('@') ? user.username : 'admin@aradhnamarg.com');
+  const avatarUrl =
+    user?.avatar_url ||
+    `https://api.dicebear.com/7.x/micah/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4&backgroundType=gradientLinear`;
+
   const DASHBOARD_NAV = [{ name: 'DASHBOARD', path: getAdminPath('/dashboard'), end: true, icon: LayoutDashboard }];
 
   const CONTENT_NAV = [
@@ -155,17 +163,24 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
             </div>
           </div>
 
-          {/* Bottom user profile mock */}
+          {/* Bottom user profile */}
           <div className="border-t border-gray-100 flex-shrink-0">
-            <div className="flex items-center gap-3 px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+            <div
+              className="flex items-center gap-3 px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+              title={`${displayName} (${displayEmail})`}
+            >
               <img
-                src="https://api.dicebear.com/7.x/micah/svg?seed=AdminUser&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4&backgroundType=gradientLinear"
-                alt="Admin Avatar"
-                className="w-10 h-10 rounded-full shadow-sm border-2 border-white bg-saffron/10"
+                src={avatarUrl}
+                alt={displayName}
+                className="w-10 h-10 rounded-full shadow-sm border-2 border-white bg-saffron/10 object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src =
+                    `https://api.dicebear.com/7.x/micah/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4&backgroundType=gradientLinear`;
+                }}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-[#00274c] truncate">Admin User</p>
-                <p className="text-xs text-gray-500 truncate">admin@aradhnamarg.com</p>
+                <p className="text-sm font-bold text-[#00274c] truncate">{displayName}</p>
+                <p className="text-xs text-gray-500 truncate">{displayEmail}</p>
               </div>
             </div>
           </div>

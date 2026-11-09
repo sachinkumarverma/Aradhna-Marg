@@ -56,6 +56,8 @@ The repository is organized into distinct environments:
 3. **Environment Setup:**
    Copy the `.env.example` to `.env` in the root directory or configure specific `.env` files within `/frontend` and `/backend`. Provide valid keys for Supabase, Backblaze B2, OpenAI/Gemini, and YouTube.
 
+   For the deployed backend, set `NODE_ENV=production` in the hosting provider's runtime environment. The backend intentionally defaults to `development` for local work, so production must be declared by deployment configuration rather than inferred or hardcoded in health responses.
+
 ## 💻 Development
 
 ### Starting the Frontend

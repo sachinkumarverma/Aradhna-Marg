@@ -1,43 +1,87 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '@/responses/apiResponse';
-import { InternalServerError } from '@/errors/appError';
-import { logger } from '@utils/logger';
+import { NextFunction, Request, RequestHandler, Response, Router } from 'express';
 import { db } from '@common/database/DatabaseClient';
+import { logger } from '@utils/logger';
+import { requireAdmin } from '@/middlewares/auth';
+import { systemHealthService } from '@/services/SystemHealthService';
 
-const router = Router();
+const createRateLimiter = (windowMs: number, maxRequests: number): RequestHandler => {
+  const requests = new Map<string, { count: number; resetAt: number }>();
 
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let dbError = false;
-    try {
-      await db.query(`SELECT 1`);
-    } catch (e) {
-      dbError = true;
-      logger.error({ err: e }, 'Database health check failed');
-      throw new InternalServerError('Database connection failed');
+  return (req: Request, res: Response, next: NextFunction) => {
+    const now = Date.now();
+    const key = req.ip || 'unknown';
+
+    if (requests.size > 1_000) {
+      for (const [entryKey, entry] of requests) {
+        if (entry.resetAt <= now) requests.delete(entryKey);
+      }
     }
 
-    const healthData = {
-      api_status: 'OK',
-      database_status: dbError ? 'ERROR' : 'OK',
-      storage_status: 'OK',
-      youtube_api_status: process.env.YOUTUBE_API_KEY ? 'OK' : 'OK', // Assuming OK if running
-      groq_ai_status: process.env.GROQ_API_KEY ? 'OK' : 'OK',
-      cron_jobs_status: 'OK',
-      server_time: new Date().toISOString(),
-      uptime_seconds: process.uptime(),
-      environment: process.env.NODE_ENV === 'production' ? 'Production' : 'Development',
-      version: {
-        frontend: 'v1.0.0',
-        backend: 'v1.0.0',
-        database: 'Migration 14'
-      }
-    };
+    const current = requests.get(key);
 
-    return sendSuccess(res, 'Health check passed', healthData);
+    if (!current || current.resetAt <= now) {
+      requests.set(key, { count: 1, resetAt: now + windowMs });
+      return next();
+    }
+
+    if (current.count >= maxRequests) {
+      res.setHeader('Retry-After', Math.ceil((current.resetAt - now) / 1000));
+      return res.status(429).json({
+        success: false,
+        message: 'Too many health checks',
+        status: 'RATE_LIMITED'
+      });
+    }
+
+    current.count += 1;
+    return next();
+  };
+};
+
+const publicHealthRateLimiter = createRateLimiter(60_000, 60);
+const internalHealthRateLimiter = createRateLimiter(60_000, 30);
+
+const publicHealthRouter = Router();
+
+publicHealthRouter.get('/', publicHealthRateLimiter, async (_req: Request, res: Response) => {
+  try {
+    await db.query('SELECT 1');
+    return res.status(200).json({
+      success: true,
+      message: 'Service is healthy',
+      status: 'OK'
+    });
   } catch (error) {
-    next(error);
+    logger.error({ err: error }, 'Public health check failed');
+    return res.status(503).json({
+      success: false,
+      message: 'Service unavailable',
+      status: 'ERROR'
+    });
   }
 });
 
-export default router;
+export const internalHealthRoutes = Router();
+
+internalHealthRoutes.get('/', internalHealthRateLimiter, requireAdmin, async (_req: Request, res: Response) => {
+  try {
+    const health = await systemHealthService.getDetailedHealth();
+    const healthy = health.api_status === 'OK';
+
+    return res.status(healthy ? 200 : 503).json({
+      success: healthy,
+      message: healthy ? 'Detailed health check passed' : 'Service diagnostics detected a failure',
+      status: healthy ? 'OK' : 'ERROR',
+      data: health
+    });
+  } catch (error) {
+    logger.error({ err: error }, 'Internal health diagnostics failed');
+    return res.status(503).json({
+      success: false,
+      message: 'Health diagnostics unavailable',
+      status: 'ERROR'
+    });
+  }
+});
+
+export default publicHealthRouter;

@@ -25,15 +25,19 @@ class AuthController {
         throw new UnauthorizedError('Invalid credentials');
       }
 
-      // Sign a JWT valid for 24 hours
-      const token = jwt.sign({ username, role: 'admin' }, config.JWT_SECRET, { expiresIn: '24h' });
+      // Sign a JWT valid for 1 hour
+      const adminEmail = config.ADMIN_EMAIL || 'admin@aradhnamarg.com';
+      const expiresIn = (config.JWT_ADMIN_EXPIRES_IN || '1h') as any;
+      const token = jwt.sign({ username, name: 'Admin User', email: adminEmail, role: 'admin' }, config.JWT_SECRET, {
+        expiresIn
+      });
 
       logger.info(`Admin login successful for user: ${username}`);
 
       return sendSuccess(res, 'Login successful', {
         token,
-        user: { username, role: 'admin' },
-        expiresIn: '24h'
+        user: { username, name: 'Admin User', email: adminEmail, role: 'admin' },
+        expiresIn
       });
     } catch (error) {
       next(error);
@@ -91,12 +95,22 @@ class AuthController {
       });
     }
 
-    // Sign Admin JWT valid for 24 hours
-    const token = jwt.sign({ username: googleUser.name || email, email, role: 'admin' }, config.JWT_SECRET, {
-      expiresIn: '24h'
-    });
+    const adminName = googleUser.name || 'Admin User';
+    const avatarUrl = googleUser.picture || null;
+    const expiresIn = (config.JWT_ADMIN_EXPIRES_IN || '1h') as any;
 
-    return { token, user: { username: googleUser.name || email, email, role: 'admin' }, email };
+    // Sign Admin JWT valid for 1 hour
+    const token = jwt.sign(
+      { username: adminName, name: adminName, email, avatar_url: avatarUrl, role: 'admin' },
+      config.JWT_SECRET,
+      { expiresIn }
+    );
+
+    return {
+      token,
+      user: { username: adminName, name: adminName, email, avatar_url: avatarUrl, role: 'admin' },
+      email
+    };
   };
 
   /**
@@ -107,12 +121,13 @@ class AuthController {
     try {
       const { credential } = req.body;
       const { token, user, email } = await this.verifyAndAuthorizeAdmin(credential);
+      const expiresIn = (config.JWT_ADMIN_EXPIRES_IN || '1h') as any;
       logger.info(`Admin Google login successful for email: ${email}`);
 
       return sendSuccess(res, 'Admin Google login successful', {
         token,
         user,
-        expiresIn: '24h'
+        expiresIn
       });
     } catch (error) {
       next(error);
@@ -161,6 +176,46 @@ class AuthController {
   public me = async (req: Request, res: Response, next: NextFunction) => {
     try {
       return sendSuccess(res, 'User info', { user: req.user });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * POST /api/admin/auth/refresh
+   * Extends the active admin session with a fresh 1-hour JWT.
+   */
+  public refresh = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user;
+      const adminEmail = user?.email || config.ADMIN_EMAIL || 'admin@aradhnamarg.com';
+      const adminName = user?.name || user?.username || 'Admin User';
+      const avatarUrl = user?.avatar_url || null;
+      const expiresIn = (config.JWT_ADMIN_EXPIRES_IN || '1h') as any;
+
+      const token = jwt.sign(
+        {
+          username: user?.username || adminName,
+          name: adminName,
+          email: adminEmail,
+          avatar_url: avatarUrl,
+          role: 'admin'
+        },
+        config.JWT_SECRET,
+        { expiresIn }
+      );
+
+      return sendSuccess(res, 'Session extended successfully', {
+        token,
+        user: {
+          username: user?.username || adminName,
+          name: adminName,
+          email: adminEmail,
+          avatar_url: avatarUrl,
+          role: 'admin'
+        },
+        expiresIn
+      });
     } catch (error) {
       next(error);
     }

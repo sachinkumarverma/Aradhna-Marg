@@ -10,6 +10,9 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_U
 export interface AdminUser {
   username: string;
   role: string;
+  name?: string;
+  email?: string;
+  avatar_url?: string | null;
 }
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
@@ -31,11 +34,19 @@ export const setSessionToken = (token: string, user?: AdminUser) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       StorageService.setUser({
-        username: payload.username || payload.email || 'Admin',
+        username: payload.username || payload.name || payload.email || 'Admin User',
+        name: payload.name || payload.username || 'Admin User',
+        email: payload.email || 'admin@aradhnamarg.com',
+        avatar_url: payload.avatar_url || null,
         role: payload.role || 'admin'
       });
     } catch {
-      StorageService.setUser({ username: 'Admin', role: 'admin' });
+      StorageService.setUser({
+        username: 'Admin User',
+        name: 'Admin User',
+        email: 'admin@aradhnamarg.com',
+        role: 'admin'
+      });
     }
   }
 };
@@ -80,12 +91,38 @@ export const verifySession = async (): Promise<boolean> => {
   if (!token) return false;
 
   try {
-    await axios.get(`${API_BASE}/admin/auth/me`, {
+    const res = await axios.get(`${API_BASE}/admin/auth/me`, {
       headers: { Authorization: `Bearer ${token}` }
     });
+    if (res.data?.data?.user) {
+      StorageService.setUser(res.data.data.user);
+    }
     return true;
   } catch {
     clearSession();
     return false;
+  }
+};
+
+export const refreshSession = async (): Promise<string | null> => {
+  const token = getToken();
+  if (!token) return null;
+
+  try {
+    const res = await axios.post(
+      `${API_BASE}/admin/auth/refresh`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+    const newToken = res.data?.data?.token;
+    if (newToken) {
+      setSessionToken(newToken, res.data?.data?.user);
+      return newToken;
+    }
+    return null;
+  } catch {
+    return null;
   }
 };

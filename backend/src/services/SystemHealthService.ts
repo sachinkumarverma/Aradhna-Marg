@@ -1,7 +1,11 @@
+import fs from 'fs';
+import path from 'path';
 import { db } from '@common/database/DatabaseClient';
 import { aiJobService } from '@admin/services/AiJobService';
 import { agentRunRepository } from '@/agents/repositories/AgentRunRepository';
 import { logger } from '@utils/logger';
+import { config } from '@/config';
+import { cronManager } from '@/cron/manager';
 
 export interface SystemHealthOverview {
   database: {
@@ -30,6 +34,47 @@ export interface SystemHealthOverview {
   };
   timestamp: string;
 }
+
+export interface SystemHealthDiagnostics {
+  api_status: 'OK' | 'ERROR';
+  database_status: 'OK' | 'ERROR';
+  database_latency_ms: number;
+  storage_status: 'OK' | 'NOT_CONFIGURED';
+  youtube_api_status: 'OK' | 'NOT_CONFIGURED';
+  groq_ai_status: 'OK' | 'NOT_CONFIGURED' | 'NOT_SELECTED';
+  cron_jobs_status: 'OK' | 'ERROR';
+  server_time: string;
+  uptime_seconds: number;
+  environment: 'Production' | 'Development' | 'Test';
+  version: {
+    frontend: string;
+    backend: string;
+    database: string;
+  };
+  diagnostics: SystemHealthOverview;
+  cron_jobs: ReturnType<typeof cronManager.getHealthSummary>;
+}
+
+const readPackageVersion = (packagePath: string): string => {
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8')) as { version?: string };
+    return packageJson.version ?? 'unknown';
+  } catch {
+    return 'unknown';
+  }
+};
+
+const readLatestMigration = (migrationsPath: string): string => {
+  try {
+    const migrations = fs
+      .readdirSync(migrationsPath)
+      .filter((file) => file.endsWith('.sql'))
+      .sort();
+    return migrations.at(-1)?.replace(/\.sql$/, '') ?? 'unknown';
+  } catch {
+    return 'unknown';
+  }
+};
 
 export class SystemHealthService {
   public async getHealthOverview(): Promise<SystemHealthOverview> {
@@ -120,9 +165,49 @@ export class SystemHealthService {
         uptimeSeconds: Math.floor(process.uptime()),
         memoryUsageMb,
         nodeVersion: process.version,
-        environment: process.env.NODE_ENV === 'production' ? 'Production' : 'Development'
+        environment:
+          config.NODE_ENV === 'production' ? 'Production' : config.NODE_ENV === 'test' ? 'Test' : 'Development'
       },
       timestamp
+    };
+  }
+
+  public async getDetailedHealth(): Promise<SystemHealthDiagnostics> {
+    const diagnostics = await this.getHealthOverview();
+    const safeDiagnostics: SystemHealthOverview = {
+      ...diagnostics,
+      database: {
+        status: diagnostics.database.status,
+        latencyMs: diagnostics.database.latencyMs
+      }
+    };
+    const cronJobs = cronManager.getHealthSummary();
+    const databaseHealthy = diagnostics.database.status === 'HEALTHY';
+    const environment =
+      config.NODE_ENV === 'production' ? 'Production' : config.NODE_ENV === 'test' ? 'Test' : 'Development';
+    const selectedAiConfigured = config.AI_PROVIDER === 'groq' && Boolean(config.GROQ_API_KEY);
+
+    return {
+      api_status: databaseHealthy ? 'OK' : 'ERROR',
+      database_status: databaseHealthy ? 'OK' : 'ERROR',
+      database_latency_ms: diagnostics.database.latencyMs,
+      storage_status:
+        process.env.SUPABASE_URL && (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY)
+          ? 'OK'
+          : 'NOT_CONFIGURED',
+      youtube_api_status: config.YOUTUBE_API_KEY ? 'OK' : 'NOT_CONFIGURED',
+      groq_ai_status: config.AI_PROVIDER !== 'groq' ? 'NOT_SELECTED' : selectedAiConfigured ? 'OK' : 'NOT_CONFIGURED',
+      cron_jobs_status: cronJobs.status,
+      server_time: safeDiagnostics.timestamp,
+      uptime_seconds: safeDiagnostics.process.uptimeSeconds,
+      environment,
+      version: {
+        backend: readPackageVersion(path.resolve(__dirname, '../../package.json')),
+        frontend: readPackageVersion(path.resolve(__dirname, '../../../frontend/package.json')),
+        database: readLatestMigration(path.resolve(__dirname, '../../supabase/migrations'))
+      },
+      diagnostics: safeDiagnostics,
+      cron_jobs: cronJobs
     };
   }
 }

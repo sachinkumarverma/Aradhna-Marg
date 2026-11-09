@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { UnauthorizedError } from '@/errors/appError';
+import { ForbiddenError, UnauthorizedError } from '@/errors/appError';
 import { logger } from '@utils/logger';
 import jwt from 'jsonwebtoken';
 import { config } from '@/config';
@@ -23,6 +23,10 @@ export const requireAdmin = async (req: Request, res: Response, next: NextFuncti
 
     if (!decoded) {
       throw new UnauthorizedError('Invalid or expired token');
+    }
+
+    if (decoded.role !== 'admin') {
+      throw new ForbiddenError('Admin access required');
     }
 
     req.user = decoded;

@@ -18,6 +18,7 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().optional(),
   YOUTUBE_API_KEY: z.string().optional(),
   JWT_SECRET: z.string().min(10),
+  JWT_ADMIN_EXPIRES_IN: z.string().default('1h'),
   ADMIN_USERNAME: z.string().min(3),
   ADMIN_PASSWORD: z.string().min(6),
   CRON_SECRET: z.string().min(10),

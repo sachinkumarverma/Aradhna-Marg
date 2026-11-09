@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '@api/auth';
+import { logout, refreshSession } from '@api/auth';
 import { getAdminPath } from '@utils/host';
 import toast from 'react-hot-toast';
 
@@ -102,7 +102,11 @@ export const SessionManager: React.FC = () => {
             Logout Now
           </button>
           <button
-            onClick={() => setShowWarning(false)}
+            onClick={async () => {
+              setShowWarning(false);
+              await refreshSession();
+              toast.success('Session extended successfully. 🙏', { id: 'session-extend-toast' });
+            }}
             className="px-4 py-2 text-sm font-medium text-white bg-saffron hover:bg-saffron/90 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-saffron/50 shadow-sm"
           >
             Extend Session
