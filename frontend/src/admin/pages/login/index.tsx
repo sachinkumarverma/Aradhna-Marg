@@ -141,13 +141,13 @@ export const AdminLogin: React.FC = () => {
         )}
       </header>
 
-      {/* Main Workspace: Clean Lord Krishna background with Auth Card on right */}
-      <main className="relative z-20 flex-1 max-w-[1440px] w-full mx-auto px-6 sm:px-10 md:px-14 lg:px-16 pt-2 pb-8 flex items-center justify-center md:justify-end min-h-0">
+      {/* Main Workspace: Clean Lord Krishna background with Auth Card in center on tab/mobile, on right on desktop */}
+      <main className="relative z-20 flex-1 max-w-[1440px] w-full mx-auto px-6 sm:px-10 md:px-14 lg:px-16 pt-2 pb-8 flex items-center justify-center lg:justify-end min-h-0">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="w-full max-w-[420px] sm:max-w-[430px] bg-white rounded-[26px] p-5 sm:p-6 shadow-[0_15px_40px_rgba(234,88,12,0.12)] md:shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-orange-100/90 md:border-slate-100/90 text-slate-800 relative z-20 -translate-y-4 sm:-translate-y-6 md:-translate-y-8"
+          className="w-full max-w-[420px] sm:max-w-[430px] bg-white rounded-[26px] p-5 sm:p-6 shadow-[0_15px_40px_rgba(234,88,12,0.12)] lg:shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-orange-100/90 lg:border-slate-100/90 text-slate-800 relative z-20 -translate-y-2 sm:-translate-y-4 lg:-translate-y-8"
         >
           {/* Card Top: Golden Om Medallion Flanked by Gold Rules */}
           <div className="flex items-center justify-center gap-2.5 mt-1 mb-1.5">

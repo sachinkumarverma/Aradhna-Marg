@@ -206,15 +206,15 @@ export const AuthPage: React.FC = () => {
       <main className="relative z-20 flex-1 max-w-[1440px] w-full mx-auto px-6 sm:px-10 lg:px-16 pt-8 pb-8 lg:pt-0 lg:pb-0 flex items-stretch min-h-0 lg:h-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full items-start lg:h-full">
           {/* Left Column: Headline and subhead in English (anchored slightly up so it never overlaps Krishna) */}
-          <div className="lg:col-span-6 xl:col-span-7 flex flex-col justify-start lg:self-start lg:pt-[clamp(5rem,15.5vh,7rem)] space-y-4 sm:space-y-5 max-w-[520px]">
+          <div className="lg:col-span-6 xl:col-span-7 flex flex-col justify-start lg:self-start lg:pt-[clamp(5rem,15.5vh,7rem)] space-y-4 sm:space-y-5 max-w-[520px] md:max-w-none lg:max-w-[520px]">
             {/* Punch Headline: Playfair Display Bold */}
             <h1
-              className="text-4xl sm:text-[44px] lg:text-[52px] xl:text-[58px] font-bold text-white leading-[1.08] tracking-tight drop-shadow-md font-playfair-bold"
+              className="text-4xl sm:text-[44px] md:text-[38px] lg:text-[52px] xl:text-[58px] font-bold text-white leading-[1.08] tracking-tight drop-shadow-md font-playfair-bold"
               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
             >
               A sacred space{' '}
               <span
-                className="block text-transparent bg-clip-text bg-gradient-to-r from-[#fde68a] via-[#f59e0b] to-[#fbbf24] drop-shadow-[0_2px_15px_rgba(245,158,11,0.35)] mt-1 font-playfair-bold"
+                className="block md:inline lg:block text-transparent bg-clip-text bg-gradient-to-r from-[#fde68a] via-[#f59e0b] to-[#fbbf24] drop-shadow-[0_2px_15px_rgba(245,158,11,0.35)] mt-1 md:mt-0 lg:mt-1 md:ml-2.5 lg:ml-0 font-playfair-bold whitespace-normal md:whitespace-nowrap lg:whitespace-normal"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
               >
                 for devotion
@@ -222,7 +222,7 @@ export const AuthPage: React.FC = () => {
             </h1>
 
             {/* Devotional Subtitle: breaks into 2 natural lines */}
-            <p className="text-slate-200/90 text-sm sm:text-[15px] leading-relaxed max-w-[340px] font-sans">
+            <p className="text-slate-200/90 text-sm sm:text-[15px] leading-relaxed max-w-[340px] md:max-w-[520px] lg:max-w-[340px] font-sans">
               Listen, read, and return to the wisdom that grounds your day.
             </p>
 
@@ -603,7 +603,7 @@ export const AuthPage: React.FC = () => {
 
       {/* Devotional Sub-footer */}
       <footer className="relative z-30 w-full py-2.5 px-6 lg:px-16 text-center lg:text-left text-[11px] text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] font-sans shrink-0">
-        © {new Date().getFullYear()} Aradhna Marg • Dedicated to Sanatan Dharma • All Rights Reserved
+        © {new Date().getFullYear()} Aradhna Marg • All Rights Reserved
       </footer>
     </div>
   );

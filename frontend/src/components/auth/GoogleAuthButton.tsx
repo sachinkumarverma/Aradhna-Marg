@@ -60,8 +60,10 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   disabled = false,
   isAdmin = false
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
+  const lastRenderedWidthRef = useRef<number | null>(null);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
   // Stable callback references to prevent GSI re-initialization on state updates
@@ -99,23 +101,32 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
         }
       });
 
+      // Measure exact container width so Google renders a button matching the whole container width
+      const containerWidth = containerRef.current?.clientWidth || 380;
+      // Google Identity Services limits width between 200px and 400px
+      const targetWidth = Math.min(400, Math.max(200, Math.floor(containerWidth)));
+
       // Clear existing children before rendering
       buttonRef.current.innerHTML = '';
 
-      // Render with maximum permitted width (400) so scaled iframe covers entire button
+      // Render official Google button overlay at 1:1 matching width (NO CSS transforms/scale)
       window.google.accounts.id.renderButton(buttonRef.current, {
+        type: 'standard',
         theme: 'outline',
         size: 'large',
         text,
         shape: 'pill',
-        width: 400,
-        logo_alignment: 'left'
+        width: targetWidth,
+        logo_alignment: 'center'
       });
+
+      lastRenderedWidthRef.current = targetWidth;
     } catch (e) {
       if (onErrorRef.current) onErrorRef.current(e);
     }
   }, [clientId, text, isAdmin]);
 
+  // Initial script load & render
   useEffect(() => {
     if (!clientId) return;
 
@@ -129,7 +140,25 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
     return () => {
       active = false;
     };
-  }, [clientId, text, initGsi]);
+  }, [clientId, initGsi]);
+
+  // Re-render button if container width changes (e.g., orientation change or responsive resize)
+  useEffect(() => {
+    if (!containerRef.current || !clientId) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const newWidth = Math.min(400, Math.max(200, Math.floor(entry.contentRect.width)));
+        const lastWidth = lastRenderedWidthRef.current;
+        if (lastWidth && Math.abs(newWidth - lastWidth) >= 12) {
+          initGsi();
+        }
+      }
+    });
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [clientId, initGsi]);
 
   const handleFallbackClick = () => {
     if (disabled || loading) return;
@@ -143,11 +172,26 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
 
   const buttonText = label || (text === 'signup_with' ? 'Sign up with Google' : 'Sign in with Google');
 
+  const handleContainerKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleFallbackClick();
+    }
+  };
+
   return (
-    <div className={`w-full flex flex-col items-center ${className}`}>
-      <div className="relative w-full h-11 sm:h-12 overflow-hidden rounded-full">
-        {/* Custom Visual Layer: Google icon and text tightly grouped in center with semi-bold typography */}
-        <div className="w-full h-full flex items-center justify-center gap-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-full shadow-2xs text-sm font-semibold leading-none text-slate-800 transition-all font-sans select-none pointer-events-none">
+    <div ref={containerRef} className={`w-full max-w-[400px] mx-auto flex flex-col items-center ${className}`}>
+      <div
+        className="group relative w-full h-11 sm:h-12 overflow-hidden rounded-full"
+        role="button"
+        tabIndex={disabled || loading ? -1 : 0}
+        aria-label={buttonText}
+        aria-disabled={disabled || loading}
+        onClick={handleFallbackClick}
+        onKeyDown={handleContainerKeyDown}
+      >
+        {/* Custom Visual Layer: Preserves exact semi-bold font weight, crisp G logo, and hover style */}
+        <div className="relative z-30 w-full h-full flex items-center justify-center gap-2.5 px-4 bg-white group-hover:bg-slate-50 border border-slate-200/90 group-hover:border-slate-300 rounded-full shadow-2xs text-sm font-semibold leading-none text-slate-800 transition-all font-sans select-none pointer-events-none">
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin text-saffron" />
           ) : (
@@ -170,25 +214,26 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
               />
             </svg>
           )}
-          <span className="translate-y-px">{buttonText}</span>
+          <span className="font-semibold tracking-normal translate-y-px">{buttonText}</span>
         </div>
 
-        {/* Active GIS Interactive Overlay: Scaled to guarantee 100% full button coverage with zero dead zones */}
+        {/* Loading spinner overlay */}
+        {loading && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/80 rounded-full backdrop-blur-2xs pointer-events-none">
+            <Loader2 className="w-5 h-5 animate-spin text-saffron" />
+          </div>
+        )}
+
+        {/* Active GIS Interactive Overlay: Unscaled, exact matching width, covering entire container */}
         {clientId ? (
           <div
             ref={buttonRef}
-            className="absolute inset-0 z-20 overflow-hidden rounded-full cursor-pointer opacity-[0.001] flex items-center justify-center [&>div]:!w-full [&>div]:!h-full [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:!scale-[1.4] [&_iframe]:!origin-center"
+            className={`absolute inset-0 z-20 w-full h-full cursor-pointer opacity-100 rounded-full overflow-hidden flex items-center justify-center ${
+              disabled || loading ? 'pointer-events-none' : ''
+            }`}
             title={buttonText}
           />
-        ) : (
-          <button
-            type="button"
-            onClick={handleFallbackClick}
-            disabled={disabled || loading}
-            className="absolute inset-0 z-20 w-full h-full cursor-pointer opacity-0 rounded-full"
-            aria-label={buttonText}
-          />
-        )}
+        ) : null}
       </div>
     </div>
   );
