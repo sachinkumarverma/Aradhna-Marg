@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { useTranslation } from '@i18n/LanguageContext';
 import toast from 'react-hot-toast';
 
 interface GoogleAuthButtonProps {
@@ -26,8 +25,6 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   className = '',
   disabled = false
 }) => {
-  const { language } = useTranslation();
-  const isHi = language === 'hi';
   const buttonRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
@@ -91,20 +88,17 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
 
   return (
     <div className={`w-full flex flex-col items-center ${className}`}>
-      {/* Official Google GIS Button Render Target (when client ID exists) */}
-      {clientId ? (
-        <div ref={buttonRef} className="w-full flex justify-center min-h-[44px]" />
-      ) : (
+      <div className="relative w-full h-11 sm:h-12">
         <button
           type="button"
           onClick={handleManualClick}
           disabled={disabled || loading}
-          className="w-full h-11 sm:h-12 flex items-center justify-center gap-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-full shadow-2xs text-sm font-medium text-slate-700 transition-all cursor-pointer active:scale-[0.99] disabled:opacity-50 font-sans"
+          className="w-full h-full flex items-center justify-center gap-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-full shadow-2xs text-sm font-medium leading-none text-slate-700 transition-all cursor-pointer active:scale-[0.99] disabled:opacity-50 font-sans"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin text-saffron" />
           ) : (
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -123,9 +117,18 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
               />
             </svg>
           )}
-          <span>{label || 'Continue with Google'}</span>
+          <span className="translate-y-px">{label || 'Continue with Google'}</span>
         </button>
-      )}
+
+        {/* Keep the official GIS interaction while preserving the custom visual style. */}
+        {clientId && (
+          <div
+            ref={buttonRef}
+            className="absolute inset-0 z-10 overflow-hidden rounded-full opacity-0"
+            aria-hidden="true"
+          />
+        )}
+      </div>
     </div>
   );
 };

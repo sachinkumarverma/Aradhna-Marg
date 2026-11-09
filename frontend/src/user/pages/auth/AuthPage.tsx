@@ -220,17 +220,17 @@ export const AuthPage: React.FC = () => {
               className={`auth-card auth-card-${mode} w-full max-w-[425px] sm:max-w-[435px] bg-white rounded-[28px] p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-slate-100/90 text-slate-800 relative z-20 ${mode === 'forgot' ? 'lg:min-h-[368px] flex flex-col' : ''}`}
             >
               {/* Card Top: Golden Om Medallion Flanked by Gold Rules */}
-              <div className="flex items-center justify-center gap-2.5 mb-1">
+              <div className="flex items-center justify-center gap-2.5 mt-1 mb-1.5">
                 <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-r from-transparent to-amber-400" />
                 <div className="w-8 h-8 rounded-full bg-gradient-to-b from-[#fffbeb] to-[#fef3c7] border border-amber-300/80 flex items-center justify-center text-amber-700 text-sm font-bold leading-none shadow-xs">
-                  <span className="inline-flex items-center justify-center leading-none translate-y-px">ॐ</span>
+                  <span className="inline-flex items-center justify-center leading-none translate-y-[3px]">ॐ</span>
                 </div>
                 <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-l from-transparent to-amber-400" />
               </div>
 
               {/* Card Headline: Playfair Display */}
               <h2
-                className="auth-card-title text-[28px] sm:text-[30px] lg:text-[32px] font-bold text-center text-[#0f172a] tracking-tight mt-1 mb-2 leading-tight font-playfair-bold"
+                className="auth-card-title text-[28px] sm:text-[30px] lg:text-[32px] font-bold text-center text-[#0f172a] tracking-tight mt-1 mb-5 leading-tight font-playfair-bold translate-y-px"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
               >
                 {mode === 'login' && 'Welcome Back'}
@@ -248,7 +248,7 @@ export const AuthPage: React.FC = () => {
 
               {/* Mode Toggle Tabs (Sign In / Sign Up) */}
               {mode !== 'forgot' && (
-                <div className="auth-card-tabs w-full bg-[#f1f3f9] p-1 rounded-xl flex items-center my-3 border border-slate-100">
+                <div className="auth-card-tabs w-full bg-[#f1f3f9] p-1 rounded-xl flex items-center mt-5 mb-3.5 border border-slate-100">
                   <button
                     type="button"
                     onClick={() => switchMode('login')}
@@ -258,7 +258,7 @@ export const AuthPage: React.FC = () => {
                         : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    Sign In
+                    <span className="inline-block translate-y-[2px]">Sign In</span>
                   </button>
                   <button
                     type="button"
@@ -269,7 +269,7 @@ export const AuthPage: React.FC = () => {
                         : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    Sign Up
+                    <span className="inline-block translate-y-[2px]">Sign Up</span>
                   </button>
                 </div>
               )}
@@ -345,10 +345,12 @@ export const AuthPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide leading-none shadow-md shadow-indigo-950/25 flex items-center justify-center gap-2 transition-all !mt-4 sm:!mt-5 cursor-pointer disabled:opacity-50"
+                    className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide shadow-md shadow-indigo-950/25 flex items-center justify-center transition-all !mt-4 sm:!mt-5 cursor-pointer disabled:opacity-50"
                   >
-                    {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
-                    <span>Sign In →</span>
+                    <div className="flex items-center justify-center gap-2 translate-y-[2px]">
+                      {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
+                      <span>Sign In →</span>
+                    </div>
                   </button>
 
                   {/* Bottom Lotus Ornament */}
@@ -464,10 +466,12 @@ export const AuthPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide leading-none shadow-md shadow-indigo-950/25 flex items-center justify-center gap-2 transition-all !mt-4 sm:!mt-5 cursor-pointer disabled:opacity-50"
+                    className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide shadow-md shadow-indigo-950/25 flex items-center justify-center transition-all !mt-4 sm:!mt-5 cursor-pointer disabled:opacity-50"
                   >
-                    {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
-                    <span>Sign Up →</span>
+                    <div className="flex items-center justify-center gap-2 translate-y-[2px]">
+                      {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
+                      <span>Sign Up →</span>
+                    </div>
                   </button>
 
                   {/* Bottom Lotus Ornament */}
@@ -527,10 +531,12 @@ export const AuthPage: React.FC = () => {
                       <button
                         type="submit"
                         disabled={submitting}
-                        className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide shadow-md shadow-indigo-950/25 flex items-center justify-center gap-2 transition-all mt-2 cursor-pointer disabled:opacity-50"
+                        className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide shadow-md shadow-indigo-950/25 flex items-center justify-center transition-all mt-2 cursor-pointer disabled:opacity-50"
                       >
-                        {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
-                        <span>Send Reset Link →</span>
+                        <div className="flex items-center justify-center gap-2 translate-y-[2px]">
+                          {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
+                          <span>Send Reset Link →</span>
+                        </div>
                       </button>
 
                       <div className="text-center pt-5">
