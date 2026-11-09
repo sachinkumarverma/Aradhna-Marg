@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -20,7 +20,7 @@ declare global {
 export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   onSuccess,
   onError,
-  text = 'continue_with',
+  text = 'signin_with',
   label,
   className = '',
   disabled = false
@@ -29,72 +29,84 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   const [loading, setLoading] = useState(false);
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
+  // Stable callback references to prevent GSI re-initialization on state updates
+  const onSuccessRef = useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
+
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+
+  const initGsi = useCallback(() => {
+    if (!window.google?.accounts?.id || !buttonRef.current || !clientId) return;
+
+    try {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: (response: any) => {
+          if (response?.credential) {
+            setLoading(true);
+            onSuccessRef.current(response.credential);
+          } else if (onErrorRef.current) {
+            onErrorRef.current(new Error('No Google credential returned'));
+          }
+        }
+      });
+
+      // Clear existing children before rendering
+      buttonRef.current.innerHTML = '';
+
+      // Render with maximum permitted width (400) so scaled iframe covers entire button
+      window.google.accounts.id.renderButton(buttonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        text,
+        shape: 'pill',
+        width: 400,
+        logo_alignment: 'left'
+      });
+    } catch (e) {
+      if (onErrorRef.current) onErrorRef.current(e);
+    }
+  }, [clientId, text]);
+
   useEffect(() => {
     if (!clientId) return;
 
-    // Load Google Identity Services script if not already present
-    const existingScript = document.getElementById('google-gsi-script');
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.id = 'google-gsi-script';
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = initGsi;
-      document.head.appendChild(script);
-    } else if (window.google?.accounts?.id) {
+    if (window.google?.accounts?.id) {
       initGsi();
+    } else {
+      const checkGsi = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          clearInterval(checkGsi);
+          initGsi();
+        }
+      }, 50);
+
+      const timeout = setTimeout(() => clearInterval(checkGsi), 5000);
+      return () => {
+        clearInterval(checkGsi);
+        clearTimeout(timeout);
+      };
     }
+  }, [clientId, text, initGsi]);
 
-    function initGsi() {
-      if (!window.google?.accounts?.id || !buttonRef.current) return;
-
-      try {
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: (response: any) => {
-            if (response?.credential) {
-              setLoading(true);
-              onSuccess(response.credential);
-            } else if (onError) {
-              onError(new Error('No Google credential returned'));
-            }
-          }
-        });
-
-        window.google.accounts.id.renderButton(buttonRef.current, {
-          theme: 'outline',
-          size: 'large',
-          text,
-          shape: 'pill',
-          width: 320
-        });
-      } catch (e) {
-        if (onError) onError(e);
-      }
-    }
-  }, [clientId, text, onSuccess, onError]);
-
-  const handleManualClick = () => {
+  const handleFallbackClick = () => {
     if (disabled || loading) return;
 
     if (window.google?.accounts?.id && clientId) {
       window.google.accounts.id.prompt();
     } else {
-      // Notification if client ID is missing in frontend env
       toast.error('Google OAuth is currently unavailable. Please sign in with email and password.');
     }
   };
 
+  const buttonText = label || (text === 'signup_with' ? 'Sign up with Google' : 'Sign in with Google');
+
   return (
     <div className={`w-full flex flex-col items-center ${className}`}>
-      <div className="relative w-full h-11 sm:h-12">
-        <button
-          type="button"
-          onClick={handleManualClick}
-          disabled={disabled || loading}
-          className="w-full h-full flex items-center justify-center gap-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-full shadow-2xs text-sm font-medium leading-none text-slate-700 transition-all cursor-pointer active:scale-[0.99] disabled:opacity-50 font-sans"
-        >
+      <div className="relative w-full h-11 sm:h-12 overflow-hidden rounded-full">
+        {/* Custom Visual Layer: Google icon and text tightly grouped in center with semi-bold typography */}
+        <div className="w-full h-full flex items-center justify-center gap-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-full shadow-2xs text-sm font-semibold leading-none text-slate-800 transition-all font-sans select-none pointer-events-none">
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin text-saffron" />
           ) : (
@@ -117,15 +129,23 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
               />
             </svg>
           )}
-          <span className="translate-y-px">{label || 'Continue with Google'}</span>
-        </button>
+          <span className="translate-y-px">{buttonText}</span>
+        </div>
 
-        {/* Keep the official GIS interaction while preserving the custom visual style. */}
-        {clientId && (
+        {/* Active GIS Interactive Overlay: Scaled to guarantee 100% full button coverage with zero dead zones */}
+        {clientId ? (
           <div
             ref={buttonRef}
-            className="absolute inset-0 z-10 overflow-hidden rounded-full opacity-0"
-            aria-hidden="true"
+            className="absolute inset-0 z-20 overflow-hidden rounded-full cursor-pointer opacity-[0.001] flex items-center justify-center [&>div]:!w-full [&>div]:!h-full [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:!scale-[1.4] [&_iframe]:!origin-center"
+            title={buttonText}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={handleFallbackClick}
+            disabled={disabled || loading}
+            className="absolute inset-0 z-20 w-full h-full cursor-pointer opacity-0 rounded-full"
+            aria-label={buttonText}
           />
         )}
       </div>

@@ -72,15 +72,16 @@ export const AdminLogin: React.FC = () => {
   }
 
   return (
-    <div
-      className="admin-login-page min-h-screen md:h-screen md:max-h-screen w-full bg-[#0a0f26] text-white flex flex-col justify-between relative overflow-x-hidden md:overflow-hidden selection:bg-amber-500 selection:text-white"
-      style={{
-        backgroundImage: `url('/assets/auth/krishna-admin-backdrop.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'left top',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
+    <div className="admin-login-page min-h-screen md:h-screen md:max-h-screen w-full bg-gradient-to-b from-[#fff8f2] via-[#ffedd5] to-[#ffd8be] md:bg-none md:bg-[#0a0f26] text-white flex flex-col justify-between relative overflow-x-hidden md:overflow-hidden selection:bg-amber-500 selection:text-white">
+      {/* Desktop / Tablet Canvas Backdrop: Lord Krishna WebP artwork (hidden on mobile, active on md+) */}
+      <div
+        className="hidden md:block absolute inset-0 pointer-events-none bg-cover bg-no-repeat"
+        style={{
+          backgroundImage: `url('/assets/auth/krishna-admin-backdrop.webp')`,
+          backgroundPosition: 'left top'
+        }}
+      />
+
       <SEOHead title="Admin Portal Login - Aradhna Marg" canonicalPath={getAdminPath('/login')} noIndex={true} />
 
       {/* Top Floating Bar: Logo on left with black "ARADHNA" text */}
@@ -130,13 +131,13 @@ export const AdminLogin: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="w-full max-w-[420px] sm:max-w-[430px] bg-white rounded-[26px] p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-slate-100/90 text-slate-800 relative z-20 -translate-y-4 sm:-translate-y-6 md:-translate-y-8"
+          className="w-full max-w-[420px] sm:max-w-[430px] bg-white rounded-[26px] p-5 sm:p-6 shadow-[0_15px_40px_rgba(234,88,12,0.12)] md:shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-orange-100/90 md:border-slate-100/90 text-slate-800 relative z-20 -translate-y-4 sm:-translate-y-6 md:-translate-y-8"
         >
           {/* Card Top: Golden Om Medallion Flanked by Gold Rules */}
           <div className="flex items-center justify-center gap-2.5 mt-1 mb-1.5">
             <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-r from-transparent to-amber-400" />
             <div className="w-8 h-8 rounded-full bg-gradient-to-b from-[#fffbeb] to-[#fef3c7] border border-amber-300/80 flex items-center justify-center text-amber-700 text-sm font-bold leading-none shadow-xs">
-              <span className="inline-flex items-center justify-center leading-none translate-y-[3px]">ॐ</span>
+              <span className="inline-flex items-center justify-center leading-none translate-y-[1px]">ॐ</span>
             </div>
             <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-l from-transparent to-amber-400" />
           </div>

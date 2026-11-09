@@ -149,7 +149,7 @@ export const AuthPage: React.FC = () => {
 
   return (
     <div
-      className="auth-page min-h-screen lg:h-screen lg:max-h-screen w-full bg-[#0a0f26] lg:bg-[url('/assets/auth/krishna-canvas-backdrop.jpg')] bg-cover bg-left-bottom bg-local bg-no-repeat text-white flex flex-col justify-between relative overflow-x-hidden lg:overflow-hidden selection:bg-amber-500 selection:text-white"
+      className="auth-page min-h-screen lg:h-screen lg:max-h-screen w-full bg-[#0a0f26] lg:bg-[url('/assets/auth/krishna-canvas-backdrop.webp')] bg-cover bg-left-bottom bg-local bg-no-repeat text-white flex flex-col justify-between relative overflow-x-hidden lg:overflow-hidden selection:bg-amber-500 selection:text-white"
       style={{ backgroundPosition: 'left bottom', backgroundAttachment: 'local' }}
     >
       <SEOHead
@@ -239,7 +239,7 @@ export const AuthPage: React.FC = () => {
               <div className="flex items-center justify-center gap-2.5 mt-1 mb-1.5">
                 <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-r from-transparent to-amber-400" />
                 <div className="w-8 h-8 rounded-full bg-gradient-to-b from-[#fffbeb] to-[#fef3c7] border border-amber-300/80 flex items-center justify-center text-amber-700 text-sm font-bold leading-none shadow-xs">
-                  <span className="inline-flex items-center justify-center leading-none translate-y-[3px]">ॐ</span>
+                  <span className="inline-flex items-center justify-center leading-none translate-y-[1px]">ॐ</span>
                 </div>
                 <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-l from-transparent to-amber-400" />
               </div>

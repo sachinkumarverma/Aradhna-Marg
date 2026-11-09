@@ -67,7 +67,7 @@ export const ResetPasswordPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:max-h-screen w-full bg-[#0a0f26] lg:bg-[url('/assets/auth/krishna-canvas-backdrop.jpg')] bg-cover bg-left-center bg-no-repeat text-white flex flex-col justify-between relative overflow-x-hidden lg:overflow-hidden selection:bg-amber-500 selection:text-white">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen w-full bg-[#0a0f26] lg:bg-[url('/assets/auth/krishna-canvas-backdrop.webp')] bg-cover bg-left-center bg-no-repeat text-white flex flex-col justify-between relative overflow-x-hidden lg:overflow-hidden selection:bg-amber-500 selection:text-white">
       <SEOHead
         title={isHi ? 'पासवर्ड रीसेट करें - Aradhna Marg' : 'Reset Password - Aradhna Marg'}
         canonicalPath="/reset-password"
