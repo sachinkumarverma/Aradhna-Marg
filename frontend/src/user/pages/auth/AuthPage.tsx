@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, Mail, User, Eye, EyeOff, Heart, ArrowLeft, Loader2, CheckCircle2, BookOpen, Music } from 'lucide-react';
+import {
+  Lock,
+  Mail,
+  User,
+  Eye,
+  EyeOff,
+  Heart,
+  ArrowLeft,
+  ArrowRight,
+  Loader2,
+  CheckCircle2,
+  BookOpen,
+  Music
+} from 'lucide-react';
 import { useUserAuth } from '@/context/UserAuthContext';
 import { GoogleAuthButton } from '@components/auth/GoogleAuthButton';
 import { UserAuthApi } from '@api/userAuth';
@@ -158,12 +171,15 @@ export const AuthPage: React.FC = () => {
           </div>
           <div className="flex flex-col justify-center">
             <span
-              className="font-serif font-black text-base sm:text-lg tracking-[0.14em] text-white leading-none uppercase drop-shadow-sm font-playfair-bold"
-              style={{ fontFamily: "'Playfair Display', Lora, Georgia, serif" }}
+              className="font-black text-base sm:text-[19px] tracking-[0.1em] text-white leading-none uppercase font-sans drop-shadow-sm"
+              style={{
+                fontFamily: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                fontWeight: 900
+              }}
             >
-              ARADHNA <span className="text-amber-400">MARG</span>
+              ARADHNA <span className="text-amber-400 font-black">MARG</span>
             </span>
-            <div className="h-[1.5px] w-14 sm:w-16 bg-gradient-to-r from-amber-400 to-transparent mt-1" />
+            <div className="h-[2px] w-14 sm:w-16 bg-gradient-to-r from-amber-400 to-transparent mt-1 rounded-full" />
           </div>
         </Link>
       </div>
@@ -258,7 +274,7 @@ export const AuthPage: React.FC = () => {
                         : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    <span className="inline-block translate-y-[2px]">Sign In</span>
+                    <span className="inline-block -translate-y-px">Sign In</span>
                   </button>
                   <button
                     type="button"
@@ -269,7 +285,7 @@ export const AuthPage: React.FC = () => {
                         : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    <span className="inline-block translate-y-[2px]">Sign Up</span>
+                    <span className="inline-block -translate-y-px">Sign Up</span>
                   </button>
                 </div>
               )}
@@ -347,9 +363,10 @@ export const AuthPage: React.FC = () => {
                     disabled={submitting}
                     className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide shadow-md shadow-indigo-950/25 flex items-center justify-center transition-all !mt-4 sm:!mt-5 cursor-pointer disabled:opacity-50"
                   >
-                    <div className="flex items-center justify-center gap-2 translate-y-[2px]">
+                    <div className="flex items-center justify-center gap-2 -translate-y-px">
                       {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
-                      <span>Sign In →</span>
+                      <span>Sign In</span>
+                      <ArrowRight className="w-4 h-4 stroke-[2.5] shrink-0" />
                     </div>
                   </button>
 
@@ -468,9 +485,10 @@ export const AuthPage: React.FC = () => {
                     disabled={submitting}
                     className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide shadow-md shadow-indigo-950/25 flex items-center justify-center transition-all !mt-4 sm:!mt-5 cursor-pointer disabled:opacity-50"
                   >
-                    <div className="flex items-center justify-center gap-2 translate-y-[2px]">
+                    <div className="flex items-center justify-center gap-2 -translate-y-px">
                       {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
-                      <span>Sign Up →</span>
+                      <span>Sign Up</span>
+                      <ArrowRight className="w-4 h-4 stroke-[2.5] shrink-0" />
                     </div>
                   </button>
 
@@ -533,9 +551,10 @@ export const AuthPage: React.FC = () => {
                         disabled={submitting}
                         className="w-full h-10 rounded-full bg-gradient-to-r from-[#11174b] via-[#1a216a] to-[#2d1b69] hover:brightness-110 active:scale-[0.99] text-white text-sm font-semibold tracking-wide shadow-md shadow-indigo-950/25 flex items-center justify-center transition-all mt-2 cursor-pointer disabled:opacity-50"
                       >
-                        <div className="flex items-center justify-center gap-2 translate-y-[2px]">
+                        <div className="flex items-center justify-center gap-2 -translate-y-px">
                           {submitting && <Loader2 className="w-4 h-4 animate-spin text-amber-300" />}
-                          <span>Send Reset Link →</span>
+                          <span>Send Reset Link</span>
+                          <ArrowRight className="w-4 h-4 stroke-[2.5] shrink-0" />
                         </div>
                       </button>
 

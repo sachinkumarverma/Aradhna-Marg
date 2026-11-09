@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { type RouteObject, Link } from 'react-router-dom';
+import { type RouteObject, Link, Navigate } from 'react-router-dom';
 import { AdminLayout } from '@admin/layouts/AdminLayout';
 import { AdminDashboard } from '@admin/pages/dashboard';
 import { AdminBhajans } from '@admin/pages/bhajans';
@@ -169,7 +169,7 @@ const adminChildRoutes: RouteObject[] = [
   },
   {
     path: '*',
-    element: <AdminNotFoundPage />
+    element: <Navigate to={getAdminPath('/dashboard')} replace />
   }
 ];
 
@@ -195,6 +195,10 @@ export const standaloneAdminRoutes: RouteObject[] = [
     path: '/admin',
     element: <AdminLayout />,
     children: adminChildRoutes
+  },
+  {
+    path: '*',
+    element: <Navigate to={getAdminPath('/dashboard')} replace />
   }
 ];
 
@@ -210,5 +214,9 @@ export const prefixedAdminRoutes: RouteObject[] = [
     path: '/admin',
     element: <AdminLayout />,
     children: adminChildRoutes
+  },
+  {
+    path: '/admin/*',
+    element: <Navigate to={getAdminPath('/dashboard')} replace />
   }
 ];

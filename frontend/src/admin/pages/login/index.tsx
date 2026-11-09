@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { login, adminGoogleLogin, isAuthenticated, clearSession } from '@api/auth';
 import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
-import { Loader2, Lock, Eye, EyeOff, ArrowLeft, User } from 'lucide-react';
+import { Loader2, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, User } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { SEOHead } from '@components/seo';
 import { getAdminPath, getPublicHomeUrl, isAdminHost } from '@utils/host';
@@ -92,12 +92,15 @@ export const AdminLogin: React.FC = () => {
             </div>
             <div className="flex flex-col justify-center">
               <span
-                className="font-serif font-black text-base sm:text-lg tracking-[0.14em] text-black leading-none uppercase drop-shadow-sm font-playfair-bold"
-                style={{ fontFamily: "'Playfair Display', Lora, Georgia, serif" }}
+                className="font-black text-base sm:text-[19px] tracking-[0.1em] text-black leading-none uppercase font-sans"
+                style={{
+                  fontFamily: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                  fontWeight: 900
+                }}
               >
-                ARADHNA <span className="text-orange-600">MARG</span>
+                ARADHNA <span className="text-orange-600 font-black">MARG</span>
               </span>
-              <div className="h-[1.5px] w-14 sm:w-16 bg-gradient-to-r from-orange-600 to-transparent mt-1" />
+              <div className="h-[2px] w-14 sm:w-16 bg-gradient-to-r from-orange-600 to-transparent mt-1 rounded-full" />
             </div>
           </a>
         ) : (
@@ -107,12 +110,15 @@ export const AdminLogin: React.FC = () => {
             </div>
             <div className="flex flex-col justify-center">
               <span
-                className="font-serif font-black text-base sm:text-lg tracking-[0.14em] text-black leading-none uppercase drop-shadow-sm font-playfair-bold"
-                style={{ fontFamily: "'Playfair Display', Lora, Georgia, serif" }}
+                className="font-black text-base sm:text-[19px] tracking-[0.1em] text-black leading-none uppercase font-sans"
+                style={{
+                  fontFamily: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                  fontWeight: 900
+                }}
               >
-                ARADHNA <span className="text-orange-600">MARG</span>
+                ARADHNA <span className="text-orange-600 font-black">MARG</span>
               </span>
-              <div className="h-[1.5px] w-14 sm:w-16 bg-gradient-to-r from-orange-600 to-transparent mt-1" />
+              <div className="h-[2px] w-14 sm:w-16 bg-gradient-to-r from-orange-600 to-transparent mt-1 rounded-full" />
             </div>
           </Link>
         )}
@@ -222,9 +228,10 @@ export const AdminLogin: React.FC = () => {
               disabled={loading}
               className="w-full h-12 min-h-[48px] bg-gradient-to-r from-[#ff5722] via-[#ff3b00] to-[#e63500] hover:brightness-110 active:scale-[0.99] text-white font-bold text-sm sm:text-[15px] tracking-wide rounded-xl shadow-md shadow-[#ff3b00]/25 flex justify-center items-center cursor-pointer transition-all disabled:opacity-50 disabled:pointer-events-none mt-2"
             >
-              <div className="flex items-center justify-center gap-2 translate-y-[2px]">
+              <div className="flex items-center justify-center gap-2 -translate-y-px">
                 {loading && <Loader2 className="w-4 h-4 animate-spin shrink-0" />}
-                <span>Secure Login →</span>
+                <span>Secure Login</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5] shrink-0" />
               </div>
             </button>
           </form>
