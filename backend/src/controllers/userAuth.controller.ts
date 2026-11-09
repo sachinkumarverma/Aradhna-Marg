@@ -5,12 +5,12 @@ import { AuthenticatedUserRequest } from '@middlewares/userAuth';
 import { config } from '@/config';
 
 export class UserAuthController {
-  private getLang(req: AuthenticatedUserRequest): 'hi' | 'en' {
+  private getLang = (req: AuthenticatedUserRequest): 'hi' | 'en' => {
     const h = req.headers['accept-language'];
     return h && h.toLowerCase().includes('hi') ? 'hi' : 'en';
-  }
+  };
 
-  async signup(req: AuthenticatedUserRequest, res: Response) {
+  signup = async (req: AuthenticatedUserRequest, res: Response) => {
     const lang = this.getLang(req);
     const { name, email, password } = req.body;
     const result = await userService.signup({ name, email, password }, lang);
@@ -19,9 +19,9 @@ export class UserAuthController {
       message: lang === 'hi' ? 'खाता सफलतापूर्वक बनाया गया।' : 'Account created successfully.',
       data: result
     });
-  }
+  };
 
-  async login(req: AuthenticatedUserRequest, res: Response) {
+  login = async (req: AuthenticatedUserRequest, res: Response) => {
     const lang = this.getLang(req);
     const { email, password } = req.body;
     const result = await userService.login({ email, password }, lang);
@@ -30,9 +30,9 @@ export class UserAuthController {
       message: lang === 'hi' ? 'सफलतापूर्वक लॉग इन किया गया।' : 'Logged in successfully.',
       data: result
     });
-  }
+  };
 
-  async googleAuth(req: AuthenticatedUserRequest, res: Response) {
+  googleAuth = async (req: AuthenticatedUserRequest, res: Response) => {
     const lang = this.getLang(req);
     const { credential, mode = 'login' } = req.body;
     const result = await userService.googleAuth(credential, mode, lang);
@@ -48,7 +48,7 @@ export class UserAuthController {
             : 'Signed in with Google successfully.',
       data: result
     });
-  }
+  };
 
   /**
    * POST /api/v1/auth/google/callback
@@ -77,21 +77,21 @@ export class UserAuthController {
     }
   };
 
-  async forgotPassword(req: AuthenticatedUserRequest, res: Response) {
+  forgotPassword = async (req: AuthenticatedUserRequest, res: Response) => {
     const lang = this.getLang(req);
     const { email } = req.body;
     const result = await userService.forgotPassword(email, lang);
     return res.status(200).json(result);
-  }
+  };
 
-  async resetPassword(req: AuthenticatedUserRequest, res: Response) {
+  resetPassword = async (req: AuthenticatedUserRequest, res: Response) => {
     const lang = this.getLang(req);
     const { token, password } = req.body;
     const result = await userService.resetPassword(token, password, lang);
     return res.status(200).json(result);
-  }
+  };
 
-  async getMe(req: AuthenticatedUserRequest, res: Response) {
+  getMe = async (req: AuthenticatedUserRequest, res: Response) => {
     const lang = this.getLang(req);
     if (!req.user) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
@@ -101,9 +101,9 @@ export class UserAuthController {
       success: true,
       data: profile
     });
-  }
+  };
 
-  async getWishlist(req: AuthenticatedUserRequest, res: Response) {
+  getWishlist = async (req: AuthenticatedUserRequest, res: Response) => {
     if (!req.user) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
@@ -112,9 +112,9 @@ export class UserAuthController {
       success: true,
       data: items
     });
-  }
+  };
 
-  async toggleWishlist(req: AuthenticatedUserRequest, res: Response) {
+  toggleWishlist = async (req: AuthenticatedUserRequest, res: Response) => {
     const lang = this.getLang(req);
     if (!req.user) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
@@ -145,9 +145,9 @@ export class UserAuthController {
         data: added
       });
     }
-  }
+  };
 
-  async syncWishlist(req: AuthenticatedUserRequest, res: Response) {
+  syncWishlist = async (req: AuthenticatedUserRequest, res: Response) => {
     if (!req.user) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
@@ -160,7 +160,7 @@ export class UserAuthController {
       success: true,
       data: updated
     });
-  }
+  };
 }
 
 export const userAuthController = new UserAuthController();

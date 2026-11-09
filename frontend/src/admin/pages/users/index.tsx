@@ -14,7 +14,7 @@ import {
   XCircle,
   Power
 } from 'lucide-react';
-import { UsersApi, type AdminUserItem } from '@admin/features/users/UsersApi';
+import { UsersApi, type AdminUserItem, type GetUsersResponse } from '@admin/features/users/UsersApi';
 import { SearchInput } from '@components/ui/SearchInput';
 import { Select } from '@components/ui/Select';
 import { Pagination } from '@components/ui/Pagination';
@@ -61,7 +61,17 @@ export function AdminUsers() {
   // Status Mutation (Activate / Deactivate)
   const toggleMutation = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => UsersApi.toggleStatus(id, isActive),
-    onSuccess: (_, variables) => {
+    onSuccess: (response, variables) => {
+      queryClient.setQueriesData<GetUsersResponse>({ queryKey: ['admin-users'] }, (current) => {
+        if (!current) return current;
+
+        return {
+          ...current,
+          data: current.data.map((user) =>
+            user.id === variables.id ? { ...user, ...response.data, is_active: variables.isActive } : user
+          )
+        };
+      });
       toast.success(
         variables.isActive ? 'User account activated successfully' : 'User account deactivated successfully'
       );
@@ -353,33 +363,30 @@ export function AdminUsers() {
         <DataTable
           data={data?.data || []}
           columns={columns}
-          isLoading={isLoading || isFetching}
+          isLoading={isLoading}
           skeletonRows={limit}
           renderActions={(user) => (
             <AdminButton
               variant="outline"
               size="sm"
               onClick={() => handleActionClick(user)}
-              disabled={toggleMutation.isPending}
+              disabled={toggleMutation.isPending && toggleMutation.variables?.id === user.id}
               title={user.is_active ? 'Deactivate account' : 'Activate account'}
+              leftIcon={
+                user.is_active ? (
+                  <Power className="h-3.5 w-3.5 shrink-0" />
+                ) : (
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                )
+              }
               className={cn(
-                'h-8 px-2.5 text-xs font-semibold flex items-center gap-1.5 transition-colors',
+                'h-8 min-w-[96px] px-3 text-xs font-semibold transition-colors',
                 user.is_active
                   ? 'text-rose-700 hover:text-white hover:bg-rose-600 border-rose-200 hover:border-rose-600'
                   : 'text-emerald-700 hover:text-white hover:bg-emerald-600 border-emerald-200 hover:border-emerald-600'
               )}
             >
-              {user.is_active ? (
-                <>
-                  <Power className="w-3.5 h-3.5" />
-                  <span>Deactivate</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Activate</span>
-                </>
-              )}
+              {user.is_active ? 'Deactivate' : 'Activate'}
             </AdminButton>
           )}
           emptyIcon={UsersIcon}

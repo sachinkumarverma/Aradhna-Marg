@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -50,18 +50,20 @@ export const AuthPage: React.FC = () => {
   }, [isAuthenticated, navigate, redirectUrl]);
 
   // Handle Google OAuth redirect callback params
+  const handledTokenRef = useRef(false);
   useEffect(() => {
     const tokenParam = searchParams.get('token');
     const errorParam = searchParams.get('error');
 
     if (errorParam) {
-      toast.error(decodeURIComponent(errorParam));
+      toast.error(decodeURIComponent(errorParam), { id: 'google-auth-error' });
       return;
     }
 
-    if (tokenParam) {
+    if (tokenParam && !handledTokenRef.current) {
+      handledTokenRef.current = true;
       setDirectToken(tokenParam).then(() => {
-        toast.success('Signed in with Google successfully! 🙏');
+        toast.success('Signed in with Google successfully! 🙏', { id: 'google-auth-success' });
         navigate(redirectUrl, { replace: true });
       });
     }

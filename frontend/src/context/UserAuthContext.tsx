@@ -147,18 +147,34 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const setDirectToken = async (newToken: string) => {
-    UserAuthApi.setSession(newToken, { id: '', name: '', email: '', is_verified: true });
+    let initialUser: UserProfile = { id: '', name: '', email: '', is_verified: true };
+    try {
+      const payload = JSON.parse(atob(newToken.split('.')[1]));
+      initialUser = {
+        id: payload.id || '',
+        name: payload.name || 'Devotee',
+        email: payload.email || '',
+        is_verified: true
+      };
+    } catch {
+      // ignore
+    }
+
+    UserAuthApi.setSession(newToken, initialUser);
+    setUser(initialUser);
     setToken(newToken);
     closeAuthModal();
+
     try {
       const res = await UserAuthApi.getMe();
       if (res?.data) {
+        UserAuthApi.setSession(newToken, res.data);
         setUser(res.data);
         await syncLocalFavoritesToCloud();
         await fetchCloudFavorites();
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn('[UserAuth] getMe failed in setDirectToken:', err);
     }
   };
 
