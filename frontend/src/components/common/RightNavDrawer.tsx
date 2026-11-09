@@ -404,9 +404,12 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                                 <Link
                                   to={item.viewAllPath}
                                   onClick={onClose}
-                                  className="mt-2.5 block text-center py-2 text-xs font-bold text-saffron hover:underline font-hindi-heading"
+                                  className="mt-2.5 flex items-center justify-center gap-1.5 py-2 text-xs font-bold text-saffron hover:text-orange-600 transition-colors font-hindi-heading group/viewall"
                                 >
-                                  {item.viewAllText} &rarr;
+                                  <span>{item.viewAllText}</span>
+                                  <span className="w-5 h-5 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center group-hover/viewall:bg-saffron group-hover/viewall:text-white transition-all shadow-xs shrink-0">
+                                    <ChevronRight className="w-3 h-3" />
+                                  </span>
                                 </Link>
                               )}
                             </motion.div>

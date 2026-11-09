@@ -20,6 +20,7 @@ const queryClient = new QueryClient({
 
 function App() {
   const [isMobile, setIsMobile] = React.useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  const [loadTelemetry, setLoadTelemetry] = React.useState(false);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -27,12 +28,29 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)) return;
+
+    const load = () => setLoadTelemetry(true);
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(load, { timeout: 3000 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = setTimeout(load, 2500);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   return (
     <SEOProvider>
       <QueryClientProvider client={queryClient}>
         <LanguageProvider>
           <UserAuthProvider>
-            <AppRouter />
+            <React.Suspense
+              fallback={<div className="min-h-screen flex items-center justify-center bg-[#F9F7F3]" aria-busy="true" />}
+            >
+              <AppRouter />
+            </React.Suspense>
             <Toaster
               position={isMobile ? 'bottom-center' : 'top-right'}
               containerStyle={isMobile ? { bottom: 24, zIndex: 99999 } : { zIndex: 99999 }}
@@ -45,8 +63,8 @@ function App() {
                 }
               }}
             />
-            <Analytics />
-            <SpeedInsights />
+            {loadTelemetry && <Analytics />}
+            {loadTelemetry && <SpeedInsights />}
           </UserAuthProvider>
         </LanguageProvider>
       </QueryClientProvider>

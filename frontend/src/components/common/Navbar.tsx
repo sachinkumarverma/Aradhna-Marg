@@ -87,11 +87,14 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
           <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between gap-3">
               {/* Left: Brand Logo */}
-              <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
+              <Link to="/" aria-label="Aradhna Marg home" className="flex items-center gap-2 sm:gap-3 group shrink-0">
                 <div className="w-[36px] h-[36px] sm:w-[40px] sm:h-[40px] aspect-square rounded-xl overflow-hidden bg-[#041a4b] border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs shrink-0">
                   <img
-                    src="/logo.png"
+                    src="/logo-96.webp"
                     alt="Aradhna Marg Logo"
+                    width="96"
+                    height="96"
+                    decoding="async"
                     className="w-full h-full object-cover rounded-md aspect-square"
                   />
                 </div>
@@ -103,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                     ARADHNA <span className="text-saffron">MARG</span>
                   </span>
                   <span
-                    className="text-[6.5px] sm:text-[8.5px] font-extrabold text-slate-500 tracking-[0.28em] sm:tracking-[0.4em] uppercase mt-0.5 sm:mt-0.5 ml-0.5"
+                    className="text-[6.5px] sm:text-[8.5px] font-extrabold text-slate-700 tracking-[0.28em] sm:tracking-[0.4em] uppercase mt-0.5 sm:mt-0.5 ml-0.5"
                     style={{ fontFamily: '"Rekord Antiqua", "Rekord Antiqua Semi Bold", "RekordAntiqua", Lora, serif' }}
                   >
                     SANATAN DHARMA
@@ -287,6 +290,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                   onClick={() => setSearchOpen(true)}
                   className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-50 hover:bg-orange-50 hover:text-saffron text-slate-700 flex items-center justify-center transition-colors border border-gray-200/80 shadow-2xs cursor-pointer shrink-0"
                   title={`${t('common.search')} (Ctrl+K)`}
+                  aria-label={t('common.search')}
                 >
                   <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>

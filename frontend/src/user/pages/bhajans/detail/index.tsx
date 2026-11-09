@@ -12,6 +12,7 @@ import {
   Download,
   Loader2,
   ChevronDown,
+  ChevronRight,
   Languages
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -794,8 +795,9 @@ export const BhajanDetail: React.FC = () => {
                       </h4>
                     </div>
                   </div>
-                  <span className="inline-flex items-center justify-center w-full py-2.5 px-4 bg-saffron text-white rounded-lg font-bold text-xs group-hover:brightness-90 transition-colors shadow-xs">
-                    View Deity Page &rarr;
+                  <span className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-4 bg-saffron text-white rounded-lg font-bold text-xs group-hover:brightness-95 transition-all shadow-xs">
+                    <span>View Deity Page</span>
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </span>
                 </Link>
               )}

@@ -123,14 +123,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({
               )}
             </div>
 
-            <IconText
-              icon={<ChevronRight className="w-3.5 h-3.5" />}
-              iconPosition="right"
-              gap="gap-1"
-              align="center"
-              className="text-xs font-bold text-saffron group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all shrink-0 font-hindi-heading"
-              text={<span>{t('common.watch')}</span>}
-            />
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0 font-hindi-heading">
+              <span>{t('common.watch')}</span>
+              <span className="w-6 h-6 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
           </div>
         </div>
       </Card>

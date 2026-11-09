@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Sparkles, ArrowRight } from 'lucide-react';
+import { Search, Sparkles, ArrowRight, ChevronRight } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
@@ -132,14 +132,12 @@ export const DeitiesList: React.FC = () => {
 
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/20 font-hindi-heading text-xs text-amber-200/90 font-medium">
                         <span>{t('content.bhajansAndLiterature')}</span>
-                        <IconText
-                          icon={<ArrowRight className="w-3.5 h-3.5 ml-0.5 shrink-0" />}
-                          iconPosition="right"
-                          gap="gap-1"
-                          align="center"
-                          className="text-saffron font-bold group-hover:translate-x-1 transition-transform"
-                          text={t('common.exploreDeity')}
-                        />
+                        <div className="inline-flex items-center gap-1.5 text-saffron font-bold transition-colors shrink-0">
+                          <span>{t('common.exploreDeity')}</span>
+                          <span className="w-5 h-5 rounded-full bg-saffron/20 text-saffron inline-flex items-center justify-center group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+                            <ChevronRight className="w-3 h-3" />
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </Link>

@@ -51,20 +51,21 @@
       })();
     </script>
 
-    <!-- Google AdSense Auto Ads -->
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8463841061449912"
-      crossorigin="anonymous"
-    ></script>
-
-    <!-- Google Fonts Preconnect & Playfair Display -->
+    <!-- Google Fonts: one non-blocking stylesheet instead of multiple CSS @imports -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
-
-    <!-- Google Identity Services for Instant Google Sign-In -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700;800&family=Cinzel:wght@500;600;700;800&family=Hind:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Mukta:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Rozha+One&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap"
+      onLoad="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700;800&family=Cinzel:wght@500;600;700;800&family=Hind:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Mukta:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Rozha+One&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap"
+      />
+    </noscript>
 
     <!-- Theme, PWA & Icons -->
     <meta name="theme-color" content="#ff3b00" />

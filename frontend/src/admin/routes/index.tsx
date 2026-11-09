@@ -1,13 +1,13 @@
 import { lazy } from 'react';
 import { type RouteObject, Link, Navigate } from 'react-router-dom';
 import { AdminLayout } from '@admin/layouts/AdminLayout';
-import { AdminDashboard } from '@admin/pages/dashboard';
-import { AdminBhajans } from '@admin/pages/bhajans';
-import { AdminBhajanForm } from '@admin/pages/bhajans/form';
-import { AdminLogin } from '@admin/pages/login';
 import { getAdminPath } from '@utils/host';
 
 // Lazy loaded Admin pages
+const AdminDashboard = lazy(() => import('@admin/pages/dashboard').then((m) => ({ default: m.AdminDashboard })));
+const AdminBhajans = lazy(() => import('@admin/pages/bhajans').then((m) => ({ default: m.AdminBhajans })));
+const AdminBhajanForm = lazy(() => import('@admin/pages/bhajans/form').then((m) => ({ default: m.AdminBhajanForm })));
+const AdminLogin = lazy(() => import('@admin/pages/login').then((m) => ({ default: m.AdminLogin })));
 const AdminYoutube = lazy(() => import('@admin/pages/youtube').then((m) => ({ default: m.AdminYoutube })));
 const AdminAIProcessing = lazy(() => import('@admin/pages/ai').then((m) => ({ default: m.AdminAIProcessing })));
 const AdminAIAgents = lazy(() => import('@admin/pages/ai-agents').then((m) => ({ default: m.AdminAIAgents })));

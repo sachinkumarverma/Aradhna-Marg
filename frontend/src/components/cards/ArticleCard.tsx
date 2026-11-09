@@ -4,6 +4,7 @@ import { ChevronRight, Heart, BookOpen } from 'lucide-react';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useTranslation } from '@i18n/LanguageContext';
 import { useFavorites } from '@hooks/useFavorites';
+import { getOptimizedImageUrl } from '@utils/imageUrl';
 
 interface ArticleCardProps {
   id?: string | number;
@@ -80,11 +81,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         {featuredImageUrl && (
           <div className="w-28 h-20 aspect-video rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-black/5">
             <img
-              src={featuredImageUrl}
+              src={getOptimizedImageUrl(featuredImageUrl, 320)}
               alt={title}
               width="112"
               height="80"
               loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>
@@ -98,9 +100,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-hindi-body">{cleanExcerpt}</p>
             )}
           </div>
-          <span className="text-[11px] font-bold text-saffron flex items-center gap-1 mt-2">
-            {t('common.readMore')} &rarr;
-          </span>
+          <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0 mt-2">
+            <span>{t('common.readMore')}</span>
+            <span className="w-5 h-5 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+              <ChevronRight className="w-3 h-3" />
+            </span>
+          </div>
         </div>
       </Link>
     );
@@ -115,11 +120,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         <Link to={articleUrl} className="block w-full h-full cursor-pointer">
           {featuredImageUrl ? (
             <img
-              src={featuredImageUrl}
+              src={getOptimizedImageUrl(featuredImageUrl, 640)}
               alt={title}
               width="480"
               height="270"
               loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
@@ -179,9 +185,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           {/* Footer */}
           <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-3">
             <SocialShareButtons title={title} excerpt={cleanExcerpt} url={articleUrl} />
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-orange-600 transition-colors shrink-0">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0">
               <span>{t('common.readMore')}</span>
-              <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover:bg-saffron group-hover:text-white transition-colors shadow-xs">
+              <span className="w-6 h-6 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
                 <ChevronRight className="w-3.5 h-3.5" />
               </span>
             </div>

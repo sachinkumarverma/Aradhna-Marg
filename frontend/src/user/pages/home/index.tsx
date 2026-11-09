@@ -42,6 +42,7 @@ import {
 import { SEOHead, buildWebSiteSchema, buildOrganizationSchema } from '@components/seo';
 
 import { getPrerenderedData } from '@utils/prerenderData';
+import { getOptimizedImageUrl } from '@utils/imageUrl';
 
 export const Home: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
@@ -81,15 +82,15 @@ export const Home: React.FC = () => {
   };
 
   const heroImages = [
-    '/Deities/Ganesh.png',
-    '/Deities/Krishna.png',
-    '/Deities/MataDurga.png',
-    '/Deities/Radharamanji.png',
-    '/Deities/ShivJi.png',
-    '/Deities/Shriram.png'
+    '/Deities/Ganesh.webp',
+    '/Deities/Krishna.webp',
+    '/Deities/MataDurga.webp',
+    '/Deities/Radharamanji.webp',
+    '/Deities/ShivJi.webp',
+    '/Deities/Shriram.webp'
   ];
   const [bgIndex, setBgIndex] = useState(0);
-  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => new Set([0, 1]));
+  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => new Set([1]));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -118,7 +119,18 @@ export const Home: React.FC = () => {
       <SEOHead canonicalPath="/" schema={homeSchemas} />
       {/* 1. HERO SECTION */}
       <section className="relative w-full overflow-hidden bg-black isolate min-h-[580px] sm:min-h-[640px] md:min-h-[700px] lg:min-h-[760px] py-16 sm:py-20 md:py-24 flex items-center">
-        {heroImages.map((img, i) => {
+        <img
+          src={heroImages[0]}
+          alt=""
+          aria-hidden="true"
+          width="1400"
+          height="900"
+          fetchPriority="high"
+          decoding="async"
+          className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-1000 ${bgIndex === 0 ? 'opacity-100' : 'opacity-0'}`}
+        />
+        {heroImages.slice(1).map((img, offset) => {
+          const i = offset + 1;
           const shouldLoad = loadedIndices.has(i);
           return (
             <div
@@ -197,10 +209,10 @@ export const Home: React.FC = () => {
                   <feature.icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-base text-darkBrown font-hindi-heading leading-tight">
+                  <p className="font-semibold text-base text-darkBrown font-hindi-heading leading-tight">
                     {feature.title}
-                  </h3>
-                  <p className="text-xs text-darkBrown/60 font-hindi-body">{feature.desc}</p>
+                  </p>
+                  <p className="text-xs text-darkBrown/80 font-hindi-body">{feature.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -248,7 +260,7 @@ export const Home: React.FC = () => {
                   const videoUrl = video.youtube_video_id
                     ? `/videos/${video.youtube_video_id}`
                     : `/bhajans/${video.slug || video.id}`;
-                  const thumb = video.thumbnail || video.thumbnail_url || '/Deities/Krishna.png';
+                  const thumb = video.thumbnail || video.thumbnail_url || '/Deities/Krishna.webp';
                   const title = video.title || video.hindi_title;
                   const subtitle = video.god_name || video.category_name || '';
                   const snippet = video.description || video.short_description || title;
@@ -285,6 +297,10 @@ export const Home: React.FC = () => {
                             <img
                               src={thumb}
                               alt={title}
+                              width="640"
+                              height="360"
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/35 transition-colors flex items-center justify-center">
@@ -345,8 +361,11 @@ export const Home: React.FC = () => {
 
                               <div className="flex items-center gap-3 shrink-0 ml-auto">
                                 <SocialShareButtons title={title} excerpt={snippet} url={videoUrl} />
-                                <div className="inline-flex items-center gap-1 text-xs font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link font-hindi-heading translate-y-[1.5px]">
-                                  <span>{t('common.watch')} &rarr;</span>
+                                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0 font-hindi-heading">
+                                  <span>{t('common.watch')}</span>
+                                  <span className="w-6 h-6 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+                                    <ChevronRight className="w-3.5 h-3.5" />
+                                  </span>
                                 </div>
                               </div>
                             </div>
@@ -367,8 +386,11 @@ export const Home: React.FC = () => {
                           {/* Social Icons and Watch Full Link */}
                           <div className="flex items-center gap-2 shrink-0 ml-auto">
                             <SocialShareButtons title={title} excerpt={snippet} url={videoUrl} />
-                            <div className="inline-flex items-center gap-1 text-[11px] font-bold text-saffron hover:text-orange-600 transition-colors shrink-0 group/link font-hindi-heading translate-y-[1.5px]">
-                              <span>{t('common.watch')} &rarr;</span>
+                            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0 font-hindi-heading">
+                              <span>{t('common.watch')}</span>
+                              <span className="w-5 h-5 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+                                <ChevronRight className="w-3 h-3" />
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -426,8 +448,15 @@ export const Home: React.FC = () => {
                         {/* Thumbnail Image (16:9 aspect ratio) */}
                         <div className="w-20 aspect-video rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-black/5 shadow-2xs">
                           <img
-                            src={bhajan.thumbnail_url || bhajan.image_url || '/Deities/Krishna.png'}
+                            src={getOptimizedImageUrl(
+                              bhajan.thumbnail_url || bhajan.image_url || '/Deities/Krishna.webp',
+                              240
+                            )}
                             alt={hindiTitle}
+                            width="160"
+                            height="90"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
@@ -653,8 +682,12 @@ export const Home: React.FC = () => {
                         {fest.banner_image ? (
                           <div className="aspect-video w-20 rounded overflow-hidden shrink-0 bg-gray-100">
                             <img
-                              src={fest.banner_image}
+                              src={getOptimizedImageUrl(fest.banner_image, 240)}
                               alt={festName}
+                              width="160"
+                              height="90"
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                             />
                           </div>
@@ -675,10 +708,12 @@ export const Home: React.FC = () => {
                             )}
                           </div>
                           <div className="flex items-center justify-end mt-1.5">
-                            <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:underline font-hindi-heading">
-                              {t('common.read')}{' '}
-                              <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
-                            </span>
+                            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors font-hindi-heading">
+                              <span>{t('common.read')}</span>
+                              <span className="w-5 h-5 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+                                <ChevronRight className="w-3 h-3" />
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </Link>

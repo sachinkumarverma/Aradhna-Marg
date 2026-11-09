@@ -68,6 +68,7 @@ export class MediaService {
     // Upload main file to Supabase
     const { error: uploadError } = await supabase.storage.from(this.bucketName).upload(filePath, processedBuffer, {
       contentType: finalMimeType,
+      cacheControl: '31536000',
       upsert: false
     });
 
@@ -93,6 +94,7 @@ export class MediaService {
         .from(this.bucketName)
         .upload(thumbFilename, thumbBuffer, {
           contentType: 'image/webp',
+          cacheControl: '31536000',
           upsert: false
         });
 

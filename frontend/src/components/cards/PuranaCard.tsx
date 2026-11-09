@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Eye, Heart } from 'lucide-react';
+import { BookOpen, Eye, Heart, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@i18n/LanguageContext';
 import { useFavorites } from '@hooks/useFavorites';
 
@@ -70,6 +70,7 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
                 src={coverImage}
                 alt={title}
                 loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             ) : (
@@ -123,12 +124,12 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
           {/* Footer */}
           <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between text-[11px] text-slate-500 font-medium mt-auto">
             <IconText icon={<Eye className="w-3.5 h-3.5 text-saffron" />} gap="gap-1" text={viewCount || 0} />
-            <IconText
-              icon={<BookOpen className="w-3.5 h-3.5" />}
-              gap="gap-1"
-              className="text-xs font-bold text-saffron group-hover:translate-x-0.5 transition-transform"
-              text={t('common.readPdf')}
-            />
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0 font-hindi-heading">
+              <span>{t('common.readPdf')}</span>
+              <span className="w-6 h-6 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+                <ChevronRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
           </div>
         </Link>
       </div>

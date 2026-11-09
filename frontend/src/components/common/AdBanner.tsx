@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { getConfiguredPublisherId, loadAdSenseScript } from '@utils/adsense';
 
 interface AdBannerProps {
   htmlCode?: string;
@@ -11,14 +12,27 @@ export const AdBanner: React.FC<AdBannerProps> = ({ htmlCode, className = '' }) 
   useEffect(() => {
     if (!containerRef.current || !htmlCode) return;
 
-    // Reset container
-    containerRef.current.innerHTML = '';
+    let active = true;
+    const renderAd = async () => {
+      const configuredPublisherId = getConfiguredPublisherId();
+      const embeddedPublisherId = htmlCode.match(/client=(ca-pub-\d{10,20})/)?.[1];
+      if (htmlCode.includes('adsbygoogle') && (configuredPublisherId || embeddedPublisherId)) {
+        await loadAdSenseScript(configuredPublisherId || embeddedPublisherId || '');
+      }
 
-    // Create a range to execute any embedded <script> tags properly
-    const range = document.createRange();
-    range.selectNode(containerRef.current);
-    const documentFragment = range.createContextualFragment(htmlCode);
-    containerRef.current.appendChild(documentFragment);
+      if (!active || !containerRef.current) return;
+
+      containerRef.current.innerHTML = '';
+      const range = document.createRange();
+      range.selectNode(containerRef.current);
+      const documentFragment = range.createContextualFragment(htmlCode);
+      containerRef.current.appendChild(documentFragment);
+    };
+
+    void renderAd();
+    return () => {
+      active = false;
+    };
   }, [htmlCode]);
 
   if (!htmlCode || !htmlCode.trim()) {

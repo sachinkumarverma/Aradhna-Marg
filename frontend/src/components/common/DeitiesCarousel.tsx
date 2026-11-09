@@ -2,14 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DeityCard } from '@components/cards/DeityCard';
+import { getOptimizedImageUrl } from '@utils/imageUrl';
 
 const defaultDeities = [
-  { id: 1, name: 'Ganesh', slug: 'ganesh', image: '/Deities/Ganesh.png' },
-  { id: 2, name: 'Krishna', slug: 'krishna', image: '/Deities/Krishna.png' },
-  { id: 3, name: 'Mata Durga', slug: 'mata-durga', image: '/Deities/MataDurga.png' },
-  { id: 4, name: 'Radha Raman Ji', slug: 'radha-raman-ji', image: '/Deities/Radharamanji.png' },
-  { id: 5, name: 'Shiv Ji', slug: 'shiv-ji', image: '/Deities/ShivJi.png' },
-  { id: 6, name: 'Shri Ram', slug: 'shri-ram', image: '/Deities/Shriram.png' }
+  { id: 1, name: 'Ganesh', slug: 'ganesh', image: '/Deities/Ganesh.webp' },
+  { id: 2, name: 'Krishna', slug: 'krishna', image: '/Deities/Krishna.webp' },
+  { id: 3, name: 'Mata Durga', slug: 'mata-durga', image: '/Deities/MataDurga.webp' },
+  { id: 4, name: 'Radha Raman Ji', slug: 'radha-raman-ji', image: '/Deities/Radharamanji.webp' },
+  { id: 5, name: 'Shiv Ji', slug: 'shiv-ji', image: '/Deities/ShivJi.webp' },
+  { id: 6, name: 'Shri Ram', slug: 'shri-ram', image: '/Deities/Shriram.webp' }
 ];
 
 interface DeitiesCarouselProps {
@@ -86,13 +87,13 @@ export const DeitiesCarousel: React.FC<DeitiesCarouselProps> = ({ deities: apiDe
   const getImageSrc = (deity: any) => {
     if (deity.image && deity.image.trim()) return deity.image;
     const nameLower = (deity.name || '').toLowerCase();
-    if (nameLower.includes('ganesh')) return '/Deities/Ganesh.png';
-    if (nameLower.includes('krishna')) return '/Deities/Krishna.png';
-    if (nameLower.includes('durga')) return '/Deities/MataDurga.png';
-    if (nameLower.includes('radha')) return '/Deities/Radharamanji.png';
-    if (nameLower.includes('shiv')) return '/Deities/ShivJi.png';
-    if (nameLower.includes('ram')) return '/Deities/Shriram.png';
-    return '/Deities/Krishna.png';
+    if (nameLower.includes('ganesh')) return '/Deities/Ganesh.webp';
+    if (nameLower.includes('krishna')) return '/Deities/Krishna.webp';
+    if (nameLower.includes('durga')) return '/Deities/MataDurga.webp';
+    if (nameLower.includes('radha')) return '/Deities/Radharamanji.webp';
+    if (nameLower.includes('shiv')) return '/Deities/ShivJi.webp';
+    if (nameLower.includes('ram')) return '/Deities/Shriram.webp';
+    return '/Deities/Krishna.webp';
   };
 
   return (
@@ -136,7 +137,12 @@ export const DeitiesCarousel: React.FC<DeitiesCarouselProps> = ({ deities: apiDe
         >
           {displayDeities.map((deity: any) => (
             <div key={deity.id || deity.name} className="px-2.5 shrink-0" style={{ width: `${100 / itemsToShow}%` }}>
-              <DeityCard id={deity.id} slug={deity.slug} name={deity.name} image={deity.image} />
+              <DeityCard
+                id={deity.id}
+                slug={deity.slug}
+                name={deity.name}
+                image={getOptimizedImageUrl(getImageSrc(deity), 640)}
+              />
             </div>
           ))}
         </div>

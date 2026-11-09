@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, ArrowRight, Sparkles, ExternalLink } from 'lucide-react';
+import { Mail, ArrowRight, ChevronRight, Sparkles, ExternalLink } from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { useTranslation } from '@i18n/LanguageContext';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
@@ -255,7 +255,10 @@ export const PrivacyPolicyPage: React.FC = () => {
                         : 'Opt out of Google personalized advertising directly across your Google accounts and devices.'}
                     </p>
                   </div>
-                  <span className="text-xs text-saffron font-bold mt-3 block">adssettings.google.com →</span>
+                  <span className="text-xs text-saffron font-bold mt-3 inline-flex items-center gap-1 group-hover:underline">
+                    <span>adssettings.google.com</span>
+                    <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
                 </a>
 
                 <a
@@ -275,7 +278,10 @@ export const PrivacyPolicyPage: React.FC = () => {
                         : 'Digital Advertising Alliance consumer choice tool to opt out of third-party interest-based ads.'}
                     </p>
                   </div>
-                  <span className="text-xs text-blue-600 font-bold mt-3 block">aboutads.info/choices →</span>
+                  <span className="text-xs text-blue-600 font-bold mt-3 inline-flex items-center gap-1 group-hover:underline">
+                    <span>aboutads.info/choices</span>
+                    <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
                 </a>
 
                 <a
@@ -295,7 +301,10 @@ export const PrivacyPolicyPage: React.FC = () => {
                         : 'Network Advertising Initiative opt-out page for participating advertising network vendors.'}
                     </p>
                   </div>
-                  <span className="text-xs text-purple-600 font-bold mt-3 block">optout.networkadvertising.org →</span>
+                  <span className="text-xs text-purple-600 font-bold mt-3 inline-flex items-center gap-1 group-hover:underline">
+                    <span>optout.networkadvertising.org</span>
+                    <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
                 </a>
 
                 <a
@@ -315,7 +324,10 @@ export const PrivacyPolicyPage: React.FC = () => {
                         : 'Dedicated behavioral advertising guidance and opt-out choices for visitors in the EU and UK.'}
                     </p>
                   </div>
-                  <span className="text-xs text-emerald-600 font-bold mt-3 block">youronlinechoices.com →</span>
+                  <span className="text-xs text-emerald-600 font-bold mt-3 inline-flex items-center gap-1 group-hover:underline">
+                    <span>youronlinechoices.com</span>
+                    <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
                 </a>
               </div>
 

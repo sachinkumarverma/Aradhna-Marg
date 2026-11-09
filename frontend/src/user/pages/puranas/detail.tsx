@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Download, Eye, BookOpen, Sparkles, ArrowLeft, Calendar, ArrowRight } from 'lucide-react';
+import { Download, Eye, BookOpen, Sparkles, ArrowLeft, Calendar, ArrowRight, ChevronRight } from 'lucide-react';
 import { apiClient } from '@api/client';
 import { PublicApi } from '@api/publicApi';
 import toast from 'react-hot-toast';
@@ -392,10 +392,12 @@ export const PuranDetail: React.FC = () => {
                         )}
                       </div>
                       <div className="flex items-center justify-end mt-1.5">
-                        <span className="inline-flex items-center text-xs font-bold text-saffron group-hover:underline font-hindi-heading">
-                          {t('common.read')}{' '}
-                          <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
-                        </span>
+                        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors font-hindi-heading">
+                          <span>{t('common.read')}</span>
+                          <span className="w-5 h-5 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+                            <ChevronRight className="w-3 h-3" />
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </Link>

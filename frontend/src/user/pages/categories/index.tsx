@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Music, BookOpen, Flame, Compass, ArrowRight, FolderKanban } from 'lucide-react';
+import { Search, Music, BookOpen, Flame, Compass, ArrowRight, ChevronRight, FolderKanban } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { PublicApi } from '@api/publicApi';
 import { Link } from 'react-router-dom';
@@ -140,16 +140,14 @@ export const CategoriesList: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Bottom Link Bar - View text aligned perfectly on same line as ArrowRight */}
+                    {/* Bottom Link Bar - View text aligned perfectly on same line as ChevronRight pill */}
                     <div className="flex items-center justify-end mt-3.5 pt-2.5 border-t border-gray-100/80 font-hindi-heading">
-                      <IconText
-                        icon={<ArrowRight className="w-3.5 h-3.5 shrink-0" />}
-                        iconPosition="right"
-                        gap="gap-1"
-                        align="center"
-                        className="text-xs font-bold text-saffron group-hover:translate-x-1 transition-transform leading-none"
-                        text={t('common.view')}
-                      />
+                      <div className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0 font-hindi-heading">
+                        <span>{t('common.view')}</span>
+                        <span className="w-5 h-5 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
+                          <ChevronRight className="w-3 h-3" />
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 </motion.div>

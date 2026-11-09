@@ -17,6 +17,39 @@ declare global {
   }
 }
 
+let googleIdentityScriptPromise: Promise<void> | null = null;
+
+function loadGoogleIdentityServices(): Promise<void> {
+  if (typeof window === 'undefined' || window.google?.accounts?.id) {
+    return Promise.resolve();
+  }
+
+  if (googleIdentityScriptPromise) return googleIdentityScriptPromise;
+
+  googleIdentityScriptPromise = new Promise((resolve, reject) => {
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src^="https://accounts.google.com/gsi/client"]'
+    );
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve(), { once: true });
+      existingScript.addEventListener('error', () => reject(new Error('Google Identity Services failed to load')), {
+        once: true
+      });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Google Identity Services failed to load'));
+    document.head.appendChild(script);
+  });
+
+  return googleIdentityScriptPromise;
+}
+
 export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   onSuccess,
   onError,
@@ -72,22 +105,16 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   useEffect(() => {
     if (!clientId) return;
 
-    if (window.google?.accounts?.id) {
-      initGsi();
-    } else {
-      const checkGsi = setInterval(() => {
-        if (window.google?.accounts?.id) {
-          clearInterval(checkGsi);
-          initGsi();
-        }
-      }, 50);
+    let active = true;
+    loadGoogleIdentityServices()
+      .then(() => {
+        if (active) initGsi();
+      })
+      .catch((error) => onErrorRef.current?.(error));
 
-      const timeout = setTimeout(() => clearInterval(checkGsi), 5000);
-      return () => {
-        clearInterval(checkGsi);
-        clearTimeout(timeout);
-      };
-    }
+    return () => {
+      active = false;
+    };
   }, [clientId, text, initGsi]);
 
   const handleFallbackClick = () => {

@@ -1,28 +1,37 @@
+import { lazy } from 'react';
 import { Navigate, type RouteObject } from 'react-router-dom';
 import { PublicLayout } from '@user/layouts/PublicLayout';
-import { Home } from '@user/pages/home';
-import { BhajanDetail } from '@user/pages/bhajans/detail';
-import { SearchPage } from '@user/pages/search';
-import { ExplorePage } from '@user/pages/explore';
-import { CollectionDetails } from '@user/pages/collections/CollectionDetails';
-import { VideosList } from '@user/pages/videos';
-import { BhajansList } from '@user/pages/bhajans';
-import { ArticlesList } from '@user/pages/articles';
-import { ArticleDetail } from '@user/pages/articles/detail';
-import { FestivalsList } from '@user/pages/festivals';
-import { FestivalDetail } from '@user/pages/festivals/detail';
-import { PuranasList } from '@user/pages/puranas';
-import { PuranDetail } from '@user/pages/puranas/detail';
-import { CategoriesList } from '@user/pages/categories';
-import { DeitiesList } from '@user/pages/deities';
-import { TermsPage, DisclaimerPage, PrivacyPolicyPage, AboutPage } from '@user/pages/legal';
-import { DonatePage } from '@user/pages/donate';
-import { ContactPage } from '@user/pages/contact';
-import { FavoritesPage } from '@user/pages/favorites';
-import { AuthPage } from '@user/pages/auth/AuthPage';
-import { ResetPasswordPage } from '@user/pages/auth/ResetPasswordPage';
-import { NotFoundPage } from '@user/pages/common/NotFoundPage';
 import { ENABLE_DONATIONS } from '@/constants';
+
+const Home = lazy(() => import('@user/pages/home').then((m) => ({ default: m.Home })));
+const BhajanDetail = lazy(() => import('@user/pages/bhajans/detail').then((m) => ({ default: m.BhajanDetail })));
+const SearchPage = lazy(() => import('@user/pages/search').then((m) => ({ default: m.SearchPage })));
+const ExplorePage = lazy(() => import('@user/pages/explore').then((m) => ({ default: m.ExplorePage })));
+const CollectionDetails = lazy(() =>
+  import('@user/pages/collections/CollectionDetails').then((m) => ({ default: m.CollectionDetails }))
+);
+const VideosList = lazy(() => import('@user/pages/videos').then((m) => ({ default: m.VideosList })));
+const BhajansList = lazy(() => import('@user/pages/bhajans').then((m) => ({ default: m.BhajansList })));
+const ArticlesList = lazy(() => import('@user/pages/articles').then((m) => ({ default: m.ArticlesList })));
+const ArticleDetail = lazy(() => import('@user/pages/articles/detail').then((m) => ({ default: m.ArticleDetail })));
+const FestivalsList = lazy(() => import('@user/pages/festivals').then((m) => ({ default: m.FestivalsList })));
+const FestivalDetail = lazy(() => import('@user/pages/festivals/detail').then((m) => ({ default: m.FestivalDetail })));
+const PuranasList = lazy(() => import('@user/pages/puranas').then((m) => ({ default: m.PuranasList })));
+const PuranDetail = lazy(() => import('@user/pages/puranas/detail').then((m) => ({ default: m.PuranDetail })));
+const CategoriesList = lazy(() => import('@user/pages/categories').then((m) => ({ default: m.CategoriesList })));
+const DeitiesList = lazy(() => import('@user/pages/deities').then((m) => ({ default: m.DeitiesList })));
+const TermsPage = lazy(() => import('@user/pages/legal').then((m) => ({ default: m.TermsPage })));
+const DisclaimerPage = lazy(() => import('@user/pages/legal').then((m) => ({ default: m.DisclaimerPage })));
+const PrivacyPolicyPage = lazy(() => import('@user/pages/legal').then((m) => ({ default: m.PrivacyPolicyPage })));
+const AboutPage = lazy(() => import('@user/pages/legal').then((m) => ({ default: m.AboutPage })));
+const DonatePage = lazy(() => import('@user/pages/donate').then((m) => ({ default: m.DonatePage })));
+const ContactPage = lazy(() => import('@user/pages/contact').then((m) => ({ default: m.ContactPage })));
+const FavoritesPage = lazy(() => import('@user/pages/favorites').then((m) => ({ default: m.FavoritesPage })));
+const AuthPage = lazy(() => import('@user/pages/auth/AuthPage').then((m) => ({ default: m.AuthPage })));
+const ResetPasswordPage = lazy(() =>
+  import('@user/pages/auth/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage }))
+);
+const NotFoundPage = lazy(() => import('@user/pages/common/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
 
 export const userRoutes: RouteObject[] = [
   // Standalone Auth & Account Recovery Pages (rendered WITHOUT PublicLayout / Navbar / Footer)

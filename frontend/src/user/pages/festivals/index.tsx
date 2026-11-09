@@ -157,9 +157,9 @@ export const FestivalsList: React.FC = () => {
                           <div onClick={(e) => e.stopPropagation()}>
                             <SocialShareButtons title={festName} excerpt={festDesc} url={targetUrl} />
                           </div>
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-orange-600 transition-colors shrink-0 font-hindi-heading">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron group-hover:text-amber-700 transition-colors shrink-0 font-hindi-heading">
                             <span>{t('common.readMore')}</span>
-                            <span className="w-6 h-6 rounded-full bg-amber-50 text-saffron flex items-center justify-center group-hover:bg-saffron group-hover:text-white transition-colors shadow-xs">
+                            <span className="w-6 h-6 rounded-full bg-saffron/10 text-saffron inline-flex items-center justify-center icon-wrapper group-hover:bg-saffron group-hover:text-white transition-all shadow-xs shrink-0">
                               <ChevronRight className="w-3.5 h-3.5" />
                             </span>
                           </span>
