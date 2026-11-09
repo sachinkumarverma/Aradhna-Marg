@@ -64,10 +64,13 @@ export class EmailService {
     html: string;
     text?: string;
     replyTo?: string;
+    fromEmail?: string;
+    fromName?: string;
   }): Promise<boolean> {
-    const fromAddress = config.EMAIL_FROM_ADDRESS || 'support@aradhnamarg.com';
+    const fromAddress = options.fromEmail || config.EMAIL_FROM_ADDRESS || 'support@aradhnamarg.com';
+    const fromName = options.fromName || 'Aradhna Marg (आराधना मार्ग)';
     const fromSender = {
-      name: 'Aradhna Marg (आराधना मार्ग)',
+      name: fromName,
       email: fromAddress
     };
 
@@ -75,14 +78,14 @@ export class EmailService {
     if (this.transporter && config.SMTP_USER && config.SMTP_PASS) {
       try {
         await this.transporter.sendMail({
-          from: config.EMAIL_FROM || `"${fromSender.name}" <${fromSender.email}>`,
+          from: `"${fromSender.name}" <${fromSender.email}>`,
           to: options.to,
           subject: options.subject,
           html: options.html,
           text: options.text || options.html.replace(/<[^>]*>?/gm, ''),
           replyTo: options.replyTo || fromAddress
         });
-        logger.info(`✅ Email successfully sent via SMTP to: ${options.to}`);
+        logger.info(`✅ Email successfully sent via SMTP to: ${options.to} from: ${fromAddress}`);
         return true;
       } catch (smtpError: any) {
         logger.warn(`⚠️ SMTP send failed (${smtpError.message}). Attempting Brevo REST API fallback...`);
@@ -215,7 +218,9 @@ export class EmailService {
       to: adminEmail,
       subject,
       html,
-      replyTo: data.email
+      replyTo: data.email,
+      fromEmail: config.EMAIL_NOREPLY_ADDRESS || 'noreply@aradhnamarg.com',
+      fromName: 'Aradhna Marg Contact Form'
     });
   }
 
@@ -300,7 +305,10 @@ export class EmailService {
       to: data.email,
       toName: data.name,
       subject,
-      html
+      html,
+      fromEmail: config.EMAIL_NOREPLY_ADDRESS || 'noreply@aradhnamarg.com',
+      fromName: 'Aradhna Marg',
+      replyTo: config.EMAIL_SUPPORT_ADDRESS || 'support@aradhnamarg.com'
     });
   }
 
@@ -498,7 +506,10 @@ export class EmailService {
       to: data.donorEmail,
       toName: data.donorName,
       subject,
-      html
+      html,
+      fromEmail: config.EMAIL_INFO_ADDRESS || 'info@aradhnamarg.com',
+      fromName: 'Aradhna Marg Seva',
+      replyTo: config.EMAIL_SUPPORT_ADDRESS || 'support@aradhnamarg.com'
     });
   }
 
@@ -578,7 +589,9 @@ export class EmailService {
     return this.sendMail({
       to: adminEmail,
       subject,
-      html
+      html,
+      fromEmail: config.EMAIL_INFO_ADDRESS || 'info@aradhnamarg.com',
+      fromName: 'Aradhna Marg Seva Alert'
     });
   }
 
@@ -664,7 +677,10 @@ export class EmailService {
       to: data.email,
       toName: data.name,
       subject,
-      html
+      html,
+      fromEmail: config.EMAIL_INFO_ADDRESS || 'info@aradhnamarg.com',
+      fromName: 'Aradhna Marg',
+      replyTo: config.EMAIL_SUPPORT_ADDRESS || 'support@aradhnamarg.com'
     });
   }
 
@@ -763,7 +779,10 @@ export class EmailService {
       to: data.email,
       toName: data.name,
       subject,
-      html
+      html,
+      fromEmail: config.EMAIL_INFO_ADDRESS || 'info@aradhnamarg.com',
+      fromName: 'Aradhna Marg Security',
+      replyTo: config.EMAIL_SUPPORT_ADDRESS || 'support@aradhnamarg.com'
     });
   }
 
@@ -819,7 +838,10 @@ export class EmailService {
       to: data.email,
       toName: data.name,
       subject,
-      html
+      html,
+      fromEmail: config.EMAIL_INFO_ADDRESS || 'info@aradhnamarg.com',
+      fromName: 'Aradhna Marg Security',
+      replyTo: config.EMAIL_SUPPORT_ADDRESS || 'support@aradhnamarg.com'
     });
   }
 }
