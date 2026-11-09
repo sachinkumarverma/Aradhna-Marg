@@ -25,7 +25,7 @@ export const AuthPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const { isAuthenticated, login, signup, googleAuth } = useUserAuth();
+  const { isAuthenticated, login, signup, googleAuth, setDirectToken } = useUserAuth();
 
   // URL Query Parameters
   const initialMode = (searchParams.get('mode') as 'login' | 'signup' | 'forgot') || 'login';
@@ -48,6 +48,24 @@ export const AuthPage: React.FC = () => {
       navigate(redirectUrl, { replace: true });
     }
   }, [isAuthenticated, navigate, redirectUrl]);
+
+  // Handle Google OAuth redirect callback params
+  useEffect(() => {
+    const tokenParam = searchParams.get('token');
+    const errorParam = searchParams.get('error');
+
+    if (errorParam) {
+      toast.error(decodeURIComponent(errorParam));
+      return;
+    }
+
+    if (tokenParam) {
+      setDirectToken(tokenParam).then(() => {
+        toast.success('Signed in with Google successfully! 🙏');
+        navigate(redirectUrl, { replace: true });
+      });
+    }
+  }, [searchParams, setDirectToken, navigate, redirectUrl]);
 
   // Form states
   const [name, setName] = useState('');

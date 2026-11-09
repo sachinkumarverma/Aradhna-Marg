@@ -41,71 +41,104 @@ class AuthController {
   };
 
   /**
+   * Helper: verify Google credential and authorize as admin
+   */
+  private verifyAndAuthorizeAdmin = async (
+    credential: string
+  ): Promise<{ token: string; user: any; email: string }> => {
+    if (!credential) {
+      throw new UnauthorizedError('Google credential is required');
+    }
+
+    const googleUser = await verifyGoogleToken(credential);
+    const email = googleUser.email.toLowerCase();
+
+    // Check against allowed admin emails in env (ADMIN_ALLOWED_EMAILS strictly takes priority)
+    const rawAllowed = (config.ADMIN_ALLOWED_EMAILS || process.env.ADMIN_ALLOWED_EMAILS || '').trim();
+    const allowedEmails = (rawAllowed ? rawAllowed : config.ADMIN_EMAIL || config.ADMIN_USERNAME || '')
+      .toLowerCase()
+      .split(',')
+      .map((e) => e.trim())
+      .filter(Boolean);
+
+    const isAllowed = allowedEmails.some((allowed) => allowed === email);
+
+    if (!isAllowed) {
+      logger.warn({ email }, 'Unauthorized admin Google login attempt');
+      throw new UnauthorizedError(`Email ${email} is not authorized as an administrator.`);
+    }
+
+    // Check if user exists in database and ensure active status
+    const user = await userRepository.findByEmail(email);
+    if (user && user.is_active === false) {
+      logger.warn({ email }, 'Deactivated admin Google login attempt');
+      throw new UnauthorizedError('Your administrator account has been deactivated.');
+    }
+
+    // Sync Google profile data and update last login in users table
+    if (user) {
+      if (!user.google_id || !user.avatar_url) {
+        await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
+      }
+      await userRepository.updateLastLogin(user.id);
+    } else {
+      await userRepository.create({
+        name: googleUser.name || 'Admin',
+        email,
+        google_id: googleUser.sub,
+        avatar_url: googleUser.picture,
+        is_verified: true
+      });
+    }
+
+    // Sign Admin JWT valid for 24 hours
+    const token = jwt.sign({ username: googleUser.name || email, email, role: 'admin' }, config.JWT_SECRET, {
+      expiresIn: '24h'
+    });
+
+    return { token, user: { username: googleUser.name || email, email, role: 'admin' }, email };
+  };
+
+  /**
    * POST /api/admin/auth/google
-   * Verifies Google token and checks if email is an authorized admin.
+   * Verifies Google token and returns JSON response.
    */
   public googleLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { credential } = req.body;
-      if (!credential) {
-        throw new UnauthorizedError('Google credential is required');
-      }
-
-      const googleUser = await verifyGoogleToken(credential);
-      const email = googleUser.email.toLowerCase();
-
-      // Check against allowed admin emails in env (ADMIN_ALLOWED_EMAILS strictly takes priority)
-      const rawAllowed = (config.ADMIN_ALLOWED_EMAILS || process.env.ADMIN_ALLOWED_EMAILS || '').trim();
-      const allowedEmails = (rawAllowed ? rawAllowed : config.ADMIN_EMAIL || config.ADMIN_USERNAME || '')
-        .toLowerCase()
-        .split(',')
-        .map((e) => e.trim())
-        .filter(Boolean);
-
-      const isAllowed = allowedEmails.some((allowed) => allowed === email);
-
-      if (!isAllowed) {
-        logger.warn({ email }, 'Unauthorized admin Google login attempt');
-        throw new UnauthorizedError(`ईमेल ${email} एडमिन के रूप में अधिकृत नहीं है। (Unauthorized admin email)`);
-      }
-
-      // Check if user exists in database and ensure active status
-      const user = await userRepository.findByEmail(email);
-      if (user && user.is_active === false) {
-        logger.warn({ email }, 'Deactivated admin Google login attempt');
-        throw new UnauthorizedError('आपका खाता निष्क्रिय कर दिया गया है। (Account has been deactivated)');
-      }
-
-      // Sync Google profile data and update last login in users table
-      if (user) {
-        if (!user.google_id || !user.avatar_url) {
-          await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
-        }
-        await userRepository.updateLastLogin(user.id);
-      } else {
-        await userRepository.create({
-          name: googleUser.name || 'Admin',
-          email,
-          google_id: googleUser.sub,
-          avatar_url: googleUser.picture,
-          is_verified: true
-        });
-      }
-
-      // Sign Admin JWT valid for 24 hours
-      const token = jwt.sign({ username: googleUser.name || email, email, role: 'admin' }, config.JWT_SECRET, {
-        expiresIn: '24h'
-      });
-
+      const { token, user, email } = await this.verifyAndAuthorizeAdmin(credential);
       logger.info(`Admin Google login successful for email: ${email}`);
 
       return sendSuccess(res, 'Admin Google login successful', {
         token,
-        user: { username: googleUser.name || email, email, role: 'admin' },
+        user,
         expiresIn: '24h'
       });
     } catch (error) {
       next(error);
+    }
+  };
+
+  /**
+   * POST /api/admin/auth/google/callback
+   * Handles Google Identity Services redirect callback (application/x-www-form-urlencoded)
+   */
+  public googleRedirectCallback = async (req: Request, res: Response) => {
+    const adminBaseUrl =
+      process.env.ADMIN_FRONTEND_URL ||
+      (config.NODE_ENV === 'production' ? 'https://admin.aradhnamarg.com' : 'http://localhost:5173/admin');
+
+    try {
+      const credential = req.body?.credential;
+      const { token, email } = await this.verifyAndAuthorizeAdmin(credential);
+      logger.info(`Admin Google redirect login successful for email: ${email}`);
+
+      return res.redirect(`${adminBaseUrl}/login?token=${encodeURIComponent(token)}&authSuccess=true`);
+    } catch (error: any) {
+      logger.error('Admin Google redirect callback error:', error.message || error);
+      return res.redirect(
+        `${adminBaseUrl}/login?error=${encodeURIComponent(error.message || 'Google authorization failed')}`
+      );
     }
   };
 

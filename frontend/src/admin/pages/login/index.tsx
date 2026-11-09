@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { login, adminGoogleLogin, isAuthenticated, clearSession } from '@api/auth';
+import { login, adminGoogleLogin, isAuthenticated, clearSession, setSessionToken } from '@api/auth';
 import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
 import { Loader2, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, User } from 'lucide-react';
 import { CustomLoader } from '@components/common/CustomLoader';
@@ -24,6 +24,22 @@ export const AdminLogin: React.FC = () => {
     if (searchParams.get('force') === 'true' || searchParams.get('logout') === 'true') {
       clearSession();
       setCheckingAuth(false);
+      return;
+    }
+
+    // Handle Google OAuth redirect callback params
+    const tokenParam = searchParams.get('token');
+    const errorParam = searchParams.get('error');
+
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+      setCheckingAuth(false);
+      return;
+    }
+
+    if (tokenParam) {
+      setSessionToken(tokenParam);
+      navigate(getAdminPath('/dashboard'), { replace: true });
       return;
     }
 
@@ -161,6 +177,7 @@ export const AdminLogin: React.FC = () => {
               onSuccess={handleGoogleSuccess}
               onError={(err) => setError(err)}
               disabled={loading}
+              isAdmin={true}
             />
           </div>
 

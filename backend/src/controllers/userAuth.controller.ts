@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { userService } from '@services/UserService';
 import { wishlistRepository } from '@repositories/WishlistRepository';
 import { AuthenticatedUserRequest } from '@middlewares/userAuth';
+import { config } from '@/config';
 
 export class UserAuthController {
   private getLang(req: AuthenticatedUserRequest): 'hi' | 'en' {
@@ -48,6 +49,33 @@ export class UserAuthController {
       data: result
     });
   }
+
+  /**
+   * POST /api/v1/auth/google/callback
+   * Handles Google Identity Services redirect callback (application/x-www-form-urlencoded)
+   */
+  googleRedirectCallback = async (req: AuthenticatedUserRequest, res: Response) => {
+    const frontendBaseUrl =
+      process.env.FRONTEND_URL ||
+      (config.NODE_ENV === 'production' ? 'https://aradhnamarg.com' : 'http://localhost:5173');
+
+    try {
+      const credential = req.body?.credential;
+      if (!credential) {
+        return res.redirect(
+          `${frontendBaseUrl}/auth?error=${encodeURIComponent('No credential received from Google')}`
+        );
+      }
+
+      const lang = this.getLang(req);
+      const result = await userService.handleGoogleRedirect(credential, lang);
+      return res.redirect(`${frontendBaseUrl}/auth?token=${encodeURIComponent(result.token)}&authSuccess=true`);
+    } catch (err: any) {
+      return res.redirect(
+        `${frontendBaseUrl}/auth?error=${encodeURIComponent(err?.message || 'Google authentication failed')}`
+      );
+    }
+  };
 
   async forgotPassword(req: AuthenticatedUserRequest, res: Response) {
     const lang = this.getLang(req);

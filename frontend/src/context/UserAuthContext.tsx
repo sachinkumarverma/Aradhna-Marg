@@ -20,6 +20,7 @@ interface UserAuthContextType {
   login: (email: string, password?: string) => Promise<void>;
   signup: (name: string, email: string, password?: string) => Promise<void>;
   googleAuth: (credential: string, mode: 'login' | 'signup') => Promise<void>;
+  setDirectToken: (token: string) => Promise<void>;
   logout: () => void;
   syncLocalFavoritesToCloud: () => Promise<void>;
 }
@@ -145,6 +146,22 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     await fetchCloudFavorites();
   };
 
+  const setDirectToken = async (newToken: string) => {
+    UserAuthApi.setSession(newToken, { id: '', name: '', email: '', is_verified: true });
+    setToken(newToken);
+    closeAuthModal();
+    try {
+      const res = await UserAuthApi.getMe();
+      if (res?.data) {
+        setUser(res.data);
+        await syncLocalFavoritesToCloud();
+        await fetchCloudFavorites();
+      }
+    } catch {
+      // ignore
+    }
+  };
+
   const login = async (email: string, password?: string) => {
     try {
       const res = await UserAuthApi.login({ email, password });
@@ -206,6 +223,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         login,
         signup,
         googleAuth,
+        setDirectToken,
         logout,
         syncLocalFavoritesToCloud
       }}

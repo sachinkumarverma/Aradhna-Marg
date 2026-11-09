@@ -23,6 +23,23 @@ const saveSession = (token: string, user: AdminUser) => {
   StorageService.setUser(user);
 };
 
+export const setSessionToken = (token: string, user?: AdminUser) => {
+  StorageService.setToken(token);
+  if (user) {
+    StorageService.setUser(user);
+  } else {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      StorageService.setUser({
+        username: payload.username || payload.email || 'Admin',
+        role: payload.role || 'admin'
+      });
+    } catch {
+      StorageService.setUser({ username: 'Admin', role: 'admin' });
+    }
+  }
+};
+
 export const clearSession = () => {
   StorageService.clearAuth();
 };

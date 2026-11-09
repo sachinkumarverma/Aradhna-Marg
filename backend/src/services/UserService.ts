@@ -201,6 +201,59 @@ export class UserService {
   }
 
   /**
+   * Handle Google Redirect Flow (automatically signs in or creates account for new devotee)
+   */
+  async handleGoogleRedirect(idToken: string, lang: 'hi' | 'en' = 'en') {
+    if (!idToken) {
+      throw new AppError(
+        lang === 'hi' ? 'Google प्रमाणीकरण विवरण आवश्यक है।' : 'Google authentication credential is required.',
+        400
+      );
+    }
+
+    const googleUser = await verifyGoogleToken(idToken);
+    let user = await userRepository.findByEmail(googleUser.email);
+
+    if (!user) {
+      user = await userRepository.create({
+        name: googleUser.name || 'Devotee',
+        email: googleUser.email,
+        google_id: googleUser.sub,
+        avatar_url: googleUser.picture,
+        is_verified: true
+      });
+
+      // Send welcome email on new sign-up
+      emailService
+        .sendWelcomeEmail({
+          name: user.name,
+          email: user.email,
+          verificationUrl: 'https://aradhnamarg.com/bhajans'
+        })
+        .catch(() => {});
+    } else {
+      if (user.is_active === false) {
+        throw new AppError(
+          lang === 'hi'
+            ? 'आपका खाता निष्क्रिय कर दिया गया है। कृपया सहायता से संपर्क करें।'
+            : 'Your account has been deactivated. Please contact support.',
+          403
+        );
+      }
+      if (!user.google_id || !user.avatar_url) {
+        user = await userRepository.updateGoogleId(user.id, googleUser.sub, googleUser.picture);
+      }
+    }
+
+    await userRepository.updateLastLogin(user.id);
+    const token = generateUserToken(user);
+    return {
+      token,
+      user: this.sanitizeUser(user)
+    };
+  }
+
+  /**
    * 15-Minute Timeline Password Reset Request
    */
   async forgotPassword(email: string, lang: 'hi' | 'en' = 'en') {

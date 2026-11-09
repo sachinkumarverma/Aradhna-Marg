@@ -3,12 +3,13 @@ import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface GoogleAuthButtonProps {
-  onSuccess: (credential: string) => void;
+  onSuccess?: (credential: string) => void;
   onError?: (err: any) => void;
   text?: 'signin_with' | 'signup_with' | 'continue_with';
   label?: string;
   className?: string;
   disabled?: boolean;
+  isAdmin?: boolean;
 }
 
 declare global {
@@ -56,7 +57,8 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   text = 'signin_with',
   label,
   className = '',
-  disabled = false
+  disabled = false,
+  isAdmin = false
 }) => {
   const buttonRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
@@ -73,12 +75,24 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
     if (!window.google?.accounts?.id || !buttonRef.current || !clientId) return;
 
     try {
+      const envBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
+      let base = envBase;
+      if (!base.startsWith('http://') && !base.startsWith('https://')) {
+        base =
+          typeof window !== 'undefined' && window.location.hostname.includes('localhost')
+            ? 'http://localhost:5000/api'
+            : 'https://api.aradhnamarg.com/api';
+      }
+      const callbackUri = isAdmin ? `${base}/admin/auth/google/callback` : `${base}/v1/auth/google/callback`;
+
       window.google.accounts.id.initialize({
         client_id: clientId,
+        ux_mode: 'redirect',
+        login_uri: callbackUri,
         callback: (response: any) => {
           if (response?.credential) {
             setLoading(true);
-            onSuccessRef.current(response.credential);
+            onSuccessRef.current?.(response.credential);
           } else if (onErrorRef.current) {
             onErrorRef.current(new Error('No Google credential returned'));
           }
@@ -100,7 +114,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
     } catch (e) {
       if (onErrorRef.current) onErrorRef.current(e);
     }
-  }, [clientId, text]);
+  }, [clientId, text, isAdmin]);
 
   useEffect(() => {
     if (!clientId) return;
