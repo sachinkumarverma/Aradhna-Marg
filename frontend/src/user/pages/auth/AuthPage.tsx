@@ -107,7 +107,9 @@ export const AuthPage: React.FC = () => {
       verificationSentParam === 'true' && emailParam ? `${verificationSentParam}:${emailParam}` : null;
     if (verificationSentNoticeKey && handledVerificationSentNoticeRef.current !== verificationSentNoticeKey) {
       handledVerificationSentNoticeRef.current = verificationSentNoticeKey;
-      setPendingVerificationEmail(decodeURIComponent(emailParam));
+      if (emailParam) {
+        setPendingVerificationEmail(decodeURIComponent(emailParam));
+      }
       toast.success('Verification link sent! Please verify your email before signing in.', {
         id: 'verification-sent-notice',
         duration: 8000
