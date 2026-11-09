@@ -96,7 +96,7 @@ export const PrivacyPolicyPage: React.FC = () => {
         <div className="space-y-8">
           {/* Section 1 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading">
               {isHi ? '1. एकत्रित की जाने वाली जानकारी (Information We Collect)' : '1. Information We Collect'}
             </h2>
             <div
@@ -138,7 +138,7 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 2: Google AdSense & Third-Party Advertising Cookies (Crucial Google Requirement) */}
           <div className="bg-gradient-to-br from-amber-50/80 via-white to-orange-50/60 rounded-2xl p-6 sm:p-10 border-2 border-amber-200/90 shadow-md">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading">
               {isHi
                 ? '2. Google AdSense एवं तृतीय-पक्ष विज्ञापन कुकीज़ (Advertising Cookies)'
                 : '2. Google AdSense & Third-Party Advertising Cookies'}
@@ -223,7 +223,7 @@ export const PrivacyPolicyPage: React.FC = () => {
             id="ad-settings"
             className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow"
           >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading">
               {isHi
                 ? '3. विज्ञापनों से बाहर निकलने के विकल्प (Your Opt-Out Choices)'
                 : '3. Your Opt-Out Choices & Ad Settings'}
@@ -374,7 +374,7 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 4: Third-Party Vendors & Ad Networks */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading">
               {isHi
                 ? '4. तृतीय-पक्ष विक्रेता एवं विज्ञापन नेटवर्क (Third-Party Ad Networks)'
                 : '4. Third-Party Vendors & Ad Networks'}
@@ -403,7 +403,7 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 5: EEA, UK & Switzerland Consent Handling (GDPR Compliance) */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading">
               {isHi
                 ? '5. यूरोपीय संघ (EEA), यूके एवं स्विट्ज़रलैंड हेतु सहमति (EU User Consent)'
                 : '5. Consent Handling for EEA, UK & Switzerland (GDPR)'}
@@ -448,7 +448,7 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 6: Analytics & Embedded Devotional Media */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading">
               {isHi
                 ? '6. एनालिटिक्स एवं एम्बेडेड भक्ति मीडिया (Analytics & Media)'
                 : '6. Analytics & Embedded Devotional Media'}
@@ -480,7 +480,7 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           {/* Section 7: Data Security & Storage */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading">
               {isHi
                 ? '7. डेटा सुरक्षा एवं गोपनीयता प्रतिबद्धता (Data Security)'
                 : '7. Data Security & Sacred Commitment'}
@@ -499,7 +499,7 @@ export const PrivacyPolicyPage: React.FC = () => {
 
         {/* Contact & Navigation Footer Card */}
         <div className="mt-12 rounded-3xl bg-gradient-to-r from-amber-50 via-white to-orange-50 p-8 sm:p-12 border border-orange-200/80 shadow-sm text-center">
-          <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-darkBrown mb-3.5 tracking-tight">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-darkBrown mb-3.5 tracking-tight font-hindi-heading">
             {isHi ? 'गोपनीयता या विज्ञापन से संबंधित कोई प्रश्न?' : 'Questions Regarding Privacy or Advertising?'}
           </h3>
           <p

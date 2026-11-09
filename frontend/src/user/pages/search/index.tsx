@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search as SearchIcon, Sparkles } from 'lucide-react';
 import { SearchBar } from '@components/search/SearchBar';
 import { PuranaCard } from '@components/cards/PuranaCard';
@@ -76,11 +76,12 @@ export const SearchPage: React.FC = () => {
             categoryName={item.category || item.category_name}
           />
         );
-      case 'VIDEO':
+      case 'VIDEO': {
+        const videoId = item.youtube_video_id || item.slug || item.id;
         return (
           <VideoCard
             id={item.id || item.youtube_video_id}
-            slug={item.slug || item.youtube_video_id || item.id}
+            slug={videoId}
             title={title}
             godName={item.category || item.channel_name || 'Devotional'}
             views={item.views || 0}
@@ -89,6 +90,7 @@ export const SearchPage: React.FC = () => {
             publishDate={item.published_at}
           />
         );
+      }
       default:
         return (
           <BhajanCard

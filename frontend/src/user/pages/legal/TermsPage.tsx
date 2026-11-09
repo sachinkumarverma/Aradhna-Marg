@@ -1,16 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Scale,
-  ShieldCheck,
-  FileText,
-  AlertTriangle,
-  Sparkles,
-  BookOpen,
-  Mail,
-  ArrowRight,
-  CheckCircle2
-} from 'lucide-react';
+import { Sparkles, BookOpen, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { useTranslation } from '@i18n/LanguageContext';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
@@ -104,7 +94,9 @@ export const TermsPage: React.FC = () => {
         <div className="space-y-8">
           {/* Section 1 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi ? '1. शर्तों की स्वीकृति (Acceptance of Terms)' : '1. Acceptance of Terms'}
             </h2>
             <div
@@ -125,7 +117,9 @@ export const TermsPage: React.FC = () => {
 
           {/* Section 2 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '2. हमारी सामग्री एवं सम्पादकीय कार्य (About Our Content)'
                 : '2. About Our Devotional & Cultural Content'}
@@ -153,7 +147,9 @@ export const TermsPage: React.FC = () => {
 
           {/* Section 3 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '3. बौद्धिक संपदा एवं कॉपीराइट (Intellectual Property & Copyright)'
                 : '3. Intellectual Property & Copyright'}
@@ -193,7 +189,9 @@ export const TermsPage: React.FC = () => {
 
           {/* Section 4 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi ? '4. अनुमत एवं धार्मिक उपयोग (Permitted Use)' : '4. Permitted Personal & Devotional Use'}
             </h2>
             <p
@@ -244,7 +242,9 @@ export const TermsPage: React.FC = () => {
 
           {/* Section 5 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-red-100/80 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '5. जिम्मेदार उपयोग एवं निषिद्ध गतिविधियाँ (Responsible Use)'
                 : '5. Responsible Use of the Website'}
@@ -284,7 +284,9 @@ export const TermsPage: React.FC = () => {
 
           {/* Section 6 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '6. उपयोगकर्ता योगदान व सुझाव (User Submissions & Suggestions)'
                 : '6. User Submissions & Suggestions'}
@@ -312,7 +314,9 @@ export const TermsPage: React.FC = () => {
 
           {/* Section 7 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '7. तृतीय-पक्ष सेवाएँ, कड़ियाँ एवं विज्ञापन (Third-Party Services)'
                 : '7. Third-Party Services, Links & Advertising'}
@@ -337,9 +341,8 @@ export const TermsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl p-6 sm:p-8 border border-orange-100 shadow-sm">
               <h2
-                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight flex items-center gap-2.5`}
+                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight font-hindi-heading`}
               >
-                <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0" />
                 {isHi ? '8. पाठ भेद एवं सटीकता' : '8. Accuracy of Content'}
               </h2>
               <p
@@ -353,9 +356,8 @@ export const TermsPage: React.FC = () => {
 
             <div className="bg-white rounded-2xl p-6 sm:p-8 border border-orange-100 shadow-sm">
               <h2
-                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight flex items-center gap-2.5`}
+                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight font-hindi-heading`}
               >
-                <ShieldCheck className="w-6 h-6 text-emerald-600 shrink-0" />
                 {isHi ? '9. लागू कानून एवं न्यायक्षेत्र' : '9. Governing Law & Updates'}
               </h2>
               <p
@@ -371,7 +373,9 @@ export const TermsPage: React.FC = () => {
 
         {/* Contact & Navigation Footer Card */}
         <div className="mt-12 rounded-3xl bg-gradient-to-r from-amber-50 via-white to-orange-50 p-8 sm:p-12 border border-orange-200/80 shadow-sm text-center">
-          <h3 className={`text-2xl sm:text-3xl md:text-4xl font-black text-darkBrown mb-3.5 tracking-tight`}>
+          <h3
+            className={`text-2xl sm:text-3xl md:text-4xl font-black text-darkBrown mb-3.5 tracking-tight font-hindi-heading`}
+          >
             {isHi ? 'क्या आपके पास कोई प्रश्न या सुझाव है?' : 'Questions About Our Terms?'}
           </h3>
           <p

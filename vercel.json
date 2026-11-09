@@ -109,6 +109,10 @@
   ],
   "rewrites": [
     {
+      "source": "/videos/:slug",
+      "destination": "/index.html"
+    },
+    {
       "source": "/(.*)",
       "has": [
         {

@@ -366,6 +366,7 @@ export const BhajanDetail: React.FC = () => {
         ogImage={bhajan.thumbnail_url || bhajan.image_url}
         publishedTime={bhajan.created_at}
         modifiedTime={bhajan.updated_at}
+        noIndex={isVideo}
         schema={detailSchemas}
       />
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">

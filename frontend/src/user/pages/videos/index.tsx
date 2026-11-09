@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Video as VideoIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { apiClient } from '@api/client';
 import { VideoCard } from '@components/cards/VideoCard';
@@ -130,18 +129,16 @@ export const VideosList = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                 >
-                  <Link to={`/videos/${video.youtube_video_id}`} className="block h-full">
-                    <VideoCard
-                      id={video.id || video.youtube_video_id}
-                      slug={video.youtube_video_id}
-                      title={video.title}
-                      godName={video.channel_name || 'Devotional'}
-                      views={video.view_count || 0}
-                      duration={video.duration || '00:00'}
-                      thumbnailUrl={video.thumbnail}
-                      publishDate={video.published_at}
-                    />
-                  </Link>
+                  <VideoCard
+                    id={video.id || video.youtube_video_id}
+                    slug={video.youtube_video_id}
+                    title={video.title}
+                    godName={video.channel_name || 'Devotional'}
+                    views={video.view_count || 0}
+                    duration={video.duration || '00:00'}
+                    thumbnailUrl={video.thumbnail}
+                    publishDate={video.published_at}
+                  />
                 </motion.div>
               ))}
             </div>

@@ -30,7 +30,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   publishDate
 }) => {
   const { t } = useTranslation();
-  const shareUrl = slug ? `/videos/${slug}` : undefined;
+  const internalUrl = slug ? `/videos/${slug}` : '/videos';
   const cardId = String(id || slug || title);
   const { isFavorite, toggleFavorite } = useFavorites();
   const hearted = isFavorite(cardId);
@@ -40,13 +40,13 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     type: 'video' as const,
     title,
     thumbnailUrl,
-    url: slug ? `/videos/${slug}` : shareUrl || `/videos`,
+    url: internalUrl,
     subtitle: godName,
     category: 'Video'
   };
 
   return (
-    <Link to={slug ? `/videos/${slug}` : '/videos'} className="block h-full select-none cursor-pointer">
+    <Link to={internalUrl} className="block h-full select-none cursor-pointer">
       <Card className="group p-0 relative isolate overflow-hidden flex flex-col h-full bg-white border border-gray-100 hover:border-saffron/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-xl">
         {/* Thumbnail Area */}
         <div className="relative aspect-video w-full overflow-hidden bg-slate-900 border-b border-black/5">

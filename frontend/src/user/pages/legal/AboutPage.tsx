@@ -108,7 +108,9 @@ export const AboutPage: React.FC = () => {
         <div className="space-y-8">
           {/* Section 1 - Our Mission */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi ? 'हमारा पावन उद्देश्य (Our Sacred Mission)' : 'Our Sacred Mission'}
             </h2>
             <div
@@ -129,7 +131,9 @@ export const AboutPage: React.FC = () => {
 
           {/* Section 2 - Core Pillars */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi ? 'आराधना मार्ग पर क्या उपलब्ध है?' : 'What We Offer to Devotees'}
             </h2>
             <p
@@ -145,7 +149,7 @@ export const AboutPage: React.FC = () => {
                 <IconText
                   icon={<Music className="w-5 h-5 shrink-0 -translate-y-[1px]" />}
                   text={isHi ? 'पावन भजन एवं भावार्थ' : 'Bhajans & Bhavarth'}
-                  className="mb-2 text-saffron font-bold text-lg leading-snug"
+                  className="mb-2 text-saffron font-bold text-lg leading-snug font-hindi-heading"
                 />
                 <p
                   className={`text-[16px] sm:text-[17px] text-gray-700 leading-relaxed ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -160,7 +164,7 @@ export const AboutPage: React.FC = () => {
                 <IconText
                   icon={<BookOpen className="w-5 h-5 shrink-0 -translate-y-[1px]" />}
                   text={isHi ? '18 महापुराण संग्रह' : '18 Mahapuranas'}
-                  className="mb-2 text-amber-700 font-bold text-lg leading-snug"
+                  className="mb-2 text-amber-700 font-bold text-lg leading-snug font-hindi-heading"
                 />
                 <p
                   className={`text-[16px] sm:text-[17px] text-gray-700 leading-relaxed ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -175,7 +179,7 @@ export const AboutPage: React.FC = () => {
                 <IconText
                   icon={<Flame className="w-5 h-5 shrink-0 -translate-y-[1px]" />}
                   text={isHi ? 'आरती, चालीसा व स्तोत्र' : 'Aarti, Chalisa & Stotram'}
-                  className="mb-2 text-emerald-700 font-bold text-lg leading-snug"
+                  className="mb-2 text-emerald-700 font-bold text-lg leading-snug font-hindi-heading"
                 />
                 <p
                   className={`text-[16px] sm:text-[17px] text-gray-700 leading-relaxed ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -190,7 +194,7 @@ export const AboutPage: React.FC = () => {
                 <IconText
                   icon={<Calendar className="w-5 h-5 shrink-0 -translate-y-[1px]" />}
                   text={isHi ? 'धार्मिक पर्व व तिथियाँ' : 'Festivals & Wisdom'}
-                  className="mb-2 text-purple-700 font-bold text-lg leading-snug"
+                  className="mb-2 text-purple-700 font-bold text-lg leading-snug font-hindi-heading"
                 />
                 <p
                   className={`text-[16px] sm:text-[17px] text-gray-700 leading-relaxed ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -205,7 +209,9 @@ export const AboutPage: React.FC = () => {
 
           {/* Section 3 - Editorial Values & Reverence */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi ? 'हमारी संपादकीय मर्यादा व संतों के प्रति आदर' : 'Our Editorial Values & Reverence'}
             </h2>
             <div
@@ -226,7 +232,9 @@ export const AboutPage: React.FC = () => {
 
           {/* Section 4 - Community & Devotee Engagement */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi ? 'भक्त सहभागिता एवं सेवा (Community & Seva)' : 'Devotee Community & Seva'}
             </h2>
             <div
@@ -243,7 +251,9 @@ export const AboutPage: React.FC = () => {
 
         {/* Contact & Navigation Footer Card */}
         <div className="mt-12 rounded-3xl bg-gradient-to-r from-amber-50 via-white to-orange-50 p-8 sm:p-12 border border-orange-200/80 shadow-sm text-center">
-          <h3 className={`text-2xl sm:text-3xl md:text-4xl font-black text-darkBrown mb-3.5 tracking-tight`}>
+          <h3
+            className={`text-2xl sm:text-3xl md:text-4xl font-black text-darkBrown mb-3.5 tracking-tight font-hindi-heading`}
+          >
             {isHi ? 'हमसे जुड़ें व संपर्क करें' : 'Connect with Aradhna Marg'}
           </h3>
           <p

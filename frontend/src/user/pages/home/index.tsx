@@ -256,8 +256,8 @@ export const Home: React.FC = () => {
             ) : fullVideos.length > 0 || (data?.featuredBhajans && data.featuredBhajans.length > 0) ? (
               <div className="flex flex-col gap-5">
                 {(fullVideos.length > 0 ? fullVideos : data.featuredBhajans).slice(0, 5).map((video: any) => {
-                  const isVideo = Boolean(video.youtube_video_id);
-                  const videoUrl = video.youtube_video_id
+                  const isImportedVideo = fullVideos.length > 0;
+                  const videoUrl = isImportedVideo
                     ? `/videos/${video.youtube_video_id}`
                     : `/bhajans/${video.slug || video.id}`;
                   const thumb = video.thumbnail || video.thumbnail_url || '/Deities/Krishna.webp';
@@ -269,12 +269,12 @@ export const Home: React.FC = () => {
 
                   const favoriteItem = {
                     id: videoId,
-                    type: isVideo ? ('video' as const) : ('bhajan' as const),
+                    type: isImportedVideo ? ('video' as const) : ('bhajan' as const),
                     title,
                     thumbnailUrl: thumb,
                     url: videoUrl,
                     subtitle,
-                    category: isVideo ? 'Video' : 'Bhajan'
+                    category: isImportedVideo ? 'Video' : 'Bhajan'
                   };
 
                   return (

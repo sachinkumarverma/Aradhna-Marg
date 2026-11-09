@@ -1,17 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  AlertOctagon,
-  Shield,
-  BookOpen,
-  Video,
-  FileCheck2,
-  Mail,
-  ArrowRight,
-  Sparkles,
-  Info,
-  Scale
-} from 'lucide-react';
+import { Shield, BookOpen, Video, Mail, ArrowRight, Sparkles, Scale } from 'lucide-react';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { useTranslation } from '@i18n/LanguageContext';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
@@ -105,7 +94,9 @@ export const DisclaimerPage: React.FC = () => {
         <div className="space-y-8">
           {/* Section 1 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '1. हमारा उद्देश्य एवं संपादकीय दृष्टिकोण (Our Purpose & Editorial Approach)'
                 : '1. Our Purpose & Editorial Approach'}
@@ -128,7 +119,9 @@ export const DisclaimerPage: React.FC = () => {
 
           {/* Section 2 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '2. कॉपीराइट एवं स्वामित्वाधिकार (Copyright, Ownership & Content Rights)'
                 : '2. Copyright, Ownership & Content Rights'}
@@ -151,7 +144,9 @@ export const DisclaimerPage: React.FC = () => {
 
           {/* Section 3 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '3. एम्बेडेड वीडियो एवं मीडिया (Embedded Media & Third-Party Content)'
                 : '3. Embedded Media & Third-Party Content'}
@@ -186,7 +181,9 @@ export const DisclaimerPage: React.FC = () => {
 
           {/* Section 4 */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight`}>
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
               {isHi
                 ? '4. उचित उपयोग एवं सद्भावना (Copyright Exceptions & Fair Use)'
                 : '4. Copyright Exceptions & Fair Use'}
@@ -206,10 +203,9 @@ export const DisclaimerPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl p-6 sm:p-8 border border-orange-100 shadow-sm">
               <h2
-                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight flex items-start gap-2.5 leading-snug`}
+                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight font-hindi-heading`}
               >
-                <Info className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
-                <span>{isHi ? '5. जानकारी की सटीकता (Accuracy)' : '5. Accuracy of Information'}</span>
+                {isHi ? '5. जानकारी की सटीकता (Accuracy)' : '5. Accuracy of Information'}
               </h2>
               <p
                 className={`text-gray-700 text-[17px] sm:text-[18px] md:text-[19px] leading-[1.8] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -222,10 +218,9 @@ export const DisclaimerPage: React.FC = () => {
 
             <div className="bg-white rounded-2xl p-6 sm:p-8 border border-orange-100 shadow-sm">
               <h2
-                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight flex items-start gap-2.5 leading-snug`}
+                className={`text-xl sm:text-2xl md:text-3xl font-extrabold text-darkBrown mb-3.5 tracking-tight font-hindi-heading`}
               >
-                <AlertOctagon className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
-                <span>{isHi ? '6. कोई परामर्श नहीं' : '6. No Professional Advice'}</span>
+                {isHi ? '6. कोई परामर्श नहीं' : '6. No Professional Advice'}
               </h2>
               <p
                 className={`text-gray-700 text-[17px] sm:text-[18px] md:text-[19px] leading-[1.8] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -240,12 +235,9 @@ export const DisclaimerPage: React.FC = () => {
           {/* Section 7 - DMCA / Copyright Grievance */}
           <div className="bg-gradient-to-br from-amber-50 via-white to-orange-50 rounded-2xl p-6 sm:p-10 border border-orange-200/80 shadow-sm">
             <h2
-              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight flex items-start gap-3 leading-snug`}
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
             >
-              <FileCheck2 className="w-7 h-7 sm:w-8 sm:h-8 text-saffron shrink-0 mt-0.5" />
-              <span>
-                {isHi ? '7. कॉपीराइट आपत्ति एवं निवारण (Copyright Concerns)' : '7. Copyright Concerns & Grievance'}
-              </span>
+              {isHi ? '7. कॉपीराइट आपत्ति एवं निवारण (Copyright Concerns)' : '7. Copyright Concerns & Grievance'}
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
@@ -265,7 +257,9 @@ export const DisclaimerPage: React.FC = () => {
 
         {/* Contact & Navigation Footer Card */}
         <div className="mt-12 rounded-3xl bg-gradient-to-r from-amber-50 via-white to-orange-50 p-8 sm:p-12 border border-orange-200/80 shadow-sm text-center">
-          <h3 className={`text-2xl sm:text-3xl md:text-4xl font-black text-darkBrown mb-3.5 tracking-tight`}>
+          <h3
+            className={`text-2xl sm:text-3xl md:text-4xl font-black text-darkBrown mb-3.5 tracking-tight font-hindi-heading`}
+          >
             {isHi ? 'संपर्क एवं सहायता' : 'Get in Touch with Our Team'}
           </h3>
           <p
