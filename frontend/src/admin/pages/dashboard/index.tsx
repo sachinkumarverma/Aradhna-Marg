@@ -527,34 +527,45 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : recentDonations?.data && recentDonations.data.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-              {recentDonations.data.map((payment: PaymentItem) => (
-                <div
-                  key={payment.id}
-                  onClick={() => navigate(getAdminPath('/donations?tab=payments'))}
-                  className="flex items-center justify-between p-2.5 bg-white rounded-md border border-gray-100 hover:border-orange-200 transition-all cursor-pointer shadow-2xs"
-                >
-                  <div className="min-w-0 pr-2">
-                    <p className="text-xs font-semibold text-gray-900 truncate">
-                      {payment.isAnonymous ? 'Anonymous Supporter' : payment.supporterName || 'Supporter'}
-                    </p>
-                    <p className="text-[11px] text-gray-400">
-                      {payment.paidAt
-                        ? new Intl.DateTimeFormat('en-IN', { dateStyle: 'short' }).format(new Date(payment.paidAt))
-                        : 'Recent'}
-                    </p>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 shrink-0">
-                    ₹{payment.amount}
-                  </span>
-                </div>
-              ))}
-            </div>
           ) : (
-            <div className="text-center py-4 bg-white/70 rounded-md border border-dashed border-gray-200 text-xs text-gray-400">
-              No recent contributions recorded yet.
-            </div>
+            (() => {
+              const displayablePayments = (recentDonations?.data || []).filter(
+                (payment: PaymentItem) =>
+                  !payment.supporterName?.toLowerCase().includes('test') &&
+                  payment.supporterName !== 'Transition Devotee' &&
+                  payment.supporterName !== 'Secret Devotee' &&
+                  !payment.gatewayOrderId?.startsWith('order_test_')
+              );
+              return displayablePayments.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                  {displayablePayments.map((payment: PaymentItem) => (
+                    <div
+                      key={payment.id}
+                      onClick={() => navigate(getAdminPath('/donations?tab=payments'))}
+                      className="flex items-center justify-between p-2.5 bg-white rounded-md border border-gray-100 hover:border-orange-200 transition-all cursor-pointer shadow-2xs"
+                    >
+                      <div className="min-w-0 pr-2">
+                        <p className="text-xs font-semibold text-gray-900 truncate">
+                          {payment.isAnonymous ? 'Anonymous Supporter' : payment.supporterName || 'Supporter'}
+                        </p>
+                        <p className="text-[11px] text-gray-400">
+                          {payment.paidAt
+                            ? new Intl.DateTimeFormat('en-IN', { dateStyle: 'short' }).format(new Date(payment.paidAt))
+                            : 'Recent'}
+                        </p>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 shrink-0">
+                        ₹{payment.amount}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-4 bg-white/70 rounded-md border border-dashed border-gray-200 text-xs text-gray-400">
+                  No recent contributions recorded yet.
+                </div>
+              );
+            })()
           )}
         </div>
       </div>

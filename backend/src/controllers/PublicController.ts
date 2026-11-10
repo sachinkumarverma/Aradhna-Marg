@@ -627,7 +627,7 @@ export class PublicController {
 
       // Related Bhajans
       const relatedBhajansQuery = `
-        SELECT b.id, b.title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration,
+        SELECT b.id, b.title, b.title_en, b.english_title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration,
                d.name as god_name, c.name as category_name
         FROM bhajans b
         LEFT JOIN deities d ON b.god_id = d.id
@@ -812,7 +812,7 @@ export class PublicController {
 
       // Related Bhajans
       const relatedBhajansQuery = `
-        SELECT b.id, b.title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration,
+        SELECT b.id, b.title, b.title_en, b.english_title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration,
                d.name as god_name, c.name as category_name
         FROM bhajans b
         LEFT JOIN festival_bhajans fb ON b.id = fb.bhajan_id
@@ -1038,7 +1038,7 @@ export class PublicController {
 
       // Fetch related Bhajans
       const bhajansRes = await db.query(
-        `SELECT b.id, b.title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration
+        `SELECT b.id, b.title, b.title_en, b.english_title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration
          FROM bhajans b
          WHERE (b.god_id = $1 OR b.god_id::text = $1::text) AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
          ORDER BY b.popularity_score DESC NULLS LAST, b.created_at DESC LIMIT 8`,
@@ -1047,7 +1047,7 @@ export class PublicController {
 
       // Fetch related Articles
       const articlesRes = await db.query(
-        `SELECT a.id, a.title, a.title_en, a.slug, a.excerpt, m.url as featured_image_url
+        `SELECT a.id, a.title, a.title_en, a.slug, a.excerpt, a.excerpt_en, m.url as featured_image_url
          FROM articles a
          JOIN article_gods ag ON a.id = ag.article_id
          LEFT JOIN media_files m ON a.featured_image_id = m.id
@@ -1128,8 +1128,9 @@ export class PublicController {
 
       // Fetch associated Bhajans
       const bhajansRes = await db.query(
-        `SELECT b.id, b.title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration
+        `SELECT b.id, b.title, b.title_en, b.english_title, b.slug, COALESCE(b.thumbnail_url, b.image_url, b.open_graph_image) as thumbnail_url, b.youtube_video_id, b.views, b.duration, g.name as god_name
          FROM bhajans b
+         LEFT JOIN deities g ON b.god_id = g.id
          WHERE b.category_id = $1 AND b.status = 'PUBLISHED' AND b.deleted_at IS NULL
          ORDER BY b.created_at DESC LIMIT 12`,
         [category.id]
@@ -1137,7 +1138,7 @@ export class PublicController {
 
       // Fetch associated Articles
       const articlesRes = await db.query(
-        `SELECT a.id, a.title, a.title_en, a.slug, a.excerpt, m.url as featured_image_url
+        `SELECT a.id, a.title, a.title_en, a.slug, a.excerpt, a.excerpt_en, m.url as featured_image_url
          FROM articles a
          LEFT JOIN media_files m ON a.featured_image_id = m.id
          WHERE a.category_id = $1 AND a.status = 'PUBLISHED' AND a.deleted_at IS NULL
@@ -1201,7 +1202,7 @@ export class PublicController {
       const author = rows[0];
 
       const articlesRes = await db.query(
-        `SELECT a.id, a.title, a.slug, a.excerpt, m.url as featured_image_url
+        `SELECT a.id, a.title, a.title_en, a.slug, a.excerpt, a.excerpt_en, m.url as featured_image_url
          FROM articles a LEFT JOIN media_files m ON a.featured_image_id = m.id
          WHERE a.author_id = $1 AND a.status = 'PUBLISHED' AND a.deleted_at IS NULL
          ORDER BY a.created_at DESC LIMIT 10`,

@@ -12,6 +12,20 @@ if (typeof document !== 'undefined') {
   });
 }
 
+// Auto-recover from stale chunks when a new application deployment occurs
+if (typeof window !== 'undefined') {
+  window.addEventListener('vite:preloadError', (event) => {
+    console.warn('[App] Stale chunk detected after deployment, auto-refreshing...', event);
+    const RELOAD_KEY = 'am_stale_chunk_reload';
+    const lastReload = sessionStorage.getItem(RELOAD_KEY);
+    const now = Date.now();
+    if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+      sessionStorage.setItem(RELOAD_KEY, String(now));
+      window.location.reload();
+    }
+  });
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

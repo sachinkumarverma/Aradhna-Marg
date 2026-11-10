@@ -102,7 +102,7 @@
       "destination": "/index.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/).*)",
       "has": [
         {
           "type": "host",

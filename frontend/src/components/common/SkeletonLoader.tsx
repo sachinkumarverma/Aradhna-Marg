@@ -95,19 +95,16 @@ export const BhajanCardSkeleton: React.FC = () => (
     <div className="aspect-video w-full bg-amber-100/50 border-b border-amber-100/40" />
 
     {/* Devotional Content Area */}
-    <div className="p-4 flex flex-col flex-1 justify-between">
+    <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between">
       <div>
-        <div className="pt-0.5 pb-0.5 min-h-[44px] flex flex-col justify-center gap-1.5">
+        <div className="pt-0.5 pb-0.5 flex flex-col justify-center gap-1.5">
           <div className="h-4 bg-amber-200/50 rounded-md w-5/6" />
           <div className="h-4 bg-amber-200/40 rounded-md w-2/3" />
-        </div>
-        <div className="h-[16px] mt-0.5 flex items-center">
-          <div className="h-3 bg-gray-200/70 rounded-md w-1/2" />
         </div>
       </div>
 
       {/* Devotional Footer */}
-      <div className="mt-4 pt-3 border-t border-amber-100/70 flex items-center justify-between gap-2">
+      <div className="mt-3 pt-2.5 border-t border-amber-100/70 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
           <div className="w-7 h-7 rounded-full bg-amber-100/60" />
           <div className="w-7 h-7 rounded-full bg-amber-100/60" />

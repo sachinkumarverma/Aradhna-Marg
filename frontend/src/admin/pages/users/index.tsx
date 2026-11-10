@@ -122,7 +122,7 @@ export function AdminUsers() {
     {
       header: 'Devotee',
       sortKey: 'name',
-      className: 'min-w-[240px]',
+      className: 'min-w-[180px]',
       accessor: (row: AdminUserItem) => (
         <div className="flex items-center gap-3">
           {row.avatar_url ? (
@@ -161,7 +161,7 @@ export function AdminUsers() {
     {
       header: 'Authentication',
       sortKey: (row: AdminUserItem) => (row.google_id ? 'Google' : 'Email'),
-      className: 'whitespace-nowrap min-w-[150px]',
+      className: 'whitespace-nowrap min-w-[105px]',
       accessor: (row: AdminUserItem) =>
         row.google_id ? (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200/70 whitespace-nowrap">
@@ -195,7 +195,7 @@ export function AdminUsers() {
     {
       header: 'Signup Date',
       sortKey: 'created_at',
-      className: 'whitespace-nowrap min-w-[170px]',
+      className: 'whitespace-nowrap min-w-[125px]',
       accessor: (row: AdminUserItem) => (
         <div className="flex items-center gap-2 text-xs text-slate-800 font-medium whitespace-nowrap">
           <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
@@ -206,7 +206,7 @@ export function AdminUsers() {
     {
       header: 'Last Logged In',
       sortKey: (row: AdminUserItem) => row.last_login_at || '',
-      className: 'whitespace-nowrap min-w-[210px]',
+      className: 'whitespace-nowrap min-w-[160px]',
       accessor: (row: AdminUserItem) => (
         <div className="flex items-center gap-2 text-xs text-slate-800 font-medium whitespace-nowrap">
           <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
@@ -221,7 +221,7 @@ export function AdminUsers() {
     {
       header: 'Status',
       sortKey: 'is_active',
-      className: 'text-center whitespace-nowrap min-w-[130px]',
+      className: 'text-center whitespace-nowrap min-w-[95px]',
       accessor: (row: AdminUserItem) => (
         <span
           className={`inline-flex items-center justify-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap ${
@@ -362,6 +362,7 @@ export function AdminUsers() {
       {/* Main Table Container using DataTable */}
       <div className="flex-1 min-h-0 relative">
         <DataTable
+          compact={true}
           data={data?.data || []}
           columns={columns}
           isLoading={isLoading}

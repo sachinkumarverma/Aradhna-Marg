@@ -1,41 +1,56 @@
-import { lazy } from 'react';
 import { type RouteObject, Link, Navigate } from 'react-router-dom';
 import { AdminLayout } from '@admin/layouts/AdminLayout';
 import { getAdminPath } from '@utils/host';
+import { lazyWithRetry } from '@utils/lazyWithRetry';
+import { RouteErrorBoundary } from '@components/common/RouteErrorBoundary';
 
-// Lazy loaded Admin pages
-const AdminDashboard = lazy(() => import('@admin/pages/dashboard').then((m) => ({ default: m.AdminDashboard })));
-const AdminBhajans = lazy(() => import('@admin/pages/bhajans').then((m) => ({ default: m.AdminBhajans })));
-const AdminBhajanForm = lazy(() => import('@admin/pages/bhajans/form').then((m) => ({ default: m.AdminBhajanForm })));
-const AdminLogin = lazy(() => import('@admin/pages/login').then((m) => ({ default: m.AdminLogin })));
-const AdminYoutube = lazy(() => import('@admin/pages/youtube').then((m) => ({ default: m.AdminYoutube })));
-const AdminAIProcessing = lazy(() => import('@admin/pages/ai').then((m) => ({ default: m.AdminAIProcessing })));
-const AdminAIAgents = lazy(() => import('@admin/pages/ai-agents').then((m) => ({ default: m.AdminAIAgents })));
-const AdminAIJobs = lazy(() => import('@admin/pages/ai-jobs').then((m) => ({ default: m.AdminAIJobs })));
-const AdminCategories = lazy(() => import('@admin/pages/categories').then((m) => ({ default: m.AdminCategories })));
-const AdminDeities = lazy(() => import('@admin/pages/deities').then((m) => ({ default: m.AdminDeities })));
-const AdminFestivals = lazy(() => import('@admin/pages/festivals').then((m) => ({ default: m.AdminFestivals })));
-const AdminFestivalForm = lazy(() =>
+// Lazy loaded Admin pages with automated chunk-load retry
+const AdminDashboard = lazyWithRetry(() =>
+  import('@admin/pages/dashboard').then((m) => ({ default: m.AdminDashboard }))
+);
+const AdminBhajans = lazyWithRetry(() => import('@admin/pages/bhajans').then((m) => ({ default: m.AdminBhajans })));
+const AdminBhajanForm = lazyWithRetry(() =>
+  import('@admin/pages/bhajans/form').then((m) => ({ default: m.AdminBhajanForm }))
+);
+const AdminLogin = lazyWithRetry(() => import('@admin/pages/login').then((m) => ({ default: m.AdminLogin })));
+const AdminYoutube = lazyWithRetry(() => import('@admin/pages/youtube').then((m) => ({ default: m.AdminYoutube })));
+const AdminAIProcessing = lazyWithRetry(() =>
+  import('@admin/pages/ai').then((m) => ({ default: m.AdminAIProcessing }))
+);
+const AdminAIAgents = lazyWithRetry(() => import('@admin/pages/ai-agents').then((m) => ({ default: m.AdminAIAgents })));
+const AdminAIJobs = lazyWithRetry(() => import('@admin/pages/ai-jobs').then((m) => ({ default: m.AdminAIJobs })));
+const AdminCategories = lazyWithRetry(() =>
+  import('@admin/pages/categories').then((m) => ({ default: m.AdminCategories }))
+);
+const AdminDeities = lazyWithRetry(() => import('@admin/pages/deities').then((m) => ({ default: m.AdminDeities })));
+const AdminFestivals = lazyWithRetry(() =>
+  import('@admin/pages/festivals').then((m) => ({ default: m.AdminFestivals }))
+);
+const AdminFestivalForm = lazyWithRetry(() =>
   import('@admin/pages/festivals/form').then((m) => ({ default: m.AdminFestivalForm }))
 );
-const AdminSEO = lazy(() => import('@admin/pages/seo').then((m) => ({ default: m.AdminSEO })));
-const AdminSettings = lazy(() => import('@admin/pages/settings').then((m) => ({ default: m.AdminSettings })));
-const AdminArticles = lazy(() => import('@admin/pages/articles').then((m) => ({ default: m.AdminArticles })));
-const AdminArticleForm = lazy(() =>
+const AdminSEO = lazyWithRetry(() => import('@admin/pages/seo').then((m) => ({ default: m.AdminSEO })));
+const AdminSettings = lazyWithRetry(() => import('@admin/pages/settings').then((m) => ({ default: m.AdminSettings })));
+const AdminArticles = lazyWithRetry(() => import('@admin/pages/articles').then((m) => ({ default: m.AdminArticles })));
+const AdminArticleForm = lazyWithRetry(() =>
   import('@admin/pages/articles/form').then((m) => ({ default: m.AdminArticleForm }))
 );
-const AdminPuranas = lazy(() => import('@admin/pages/puranas').then((m) => ({ default: m.AdminPuranas })));
-const AdminPuranForm = lazy(() => import('@admin/pages/puranas/form').then((m) => ({ default: m.AdminPuranForm })));
-const AdminAuthors = lazy(() => import('@admin/pages/authors').then((m) => ({ default: m.AdminAuthors })));
-const AdminTags = lazy(() => import('@admin/pages/tags').then((m) => ({ default: m.AdminTags })));
-const AdminAdvertisements = lazy(() =>
+const AdminPuranas = lazyWithRetry(() => import('@admin/pages/puranas').then((m) => ({ default: m.AdminPuranas })));
+const AdminPuranForm = lazyWithRetry(() =>
+  import('@admin/pages/puranas/form').then((m) => ({ default: m.AdminPuranForm }))
+);
+const AdminAuthors = lazyWithRetry(() => import('@admin/pages/authors').then((m) => ({ default: m.AdminAuthors })));
+const AdminTags = lazyWithRetry(() => import('@admin/pages/tags').then((m) => ({ default: m.AdminTags })));
+const AdminAdvertisements = lazyWithRetry(() =>
   import('@admin/pages/advertisements').then((m) => ({ default: m.AdminAdvertisements }))
 );
-const AdminSystemHealth = lazy(() =>
+const AdminSystemHealth = lazyWithRetry(() =>
   import('@admin/pages/system-health').then((m) => ({ default: m.AdminSystemHealth }))
 );
-const AdminDonations = lazy(() => import('@admin/pages/donations').then((m) => ({ default: m.AdminDonations })));
-const AdminUsers = lazy(() => import('@admin/pages/users').then((m) => ({ default: m.AdminUsers })));
+const AdminDonations = lazyWithRetry(() =>
+  import('@admin/pages/donations').then((m) => ({ default: m.AdminDonations }))
+);
+const AdminUsers = lazyWithRetry(() => import('@admin/pages/users').then((m) => ({ default: m.AdminUsers })));
 
 export const AdminNotFoundPage = () => (
   <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -179,21 +194,25 @@ const adminChildRoutes: RouteObject[] = [
 export const standaloneAdminRoutes: RouteObject[] = [
   {
     path: '/login',
-    element: <AdminLogin />
+    element: <AdminLogin />,
+    errorElement: <RouteErrorBoundary />
   },
   {
     path: '/',
     element: <AdminLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: adminChildRoutes
   },
   // Backward compatibility on admin host if user enters /admin/...
   {
     path: '/admin/login',
-    element: <AdminLogin />
+    element: <AdminLogin />,
+    errorElement: <RouteErrorBoundary />
   },
   {
     path: '/admin',
     element: <AdminLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: adminChildRoutes
   },
   {
@@ -208,11 +227,13 @@ export const standaloneAdminRoutes: RouteObject[] = [
 export const prefixedAdminRoutes: RouteObject[] = [
   {
     path: '/admin/login',
-    element: <AdminLogin />
+    element: <AdminLogin />,
+    errorElement: <RouteErrorBoundary />
   },
   {
     path: '/admin',
     element: <AdminLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: adminChildRoutes
   },
   {

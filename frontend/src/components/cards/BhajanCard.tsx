@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useFavorites } from '@hooks/useFavorites';
 import { useTranslation } from '@i18n/LanguageContext';
+import { cn } from '@utils/cn';
 
 interface BhajanCardProps {
   id?: string | number;
@@ -33,19 +34,26 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
   slug,
   publishDate
 }) => {
-  const { t } = useTranslation();
+  const { language, t } = useTranslation();
   const shareUrl = slug ? `/bhajans/${slug}` : undefined;
   const cardId = String(id || slug || title);
   const { isFavorite, toggleFavorite } = useFavorites();
   const hearted = isFavorite(cardId);
-  const subtitle = englishTitle || titleEn;
-  const showEnglish = subtitle && subtitle.trim().toLowerCase() !== title.trim().toLowerCase();
+  const enTitle = englishTitle || titleEn;
+  const isEn = language === 'en';
+
+  // In English mode, show English title as primary title if available
+  const displayTitle = isEn && enTitle?.trim() ? enTitle.trim() : title;
+
+  // Secondary subtitle: in Hindi mode show English (if different); in English mode show Hindi (if different)
+  const displaySubtitle =
+    !isEn && enTitle && enTitle.trim().toLowerCase() !== title.trim().toLowerCase() ? enTitle : undefined;
 
   const favoriteItem = {
     id: cardId,
     type: 'bhajan' as const,
-    title,
-    englishTitle: subtitle,
+    title: displayTitle,
+    englishTitle: enTitle,
     thumbnailUrl,
     url: slug ? `/bhajans/${slug}` : `/bhajans`,
     subtitle: godName,
@@ -134,20 +142,25 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
         </div>
 
         {/* Devotional Content Area */}
-        <div className="p-4 flex flex-col flex-1 justify-between">
-          <div className="min-h-[58px]">
-            <h3 className="font-bold text-darkBrown text-base line-clamp-2 pt-0.5 pb-0.5 leading-snug group-hover:text-saffron transition-colors font-hindi-heading">
-              {title}
+        <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between">
+          <div>
+            <h3
+              className={cn(
+                'font-bold text-darkBrown text-base line-clamp-2 pt-0.5 pb-0.5 leading-snug group-hover:text-saffron transition-colors',
+                isEn ? 'font-sans' : 'font-hindi-heading'
+              )}
+            >
+              {displayTitle}
             </h3>
-            <p className="text-xs text-slate-500 font-sans line-clamp-1 mt-0.5 font-medium h-[16px]">
-              {showEnglish ? subtitle : '\u00A0'}
-            </p>
+            {displaySubtitle && (
+              <p className="text-xs text-slate-500 font-sans line-clamp-1 mt-1 font-medium">{displaySubtitle}</p>
+            )}
           </div>
 
           {/* Devotional Footer */}
-          <div className="mt-4 pt-3 border-t border-amber-100/70 flex items-center justify-between gap-2">
+          <div className="mt-3 pt-2.5 border-t border-amber-100/70 flex items-center justify-between gap-2">
             <SocialShareButtons
-              title={title}
+              title={displayTitle}
               excerpt={godName ? `${godName} का पावन भजन एवं आरती` : undefined}
               url={shareUrl}
             />

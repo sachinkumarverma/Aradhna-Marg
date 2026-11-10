@@ -14,6 +14,7 @@ interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
   isLoading?: boolean;
+  compact?: boolean;
   selectedRowId?: string | number | null;
   onRowClick?: (row: T) => void;
   rowClassName?: (row: T) => string;
@@ -35,6 +36,7 @@ export function DataTable<T extends { id: string | number }>({
   data,
   columns,
   isLoading,
+  compact = false,
   selectedRowId,
   onRowClick,
   rowClassName,
@@ -51,6 +53,7 @@ export function DataTable<T extends { id: string | number }>({
   onSortChange,
   skeletonRows
 }: DataTableProps<T>) {
+  const cellPaddingClass = compact ? 'px-3.5 sm:px-4 py-3 sm:py-3.5' : 'px-6 py-4';
   const prevCountRef = React.useRef(10);
   React.useEffect(() => {
     if (data && data.length > 0) {
@@ -200,7 +203,8 @@ export function DataTable<T extends { id: string | number }>({
                   key={idx}
                   onClick={() => isSortable && handleHeaderClick(col)}
                   className={cn(
-                    'px-6 py-4 font-bold select-none bg-orange-50 whitespace-nowrap',
+                    cellPaddingClass,
+                    'font-bold select-none bg-orange-50 whitespace-nowrap',
                     isSortable && 'cursor-pointer group hover:bg-orange-100 transition-colors',
                     col.className
                   )}
@@ -230,7 +234,9 @@ export function DataTable<T extends { id: string | number }>({
                 </th>
               );
             })}
-            <th className="px-6 py-4 font-bold text-right select-none bg-orange-50 whitespace-nowrap">Actions</th>
+            <th className={cn(cellPaddingClass, 'font-bold text-right select-none bg-orange-50 whitespace-nowrap')}>
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -238,7 +244,7 @@ export function DataTable<T extends { id: string | number }>({
             Array.from({ length: effectiveSkeletonRows }).map((_, rIdx) => (
               <tr key={rIdx} className="border-b border-gray-100/80 animate-pulse bg-white">
                 {columns.map((col, cIdx) => (
-                  <td key={cIdx} className={cn('px-6 py-4', col.className)}>
+                  <td key={cIdx} className={cn(cellPaddingClass, col.className)}>
                     {cIdx === 0 ? (
                       <div className="space-y-2 py-0.5">
                         <div className="h-4 bg-gray-200/80 rounded w-4/5" />
@@ -253,7 +259,7 @@ export function DataTable<T extends { id: string | number }>({
                     )}
                   </td>
                 ))}
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className={cn(cellPaddingClass, 'whitespace-nowrap')}>
                   <div className="flex items-center justify-end gap-2">
                     <div className="h-7 w-7 bg-gray-100 rounded-md" />
                     <div className="h-7 w-7 bg-gray-100 rounded-md" />
@@ -296,7 +302,7 @@ export function DataTable<T extends { id: string | number }>({
                     <td
                       key={idx}
                       className={cn(
-                        'px-6 py-4',
+                        cellPaddingClass,
                         col.className,
                         idx === 0 && isHighlighted && 'border-l-4 border-l-saffron'
                       )}
@@ -305,7 +311,7 @@ export function DataTable<T extends { id: string | number }>({
                     </td>
                   ))}
                   <td
-                    className="px-6 py-4 whitespace-nowrap"
+                    className={cn(cellPaddingClass, 'whitespace-nowrap')}
                     onClick={(e) => (renderActions ? e.stopPropagation() : undefined)}
                   >
                     <div className="flex items-center justify-end gap-2 transition-opacity">

@@ -74,7 +74,7 @@ export const CollectionDetails: React.FC = () => {
       }
     };
     fetchDetails();
-  }, [id, collectionType, getLocalizedField]);
+  }, [id, collectionType, language, getLocalizedField]);
 
   if (loading) {
     return <CustomLoader fullScreen text={language === 'hi' ? 'संग्रह लोड हो रहा है...' : 'Loading collection...'} />;
@@ -173,17 +173,32 @@ export const CollectionDetails: React.FC = () => {
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-              {data.bhajans.map((bhajan: any) => (
-                <Link key={bhajan.id} to={`/bhajans/${bhajan.slug || bhajan.id}`}>
+              {data.bhajans.map((bhajan: any) => {
+                const enTitle = bhajan.english_title || bhajan.title_en;
+                const localizedTitle =
+                  getLocalizedField(bhajan, 'title') || (language === 'en' && enTitle ? enTitle : bhajan.title);
+                const godDisplayName =
+                  collectionType === 'gods' || collectionType === 'deities'
+                    ? data.title
+                    : getLocalizedField(bhajan, 'god_name') || bhajan.god_name;
+                return (
                   <BhajanCard
-                    title={bhajan.title}
-                    godName={data.title}
+                    key={bhajan.id}
+                    id={bhajan.id}
+                    slug={bhajan.slug || bhajan.id}
+                    title={localizedTitle}
+                    englishTitle={enTitle}
+                    godName={godDisplayName}
                     views={bhajan.views || 0}
-                    duration={bhajan.duration ? `${Math.floor(bhajan.duration / 60)} m` : t('navigation.bhajans')}
+                    duration={
+                      bhajan.duration
+                        ? `${Math.floor(bhajan.duration / 60)}: ${(bhajan.duration % 60).toString().padStart(2, '0')}`
+                        : undefined
+                    }
                     thumbnailUrl={bhajan.thumbnail_url}
                   />
-                </Link>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -202,8 +217,8 @@ export const CollectionDetails: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
               {data.articles.map((art: any) => {
-                const title = art.displayTitle || getLocalizedField(art, 'title');
-                const excerpt = art.displayExcerpt || getLocalizedField(art, 'excerpt');
+                const title = getLocalizedField(art, 'title') || art.displayTitle || art.title;
+                const excerpt = getLocalizedField(art, 'excerpt') || art.displayExcerpt || art.excerpt;
                 return (
                   <Link
                     key={art.id}
@@ -248,9 +263,9 @@ export const CollectionDetails: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
               {data.festivals.map((fest: any) => {
-                const festName = fest.displayName || getLocalizedField(fest, 'name') || fest.name;
+                const festName = getLocalizedField(fest, 'name') || fest.displayName || fest.name;
                 const festDesc =
-                  fest.displayDescription || getLocalizedField(fest, 'short_description') || fest.short_description;
+                  getLocalizedField(fest, 'short_description') || fest.displayDescription || fest.short_description;
                 return (
                   <Link
                     key={fest.id}
