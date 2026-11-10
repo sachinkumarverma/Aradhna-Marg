@@ -200,7 +200,7 @@ export function DataTable<T extends { id: string | number }>({
                   key={idx}
                   onClick={() => isSortable && handleHeaderClick(col)}
                   className={cn(
-                    'px-6 py-4 font-bold select-none bg-orange-50',
+                    'px-6 py-4 font-bold select-none bg-orange-50 whitespace-nowrap',
                     isSortable && 'cursor-pointer group hover:bg-orange-100 transition-colors',
                     col.className
                   )}
@@ -230,7 +230,7 @@ export function DataTable<T extends { id: string | number }>({
                 </th>
               );
             })}
-            <th className="px-6 py-4 font-bold text-right select-none bg-orange-50">Actions</th>
+            <th className="px-6 py-4 font-bold text-right select-none bg-orange-50 whitespace-nowrap">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -253,7 +253,7 @@ export function DataTable<T extends { id: string | number }>({
                     )}
                   </td>
                 ))}
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center justify-end gap-2">
                     <div className="h-7 w-7 bg-gray-100 rounded-md" />
                     <div className="h-7 w-7 bg-gray-100 rounded-md" />
@@ -304,7 +304,10 @@ export function DataTable<T extends { id: string | number }>({
                       {typeof col.accessor === 'function' ? col.accessor(row) : (row[col.accessor] as React.ReactNode)}
                     </td>
                   ))}
-                  <td className="px-6 py-4" onClick={(e) => (renderActions ? e.stopPropagation() : undefined)}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap"
+                    onClick={(e) => (renderActions ? e.stopPropagation() : undefined)}
+                  >
                     <div className="flex items-center justify-end gap-2 transition-opacity">
                       {renderActions && renderActions(row)}
                       {onPreview && (

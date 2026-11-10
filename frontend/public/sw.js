@@ -3,6 +3,7 @@ const CACHE_NAME = 'aradhnamarg-pwa-v2';
 const PRECACHE_ASSETS = [
   '/',
   '/manifest.webmanifest',
+  '/manifest-admin.webmanifest',
   '/logo.png',
   '/favicon.svg',
   '/favicon.ico',
@@ -60,9 +61,7 @@ self.addEventListener('fetch', (event) => {
         if (
           networkResponse &&
           networkResponse.status === 200 &&
-          (url.pathname.startsWith('/assets') ||
-            url.pathname.startsWith('/icons') ||
-            url.pathname === '/logo.png')
+          (url.pathname.startsWith('/assets') || url.pathname.startsWith('/icons') || url.pathname === '/logo.png')
         ) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {

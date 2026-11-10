@@ -4,7 +4,24 @@ import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'admin-manifest-dev-rewrite',
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          if (req.url && (req.url === '/manifest.webmanifest' || req.url.startsWith('/manifest.webmanifest?'))) {
+            const referer = (req.headers['referer'] as string) || '';
+            const host = (req.headers['host'] as string) || '';
+            if (host.includes('admin') || referer.includes('/admin') || referer.includes('app=admin')) {
+              req.url = '/manifest-admin.webmanifest';
+            }
+          }
+          next();
+        });
+      }
+    }
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

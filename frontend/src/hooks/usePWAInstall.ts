@@ -45,6 +45,7 @@ export function usePWAInstall() {
       (window.navigator as any).standalone === true ||
       document.referrer.includes('android-app://') ||
       window.location.search.includes('source=pwa') ||
+      window.location.search.includes('source=admin-pwa') ||
       localStorage.getItem('am_pwa_is_installed') === 'true';
 
     setIsInstalled(isStandalone);

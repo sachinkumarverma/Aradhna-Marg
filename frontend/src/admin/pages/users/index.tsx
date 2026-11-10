@@ -122,6 +122,7 @@ export function AdminUsers() {
     {
       header: 'Devotee',
       sortKey: 'name',
+      className: 'min-w-[240px]',
       accessor: (row: AdminUserItem) => (
         <div className="flex items-center gap-3">
           {row.avatar_url ? (
@@ -160,10 +161,10 @@ export function AdminUsers() {
     {
       header: 'Authentication',
       sortKey: (row: AdminUserItem) => (row.google_id ? 'Google' : 'Email'),
-      className: 'w-44',
+      className: 'whitespace-nowrap min-w-[150px]',
       accessor: (row: AdminUserItem) =>
         row.google_id ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200/70">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200/70 whitespace-nowrap">
             <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -185,8 +186,8 @@ export function AdminUsers() {
             <span>Google</span>
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-            <Mail className="w-3 h-3 text-gray-500" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200 whitespace-nowrap">
+            <Mail className="w-3 h-3 text-gray-500 shrink-0" />
             <span>Email / Pass</span>
           </span>
         )
@@ -194,25 +195,25 @@ export function AdminUsers() {
     {
       header: 'Signup Date',
       sortKey: 'created_at',
-      className: 'w-44',
+      className: 'whitespace-nowrap min-w-[170px]',
       accessor: (row: AdminUserItem) => (
-        <div className="flex items-center gap-2 text-xs text-slate-800 font-medium">
+        <div className="flex items-center gap-2 text-xs text-slate-800 font-medium whitespace-nowrap">
           <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-          <span>{formatDateSafe(row.created_at, false)}</span>
+          <span className="whitespace-nowrap">{formatDateSafe(row.created_at, false)}</span>
         </div>
       )
     },
     {
       header: 'Last Logged In',
       sortKey: (row: AdminUserItem) => row.last_login_at || '',
-      className: 'w-44',
+      className: 'whitespace-nowrap min-w-[210px]',
       accessor: (row: AdminUserItem) => (
-        <div className="flex items-center gap-2 text-xs text-slate-800 font-medium">
+        <div className="flex items-center gap-2 text-xs text-slate-800 font-medium whitespace-nowrap">
           <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
           {row.last_login_at ? (
-            <span className="text-gray-900 font-semibold">{formatDateSafe(row.last_login_at)}</span>
+            <span className="whitespace-nowrap">{formatDateSafe(row.last_login_at)}</span>
           ) : (
-            <span className="text-gray-400 italic">Never</span>
+            <span className="text-gray-400 italic whitespace-nowrap">Never</span>
           )}
         </div>
       )
@@ -220,10 +221,10 @@ export function AdminUsers() {
     {
       header: 'Status',
       sortKey: 'is_active',
-      className: 'text-center w-36',
+      className: 'text-center whitespace-nowrap min-w-[130px]',
       accessor: (row: AdminUserItem) => (
         <span
-          className={`inline-flex items-center justify-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+          className={`inline-flex items-center justify-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap ${
             row.is_active ? 'bg-green-600 text-white' : 'bg-rose-600 text-white'
           }`}
         >

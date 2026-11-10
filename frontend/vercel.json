@@ -88,6 +88,16 @@
   ],
   "rewrites": [
     {
+      "source": "/manifest.webmanifest",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?<admin>admin\\..*|.*-admin\\..*)"
+        }
+      ],
+      "destination": "/manifest-admin.webmanifest"
+    },
+    {
       "source": "/videos/:slug",
       "destination": "/index.html"
     },

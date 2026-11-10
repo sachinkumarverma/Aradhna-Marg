@@ -69,12 +69,40 @@
 
     <!-- Theme, PWA & Icons -->
     <meta name="theme-color" content="#ff3b00" />
-    <meta name="application-name" content="Aradhna Marg" />
+    <meta id="app-name-meta" name="application-name" content="Aradhna Marg" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Aradhna Marg" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta id="apple-app-title-meta" name="apple-mobile-web-app-title" content="Aradhna Marg" />
+    <link id="app-manifest-link" rel="manifest" href="/manifest.webmanifest" />
+    <script>
+      (function () {
+        try {
+          var h = (window.location.hostname || '').toLowerCase();
+          var p = (window.location.pathname || '').toLowerCase();
+          var s = (window.location.search || '').toLowerCase();
+          var isAdmin =
+            h === 'admin.aradhnamarg.com' ||
+            h.indexOf('admin.') === 0 ||
+            h.indexOf('admin-') === 0 ||
+            h.indexOf('-admin.') !== -1 ||
+            h.indexOf('-admin.vercel.app') !== -1 ||
+            p === '/admin' ||
+            p.indexOf('/admin/') === 0 ||
+            s.indexOf('app=admin') !== -1 ||
+            s.indexOf('mode=admin') !== -1;
+
+          if (isAdmin) {
+            var manifestEl = document.getElementById('app-manifest-link');
+            if (manifestEl) manifestEl.setAttribute('href', '/manifest-admin.webmanifest');
+            var nameEl = document.getElementById('app-name-meta');
+            if (nameEl) nameEl.setAttribute('content', 'Aradhna Admin');
+            var appleTitleEl = document.getElementById('apple-app-title-meta');
+            if (appleTitleEl) appleTitleEl.setAttribute('content', 'Aradhna Admin');
+          }
+        } catch (_) {}
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
