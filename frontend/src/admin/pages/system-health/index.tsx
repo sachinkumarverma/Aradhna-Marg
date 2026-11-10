@@ -19,8 +19,14 @@ export const AdminSystemHealth: React.FC = () => {
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['system-health'],
     queryFn: async () => {
-      const res = await apiClient.get('/v1/health');
-      return res.data.data;
+      const headers = { 'Cache-Control': 'no-cache, no-store' };
+      try {
+        const res = await apiClient.get('/internal/health', { headers });
+        return res.data?.data || res.data;
+      } catch {
+        const fallbackRes = await apiClient.get('/v1/health', { headers });
+        return fallbackRes.data?.data || fallbackRes.data;
+      }
     },
     refetchInterval: 30000 // auto refresh every 30s
   });
@@ -139,66 +145,90 @@ export const AdminSystemHealth: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        {/* Last Checked */}
-        <div className="bg-gradient-to-br from-green-50 to-white p-6 rounded-md border border-green-100 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Last Checked</h3>
-          {data ? (
-            <div>
-              <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">
-                {format(new Date(data.server_time), 'dd MMM yyyy')}
-              </p>
-              <p className="text-gray-500">{format(new Date(data.server_time), 'h:mm:ss a')}</p>
+        {/* Last Health Check */}
+        <div className="bg-gradient-to-br from-green-50 to-white p-5 sm:p-6 rounded-md border border-green-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Last Health Check</h3>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                Live
+              </span>
             </div>
-          ) : (
-            <div className="h-14 flex items-center text-gray-400">Loading...</div>
-          )}
+            {data ? (
+              <div>
+                <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">
+                  {format(new Date(data.server_time), 'dd MMM yyyy')}
+                </p>
+                <p className="text-sm font-semibold text-gray-600 mt-0.5">
+                  {format(new Date(data.server_time), 'h:mm:ss a')}
+                </p>
+              </div>
+            ) : (
+              <div className="h-14 flex items-center text-gray-400">Loading...</div>
+            )}
+          </div>
+          <p className="text-[11px] text-gray-400 mt-3 pt-2 border-t border-green-100/60">Auto-refreshed every 30s</p>
         </div>
 
         {/* Environment */}
-        <div className="bg-gradient-to-br from-amber-50 to-white p-6 rounded-md border border-amber-100 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Environment</h3>
-          {data ? (
-            <div>
-              <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{data.environment}</p>
-              <div className="mt-1 space-y-0.5">
-                <p className="text-sm text-gray-500">
-                  Uptime: {Math.floor(data.uptime_seconds / 3600)}h {Math.floor((data.uptime_seconds % 3600) / 60)}m
-                </p>
-                <p className="text-sm text-gray-500">
-                  Started:{' '}
-                  {format(
-                    new Date(new Date(data.server_time).getTime() - data.uptime_seconds * 1000),
-                    'dd MMM, h:mm:ss a'
-                  )}
-                </p>
+        <div className="bg-gradient-to-br from-amber-50 to-white p-5 sm:p-6 rounded-md border border-amber-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Environment</h3>
+            {data ? (
+              <div>
+                <p className="text-xl font-bold tracking-wide text-slate-900 uppercase">{data.environment}</p>
+                <div className="mt-1 space-y-0.5">
+                  <p className="text-sm text-gray-600 font-medium">
+                    Uptime:{' '}
+                    <span className="font-bold text-slate-800">
+                      {Math.floor(data.uptime_seconds / 3600)}h {Math.floor((data.uptime_seconds % 3600) / 60)}m
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Started:{' '}
+                    {format(
+                      new Date(new Date(data.server_time).getTime() - data.uptime_seconds * 1000),
+                      'dd MMM, h:mm:ss a'
+                    )}
+                  </p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="h-14 flex items-center text-gray-400">Loading...</div>
-          )}
+            ) : (
+              <div className="h-14 flex items-center text-gray-400">Loading...</div>
+            )}
+          </div>
+          <p className="text-[11px] text-gray-400 mt-3 pt-2 border-t border-amber-100/60">Node.js process status</p>
         </div>
 
         {/* Version Info */}
-        <div className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-md border border-gray-200 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Version Information</h3>
-          {data ? (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Frontend</span>
-                <span className="font-bold text-gray-900">{data.version?.frontend}</span>
+        <div className="bg-gradient-to-br from-gray-50 to-white p-5 sm:p-6 rounded-md border border-gray-200 shadow-sm min-w-0 overflow-hidden flex flex-col justify-between">
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Version Information</h3>
+            {data ? (
+              <div className="space-y-2 min-w-0">
+                <div className="flex items-center justify-between text-sm gap-2">
+                  <span className="text-gray-500 shrink-0">Frontend</span>
+                  <span className="font-bold text-gray-900 font-mono text-xs">{data.version?.frontend || '1.0.0'}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm gap-2">
+                  <span className="text-gray-500 shrink-0">Backend</span>
+                  <span className="font-bold text-gray-900 font-mono text-xs">{data.version?.backend || '1.0.0'}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm gap-2 min-w-0">
+                  <span className="text-gray-500 shrink-0">Database</span>
+                  <span
+                    className="font-bold text-gray-900 font-mono text-xs truncate max-w-[140px] sm:max-w-[180px] text-right block"
+                    title={data.version?.database}
+                  >
+                    {data.version?.database}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Backend</span>
-                <span className="font-bold text-gray-900">{data.version?.backend}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Database</span>
-                <span className="font-bold text-gray-900">{data.version?.database}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="h-14 flex items-center text-gray-400">Loading...</div>
-          )}
+            ) : (
+              <div className="h-14 flex items-center text-gray-400">Loading...</div>
+            )}
+          </div>
+          <p className="text-[11px] text-gray-400 mt-3 pt-2 border-t border-gray-100">Latest active migration</p>
         </div>
       </div>
     </div>

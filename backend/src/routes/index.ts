@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import healthRoutes from './health';
+import healthRoutes, { internalHealthRoutes } from './health';
 
 // Placeholders for future route modules
 import { categoryRoutes } from '@features/categories';
@@ -21,6 +21,8 @@ router.use('/auth', userAuthRoutes);
 
 // API Version 1
 router.use('/v1/health', healthRoutes);
+router.use('/v1/internal/health', internalHealthRoutes);
+router.use('/internal/health', internalHealthRoutes);
 router.use('/v1/cron', cronRoutes);
 
 // router.use('/v1/bhajans', bhajanRoutes);
