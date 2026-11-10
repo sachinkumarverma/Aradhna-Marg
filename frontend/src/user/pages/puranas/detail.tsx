@@ -33,12 +33,14 @@ export const PuranDetail: React.FC = () => {
       const p = getPrerenderedData();
       return p && (p.slug === slug || p.id === slug) ? p : undefined;
     },
+    staleTime: 5 * 60 * 1000,
     enabled: !!slug
   });
 
   const { data: extraContent } = useQuery({
     queryKey: ['purana-detail-extra-content', language],
-    queryFn: () => PublicApi.getHomeData()
+    queryFn: () => PublicApi.getHomeData(),
+    staleTime: 10 * 60 * 1000
   });
 
   const trackViewMutation = useMutation({

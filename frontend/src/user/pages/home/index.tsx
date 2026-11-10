@@ -58,6 +58,10 @@ export const Home: React.FC = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
+    if (prerendered) {
+      PublicApi.seedCache('home_data', prerendered);
+      return;
+    }
     const loadHomeData = async () => {
       try {
         const res = await PublicApi.getHomeData();
@@ -71,7 +75,7 @@ export const Home: React.FC = () => {
       }
     };
     loadHomeData();
-  }, []);
+  }, [prerendered]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -254,28 +258,25 @@ export const Home: React.FC = () => {
                   <VideoCardSkeleton key={n} />
                 ))}
               </div>
-            ) : fullVideos.length > 0 || (data?.featuredBhajans && data.featuredBhajans.length > 0) ? (
+            ) : fullVideos.length > 0 ? (
               <div className="flex flex-col gap-5">
-                {(fullVideos.length > 0 ? fullVideos : data.featuredBhajans).slice(0, 5).map((video: any) => {
-                  const isImportedVideo = fullVideos.length > 0;
-                  const videoUrl = isImportedVideo
-                    ? `/videos/${video.youtube_video_id}`
-                    : `/bhajans/${video.slug || video.id}`;
+                {fullVideos.slice(0, 5).map((video: any) => {
+                  const videoUrl = `/videos/${video.youtube_video_id}`;
                   const thumb = video.thumbnail || video.thumbnail_url || '/Deities/Krishna.webp';
-                  const title = video.title || video.hindi_title;
-                  const subtitle = video.god_name || video.category_name || '';
-                  const snippet = video.description || video.short_description || title;
-                  const videoId = String(video.youtube_video_id || video.slug || video.id || title);
+                  const title = video.title;
+                  const subtitle = video.channel_name || '';
+                  const snippet = video.description || title;
+                  const videoId = String(video.youtube_video_id || video.id || title);
                   const isHearted = isFavorite(videoId) || isFavorite(String(video.id));
 
                   const favoriteItem = {
                     id: videoId,
-                    type: isImportedVideo ? ('video' as const) : ('bhajan' as const),
+                    type: 'video' as const,
                     title,
                     thumbnailUrl: thumb,
                     url: videoUrl,
                     subtitle,
-                    category: isImportedVideo ? 'Video' : 'Bhajan'
+                    category: 'Video'
                   };
 
                   return (

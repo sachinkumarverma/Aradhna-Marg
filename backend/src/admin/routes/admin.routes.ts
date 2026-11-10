@@ -16,8 +16,24 @@ import { requireAdmin } from '@middlewares/auth';
 import { authController } from '@admin/controllers/auth.controller';
 import { adminUserController } from '@admin/controllers/user.controller';
 import mediaRoutes from '@/routes/media.routes';
+import { publicCacheService } from '@services/PublicCacheService';
 
 const router = Router();
+
+// Ensure all admin endpoints are strictly never cached
+router.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+
+  // Automatically flush public cache when admin mutates content
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
+    res.on('finish', () => {
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        publicCacheService.clear();
+      }
+    });
+  }
+  next();
+});
 
 // Public auth routes — no JWT required
 router.post('/auth/login', authController.login);

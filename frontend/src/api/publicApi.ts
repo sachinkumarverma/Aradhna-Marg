@@ -45,6 +45,12 @@ export class PublicApi {
     cache.clear();
   }
 
+  static seedCache(key: string, data: any) {
+    if (data !== undefined && data !== null && !cache.has(key)) {
+      cache.set(key, { data, timestamp: Date.now() });
+    }
+  }
+
   static async getSettings(): Promise<PublicSettings> {
     try {
       const response = await apiClient.get('/v1/public/settings', {

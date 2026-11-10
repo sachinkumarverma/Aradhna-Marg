@@ -4,6 +4,12 @@ import { requireUser } from '@middlewares/userAuth';
 
 const router = Router();
 
+// Ensure user authentication and wishlist data is strictly never cached
+router.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  next();
+});
+
 // Public Authentication endpoints
 router.post('/signup', userAuthController.signup);
 router.post('/login', userAuthController.login);

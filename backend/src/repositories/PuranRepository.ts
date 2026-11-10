@@ -79,19 +79,22 @@ export class PuranRepository extends BaseRepository<any> {
   }
 
   public async getBySlug(slug: string) {
-    const { rows } = await db.query(
-      `SELECT * FROM ${this.tableName} WHERE slug = $1 AND status = 'PUBLISHED' AND deleted_at IS NULL LIMIT 1`,
-      [slug]
-    );
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+    const query = isUuid
+      ? `SELECT * FROM ${this.tableName} WHERE (slug = $1 OR id = $1::uuid) AND status = 'PUBLISHED' AND deleted_at IS NULL LIMIT 1`
+      : `SELECT * FROM ${this.tableName} WHERE slug = $1 AND status = 'PUBLISHED' AND deleted_at IS NULL LIMIT 1`;
+    const { rows } = await db.query(query, [slug]);
     return rows[0] || null;
   }
 
   public async getRelated(id: string, language: string, limit = 4) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    const idClause = isUuid ? `id != $1::uuid` : `id::text != $1`;
     const { rows } = await db.query(
-      `SELECT id, title, slug, language, cover_image, short_description 
+      `SELECT id, title, title_en, slug, language, cover_image, LEFT(short_description, 280) as short_description 
        FROM ${this.tableName} 
-       WHERE status = 'PUBLISHED' AND deleted_at IS NULL AND id != $1 AND language = $2 
-       ORDER BY created_at DESC 
+       WHERE status = 'PUBLISHED' AND deleted_at IS NULL AND ${idClause} AND language = $2 
+       ORDER BY display_order ASC, created_at DESC 
        LIMIT $3`,
       [id, language, limit]
     );

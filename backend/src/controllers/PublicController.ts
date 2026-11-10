@@ -11,7 +11,7 @@ export class PublicController {
   // 1. Home Payload
   public getHomeData = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      publicCacheService.setCacheHeaders(res, 60, 300);
+      publicCacheService.setCacheHeaders(res, 120, 600);
 
       const cached = publicCacheService.get<any>('home_data');
       if (cached) {
@@ -53,9 +53,9 @@ export class PublicController {
         LIMIT 6
       `;
 
-      // Puranas
+      // Puranas (concise card excerpt to keep home payload ultra-fast and lightweight)
       const puranasQuery = `
-        SELECT id, title, title_en, slug, short_description, description_en, cover_image, pdf_file, language, author, view_count, download_count
+        SELECT id, title, title_en, slug, LEFT(short_description, 280) as short_description, LEFT(description_en, 280) as description_en, cover_image, pdf_file, language, author, view_count, download_count
         FROM puranas
         WHERE status = 'PUBLISHED' AND deleted_at IS NULL
         ORDER BY display_order ASC, created_at DESC
@@ -79,14 +79,15 @@ export class PublicController {
         ORDER BY display_order ASC, name ASC
       `;
 
-      // Featured YouTube Videos (excluding Shorts) - scan enough recent records so even when many Shorts are uploaded, at least 10 full videos are found
+      // Featured YouTube Videos (excluding Shorts) - scan recent records with clean snippet so 5-10 full videos are always available
       const videosQuery = `
-        SELECT id, youtube_video_id, title, description, thumbnail, channel_name, duration, view_count, published_at
+        SELECT id, youtube_video_id, title, thumbnail, channel_name, duration, view_count, published_at,
+               LEFT(description, 200) as description
         FROM youtube_videos
         WHERE import_status != 'IGNORED'
           AND title NOT ILIKE '%#short%'
         ORDER BY published_at DESC NULLS LAST, created_at DESC
-        LIMIT 250
+        LIMIT 200
       `;
 
       const [bhajans, articles, festivals, puranas, deities, categories, videos] = await Promise.all([
@@ -111,7 +112,7 @@ export class PublicController {
         featuredVideos
       };
 
-      publicCacheService.set('home_data', payload, 300);
+      publicCacheService.set('home_data', payload, 600);
 
       return sendSuccess(res, 'Home data fetched successfully', payload);
     } catch (error) {
@@ -122,7 +123,7 @@ export class PublicController {
   // 2. Bhajans List
   public getBhajans = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      publicCacheService.setCacheHeaders(res, 60, 180);
+      publicCacheService.setCacheHeaders(res, 60, 300);
 
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 12;
@@ -188,13 +189,10 @@ export class PublicController {
         LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
       `;
 
-      const countQuery = `
-        SELECT COUNT(*) as total
-        FROM bhajans b
-        LEFT JOIN deities d ON b.god_id = d.id
-        LEFT JOIN categories c ON b.category_id = c.id
-        ${whereStr}
-      `;
+      const countQuery =
+        !category && !deity && !search
+          ? `SELECT COUNT(*) as total FROM bhajans b WHERE b.status = 'PUBLISHED' AND b.deleted_at IS NULL`
+          : `SELECT COUNT(*) as total FROM bhajans b LEFT JOIN deities d ON b.god_id = d.id LEFT JOIN categories c ON b.category_id = c.id ${whereStr}`;
 
       const [dataRes, countRes] = await Promise.all([
         db.query(dataQuery, [...queryParams, limit, offset]),
@@ -209,7 +207,7 @@ export class PublicController {
         totalPages: Math.ceil(total / limit)
       };
 
-      publicCacheService.set(cacheKey, dataRes.rows, 120, meta);
+      publicCacheService.set(cacheKey, dataRes.rows, 300, meta);
 
       return sendSuccess(res, 'Bhajans fetched successfully', dataRes.rows, meta);
     } catch (error) {
@@ -498,12 +496,10 @@ export class PublicController {
         LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
       `;
 
-      const countQuery = `
-        SELECT COUNT(*) as total
-        FROM articles a
-        LEFT JOIN categories c ON a.category_id = c.id
-        ${whereStr}
-      `;
+      const countQuery =
+        !category && !search
+          ? `SELECT COUNT(*) as total FROM articles a ${whereStr}`
+          : `SELECT COUNT(*) as total FROM articles a LEFT JOIN categories c ON a.category_id = c.id ${whereStr}`;
 
       const [dataRes, countRes] = await Promise.all([
         db.query(dataQuery, [...queryParams, limit, offset]),
@@ -526,7 +522,7 @@ export class PublicController {
         totalPages: Math.ceil(total / limit)
       };
 
-      publicCacheService.set(cacheKey, rows, 120, meta);
+      publicCacheService.set(cacheKey, rows, 300, meta);
 
       return sendSuccess(res, 'Articles fetched successfully', rows, meta);
     } catch (error) {
@@ -872,7 +868,7 @@ export class PublicController {
   // 10. Puranas List
   public getPuranas = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      publicCacheService.setCacheHeaders(res, 60, 300);
+      publicCacheService.setCacheHeaders(res, 120, 600);
 
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 12;
@@ -899,7 +895,8 @@ export class PublicController {
       const whereStr = `WHERE ${whereClauses.join(' AND ')}`;
 
       const dataQuery = `
-        SELECT id, title, title_en, slug, short_description, description_en, cover_image, pdf_file, language, author, view_count, download_count
+        SELECT id, title, title_en, slug, short_description, description_en, cover_image, pdf_file, language, author, view_count, download_count,
+               seo_title, seo_description, seo_title_en, seo_description_en
         FROM puranas
         ${whereStr}
         ORDER BY display_order ASC, created_at DESC
@@ -928,7 +925,7 @@ export class PublicController {
         totalPages: Math.ceil(total / limit)
       };
 
-      publicCacheService.set(cacheKey, rows, 300, meta);
+      publicCacheService.set(cacheKey, rows, 600, meta);
 
       return sendSuccess(res, 'Puranas fetched successfully', rows, meta);
     } catch (error) {
@@ -939,7 +936,7 @@ export class PublicController {
   // 11. Purana By Slug
   public getPuranBySlug = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      publicCacheService.setCacheHeaders(res, 60, 300);
+      publicCacheService.setCacheHeaders(res, 120, 600);
 
       const slug = req.params.slug as string;
       const lang = (req.query.lang as string) || 'hi';
@@ -962,7 +959,7 @@ export class PublicController {
             : data.short_description || data.shortDescription || data.description
       };
 
-      publicCacheService.set(cacheKey, result, 300);
+      publicCacheService.set(cacheKey, result, 600);
 
       return sendSuccess(res, 'Purana fetched successfully', result);
     } catch (error) {
@@ -974,7 +971,16 @@ export class PublicController {
   public getPuranPdfUrl = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const isDownload = req.query.download === 'true';
+      const cacheKey = `puran_pdf_${req.params.id}_${isDownload}`;
+      const cached = publicCacheService.get<any>(cacheKey);
+      if (cached) {
+        publicCacheService.setCacheHeaders(res, 300, 1800);
+        return sendSuccess(res, 'PDF URL generated (cached)', cached.data);
+      }
+
       const url = await puranService.getPdfUrl(req.params.id as string, isDownload);
+      publicCacheService.set(cacheKey, { url }, 1800);
+      publicCacheService.setCacheHeaders(res, 300, 1800);
       return sendSuccess(res, 'PDF URL generated', { url });
     } catch (error) {
       next(error);
@@ -984,7 +990,7 @@ export class PublicController {
   // 13. Deities List
   public getDeities = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      publicCacheService.setCacheHeaders(res, 60, 300);
+      publicCacheService.setCacheHeaders(res, 300, 1800);
 
       const cached = publicCacheService.get<any[]>('deities_list');
       if (cached) {
@@ -999,7 +1005,7 @@ export class PublicController {
       `;
       const { rows } = await db.query(query);
 
-      publicCacheService.set('deities_list', rows, 300);
+      publicCacheService.set('deities_list', rows, 1800);
 
       return sendSuccess(res, 'Deities fetched successfully', rows);
     } catch (error) {
@@ -1077,7 +1083,7 @@ export class PublicController {
   // 15. Categories List
   public getCategories = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      publicCacheService.setCacheHeaders(res, 60, 300);
+      publicCacheService.setCacheHeaders(res, 300, 1800);
 
       const cached = publicCacheService.get<any[]>('categories_list');
       if (cached) {
@@ -1092,7 +1098,7 @@ export class PublicController {
       `;
       const { rows } = await db.query(query);
 
-      publicCacheService.set('categories_list', rows, 300);
+      publicCacheService.set('categories_list', rows, 1800);
 
       return sendSuccess(res, 'Categories fetched successfully', rows);
     } catch (error) {

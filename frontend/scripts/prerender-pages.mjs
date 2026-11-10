@@ -191,27 +191,12 @@ function buildHtml(template, options) {
   }
 
   // Initial Semantic Body Content inside <div id="root">
-  // Wrapped in <noscript> so visitors with JavaScript enabled see the smooth loading spinner
-  // without flash of unstyled content, while search engine crawlers index the semantic text and internal links.
+  // Serves full readable static content immediately to search engines, bots, and initial paint
+  // before JavaScript executes. When React loads, it cleanly hydrates/mounts without flash.
   if (options.bodyHtml) {
-    const loadingSpinnerHtml = `
-      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #F9F7F3; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-        <div style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
-          <div style="width: 44px; height: 44px; border: 3px solid #ffedd5; border-radius: 50%; box-sizing: border-box;"></div>
-          <div style="position: absolute; width: 44px; height: 44px; border: 3px solid transparent; border-top-color: #ea580c; border-right-color: #ea580c; border-radius: 50%; animation: aradhna-spin 0.8s linear infinite; box-sizing: border-box;"></div>
-          <div style="position: absolute; width: 8px; height: 8px; background-color: #ea580c; border-radius: 50%;"></div>
-        </div>
-        <style>
-          @keyframes aradhna-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        </style>
-      </div>`;
-
     html = html.replace(
       /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/i,
-      `<div id="root">\n      <noscript>\n${options.bodyHtml}\n      </noscript>${loadingSpinnerHtml}\n    </div>`
+      `<div id="root">\n${options.bodyHtml}\n    </div>`
     );
   }
   if (options.initialData) {
@@ -902,9 +887,9 @@ async function prerenderAll() {
     const slug = p.slug || p.id;
     if (!slug) continue;
     const title = p.title;
-    const pageTitle = `${title} - कथा एवं सार | Aradhna Marg`;
+    const pageTitle = p.seo_title || `${title} - कथा एवं सार | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/puranas/${encodeURIComponent(p.slug || p.id)}`;
-    const desc = p.short_description || `${title} का पावन सार, कथाएं एवं आध्यात्मिक उपदेश।`;
+    const desc = p.seo_description || p.short_description || `${title} का पावन सार, कथाएं एवं आध्यात्मिक उपदेश।`;
     const cleanDesc = stripHtml(desc).slice(0, 180);
 
     const schema = {
@@ -916,13 +901,20 @@ async function prerenderAll() {
       inLanguage: 'hi'
     };
 
+    // Full readable content for search engines and direct curl requests
+    const fullContent = p.short_description || p.description_en || p.description || cleanDesc;
+
     const bodyHtml = `
       <article class="aradhna-prerender-puran" style="max-width: 850px; margin: 0 auto; padding: 2rem 1.5rem; font-family: system-ui, -apple-system, sans-serif;">
         <header style="margin-bottom: 2rem;">
           <nav style="font-size: 0.9rem; margin-bottom: 1rem;"><a href="/" style="color: #ea580c; text-decoration: none;">मुख्य पृष्ठ</a> / <a href="/puranas" style="color: #ea580c; text-decoration: none;">पुराण</a> / <span>${escapeHtml(title)}</span></nav>
           <h1 style="font-size: 2.2rem; font-weight: 800; color: #1c1917; margin-bottom: 0.5rem; line-height: 1.3;">${escapeHtml(title)}</h1>
-          <p style="color: #475569; font-size: 1.1rem; line-height: 1.6;">${escapeHtml(cleanDesc)}</p>
+          ${p.title_en && p.title_en !== title ? `<p style="color: #78716c; font-size: 1rem; margin-top: 0.25rem;">${escapeHtml(p.title_en)}</p>` : ''}
+          <p style="color: #475569; font-size: 1.1rem; line-height: 1.6; margin-top: 0.75rem;">${escapeHtml(cleanDesc)}</p>
         </header>
+        <section class="puran-content" style="line-height: 1.9; font-size: 1.1rem; color: #334155; margin-top: 2rem;">
+          ${fullContent}
+        </section>
         <footer style="margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
           <a href="/puranas" style="color: #ea580c; font-weight: 600; text-decoration: none;">← समस्त महापुराण देखें</a>
         </footer>
@@ -936,7 +928,8 @@ async function prerenderAll() {
       canonicalUrl,
       ogImage: p.cover_image,
       schema,
-      bodyHtml
+      bodyHtml,
+      initialData: p
     });
 
     writeRoute(`puranas/${slug}`, html);
