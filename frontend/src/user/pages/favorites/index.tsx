@@ -472,7 +472,7 @@ export const FavoritesPage: React.FC = () => {
       )}
 
       {/* 2. SEARCH BAR & CONTROLS */}
-      {favoritesCount > 2 && (
+      {favoritesCount > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
           <div className="p-2 sm:p-2.5 bg-white rounded-2xl shadow-lg border border-amber-200/80 flex items-center gap-3">
             <Search className="w-5 h-5 text-saffron ml-3 shrink-0" />

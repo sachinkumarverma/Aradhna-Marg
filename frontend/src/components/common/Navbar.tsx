@@ -225,38 +225,22 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                     </button>
 
                     {userDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
-                        <div className="px-3 py-2.5 border-b border-gray-100 mb-1">
+                      <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200/90 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                        <div className="px-3 py-2 border-b border-slate-100 mb-1">
                           <p className="text-xs font-bold text-slate-900 truncate font-hindi-heading leading-tight">
                             {user.name}
                           </p>
                           <p className="text-[11px] text-slate-500 truncate mt-0.5">{user.email}</p>
                         </div>
 
-                        <div className="space-y-0.5">
-                          <Link
-                            to="/favourite"
-                            onClick={() => setUserDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-orange-50 hover:text-saffron transition-all"
-                          >
-                            <Heart className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                            <span>{isHi ? 'मेरी पसंद सूची' : 'My Wishlist'}</span>
-                            {favoritesCount > 0 && (
-                              <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold">
-                                {favoritesCount}
-                              </span>
-                            )}
-                          </Link>
-                        </div>
-
-                        <div className="border-t border-gray-100 mt-1 pt-1">
+                        <div>
                           <button
                             type="button"
                             onClick={() => {
                               setUserDropdownOpen(false);
                               logout();
                             }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer text-left"
+                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer text-left font-hindi-heading"
                           >
                             <LogOut className="w-3.5 h-3.5 shrink-0" />
                             <span>{isHi ? 'लॉग आउट' : 'Sign Out'}</span>
