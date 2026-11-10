@@ -62,11 +62,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
     { name: 'YOUTUBE SYNC', path: getAdminPath('/youtube'), icon: PlaySquare }
   ];
 
-  const SEO_NAV = [{ name: 'SEO ENGINE', path: getAdminPath('/seo'), icon: Search }];
-
-  const FINANCE_NAV = [{ name: 'DONATIONS', path: getAdminPath('/donations'), icon: HeartHandshake }];
-
-  const COMMUNITY_NAV = [{ name: 'REGISTERED USERS', path: getAdminPath('/users'), icon: UserCheck }];
+  const COMMUNITY_GROWTH_NAV = [
+    { name: 'REGISTERED USERS', path: getAdminPath('/users'), icon: UserCheck },
+    { name: 'DONATIONS', path: getAdminPath('/donations'), icon: HeartHandshake },
+    { name: 'SEO ENGINE', path: getAdminPath('/seo'), icon: Search }
+  ];
 
   const SYSTEM_NAV = [
     { name: 'SETTINGS', path: getAdminPath('/settings'), icon: Settings },
@@ -143,18 +143,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
             </div>
 
             <div>
-              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">SEO</h3>
-              {renderLinks(SEO_NAV)}
-            </div>
-
-            <div>
-              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Finance</h3>
-              {renderLinks(FINANCE_NAV)}
-            </div>
-
-            <div>
-              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Community</h3>
-              {renderLinks(COMMUNITY_NAV)}
+              <h3 className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                Community & Growth
+              </h3>
+              {renderLinks(COMMUNITY_GROWTH_NAV)}
             </div>
 
             <div>

@@ -118,7 +118,7 @@ export const BhajansList: React.FC = () => {
   ]);
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-8 sm:pb-12">
       <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/bhajans" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Devotional Music Banner */}
@@ -249,13 +249,13 @@ export const BhajansList: React.FC = () => {
         {/* Bhajans Grid */}
         <div id="bhajans-grid" className="scroll-mt-24 min-h-[500px]">
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6 sm:mb-8">
               {Array.from({ length: 12 }).map((_, n) => (
                 <BhajanCardSkeleton key={n} />
               ))}
             </div>
           ) : isError ? (
-            <div className="text-center py-16 bg-white rounded-3xl border border-red-100 p-8 max-w-xl mx-auto shadow-xs mb-12">
+            <div className="text-center py-16 bg-white rounded-3xl border border-red-100 p-8 max-w-xl mx-auto shadow-xs mb-6 sm:mb-8">
               <div className="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">
                 !
               </div>
@@ -272,7 +272,7 @@ export const BhajansList: React.FC = () => {
               </button>
             </div>
           ) : bhajans.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6 sm:mb-8">
               {bhajans.map((bhajan, i) => (
                 <motion.div
                   key={bhajan.id}
@@ -301,7 +301,7 @@ export const BhajansList: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-white rounded-3xl border border-amber-100 p-8 shadow-xs mb-12">
+            <div className="text-center py-20 bg-white rounded-3xl border border-amber-100 p-8 shadow-xs mb-6 sm:mb-8">
               <div className="w-16 h-16 bg-amber-100/70 rounded-full flex items-center justify-center mx-auto mb-4 text-saffron">
                 <Music className="w-8 h-8" />
               </div>

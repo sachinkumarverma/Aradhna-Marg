@@ -52,7 +52,7 @@ export const VideosList = () => {
   ]);
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-6 pb-20">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-6 pb-8 sm:pb-12">
       <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/videos" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner for Divine Videos */}
@@ -115,13 +115,13 @@ export const VideosList = () => {
         {/* Grid Section */}
         <div id="videos-grid" className="scroll-mt-24 min-h-[500px]">
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 sm:mb-8">
               {Array.from({ length: 12 }).map((_, n) => (
                 <VideoGridCardSkeleton key={n} />
               ))}
             </div>
           ) : videos.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 sm:mb-8">
               {videos.map((video, i) => (
                 <motion.div
                   key={video.id}
@@ -143,7 +143,7 @@ export const VideosList = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8 mb-12">
+            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8 mb-6 sm:mb-8">
               <VideoIcon className="w-12 h-12 text-saffron mx-auto mb-4" />
               <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noVideos')}</h3>
               <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noResultsDesc')}</p>

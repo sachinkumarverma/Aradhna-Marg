@@ -57,7 +57,7 @@ export const DeitiesList: React.FC = () => {
   ]);
 
   return (
-    <div className="w-full flex-1 bg-[#F9F7F3] pt-4 sm:pt-6 md:pt-8 pb-8 sm:pb-16">
+    <div className="w-full flex-1 bg-[#F9F7F3] pt-4 sm:pt-6 md:pt-8 pb-6 sm:pb-10">
       <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/gods" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Divine Hero Banner for Deities */}

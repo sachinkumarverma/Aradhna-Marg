@@ -46,7 +46,7 @@ export const FestivalsList: React.FC = () => {
   ]);
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-8 sm:pb-12">
       <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/festivals" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner with Top-Right Search Bar */}
@@ -86,13 +86,13 @@ export const FestivalsList: React.FC = () => {
         {/* Festivals Grid */}
         <div id="festivals-grid" className="scroll-mt-24 min-h-[500px]">
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 sm:mb-8">
               {Array.from({ length: 12 }).map((_, n) => (
                 <FestivalCardSkeleton key={n} />
               ))}
             </div>
           ) : festivals.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 sm:mb-8">
               {festivals.map((fest, i) => {
                 const festName = getLocalizedField(fest, 'name') || fest.displayName || fest.name;
                 const festDesc =
@@ -171,7 +171,7 @@ export const FestivalsList: React.FC = () => {
               })}
             </div>
           ) : (
-            <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 p-8 mb-12">
+            <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 p-8 mb-6 sm:mb-8">
               <Calendar className="w-12 h-12 text-saffron mx-auto mb-4" />
               <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noFestivals')}</h3>
               <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noResultsDesc')}</p>

@@ -23,6 +23,7 @@ import { BhajanCard } from '@components/cards/BhajanCard';
 import { ArticleCard } from '@components/cards/ArticleCard';
 import { PuranaCard } from '@components/cards/PuranaCard';
 import { DeitiesCarousel } from '@components/common/DeitiesCarousel';
+import { AdUnit } from '@components/common/AdUnit';
 import { staggerContainer, fadeUpVariant } from '@/animations/variants';
 import { PublicApi } from '@api/publicApi';
 import { Link, useNavigate } from 'react-router-dom';
@@ -408,77 +409,82 @@ export const Home: React.FC = () => {
 
           {/* Right Column (4 Columns = 1/3 Width): Trending Bhajans Sidebar */}
           <div className="lg:col-span-4 min-w-0">
-            <div className="sticky top-28 bg-white rounded-xl p-5 border border-gray-100 shadow-sm relative overflow-hidden">
-              <div className="pb-3 border-b border-gray-100 mb-4">
-                <IconText
-                  icon={<Flame className="w-6 h-6 text-saffron fill-saffron" />}
-                  gap="gap-2.5"
-                  text={
-                    <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
-                      <span className="text-saffron">{t('content.trendingBhajans')}</span>
-                    </h3>
-                  }
-                />
+            <div className="sticky top-28 space-y-4">
+              <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm relative overflow-hidden">
+                <div className="pb-3 border-b border-gray-100 mb-4">
+                  <IconText
+                    icon={<Flame className="w-6 h-6 text-saffron fill-saffron" />}
+                    gap="gap-2.5"
+                    text={
+                      <h3 className="text-xl md:text-2xl font-bold text-darkBrown tracking-tight font-hindi-heading leading-tight">
+                        <span className="text-saffron">{t('content.trendingBhajans')}</span>
+                      </h3>
+                    }
+                  />
+                </div>
+
+                {loading ? (
+                  <div className="flex flex-col gap-2.5">
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <TrendingBhajanSkeleton key={n} />
+                    ))}
+                  </div>
+                ) : data?.featuredBhajans && data.featuredBhajans.length > 0 ? (
+                  <div className="flex flex-col gap-2.5">
+                    {data.featuredBhajans.slice(0, 6).map((bhajan: any) => {
+                      const hindiTitle = bhajan.hindi_title || bhajan.title;
+                      const englishTitle =
+                        bhajan.english_title ||
+                        bhajan.title_en ||
+                        (bhajan.title && bhajan.title !== bhajan.hindi_title ? bhajan.title : '') ||
+                        bhajan.god_name ||
+                        bhajan.category_name ||
+                        'Devotional Bhajan';
+
+                      return (
+                        <Link
+                          key={bhajan.id}
+                          to={`/bhajans/${bhajan.slug || bhajan.id}`}
+                          className="group flex items-center gap-3 p-2 rounded-lg hover:bg-amber-50/70 transition-all border border-transparent hover:border-amber-200/50 cursor-pointer"
+                        >
+                          {/* Thumbnail Image (16:9 aspect ratio) */}
+                          <div className="w-20 aspect-video rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-black/5 shadow-2xs">
+                            <img
+                              src={getOptimizedImageUrl(
+                                bhajan.thumbnail_url || bhajan.image_url || '/Deities/Krishna.webp',
+                                240
+                              )}
+                              alt={hindiTitle}
+                              width="160"
+                              height="90"
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+
+                          {/* Text Details */}
+                          <div className="min-w-0 flex-1">
+                            <h4 className="text-xs md:text-sm font-bold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-heading">
+                              {hindiTitle}
+                            </h4>
+                            <p className="text-[11px] font-semibold text-slate-500 truncate mt-0.5 font-hindi-body">
+                              {englishTitle}
+                            </p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-500 italic py-4 text-center font-hindi-heading">
+                    {t('empty.noBhajans')}
+                  </div>
+                )}
               </div>
 
-              {loading ? (
-                <div className="flex flex-col gap-2.5">
-                  {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <TrendingBhajanSkeleton key={n} />
-                  ))}
-                </div>
-              ) : data?.featuredBhajans && data.featuredBhajans.length > 0 ? (
-                <div className="flex flex-col gap-2.5">
-                  {data.featuredBhajans.slice(0, 6).map((bhajan: any) => {
-                    const hindiTitle = bhajan.hindi_title || bhajan.title;
-                    const englishTitle =
-                      bhajan.english_title ||
-                      bhajan.title_en ||
-                      (bhajan.title && bhajan.title !== bhajan.hindi_title ? bhajan.title : '') ||
-                      bhajan.god_name ||
-                      bhajan.category_name ||
-                      'Devotional Bhajan';
-
-                    return (
-                      <Link
-                        key={bhajan.id}
-                        to={`/bhajans/${bhajan.slug || bhajan.id}`}
-                        className="group flex items-center gap-3 p-2 rounded-lg hover:bg-amber-50/70 transition-all border border-transparent hover:border-amber-200/50 cursor-pointer"
-                      >
-                        {/* Thumbnail Image (16:9 aspect ratio) */}
-                        <div className="w-20 aspect-video rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-black/5 shadow-2xs">
-                          <img
-                            src={getOptimizedImageUrl(
-                              bhajan.thumbnail_url || bhajan.image_url || '/Deities/Krishna.webp',
-                              240
-                            )}
-                            alt={hindiTitle}
-                            width="160"
-                            height="90"
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-
-                        {/* Text Details */}
-                        <div className="min-w-0 flex-1">
-                          <h4 className="text-xs md:text-sm font-bold text-darkBrown group-hover:text-saffron transition-colors truncate font-hindi-heading">
-                            {hindiTitle}
-                          </h4>
-                          <p className="text-[11px] font-semibold text-slate-500 truncate mt-0.5 font-hindi-body">
-                            {englishTitle}
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-sm text-gray-500 italic py-4 text-center font-hindi-heading">
-                  {t('empty.noBhajans')}
-                </div>
-              )}
+              {/* Sidebar Ad Slot right below Popular Bhajans */}
+              <AdUnit slot="sidebar" label="ADVERTISEMENT • विज्ञापन" />
             </div>
           </div>
         </div>

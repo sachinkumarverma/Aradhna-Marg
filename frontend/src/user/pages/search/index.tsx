@@ -117,7 +117,7 @@ export const SearchPage: React.FC = () => {
       : 'Search Devotional Content';
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFBF7] pt-6 pb-24">
+    <div className="w-full min-h-screen bg-[#FDFBF7] pt-6 pb-8 sm:pb-12">
       <SEOHead
         title={searchTitle}
         description="Search bhajans, aartis, puranas, festivals, and spiritual literature on Aradhna Marg."

@@ -22,7 +22,7 @@ export const SimplePagination: React.FC<SimplePaginationProps> = ({
   if (totalPages <= 1) return null;
 
   return (
-    <div className={`flex items-center justify-center gap-4 my-8 ${className}`}>
+    <div className={`flex items-center justify-center gap-4 mt-6 sm:mt-8 mb-2 sm:mb-3 ${className}`}>
       <button
         type="button"
         disabled={disabled || currentPage <= 1}

@@ -55,7 +55,7 @@ export const CategoriesList: React.FC = () => {
   ]);
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-8 sm:pb-12">
       <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/categories" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner for Categories */}

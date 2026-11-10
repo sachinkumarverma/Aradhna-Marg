@@ -68,7 +68,7 @@ export const ExplorePage: React.FC = () => {
   ]);
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pb-8 sm:pb-12">
       <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/explore" schema={breadcrumbs} />
       <CollectionHero
         title={t('navigation.explore')}

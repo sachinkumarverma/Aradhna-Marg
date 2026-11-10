@@ -213,7 +213,7 @@ export const FavoritesPage: React.FC = () => {
   const isHi = language === 'hi';
   const navigate = useNavigate();
   const { favorites, removeFavorite, clearAllFavorites, favoritesCount } = useFavorites();
-  const { isAuthenticated, user, openAuthModal } = useUserAuth();
+  const { isAuthenticated, openAuthModal } = useUserAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Section Configurations
@@ -377,7 +377,7 @@ export const FavoritesPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pb-24 font-sans text-darkBrown">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pb-8 sm:pb-12 font-sans text-darkBrown">
       <SEOHead
         title={isHi ? 'मेरी पसंदीदा सूची (My Favorites)' : 'My Saved Favorites'}
         description="Your personal saved collection of Bhajans, Puranas, Articles, and Sacred Festivals on Aradhna Marg."
@@ -467,18 +467,6 @@ export const FavoritesPage: React.FC = () => {
             >
               {isHi ? 'लॉग इन / साइन अप करें ➜' : 'Sign In / Sign Up ➜'}
             </Link>
-          </div>
-        </div>
-      )}
-
-      {/* Logged in Welcome */}
-      {isAuthenticated && user && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-          <div className="flex items-center justify-between text-xs text-amber-800 bg-amber-50/70 border border-amber-200/60 px-4 py-2 rounded-xl">
-            <span>
-              🙏 <strong>{user.name}</strong>, आपकी पसंद सूची क्लाउड खाते (<strong>{user.email}</strong>) से सुरक्षित
-              रूप से जुड़ी है।
-            </span>
           </div>
         </div>
       )}

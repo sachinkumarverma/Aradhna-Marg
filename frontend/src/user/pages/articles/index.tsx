@@ -5,7 +5,6 @@ import { PublicApi } from '@api/publicApi';
 import { Select } from '@components/ui/Select';
 import { ArticleCard } from '@components/cards/ArticleCard';
 import { ArticleCardSkeleton } from '@components/common/SkeletonLoader';
-import { AdUnit } from '@components/common/AdUnit';
 import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
 import { SimplePagination } from '@components/common/SimplePagination';
@@ -72,7 +71,7 @@ export const ArticlesList: React.FC = () => {
   ]);
 
   return (
-    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-24">
+    <div className="w-full min-h-screen bg-[#F9F7F3] pt-8 pb-8 sm:pb-12">
       <SEOHead title={pageTitle} description={pageDesc} canonicalPath="/articles" schema={breadcrumbs} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Hero Banner with Top-Right Search & Filter Bar */}
@@ -133,7 +132,7 @@ export const ArticlesList: React.FC = () => {
             </div>
           ) : articles.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 sm:mb-8">
                 {articles.map((art, i) => (
                   <motion.div
                     key={art.id}
@@ -153,14 +152,9 @@ export const ArticlesList: React.FC = () => {
                   </motion.div>
                 ))}
               </div>
-
-              {/* Banner Ad Unit Placeholder */}
-              <div className="mb-12">
-                <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />
-              </div>
             </>
           ) : (
-            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8 mb-12">
+            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 p-8 mb-6 sm:mb-8">
               <BookOpen className="w-12 h-12 text-saffron mx-auto mb-4" />
               <h3 className="text-xl font-bold text-darkBrown mb-2 font-hindi-heading">{t('empty.noArticles')}</h3>
               <p className="text-slate-500 text-sm font-hindi-body">{t('empty.noArticlesDesc')}</p>
