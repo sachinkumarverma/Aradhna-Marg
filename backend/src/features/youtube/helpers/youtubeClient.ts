@@ -90,14 +90,18 @@ class YoutubeClient {
 
   public extractBestThumbnail(thumbnails: youtube_v3.Schema$ThumbnailDetails): string | null {
     if (!thumbnails) return null;
-    return (
+    const bestUrl =
       thumbnails.maxres?.url ||
       thumbnails.high?.url ||
       thumbnails.medium?.url ||
       thumbnails.standard?.url ||
       thumbnails.default?.url ||
-      null
-    );
+      null;
+    if (!bestUrl) return null;
+    if (bestUrl.includes('i.ytimg.com/vi/')) {
+      return bestUrl.replace('i.ytimg.com/vi/', 'i.ytimg.com/vi_webp/').replace('.jpg', '.webp');
+    }
+    return bestUrl;
   }
 
   public parseDuration(ptDuration: string): number {

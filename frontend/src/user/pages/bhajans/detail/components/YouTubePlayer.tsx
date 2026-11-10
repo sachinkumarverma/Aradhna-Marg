@@ -10,14 +10,21 @@ interface YouTubePlayerProps {
 
 export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ videoId, thumbnailUrl, title }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const resolvedThumb = thumbnailUrl
+    ? thumbnailUrl.includes('i.ytimg.com/vi/')
+      ? thumbnailUrl.replace('i.ytimg.com/vi/', 'i.ytimg.com/vi_webp/').replace('.jpg', '.webp')
+      : thumbnailUrl
+    : `https://i.ytimg.com/vi_webp/${videoId}/maxresdefault.webp`;
 
   return (
     <div className="w-full aspect-video rounded-3xl overflow-hidden bg-black relative shadow-lg group">
       {!isPlaying ? (
         <div className="absolute inset-0 cursor-pointer" onClick={() => setIsPlaying(true)}>
           <img
-            src={thumbnailUrl || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+            src={resolvedThumb}
             alt={title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
           />
           <div className="absolute inset-0 flex items-center justify-center">
