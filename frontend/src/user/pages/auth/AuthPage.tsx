@@ -147,8 +147,8 @@ export const AuthPage: React.FC = () => {
     if (status === 401) {
       return {
         tone: 'error',
-        title: 'Incorrect sign-in details',
-        message: 'Please check your email and password and try again.'
+        title: 'Incorrect email or password',
+        message: error.response?.data?.message || 'Please check your email and password and try again.'
       };
     }
 

@@ -195,7 +195,7 @@ export class UserRepository {
         FROM users
         WHERE id = $1
       )
-      UPDATE users AS current_user
+      UPDATE users AS u
       SET login_failed_attempts = next_state.next_attempts,
           login_locked_until = CASE
             WHEN next_state.next_attempts >= 5 THEN NOW() + INTERVAL '15 minutes'
@@ -203,8 +203,8 @@ export class UserRepository {
           END,
           updated_at = NOW()
       FROM next_state
-      WHERE current_user.id = next_state.id
-      RETURNING current_user.login_failed_attempts, current_user.login_locked_until`,
+      WHERE u.id = next_state.id
+      RETURNING u.login_failed_attempts, u.login_locked_until`,
       [id]
     );
     return res.rows[0] || null;
