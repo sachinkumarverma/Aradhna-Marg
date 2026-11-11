@@ -19,6 +19,26 @@ export const AdminLogin: React.FC = () => {
 
   const navigate = useNavigate();
 
+  const getRetryAfterMinutes = (err: any): number => {
+    const headers = err.response?.headers;
+    const retryAfter = typeof headers?.get === 'function' ? headers.get('retry-after') : headers?.['retry-after'];
+    const headerSeconds = Number(retryAfter);
+    const bodySeconds = Number(err.response?.data?.errors?.retryAfterSeconds);
+    const retrySeconds = Number.isFinite(headerSeconds) && headerSeconds > 0 ? headerSeconds : bodySeconds;
+
+    return Number.isFinite(retrySeconds) && retrySeconds > 0 ? Math.max(1, Math.ceil(retrySeconds / 60)) : 15;
+  };
+
+  const getLoginErrorMessage = (err: any): string => {
+    const responseStatus = err.response?.data?.status || err.response?.data?.errors?.status;
+    if (responseStatus === 'ACCOUNT_LOCKED' || err.response?.status === 429) {
+      const minutes = getRetryAfterMinutes(err);
+      return `Your admin account is temporarily locked after repeated failed sign-in attempts. Please try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
+    }
+
+    return err.response?.data?.message || err.message || 'Invalid credentials';
+  };
+
   useEffect(() => {
     // If user passed ?force=true or ?logout=true, clear session and show login form
     if (searchParams.get('force') === 'true' || searchParams.get('logout') === 'true') {
@@ -60,7 +80,7 @@ export const AdminLogin: React.FC = () => {
       await login(username, password);
       navigate(getAdminPath('/dashboard'), { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Invalid credentials');
+      setError(getLoginErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -143,138 +163,140 @@ export const AdminLogin: React.FC = () => {
 
       {/* Main Workspace: Clean Lord Krishna background with Auth Card in center on tab/mobile, on right on desktop */}
       <main className="relative z-20 flex-1 max-w-[1440px] w-full mx-auto px-6 sm:px-10 md:px-14 lg:px-16 pt-2 pb-8 flex items-center justify-center lg:justify-end min-h-0">
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className="w-full max-w-[420px] sm:max-w-[430px] bg-white rounded-[26px] p-5 sm:p-6 shadow-[0_15px_40px_rgba(234,88,12,0.12)] lg:shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-orange-100/90 lg:border-slate-100/90 text-slate-800 relative z-20 -translate-y-2 sm:-translate-y-4 lg:-translate-y-8"
-        >
-          {/* Card Top: Golden Om Medallion Flanked by Gold Rules */}
-          <div className="flex items-center justify-center gap-2.5 mt-1 mb-1.5">
-            <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-r from-transparent to-amber-400" />
-            <div className="w-8 h-8 rounded-full bg-gradient-to-b from-[#fffbeb] to-[#fef3c7] border border-amber-300/80 flex items-center justify-center text-amber-700 text-sm font-bold leading-none shadow-xs">
-              <span className="inline-flex items-center justify-center leading-none translate-y-[1px]">ॐ</span>
-            </div>
-            <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-l from-transparent to-amber-400" />
-          </div>
-
-          {/* Card Headline: Playfair Display */}
-          <h2
-            className="text-[24px] sm:text-[26px] lg:text-[28px] font-bold text-center text-[#0f172a] tracking-tight mt-1 mb-1 leading-tight font-playfair-bold"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
+        <div className="w-full flex justify-center lg:justify-end -translate-y-2 sm:-translate-y-4 lg:-translate-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="w-full max-w-[420px] sm:max-w-[430px] bg-white rounded-[26px] p-5 sm:p-6 shadow-[0_15px_40px_rgba(234,88,12,0.12)] lg:shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-orange-100/90 lg:border-slate-100/90 text-slate-800 relative z-20"
           >
-            Admin Access
-          </h2>
-          <p className="text-xs sm:text-[13px] text-center text-gray-500 mb-4 sm:mb-5">
-            Sign in to access the platform management console
-          </p>
-
-          {/* Google Sign-in Button prominent at top */}
-          <div className="mb-4">
-            <GoogleAuthButton
-              label="Sign in with Google"
-              text="signin_with"
-              onSuccess={handleGoogleSuccess}
-              onError={(err) => setError(err)}
-              disabled={loading}
-              isAdmin={true}
-            />
-          </div>
-
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2.5 text-gray-400 font-semibold text-[11px]">
-                Or continue with credentials
-              </span>
-            </div>
-          </div>
-
-          {/* Username & Password Form */}
-          <form onSubmit={handleLogin} className="space-y-3.5 pt-0.5">
-            <div>
-              <label className="block text-[13px] font-semibold text-slate-800 mb-1.5 font-sans">
-                Username / Email
-              </label>
-              <div className="relative flex items-center">
-                <User className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none stroke-[1.5]" />
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                  placeholder="admin@aradhnamarg.com"
-                  className="w-full h-11 pl-10 pr-3 text-sm text-slate-800 rounded-xl border border-slate-200/90 bg-white focus:border-[#171c54] focus:ring-2 focus:ring-[#171c54]/10 outline-none transition-all placeholder:text-slate-400 shadow-2xs font-sans"
-                />
+            {/* Card Top: Golden Om Medallion Flanked by Gold Rules */}
+            <div className="flex items-center justify-center gap-2.5 mt-1 mb-1.5">
+              <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-r from-transparent to-amber-400" />
+              <div className="w-8 h-8 rounded-full bg-gradient-to-b from-[#fffbeb] to-[#fef3c7] border border-amber-300/80 flex items-center justify-center text-amber-700 text-sm font-bold leading-none shadow-xs">
+                <span className="inline-flex items-center justify-center leading-none translate-y-[1px]">ॐ</span>
               </div>
+              <div className="h-[1px] w-10 sm:w-12 bg-gradient-to-l from-transparent to-amber-400" />
             </div>
 
-            <div>
-              <label className="block text-[13px] font-semibold text-slate-800 mb-1.5 font-sans">Password</label>
-              <div className="relative flex items-center">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none stroke-[1.5]" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="••••••••"
-                  className="w-full h-11 pl-10 pr-10 text-sm text-slate-800 rounded-xl border border-slate-200/90 bg-white focus:border-[#171c54] focus:ring-2 focus:ring-[#171c54]/10 outline-none transition-all placeholder:text-slate-400 shadow-2xs font-sans"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 text-slate-400 hover:text-slate-700 transition-colors p-1 rounded-md cursor-pointer focus:outline-none"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 font-medium text-center">
-                {error}
-              </div>
-            )}
-
-            {/* Submit Button in Warm Saffron / Orange */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full h-12 min-h-[48px] bg-gradient-to-r from-[#ff5722] via-[#ff3b00] to-[#e63500] hover:brightness-110 active:scale-[0.99] text-white font-bold text-sm sm:text-[15px] tracking-wide rounded-xl shadow-md shadow-[#ff3b00]/25 flex justify-center items-center cursor-pointer transition-all disabled:opacity-50 disabled:pointer-events-none mt-2"
+            {/* Card Headline: Playfair Display */}
+            <h2
+              className="text-[24px] sm:text-[26px] lg:text-[28px] font-bold text-center text-[#0f172a] tracking-tight mt-1 mb-1 leading-tight font-playfair-bold"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700 }}
             >
-              <div className="flex items-center justify-center gap-2 -translate-y-px">
-                {loading && <Loader2 className="w-4 h-4 animate-spin shrink-0" />}
-                <span>Secure Login</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5] shrink-0" />
-              </div>
-            </button>
-          </form>
+              Admin Access
+            </h2>
+            <p className="text-xs sm:text-[13px] text-center text-gray-500 mb-4 sm:mb-5">
+              Sign in to access the platform management console
+            </p>
 
-          {/* Bottom Return Link */}
-          <div className="mt-4 pt-3 border-t border-slate-100 text-center">
-            {isAdminHost() ? (
-              <a
-                href={getPublicHomeUrl()}
-                className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-amber-700 transition-colors group"
+            {/* Google Sign-in Button prominent at top */}
+            <div className="mb-4">
+              <GoogleAuthButton
+                label="Sign in with Google"
+                text="signin_with"
+                onSuccess={handleGoogleSuccess}
+                onError={(err) => setError(err)}
+                disabled={loading}
+                isAdmin={true}
+              />
+            </div>
+
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2.5 text-gray-400 font-semibold text-[11px]">
+                  Or continue with credentials
+                </span>
+              </div>
+            </div>
+
+            {/* Username & Password Form */}
+            <form onSubmit={handleLogin} className="space-y-3.5 pt-0.5">
+              <div>
+                <label className="block text-[13px] font-semibold text-slate-800 mb-1.5 font-sans">
+                  Username / Email
+                </label>
+                <div className="relative flex items-center">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none stroke-[1.5]" />
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    placeholder="user@example.com"
+                    className="w-full h-11 pl-10 pr-3 text-sm text-slate-800 rounded-xl border border-slate-200/90 bg-white focus:border-[#171c54] focus:ring-2 focus:ring-[#171c54]/10 outline-none transition-all placeholder:text-slate-400 shadow-2xs font-sans"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-semibold text-slate-800 mb-1.5 font-sans">Password</label>
+                <div className="relative flex items-center">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none stroke-[1.5]" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="••••••••"
+                    className="w-full h-11 pl-10 pr-10 text-sm text-slate-800 rounded-xl border border-slate-200/90 bg-white focus:border-[#171c54] focus:ring-2 focus:ring-[#171c54]/10 outline-none transition-all placeholder:text-slate-400 shadow-2xs font-sans"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 text-slate-400 hover:text-slate-700 transition-colors p-1 rounded-md cursor-pointer focus:outline-none"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 font-medium text-center">
+                  {error}
+                </div>
+              )}
+
+              {/* Submit Button in Warm Saffron / Orange */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 min-h-[48px] bg-gradient-to-r from-[#ff5722] via-[#ff3b00] to-[#e63500] hover:brightness-110 active:scale-[0.99] text-white font-bold text-sm sm:text-[15px] tracking-wide rounded-xl shadow-md shadow-[#ff3b00]/25 flex justify-center items-center cursor-pointer transition-all disabled:opacity-50 disabled:pointer-events-none mt-2"
               >
-                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                <span>Back to Public Website</span>
-              </a>
-            ) : (
-              <Link
-                to="/"
-                className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-amber-700 transition-colors group"
-              >
-                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                <span>Back to Public Website</span>
-              </Link>
-            )}
-          </div>
-        </motion.div>
+                <div className="flex items-center justify-center gap-2 -translate-y-px">
+                  {loading && <Loader2 className="w-4 h-4 animate-spin shrink-0" />}
+                  <span>Secure Login</span>
+                  <ArrowRight className="w-4 h-4 stroke-[2.5] shrink-0" />
+                </div>
+              </button>
+            </form>
+
+            {/* Bottom Return Link */}
+            <div className="mt-4 pt-3 border-t border-slate-100 text-center">
+              {isAdminHost() ? (
+                <a
+                  href={getPublicHomeUrl()}
+                  className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-amber-700 transition-colors group"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                  <span>Back to Public Website</span>
+                </a>
+              ) : (
+                <Link
+                  to="/"
+                  className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-amber-700 transition-colors group"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                  <span>Back to Public Website</span>
+                </Link>
+              )}
+            </div>
+          </motion.div>
+        </div>
       </main>
     </div>
   );
