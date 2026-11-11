@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getRecaptchaToken } from '@utils/recaptcha';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const USER_TOKEN_KEY = 'aradhnamarg_user_token';
@@ -6,6 +7,24 @@ const USER_DATA_KEY = 'aradhnamarg_user_data';
 export const USER_SESSION_EXPIRED_EVENT = 'user-session-expired';
 
 const protectedUserEndpoints = ['/me', '/wishlist', '/wishlist/toggle', '/wishlist/sync'];
+
+const postWithCaptchaRetry = async <T>(
+  endpoint: string,
+  data: Record<string, unknown>,
+  fallbackAction: string
+): Promise<T> => {
+  try {
+    const response = await userApi.post<T>(endpoint, data);
+    return response.data;
+  } catch (error: any) {
+    const challenge = error.response?.data;
+    if (challenge?.status !== 'CAPTCHA_REQUIRED' || !challenge.captchaRequired) throw error;
+
+    const captchaToken = await getRecaptchaToken(challenge.captchaAction || fallbackAction);
+    const retry = await userApi.post<T>(endpoint, { ...data, captchaToken });
+    return retry.data;
+  }
+};
 
 export interface UserProfile {
   id: string;
@@ -105,12 +124,14 @@ export const UserAuthApi = {
     return res.data;
   },
 
-  async login(data: { email: string; password?: string }): Promise<AuthResponse> {
-    const res = await userApi.post<AuthResponse>('/login', data);
-    if (res.data.data?.token) {
-      this.setSession(res.data.data.token, res.data.data.user);
+  async login(data: { email: string; password?: string; captchaToken?: string }): Promise<AuthResponse> {
+    const response = data.captchaToken
+      ? await userApi.post<AuthResponse>('/login', data).then((result) => result.data)
+      : await postWithCaptchaRetry<AuthResponse>('/login', data, 'user-login');
+    if (response.data?.token) {
+      this.setSession(response.data.token, response.data.user);
     }
-    return res.data;
+    return response;
   },
 
   async googleAuth(credential: string, mode: 'login' | 'signup'): Promise<AuthResponse> {

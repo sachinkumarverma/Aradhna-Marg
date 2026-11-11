@@ -5,6 +5,9 @@ import { publicController } from '@controllers/PublicController';
 import { isShortVideo } from '@utils/videoUtils';
 import { requireActiveSite } from '@/middlewares/maintenance.middleware';
 import { publicCacheService } from '@services/PublicCacheService';
+import axios from 'axios';
+import { AppError } from '@/errors/appError';
+import { isPdfResponse, MAX_PDF_PROXY_BYTES, PdfProxyInputError, validatePdfProxyUrl } from '@utils/pdfProxy';
 
 const router = Router();
 
@@ -42,32 +45,39 @@ router.get('/puranas/:slug', publicController.getPuranBySlug);
 // PDF CORS Proxy for client PDF.js rendering & direct attachment downloads
 router.get('/proxy-pdf', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const pdfUrl = req.query.url as string;
+    const pdfUrl = await validatePdfProxyUrl(req.query.url);
     const download = req.query.download === 'true';
     const filename = (req.query.filename as string) || 'document.pdf';
 
-    if (!pdfUrl) {
-      return res.status(400).json({ error: 'url parameter is required' });
-    }
-
-    const { default: axios } = await import('axios');
-    const response = await axios.get(pdfUrl, {
+    const response = await axios.get<ArrayBuffer>(pdfUrl.toString(), {
       responseType: 'arraybuffer',
-      timeout: 30000,
+      timeout: 15000,
+      maxContentLength: MAX_PDF_PROXY_BYTES,
+      maxBodyLength: MAX_PDF_PROXY_BYTES,
+      maxRedirects: 0,
+      validateStatus: (status) => status >= 200 && status < 300,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        Accept: 'application/pdf',
+        'User-Agent': 'AradhnaMarg-PdfProxy/1.0'
       }
     });
 
+    const pdfBuffer = Buffer.from(response.data);
+    if (!isPdfResponse(response.headers['content-type'], pdfBuffer)) {
+      throw new AppError('Upstream resource is not a PDF', 502);
+    }
+
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Access-Control-Allow-Origin', '*');
     if (download) {
       res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
     } else {
       res.setHeader('Cache-Control', 'public, max-age=86400');
     }
-    return res.send(Buffer.from(response.data));
+    return res.send(pdfBuffer);
   } catch (error) {
+    if (error instanceof PdfProxyInputError) {
+      return res.status(400).json({ error: error.message });
+    }
     next(error);
   }
 });

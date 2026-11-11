@@ -4,6 +4,7 @@
 
 import axios from 'axios';
 import { StorageService } from '@common/storage/StorageService';
+import { getRecaptchaToken } from '@utils/recaptcha';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -59,8 +60,27 @@ export const isAuthenticated = (): boolean => !!getToken();
 
 // ── API calls ────────────────────────────────────────────────────────────────
 
-export const login = async (username: string, password: string): Promise<{ token: string; user: AdminUser }> => {
-  const response = await axios.post(`${API_BASE}/admin/auth/login`, { username, password });
+export const login = async (
+  username: string,
+  password: string,
+  captchaToken?: string
+): Promise<{ token: string; user: AdminUser }> => {
+  let response;
+
+  try {
+    response = await axios.post(`${API_BASE}/admin/auth/login`, {
+      username,
+      password,
+      ...(captchaToken ? { captchaToken } : {})
+    });
+  } catch (error: any) {
+    const challenge = error.response?.data;
+    if (challenge?.status !== 'CAPTCHA_REQUIRED' || !challenge.captchaRequired) throw error;
+
+    const token = await getRecaptchaToken(challenge.captchaAction || 'admin-login');
+    response = await axios.post(`${API_BASE}/admin/auth/login`, { username, password, captchaToken: token });
+  }
+
   const { token, user } = response.data.data;
   saveSession(token, user);
   return { token, user };

@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import { userAuthController } from '@controllers/userAuth.controller';
 import { requireUser } from '@middlewares/userAuth';
+import {
+  userAuthRequestRateLimiter,
+  userGoogleRedirectRateLimiter,
+  userLoginRateLimiter
+} from '@middlewares/authRateLimiter';
 
 const router = Router();
 
@@ -11,15 +16,19 @@ router.use((_req, res, next) => {
 });
 
 // Public Authentication endpoints
-router.post('/signup', userAuthController.signup);
-router.post('/login', userAuthController.login);
-router.post('/google', userAuthController.googleAuth);
-router.post('/google/callback', userAuthController.googleRedirectCallback);
-router.get('/verify-email', userAuthController.verifyEmail);
-router.post('/verify-email', userAuthController.verifyEmail);
-router.post('/resend-verification', userAuthController.resendVerification);
-router.post('/forgot-password', userAuthController.forgotPassword);
-router.post('/reset-password', userAuthController.resetPassword);
+router.post('/signup', userAuthRequestRateLimiter('signup'), userAuthController.signup);
+router.post('/login', userLoginRateLimiter, userAuthController.login);
+router.post('/google', userLoginRateLimiter, userAuthController.googleAuth);
+router.post('/google/callback', userGoogleRedirectRateLimiter, userAuthController.googleRedirectCallback);
+router.get('/verify-email', userAuthRequestRateLimiter('verify-email'), userAuthController.verifyEmail);
+router.post('/verify-email', userAuthRequestRateLimiter('verify-email'), userAuthController.verifyEmail);
+router.post(
+  '/resend-verification',
+  userAuthRequestRateLimiter('resend-verification'),
+  userAuthController.resendVerification
+);
+router.post('/forgot-password', userAuthRequestRateLimiter('forgot-password'), userAuthController.forgotPassword);
+router.post('/reset-password', userAuthRequestRateLimiter('reset-password'), userAuthController.resetPassword);
 
 // Protected endpoints
 router.get('/me', requireUser, userAuthController.getMe);

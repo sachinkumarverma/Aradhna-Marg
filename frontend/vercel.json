@@ -98,6 +98,22 @@
       "destination": "/manifest-admin.webmanifest"
     },
     {
+      "source": "/auth",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/reset-password",
+      "destination": "/index.html"
+    },
+    {
       "source": "/videos/:slug",
       "destination": "/index.html"
     },

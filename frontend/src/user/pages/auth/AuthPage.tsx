@@ -82,6 +82,18 @@ export const AuthPage: React.FC = () => {
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
 
+  const isEmailVerificationRequired = (error: any): boolean => {
+    const status = error.response?.status;
+    const message = String(error.response?.data?.message || '').toLowerCase();
+
+    return (
+      status === 403 &&
+      (message.includes('email has not been verified') ||
+        message.includes('activation link') ||
+        message.includes('ईमेल अभी सत्यापित'))
+    );
+  };
+
   // Query parameters remain in the URL when switching between auth modes. Keep
   // these notices idempotent so a tab switch does not replay a one-time toast.
   const handledVerifiedNoticeRef = useRef<string | null>(null);
@@ -120,6 +132,7 @@ export const AuthPage: React.FC = () => {
   const switchMode = (newMode: 'login' | 'signup' | 'forgot') => {
     if (newMode !== 'login') {
       toast.dismiss('verification-sent-notice');
+      setPendingVerificationEmail(null);
     }
 
     setMode(newMode);
@@ -140,8 +153,7 @@ export const AuthPage: React.FC = () => {
       await login(email, password);
       navigate(redirectUrl, { replace: true });
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || '';
-      if (msg.toLowerCase().includes('verif') || msg.toLowerCase().includes('सत्याप')) {
+      if (isEmailVerificationRequired(err)) {
         setPendingVerificationEmail(email);
       }
     } finally {
@@ -201,8 +213,7 @@ export const AuthPage: React.FC = () => {
         });
       }
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || '';
-      if (msg.toLowerCase().includes('verif') || msg.toLowerCase().includes('सत्याप')) {
+      if (isEmailVerificationRequired(err)) {
         switchMode('login');
       }
     } finally {

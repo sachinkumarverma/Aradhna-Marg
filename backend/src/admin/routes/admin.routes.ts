@@ -17,6 +17,7 @@ import { authController } from '@admin/controllers/auth.controller';
 import { adminUserController } from '@admin/controllers/user.controller';
 import mediaRoutes from '@/routes/media.routes';
 import { publicCacheService } from '@services/PublicCacheService';
+import { adminGoogleRedirectRateLimiter, adminLoginRateLimiter } from '@middlewares/authRateLimiter';
 
 const router = Router();
 
@@ -36,9 +37,9 @@ router.use((req, res, next) => {
 });
 
 // Public auth routes — no JWT required
-router.post('/auth/login', authController.login);
-router.post('/auth/google', authController.googleLogin);
-router.post('/auth/google/callback', authController.googleRedirectCallback);
+router.post('/auth/login', adminLoginRateLimiter, authController.login);
+router.post('/auth/google', adminLoginRateLimiter, authController.googleLogin);
+router.post('/auth/google/callback', adminGoogleRedirectRateLimiter, authController.googleRedirectCallback);
 router.post('/auth/logout', authController.logout);
 
 // ALL routes below this line are protected by JWT

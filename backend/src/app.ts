@@ -11,6 +11,7 @@ import seoRoutes from './seo/routes/seo.routes';
 import { globalErrorHandler, notFoundHandler } from './middlewares/error';
 import { base64UploadMiddleware } from './middlewares/base64Upload.middleware';
 import { logger } from './utils/logger';
+import { corsOptions } from './config/cors';
 
 // Register cron jobs & autonomous agents
 import './features/youtube/jobs/youtube.cron';
@@ -28,7 +29,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Security & Standard Middlewares
 app.use(securityMiddleware);
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(compression());
 app.use(
   express.json({

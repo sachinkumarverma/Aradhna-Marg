@@ -54,6 +54,19 @@ describe('Health endpoint security', () => {
     });
   });
 
+  it('keeps the public response minimal even with a valid non-admin token', async () => {
+    const userToken = jwt.sign({ id: 'user-1', role: 'user' }, config.JWT_SECRET, { expiresIn: '1h' });
+    const response = await fetch(`${baseUrl}/api/health`, {
+      headers: { Authorization: `Bearer ${userToken}` }
+    });
+    const body = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(body.data, undefined);
+    assert.equal(body.message, 'Service is healthy');
+    assert.equal(body.status, 'OK');
+  });
+
   it('returns a generic 503 when the public basic check fails', async () => {
     db.query = async () => {
       throw new Error('database connection details must not be exposed');
