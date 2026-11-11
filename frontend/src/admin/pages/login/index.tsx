@@ -104,7 +104,7 @@ export const AdminLogin: React.FC = () => {
       <header className="relative z-30 w-full px-6 sm:px-10 md:px-14 lg:px-16 pt-3 sm:pt-4 pb-2 sm:pb-3 flex items-center justify-between pointer-events-none">
         {isAdminHost() ? (
           <a href={getPublicHomeUrl()} className="flex items-center gap-3 group pointer-events-auto shrink-0">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-white border-2 border-orange-500/90 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform shrink-0">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-[#010243] border border-orange-500/40 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform shrink-0">
               <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col justify-center">
@@ -122,7 +122,7 @@ export const AdminLogin: React.FC = () => {
           </a>
         ) : (
           <Link to="/" className="flex items-center gap-3 group pointer-events-auto shrink-0">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-white border-2 border-orange-500/90 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform shrink-0">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-[#010243] border border-orange-500/40 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform shrink-0">
               <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col justify-center">

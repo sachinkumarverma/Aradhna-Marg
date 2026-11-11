@@ -267,26 +267,37 @@ export function AdminUsers() {
     {
       header: 'Status',
       sortKey: 'is_active',
-      className: 'text-center whitespace-nowrap min-w-[95px]',
+      className: 'text-center whitespace-nowrap min-w-[170px]',
       accessor: (row: AdminUserItem) => (
-        <span
-          className={`inline-flex items-center justify-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap ${
-            row.is_login_locked
-              ? 'bg-amber-500 text-white'
-              : row.is_active
-                ? 'bg-green-600 text-white'
-                : 'bg-rose-600 text-white'
-          }`}
-        >
-          {row.is_login_locked ? (
-            <Lock className="w-3 h-3" />
-          ) : row.is_active ? (
-            <CheckCircle2 className="w-3 h-3" />
-          ) : (
-            <XCircle className="w-3 h-3" strokeWidth={2.5} />
+        <div className="flex flex-col items-center gap-1">
+          <span
+            className={`inline-flex items-center justify-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap ${
+              row.is_login_locked
+                ? 'bg-amber-500 text-white'
+                : row.is_active
+                  ? 'bg-green-600 text-white'
+                  : 'bg-rose-600 text-white'
+            }`}
+          >
+            {row.is_login_locked ? (
+              <Lock className="w-3 h-3" />
+            ) : row.is_active ? (
+              <CheckCircle2 className="w-3 h-3" />
+            ) : (
+              <XCircle className="w-3 h-3" strokeWidth={2.5} />
+            )}
+            {row.is_login_locked ? 'LOCKED' : row.is_active ? 'ACTIVE' : 'DEACTIVATED'}
+          </span>
+          {row.is_login_locked && row.login_locked_until && (
+            <span
+              className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 whitespace-nowrap"
+              title={`Unlocks at ${formatDateSafe(row.login_locked_until)}`}
+            >
+              <Clock className="w-3 h-3 shrink-0" />
+              Unlocks {formatDateSafe(row.login_locked_until)}
+            </span>
           )}
-          {row.is_login_locked ? 'LOCKED' : row.is_active ? 'ACTIVE' : 'DEACTIVATED'}
-        </span>
+        </div>
       )
     }
   ];

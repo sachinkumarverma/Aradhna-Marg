@@ -81,7 +81,7 @@ export const ResetPasswordPage: React.FC = () => {
       <header className="relative z-30 w-full px-5 sm:px-10 lg:px-14 pt-3.5 sm:pt-4 pb-1 shrink-0 flex items-center justify-between">
         {/* Brand Logo & Name */}
         <Link to="/" className="flex items-center gap-3 group shrink-0">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-[#041a4b] border-2 border-amber-400/90 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform shrink-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-[#010243] border border-amber-400/80 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform shrink-0">
             <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col justify-center">

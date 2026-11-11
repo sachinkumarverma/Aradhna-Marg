@@ -113,7 +113,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isMobileOpen, onClos
           {/* Header */}
           <div className="px-6 h-16 border-b border-[#e63500] flex-shrink-0 flex items-center bg-[#ff3b00] shadow-sm relative z-20 -mr-[1px]">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 shadow-sm border border-white/20">
+              <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 shadow-sm border border-white/20 bg-[#010243]">
                 <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-serif text-[19px] font-bold tracking-wide whitespace-nowrap inline-flex items-baseline">

@@ -88,7 +88,7 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
             <div className="flex items-center justify-between gap-3">
               {/* Left: Brand Logo */}
               <Link to="/" aria-label="Aradhna Marg home" className="flex items-center gap-2 sm:gap-3 group shrink-0">
-                <div className="w-[36px] h-[36px] sm:w-[40px] sm:h-[40px] aspect-square rounded-xl overflow-hidden bg-[#041a4b] border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs shrink-0">
+                <div className="w-[36px] h-[36px] sm:w-[40px] sm:h-[40px] aspect-square rounded-xl overflow-hidden bg-[#010243] border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs shrink-0">
                   <img
                     src="/logo-96.webp"
                     alt="Aradhna Marg Logo"

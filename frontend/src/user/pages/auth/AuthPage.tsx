@@ -357,7 +357,7 @@ export const AuthPage: React.FC = () => {
       <div className="relative z-30 w-full px-6 sm:px-10 lg:px-16 pt-3 sm:pt-4 pb-2 sm:pb-3 flex items-center justify-between pointer-events-none">
         {/* Brand Logo & Name */}
         <Link to="/" className="flex items-center gap-3 group pointer-events-auto shrink-0">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-[#041a4b] border-2 border-amber-400/90 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform shrink-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-[#010243] border border-amber-400/80 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform shrink-0">
             <img src="/logo.png" alt="Aradhna Marg Logo" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col justify-center">

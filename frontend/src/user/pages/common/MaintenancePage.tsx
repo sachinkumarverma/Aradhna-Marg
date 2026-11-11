@@ -56,7 +56,7 @@ export const MaintenancePage: React.FC = () => {
       {/* Top Brand Bar */}
       <header className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden bg-[#fff9f0] border border-orange-200/80 flex items-center justify-center p-1 shadow-md">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden bg-[#010243] border border-amber-500/30 flex items-center justify-center shadow-md">
             <img src="/logo.png" alt="Aradhna Marg" className="w-full h-full object-cover rounded-xl" />
           </div>
           <div className="flex flex-col">

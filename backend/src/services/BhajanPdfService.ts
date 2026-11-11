@@ -442,6 +442,7 @@ export class BhajanPdfService {
       width: 82px;
       height: 82px;
       object-fit: contain;
+      border-radius: 14px;
       margin-bottom: 12px;
       filter: drop-shadow(0 4px 10px rgba(217, 119, 6, 0.25));
     }
