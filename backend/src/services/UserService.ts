@@ -107,8 +107,34 @@ export class UserService {
       );
     }
 
+    if (user.login_locked_until && user.login_locked_until.getTime() > Date.now()) {
+      const retryAfterSeconds = Math.max(1, Math.ceil((user.login_locked_until.getTime() - Date.now()) / 1000));
+      throw new AppError(
+        lang === 'hi'
+          ? 'बार-बार गलत प्रयासों के कारण आपका खाता अस्थायी रूप से लॉक है। कृपया कुछ समय बाद पुनः प्रयास करें या सहायता से संपर्क करें।'
+          : 'Your account is temporarily locked because of repeated failed sign-in attempts. Please try again later or contact support.',
+        429,
+        { status: 'ACCOUNT_LOCKED', retryAfterSeconds }
+      );
+    }
+
     const isValid = verifyPassword(data.password, user.password_hash);
     if (!isValid) {
+      const failedLogin = await userRepository.recordFailedLogin(user.id);
+      if (failedLogin?.login_locked_until && failedLogin.login_locked_until.getTime() > Date.now()) {
+        const retryAfterSeconds = Math.max(
+          1,
+          Math.ceil((failedLogin.login_locked_until.getTime() - Date.now()) / 1000)
+        );
+        throw new AppError(
+          lang === 'hi'
+            ? 'बार-बार गलत प्रयासों के कारण आपका खाता अस्थायी रूप से लॉक है। कृपया कुछ समय बाद पुनः प्रयास करें या सहायता से संपर्क करें।'
+            : 'Your account is temporarily locked because of repeated failed sign-in attempts. Please try again later or contact support.',
+          429,
+          { status: 'ACCOUNT_LOCKED', retryAfterSeconds }
+        );
+      }
+
       throw new AppError(
         lang === 'hi' ? 'गलत ईमेल या पासवर्ड। कृपया पुनः प्रयास करें।' : 'Invalid email or password. Please try again.',
         401
@@ -166,6 +192,17 @@ export class UserService {
             ? 'इस Google ईमेल से कोई खाता पंजीकृत नहीं है। कृपया पहले "साइन अप" करें।'
             : 'No registered account found with this Google email. Please "Sign Up" first.',
           404
+        );
+      }
+
+      if (user.login_locked_until && user.login_locked_until.getTime() > Date.now()) {
+        const retryAfterSeconds = Math.max(1, Math.ceil((user.login_locked_until.getTime() - Date.now()) / 1000));
+        throw new AppError(
+          lang === 'hi'
+            ? 'बार-बार गलत प्रयासों के कारण आपका खाता अस्थायी रूप से लॉक है। कृपया कुछ समय बाद पुनः प्रयास करें या सहायता से संपर्क करें।'
+            : 'Your account is temporarily locked because of repeated failed sign-in attempts. Please try again later or contact support.',
+          429,
+          { status: 'ACCOUNT_LOCKED', retryAfterSeconds }
         );
       }
 

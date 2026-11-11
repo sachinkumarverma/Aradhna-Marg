@@ -98,6 +98,7 @@ router.delete('/authors/:id', adminAuthorController.delete);
 router.get('/users', adminUserController.list);
 router.get('/users/stats', adminUserController.getStats);
 router.patch('/users/:id/status', adminUserController.toggleStatus);
+router.post('/users/:id/unlock', adminUserController.unlockLogin);
 
 // Deities Management
 router.use('/deities', deityRoutes);

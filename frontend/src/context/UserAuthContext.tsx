@@ -211,14 +211,8 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const login = async (email: string, password?: string) => {
-    try {
-      const res = await UserAuthApi.login({ email, password });
-      handlePostAuth(res.data.user, res.data.token);
-    } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || 'Sign in failed.';
-      toast.error(msg);
-      throw err;
-    }
+    const res = await UserAuthApi.login({ email, password });
+    handlePostAuth(res.data.user, res.data.token);
   };
 
   const signup = async (name: string, email: string, password?: string) => {

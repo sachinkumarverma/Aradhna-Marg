@@ -1,5 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { isRecaptchaConfigured, verifyRecaptchaToken } from '@utils/recaptcha';
+import { userRepository } from '@repositories/UserRepository';
 
 type RateLimitMode = 'failed-auth' | 'request';
 
@@ -15,6 +16,8 @@ interface AuthRateLimitOptions {
   captchaAction?: string;
   captchaAfterAttempts?: number;
   captchaVerifier?: (token: string | undefined, action: string, remoteIp?: string) => Promise<boolean>;
+  onAccountLocked?: (accountIdentifier: string, blockedUntil: Date) => Promise<void> | void;
+  onAccountSuccess?: (accountIdentifier: string) => Promise<void> | void;
 }
 
 interface AttemptState {
@@ -24,6 +27,8 @@ interface AttemptState {
 }
 
 const attempts = new Map<string, AttemptState>();
+const accountIpKeys = new Map<string, Set<string>>();
+const ipAccountKeys = new Map<string, Set<string>>();
 
 const getClientIp = (req: Request): string => req.ip || 'unknown';
 
@@ -47,6 +52,20 @@ const getKeys = (req: Request, options: AuthRateLimitOptions): string[] => {
   }
 
   return keys;
+};
+
+const trackAccountIpKey = (keys: string[]): void => {
+  const ipKey = keys.find((key) => key.includes(':ip:'));
+  const accountKey = keys.find((key) => key.includes(':account:'));
+  if (!ipKey || !accountKey) return;
+
+  const linkedIps = accountIpKeys.get(accountKey) || new Set<string>();
+  linkedIps.add(ipKey);
+  accountIpKeys.set(accountKey, linkedIps);
+
+  const linkedAccounts = ipAccountKeys.get(ipKey) || new Set<string>();
+  linkedAccounts.add(accountKey);
+  ipAccountKeys.set(ipKey, linkedAccounts);
 };
 
 const pruneExpiredEntries = (now: number): void => {
@@ -77,14 +96,27 @@ const getRetryAfterSeconds = (states: AttemptState[], now: number): number => {
 
 const sleep = (durationMs: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, durationMs));
 
-const recordAttempt = (keys: string[], now: number, windowMs: number, blockMs: number, maxAttempts: number): void => {
+const recordAttempt = (
+  keys: string[],
+  now: number,
+  windowMs: number,
+  blockMs: number,
+  maxAttempts: number
+): { blockedUntil: number | undefined; key: string | undefined } => {
+  let accountLock: { blockedUntil: number; key: string } | undefined;
+
   keys.forEach((key) => {
     const state = getState(key, now, windowMs);
     state.count += 1;
     if (state.count >= maxAttempts) {
       state.blockedUntil = now + blockMs;
+      if (key.includes(':account:')) {
+        accountLock = { blockedUntil: state.blockedUntil, key };
+      }
     }
   });
+
+  return accountLock || { blockedUntil: undefined, key: undefined };
 };
 
 export const createAuthRateLimiter = (options: AuthRateLimitOptions): RequestHandler => {
@@ -102,15 +134,21 @@ export const createAuthRateLimiter = (options: AuthRateLimitOptions): RequestHan
     const now = Date.now();
     pruneExpiredEntries(now);
     const keys = getKeys(req, options);
+    trackAccountIpKey(keys);
     const states = keys.map((key) => getState(key, now, windowMs));
 
     if (states.some((state) => state.blockedUntil && state.blockedUntil > now)) {
       const retryAfter = getRetryAfterSeconds(states, now);
       res.setHeader('Retry-After', retryAfter);
+      const accountLocked = keys.some(
+        (key, index) => key.includes(':account:') && states[index].blockedUntil && states[index].blockedUntil > now
+      );
       return res.status(429).json({
         success: false,
-        message: 'Too many authentication attempts. Please try again later.',
-        status: 'RATE_LIMITED'
+        message: accountLocked
+          ? 'Your account is temporarily locked because of repeated failed sign-in attempts. Please try again later.'
+          : 'Too many authentication attempts. Please try again later.',
+        status: accountLocked ? 'ACCOUNT_LOCKED' : 'RATE_LIMITED'
       });
     }
 
@@ -119,10 +157,21 @@ export const createAuthRateLimiter = (options: AuthRateLimitOptions): RequestHan
         state.blockedUntil = now + blockMs;
       });
       res.setHeader('Retry-After', Math.ceil(blockMs / 1000));
+      const accountLocked = keys.some((key) => key.includes(':account:'));
+      if (accountLocked && options.onAccountLocked) {
+        const accountIdentifier = getAccountIdentifier(req, options.accountFields || []);
+        if (accountIdentifier) {
+          void Promise.resolve(options.onAccountLocked(accountIdentifier, new Date(now + blockMs))).catch(
+            () => undefined
+          );
+        }
+      }
       return res.status(429).json({
         success: false,
-        message: 'Too many authentication attempts. Please try again later.',
-        status: 'RATE_LIMITED'
+        message: accountLocked
+          ? 'Your account is temporarily locked because of repeated failed sign-in attempts. Please try again later.'
+          : 'Too many authentication attempts. Please try again later.',
+        status: accountLocked ? 'ACCOUNT_LOCKED' : 'RATE_LIMITED'
       });
     }
 
@@ -143,7 +192,15 @@ export const createAuthRateLimiter = (options: AuthRateLimitOptions): RequestHan
 
       const validCaptcha = await captchaVerifier(captchaToken, captchaAction, getClientIp(req));
       if (!validCaptcha) {
-        recordAttempt(keys, Date.now(), windowMs, blockMs, maxAttempts);
+        const attempt = recordAttempt(keys, Date.now(), windowMs, blockMs, maxAttempts);
+        if (attempt.key && attempt.blockedUntil && options.onAccountLocked) {
+          const accountIdentifier = getAccountIdentifier(req, options.accountFields || []);
+          if (accountIdentifier) {
+            void Promise.resolve(options.onAccountLocked(accountIdentifier, new Date(attempt.blockedUntil))).catch(
+              () => undefined
+            );
+          }
+        }
         return res.status(403).json({
           success: false,
           message: 'Additional verification failed. Please try again.',
@@ -163,16 +220,29 @@ export const createAuthRateLimiter = (options: AuthRateLimitOptions): RequestHan
       const shouldCount = options.mode === 'request' || failed;
 
       if (!shouldCount) {
+        const accountIdentifier = getAccountIdentifier(req, options.accountFields || []);
         keys.filter((key) => key.includes(':account:')).forEach((key) => attempts.delete(key));
+        if (accountIdentifier && options.onAccountSuccess) {
+          void Promise.resolve(options.onAccountSuccess(accountIdentifier)).catch(() => undefined);
+        }
         return;
       }
 
       const finishedAt = Date.now();
       keys.forEach((key) => {
         const state = getState(key, finishedAt, windowMs);
+        const wasLocked = Boolean(state.blockedUntil && state.blockedUntil > finishedAt);
         state.count += 1;
         if (state.count >= maxAttempts) {
           state.blockedUntil = finishedAt + blockMs;
+          if (!wasLocked && key.includes(':account:') && options.onAccountLocked) {
+            const accountIdentifier = getAccountIdentifier(req, options.accountFields || []);
+            if (accountIdentifier) {
+              void Promise.resolve(options.onAccountLocked(accountIdentifier, new Date(state.blockedUntil))).catch(
+                () => undefined
+              );
+            }
+          }
         }
       });
     });
@@ -181,11 +251,29 @@ export const createAuthRateLimiter = (options: AuthRateLimitOptions): RequestHan
   };
 };
 
+export const clearAuthRateLimitAccount = (scope: string, accountIdentifier: string): void => {
+  const accountKey = `${scope}:account:${accountIdentifier.trim().toLowerCase().slice(0, 320)}`;
+  attempts.delete(accountKey);
+
+  const linkedIps = accountIpKeys.get(accountKey) || new Set<string>();
+  linkedIps.forEach((ipKey) => {
+    const linkedAccounts = ipAccountKeys.get(ipKey);
+    linkedAccounts?.delete(accountKey);
+    if (!linkedAccounts || linkedAccounts.size === 0) {
+      attempts.delete(ipKey);
+      ipAccountKeys.delete(ipKey);
+    }
+  });
+  accountIpKeys.delete(accountKey);
+};
+
 export const userLoginRateLimiter = createAuthRateLimiter({
   scope: 'user-login',
   mode: 'failed-auth',
   accountFields: ['email'],
-  captchaAction: 'user-login'
+  captchaAction: 'user_login',
+  onAccountLocked: (email, blockedUntil) => userRepository.lockLoginByEmail(email, blockedUntil),
+  onAccountSuccess: (email) => userRepository.clearLoginLockByEmail(email)
 });
 
 export const userGoogleRedirectRateLimiter = createAuthRateLimiter({
@@ -205,7 +293,7 @@ export const adminLoginRateLimiter = createAuthRateLimiter({
   scope: 'admin-login',
   mode: 'failed-auth',
   accountFields: ['username', 'email'],
-  captchaAction: 'admin-login'
+  captchaAction: 'admin_login'
 });
 
 export const adminGoogleRedirectRateLimiter = createAuthRateLimiter({

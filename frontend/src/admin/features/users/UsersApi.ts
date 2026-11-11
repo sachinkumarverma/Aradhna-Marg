@@ -8,6 +8,9 @@ export interface AdminUserItem {
   avatar_url: string | null;
   is_verified: boolean;
   is_active: boolean;
+  login_failed_attempts: number;
+  login_locked_until: string | null;
+  is_login_locked: boolean;
   last_login_at: string | null;
   created_at: string;
   updated_at: string;
@@ -24,7 +27,7 @@ export interface GetUsersParams {
   page?: number;
   limit?: number;
   search?: string;
-  status?: 'active' | 'inactive' | 'all';
+  status?: 'active' | 'inactive' | 'locked' | 'all';
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -56,6 +59,11 @@ export const UsersApi = {
     const res = await apiClient.patch<{ success: boolean; data: AdminUserItem }>(`/admin/users/${id}/status`, {
       is_active: isActive
     });
+    return res.data;
+  },
+
+  async unlockUser(id: string): Promise<{ success: boolean; data: Partial<AdminUserItem> }> {
+    const res = await apiClient.post<{ success: boolean; data: Partial<AdminUserItem> }>(`/admin/users/${id}/unlock`);
     return res.data;
   }
 };

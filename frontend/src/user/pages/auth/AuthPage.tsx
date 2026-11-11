@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle2,
+  AlertTriangle,
   BookOpen,
   Music
 } from 'lucide-react';
@@ -20,6 +21,12 @@ import { GoogleAuthButton } from '@components/auth/GoogleAuthButton';
 import { UserAuthApi } from '@api/userAuth';
 import { SEOHead } from '@components/seo';
 import toast from 'react-hot-toast';
+
+type LoginNotice = {
+  tone: 'warning' | 'error';
+  title: string;
+  message: string;
+};
 
 export const AuthPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -81,6 +88,7 @@ export const AuthPage: React.FC = () => {
   const [forgotSent, setForgotSent] = useState(false);
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
+  const [loginNotice, setLoginNotice] = useState<LoginNotice | null>(null);
 
   const isEmailVerificationRequired = (error: any): boolean => {
     const status = error.response?.status;
@@ -92,6 +100,71 @@ export const AuthPage: React.FC = () => {
         message.includes('activation link') ||
         message.includes('ईमेल अभी सत्यापित'))
     );
+  };
+
+  const getRetryAfterMinutes = (error: any): number => {
+    const headers = error.response?.headers;
+    const retryAfter = typeof headers?.get === 'function' ? headers.get('retry-after') : headers?.['retry-after'];
+    const seconds = Number(retryAfter);
+    const bodySeconds = Number(error.response?.data?.errors?.retryAfterSeconds);
+
+    const retrySeconds = Number.isFinite(seconds) && seconds > 0 ? seconds : bodySeconds;
+    return Number.isFinite(retrySeconds) && retrySeconds > 0 ? Math.max(1, Math.ceil(retrySeconds / 60)) : 15;
+  };
+
+  const getLoginNotice = (error: any): LoginNotice => {
+    const status = error.response?.status;
+    const responseStatus = error.response?.data?.status || error.response?.data?.errors?.status;
+
+    if (responseStatus === 'ACCOUNT_LOCKED') {
+      const minutes = getRetryAfterMinutes(error);
+      return {
+        tone: 'error',
+        title: 'Account temporarily locked',
+        message: `Your account is locked after repeated failed sign-in attempts. Please try again in ${minutes} minute${minutes === 1 ? '' : 's'}, or contact support if you need help.`
+      };
+    }
+
+    if (status === 429 || responseStatus === 'RATE_LIMITED') {
+      const minutes = getRetryAfterMinutes(error);
+      return {
+        tone: 'error',
+        title: 'Sign-in temporarily blocked',
+        message: `Too many failed attempts. Please wait ${minutes} minute${minutes === 1 ? '' : 's'} before trying again.`
+      };
+    }
+
+    if (responseStatus === 'CAPTCHA_FAILED') {
+      return {
+        tone: 'warning',
+        title: 'Security verification failed',
+        message: 'Please refresh this page and try again. Do not repeatedly submit while the security check is failing.'
+      };
+    }
+
+    if (error.captchaAttempted) {
+      return {
+        tone: 'warning',
+        title: error.captchaCompleted ? 'Security check completed' : 'Security check unavailable',
+        message: error.captchaCompleted
+          ? 'The security check passed, but the email or password was not accepted.'
+          : 'Please refresh this page and try again when the security check is available.'
+      };
+    }
+
+    if (status === 401) {
+      return {
+        tone: 'error',
+        title: 'Incorrect sign-in details',
+        message: 'Please check your email and password and try again.'
+      };
+    }
+
+    return {
+      tone: 'error',
+      title: 'Sign-in failed',
+      message: error.response?.data?.message || 'Please try again.'
+    };
   };
 
   // Query parameters remain in the URL when switching between auth modes. Keep
@@ -130,6 +203,7 @@ export const AuthPage: React.FC = () => {
   }, [searchParams]);
 
   const switchMode = (newMode: 'login' | 'signup' | 'forgot') => {
+    setLoginNotice(null);
     if (newMode !== 'login') {
       toast.dismiss('verification-sent-notice');
       setPendingVerificationEmail(null);
@@ -149,12 +223,16 @@ export const AuthPage: React.FC = () => {
     }
 
     setSubmitting(true);
+    setLoginNotice(null);
     try {
       await login(email, password);
       navigate(redirectUrl, { replace: true });
     } catch (err: any) {
       if (isEmailVerificationRequired(err)) {
+        setLoginNotice(null);
         setPendingVerificationEmail(email);
+      } else {
+        setLoginNotice(getLoginNotice(err));
       }
     } finally {
       setSubmitting(false);
@@ -215,6 +293,8 @@ export const AuthPage: React.FC = () => {
     } catch (err: any) {
       if (isEmailVerificationRequired(err)) {
         switchMode('login');
+      } else if (gMode === 'login') {
+        setLoginNotice(getLoginNotice(err));
       }
     } finally {
       setSubmitting(false);
@@ -402,6 +482,27 @@ export const AuthPage: React.FC = () => {
               {/* 1. LOGIN FORM */}
               {mode === 'login' && (
                 <form onSubmit={handleLoginSubmit} className="auth-card-form space-y-3.5 sm:space-y-4 pt-1">
+                  {loginNotice && (
+                    <div
+                      role="alert"
+                      className={`flex items-start gap-2 rounded-xl border p-2.5 text-[11px] leading-snug ${
+                        loginNotice.tone === 'error'
+                          ? 'border-rose-200 bg-rose-50 text-rose-900'
+                          : 'border-amber-200 bg-amber-50 text-amber-900'
+                      }`}
+                    >
+                      <AlertTriangle
+                        className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${
+                          loginNotice.tone === 'error' ? 'text-rose-600' : 'text-amber-600'
+                        }`}
+                      />
+                      <div>
+                        <p className="font-semibold">{loginNotice.title}</p>
+                        <p className="mt-0.5">{loginNotice.message}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Verification Pending Notice Banner */}
                   {pendingVerificationEmail && (
                     <div className="p-2 sm:p-2.5 bg-amber-50 border border-amber-200/90 rounded-xl flex items-start gap-2 text-[11px] text-amber-900 animate-in fade-in">

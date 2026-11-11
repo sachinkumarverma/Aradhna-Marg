@@ -12,7 +12,9 @@ import {
   Mail,
   CheckCircle2,
   XCircle,
-  Power
+  Power,
+  Unlock,
+  Lock
 } from 'lucide-react';
 import { UsersApi, type AdminUserItem, type GetUsersResponse } from '@admin/features/users/UsersApi';
 import { SearchInput } from '@components/ui/SearchInput';
@@ -29,12 +31,16 @@ export function AdminUsers() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'locked'>('all');
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Modal confirmation for deactivating a user
-  const [confirmTarget, setConfirmTarget] = useState<{ user: AdminUserItem; targetActive: boolean } | null>(null);
+  const [confirmTarget, setConfirmTarget] = useState<{
+    user: AdminUserItem;
+    action: 'deactivate' | 'unlock';
+    targetActive?: boolean;
+  } | null>(null);
 
   // Fetch Users
   const { data, isLoading, isFetching, refetch } = useQuery({
@@ -85,9 +91,44 @@ export function AdminUsers() {
     }
   });
 
+  const unlockMutation = useMutation({
+    mutationFn: ({ id }: { id: string }) => UsersApi.unlockUser(id),
+    onSuccess: (response, variables) => {
+      queryClient.setQueriesData<GetUsersResponse>({ queryKey: ['admin-users'] }, (current) => {
+        if (!current) return current;
+
+        return {
+          ...current,
+          data: current.data.map((user) =>
+            user.id === variables.id
+              ? {
+                  ...user,
+                  ...response.data,
+                  login_failed_attempts: 0,
+                  login_locked_until: null,
+                  is_login_locked: false
+                }
+              : user
+          )
+        };
+      });
+      toast.success('User account unlocked successfully');
+      queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] });
+      setConfirmTarget(null);
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Failed to unlock user account');
+    }
+  });
+
   const handleActionClick = (user: AdminUserItem) => {
+    if (user.is_login_locked) {
+      setConfirmTarget({ user, action: 'unlock' });
+      return;
+    }
+
     if (user.is_active) {
-      setConfirmTarget({ user, targetActive: false });
+      setConfirmTarget({ user, action: 'deactivate', targetActive: false });
     } else {
       toggleMutation.mutate({ id: user.id, isActive: true });
     }
@@ -95,7 +136,12 @@ export function AdminUsers() {
 
   const handleConfirmAction = () => {
     if (!confirmTarget) return;
-    toggleMutation.mutate({ id: confirmTarget.user.id, isActive: confirmTarget.targetActive });
+    if (confirmTarget.action === 'unlock') {
+      unlockMutation.mutate({ id: confirmTarget.user.id });
+      return;
+    }
+
+    toggleMutation.mutate({ id: confirmTarget.user.id, isActive: false });
   };
 
   const formatDateSafe = (dateString?: string | null, includeTime = true) => {
@@ -225,11 +271,21 @@ export function AdminUsers() {
       accessor: (row: AdminUserItem) => (
         <span
           className={`inline-flex items-center justify-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide whitespace-nowrap ${
-            row.is_active ? 'bg-green-600 text-white' : 'bg-rose-600 text-white'
+            row.is_login_locked
+              ? 'bg-amber-500 text-white'
+              : row.is_active
+                ? 'bg-green-600 text-white'
+                : 'bg-rose-600 text-white'
           }`}
         >
-          {row.is_active ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" strokeWidth={2.5} />}
-          {row.is_active ? 'ACTIVE' : 'DEACTIVATED'}
+          {row.is_login_locked ? (
+            <Lock className="w-3 h-3" />
+          ) : row.is_active ? (
+            <CheckCircle2 className="w-3 h-3" />
+          ) : (
+            <XCircle className="w-3 h-3" strokeWidth={2.5} />
+          )}
+          {row.is_login_locked ? 'LOCKED' : row.is_active ? 'ACTIVE' : 'DEACTIVATED'}
         </span>
       )
     }
@@ -325,7 +381,8 @@ export function AdminUsers() {
             options={[
               { label: 'All Statuses', value: 'all' },
               { label: 'Active', value: 'active' },
-              { label: 'Deactivated', value: 'inactive' }
+              { label: 'Deactivated', value: 'inactive' },
+              { label: 'Locked', value: 'locked' }
             ]}
             className="w-full sm:w-44"
             searchable={false}
@@ -372,10 +429,17 @@ export function AdminUsers() {
               variant="outline"
               size="sm"
               onClick={() => handleActionClick(user)}
-              disabled={toggleMutation.isPending && toggleMutation.variables?.id === user.id}
-              title={user.is_active ? 'Deactivate account' : 'Activate account'}
+              disabled={
+                (toggleMutation.isPending && toggleMutation.variables?.id === user.id) ||
+                (unlockMutation.isPending && unlockMutation.variables?.id === user.id)
+              }
+              title={
+                user.is_login_locked ? 'Unlock account' : user.is_active ? 'Deactivate account' : 'Activate account'
+              }
               leftIcon={
-                user.is_active ? (
+                user.is_login_locked ? (
+                  <Unlock className="h-3.5 w-3.5 shrink-0" />
+                ) : user.is_active ? (
                   <Power className="h-3.5 w-3.5 shrink-0" />
                 ) : (
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
@@ -383,12 +447,14 @@ export function AdminUsers() {
               }
               className={cn(
                 'h-8 min-w-[96px] px-3 text-xs font-semibold transition-colors',
-                user.is_active
-                  ? 'text-rose-700 hover:text-white hover:bg-rose-600 border-rose-200 hover:border-rose-600'
-                  : 'text-emerald-700 hover:text-white hover:bg-emerald-600 border-emerald-200 hover:border-emerald-600'
+                user.is_login_locked
+                  ? 'text-amber-700 hover:text-white hover:bg-amber-600 border-amber-200 hover:border-amber-600'
+                  : user.is_active
+                    ? 'text-rose-700 hover:text-white hover:bg-rose-600 border-rose-200 hover:border-rose-600'
+                    : 'text-emerald-700 hover:text-white hover:bg-emerald-600 border-emerald-200 hover:border-emerald-600'
               )}
             >
-              {user.is_active ? 'Deactivate' : 'Activate'}
+              {user.is_login_locked ? 'Unlock' : user.is_active ? 'Deactivate' : 'Activate'}
             </AdminButton>
           )}
           emptyIcon={UsersIcon}
@@ -420,11 +486,15 @@ export function AdminUsers() {
       {confirmTarget && (
         <ConfirmDialog
           isOpen={true}
-          title="Deactivate Devotee Account"
-          message={`Are you sure you want to deactivate the account for "${confirmTarget.user.name}" (${confirmTarget.user.email})? While deactivated, this user will not be able to log in or access their saved favorites.`}
-          confirmText="Yes, Deactivate"
+          title={confirmTarget.action === 'unlock' ? 'Unlock Devotee Account' : 'Deactivate Devotee Account'}
+          message={
+            confirmTarget.action === 'unlock'
+              ? `Unlock the account for "${confirmTarget.user.name}" (${confirmTarget.user.email}) so they can try signing in again?`
+              : `Are you sure you want to deactivate the account for "${confirmTarget.user.name}" (${confirmTarget.user.email})? While deactivated, this user will not be able to log in or access their saved favorites.`
+          }
+          confirmText={confirmTarget.action === 'unlock' ? 'Yes, Unlock' : 'Yes, Deactivate'}
           cancelText="Cancel"
-          isDestructive={true}
+          isDestructive={confirmTarget.action !== 'unlock'}
           onConfirm={handleConfirmAction}
           onCancel={() => setConfirmTarget(null)}
         />

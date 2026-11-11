@@ -61,8 +61,8 @@ describe('Authentication security controls', () => {
         accountFields: ['email'],
         maxAttempts: 5,
         captchaAfterAttempts: 2,
-        captchaAction: 'test-login',
-        captchaVerifier: async (token, action) => token === 'valid-token' && action === 'test-login',
+        captchaAction: 'test_login',
+        captchaVerifier: async (token, action) => token === 'valid-token' && action === 'test_login',
         windowMs: 60_000,
         blockMs: 60_000,
         baseDelayMs: 0
@@ -85,6 +85,38 @@ describe('Authentication security controls', () => {
       assert.equal(invalid.status, 403);
       assert.equal((await invalid.json()).status, 'CAPTCHA_FAILED');
       assert.equal(valid.status, 401);
+    } finally {
+      await close(server);
+    }
+  });
+
+  it('identifies an account lock separately from an IP-only rate limit', async () => {
+    const app = express();
+    app.use(express.json());
+    app.post(
+      '/',
+      createAuthRateLimiter({
+        scope: 'test-account-lock-status',
+        mode: 'failed-auth',
+        accountFields: ['email'],
+        maxAttempts: 2,
+        windowMs: 60_000,
+        blockMs: 60_000,
+        baseDelayMs: 0
+      }),
+      (_req, res) => res.status(401).json({ success: false })
+    );
+
+    const server = await listen(app);
+    try {
+      await post(server, 'locked@example.com');
+      await post(server, 'locked@example.com');
+      const blocked = await post(server, 'locked@example.com');
+      const body = await blocked.json();
+
+      assert.equal(blocked.status, 429);
+      assert.equal(body.status, 'ACCOUNT_LOCKED');
+      assert.equal(blocked.headers.get('retry-after'), '60');
     } finally {
       await close(server);
     }

@@ -77,7 +77,7 @@ export const login = async (
     const challenge = error.response?.data;
     if (challenge?.status !== 'CAPTCHA_REQUIRED' || !challenge.captchaRequired) throw error;
 
-    const token = await getRecaptchaToken(challenge.captchaAction || 'admin-login');
+    const token = await getRecaptchaToken(challenge.captchaAction || 'admin_login');
     response = await axios.post(`${API_BASE}/admin/auth/login`, { username, password, captchaToken: token });
   }
 

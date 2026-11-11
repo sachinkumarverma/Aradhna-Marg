@@ -36,6 +36,15 @@ class AdminUserController {
       next(error);
     }
   };
+
+  public unlockLogin = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const updated = await adminUserService.unlockLogin(String(req.params.id));
+      return sendSuccess(res, 'User login unlocked successfully', updated);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const adminUserController = new AdminUserController();

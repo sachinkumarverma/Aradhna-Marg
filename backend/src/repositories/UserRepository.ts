@@ -10,6 +10,8 @@ export interface UserEntity {
   is_verified: boolean;
   is_active: boolean;
   last_login_at: Date | null;
+  login_failed_attempts: number;
+  login_locked_until: Date | null;
   verification_token: string | null;
   verification_token_expires_at: Date | null;
   reset_password_token: string | null;
@@ -150,10 +152,75 @@ export class UserRepository {
     await db.query(
       `UPDATE users 
        SET last_login_at = NOW(),
+           login_failed_attempts = 0,
+           login_locked_until = NULL,
            updated_at = NOW()
        WHERE id = $1`,
       [id]
     );
+  }
+
+  async lockLoginByEmail(email: string, lockedUntil: Date): Promise<void> {
+    await db.query(
+      `UPDATE users
+       SET login_failed_attempts = GREATEST(login_failed_attempts, 5),
+           login_locked_until = $2,
+           updated_at = NOW()
+       WHERE LOWER(email) = LOWER($1)`,
+      [email.trim(), lockedUntil]
+    );
+  }
+
+  async clearLoginLockByEmail(email: string): Promise<void> {
+    await db.query(
+      `UPDATE users
+       SET login_failed_attempts = 0,
+           login_locked_until = NULL,
+           updated_at = NOW()
+       WHERE LOWER(email) = LOWER($1)`,
+      [email.trim()]
+    );
+  }
+
+  async recordFailedLogin(
+    id: string
+  ): Promise<Pick<UserEntity, 'login_failed_attempts' | 'login_locked_until'> | null> {
+    const res = await db.query(
+      `WITH next_state AS (
+        SELECT id,
+               CASE
+                 WHEN login_locked_until IS NULL OR login_locked_until <= NOW() THEN 1
+                 ELSE login_failed_attempts + 1
+               END AS next_attempts
+        FROM users
+        WHERE id = $1
+      )
+      UPDATE users AS current_user
+      SET login_failed_attempts = next_state.next_attempts,
+          login_locked_until = CASE
+            WHEN next_state.next_attempts >= 5 THEN NOW() + INTERVAL '15 minutes'
+            ELSE NULL
+          END,
+          updated_at = NOW()
+      FROM next_state
+      WHERE current_user.id = next_state.id
+      RETURNING current_user.login_failed_attempts, current_user.login_locked_until`,
+      [id]
+    );
+    return res.rows[0] || null;
+  }
+
+  async unlockLogin(id: string): Promise<UserEntity | null> {
+    const res = await db.query(
+      `UPDATE users
+       SET login_failed_attempts = 0,
+           login_locked_until = NULL,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [id]
+    );
+    return res.rows[0] || null;
   }
 
   async updateStatus(id: string, isActive: boolean): Promise<UserEntity | null> {
@@ -172,7 +239,7 @@ export class UserRepository {
     page?: number;
     limit?: number;
     search?: string;
-    status?: 'active' | 'inactive' | 'all';
+    status?: 'active' | 'inactive' | 'locked' | 'all';
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
   }): Promise<{ users: UserEntity[]; total: number }> {
@@ -194,6 +261,8 @@ export class UserRepository {
       conditions.push(`is_active = TRUE`);
     } else if (params.status === 'inactive') {
       conditions.push(`is_active = FALSE`);
+    } else if (params.status === 'locked') {
+      conditions.push(`login_locked_until > NOW()`);
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -213,7 +282,8 @@ export class UserRepository {
     const total = parseInt(countRes.rows[0].count, 10);
 
     const query = `
-      SELECT id, name, email, google_id, avatar_url, is_verified, is_active, last_login_at, created_at, updated_at
+      SELECT id, name, email, google_id, avatar_url, is_verified, is_active, last_login_at,
+             login_failed_attempts, login_locked_until, created_at, updated_at
       FROM users
       ${whereClause}
       ORDER BY ${sortField} ${sortDir}
@@ -227,12 +297,13 @@ export class UserRepository {
     };
   }
 
-  async getStats(): Promise<{ total: number; active: number; inactive: number; googleUsers: number }> {
+  async getStats(): Promise<{ total: number; active: number; inactive: number; locked: number; googleUsers: number }> {
     const res = await db.query(`
       SELECT 
         COUNT(*) AS total,
         COUNT(*) FILTER (WHERE is_active = TRUE) AS active,
         COUNT(*) FILTER (WHERE is_active = FALSE) AS inactive,
+        COUNT(*) FILTER (WHERE login_locked_until > NOW()) AS locked,
         COUNT(*) FILTER (WHERE google_id IS NOT NULL) AS google_users
       FROM users
     `);
@@ -241,6 +312,7 @@ export class UserRepository {
       total: parseInt(row.total || '0', 10),
       active: parseInt(row.active || '0', 10),
       inactive: parseInt(row.inactive || '0', 10),
+      locked: parseInt(row.locked || '0', 10),
       googleUsers: parseInt(row.google_users || '0', 10)
     };
   }

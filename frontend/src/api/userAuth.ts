@@ -20,9 +20,23 @@ const postWithCaptchaRetry = async <T>(
     const challenge = error.response?.data;
     if (challenge?.status !== 'CAPTCHA_REQUIRED' || !challenge.captchaRequired) throw error;
 
-    const captchaToken = await getRecaptchaToken(challenge.captchaAction || fallbackAction);
-    const retry = await userApi.post<T>(endpoint, { ...data, captchaToken });
-    return retry.data;
+    let captchaToken: string;
+    try {
+      captchaToken = await getRecaptchaToken(challenge.captchaAction || fallbackAction);
+    } catch (captchaError: any) {
+      captchaError.captchaAttempted = true;
+      captchaError.captchaCompleted = false;
+      throw captchaError;
+    }
+
+    try {
+      const retry = await userApi.post<T>(endpoint, { ...data, captchaToken });
+      return retry.data;
+    } catch (captchaError: any) {
+      captchaError.captchaAttempted = true;
+      captchaError.captchaCompleted = true;
+      throw captchaError;
+    }
   }
 };
 
@@ -127,7 +141,7 @@ export const UserAuthApi = {
   async login(data: { email: string; password?: string; captchaToken?: string }): Promise<AuthResponse> {
     const response = data.captchaToken
       ? await userApi.post<AuthResponse>('/login', data).then((result) => result.data)
-      : await postWithCaptchaRetry<AuthResponse>('/login', data, 'user-login');
+      : await postWithCaptchaRetry<AuthResponse>('/login', data, 'user_login');
     if (response.data?.token) {
       this.setSession(response.data.token, response.data.user);
     }
