@@ -51,5 +51,6 @@ jobs:
           script: |
             cd ~/Aradhna-Marg
             git pull origin main
+            node backend/dist/scripts/run-user-login-lock-migration.js
             pm2 restart aradhna-backend
             echo "✅ Backend successfully updated and restarted!"

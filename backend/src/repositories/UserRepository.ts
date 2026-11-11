@@ -189,8 +189,8 @@ export class UserRepository {
       `WITH next_state AS (
         SELECT id,
                CASE
-                 WHEN login_locked_until IS NULL OR login_locked_until <= NOW() THEN 1
-                 ELSE login_failed_attempts + 1
+                 WHEN login_locked_until IS NOT NULL AND login_locked_until <= NOW() THEN 1
+                 ELSE COALESCE(login_failed_attempts, 0) + 1
                END AS next_attempts
         FROM users
         WHERE id = $1
