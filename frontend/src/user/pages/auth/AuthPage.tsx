@@ -142,6 +142,16 @@ export const AuthPage: React.FC = () => {
       };
     }
 
+    // The CAPTCHA retry can still fail authentication. In that case the user
+    // needs the credential error, not a success-sounding CAPTCHA message.
+    if (status === 401) {
+      return {
+        tone: 'error',
+        title: 'Incorrect sign-in details',
+        message: 'Please check your email and password and try again.'
+      };
+    }
+
     if (error.captchaAttempted) {
       return {
         tone: 'warning',
@@ -149,14 +159,6 @@ export const AuthPage: React.FC = () => {
         message: error.captchaCompleted
           ? 'The security check passed, but the email or password was not accepted.'
           : 'Please refresh this page and try again when the security check is available.'
-      };
-    }
-
-    if (status === 401) {
-      return {
-        tone: 'error',
-        title: 'Incorrect sign-in details',
-        message: 'Please check your email and password and try again.'
       };
     }
 
