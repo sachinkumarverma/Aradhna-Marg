@@ -9,6 +9,7 @@ import { useTranslation } from '@i18n/LanguageContext';
 import { IconText } from '@components/common/IconText';
 import { SimplePagination } from '@components/common/SimplePagination';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
+import { preloadRoute } from '@utils/routePreload';
 
 export const FestivalsList: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -109,6 +110,8 @@ export const FestivalsList: React.FC = () => {
                   >
                     <Link
                       to={targetUrl}
+                      onMouseEnter={() => preloadRoute('festival')}
+                      onTouchStart={() => preloadRoute('festival')}
                       className="group block bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-saffron/40 shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col justify-between cursor-pointer"
                     >
                       <div>

@@ -7,6 +7,7 @@ import { UserAuthProvider } from './context/UserAuthContext';
 import { SEOProvider } from './providers/SEOProvider';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { preloadAllCoreRoutes } from './utils/routePreload';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,7 @@ function App() {
   }, []);
 
   React.useEffect(() => {
+    preloadAllCoreRoutes();
     if (typeof window === 'undefined' || ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)) return;
 
     const load = () => setLoadTelemetry(true);

@@ -11,6 +11,7 @@ import { TopInstallBar } from './TopInstallBar';
 import { useFavorites } from '@hooks/useFavorites';
 import { useUserAuth } from '@/context/UserAuthContext';
 import { ENABLE_DONATIONS } from '@/constants';
+import { preloadRoute } from '@utils/routePreload';
 
 interface NavbarProps {
   containerRef?: React.RefObject<HTMLElement | null>;
@@ -123,6 +124,8 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                       <li key={link.path}>
                         <Link
                           to={link.path}
+                          onMouseEnter={() => preloadRoute(link.path.replace('/', ''))}
+                          onTouchStart={() => preloadRoute(link.path.replace('/', ''))}
                           className={`${
                             isHi
                               ? 'text-[17px] 2xl:text-[18.5px] font-bold tracking-normal px-3 2xl:px-4'

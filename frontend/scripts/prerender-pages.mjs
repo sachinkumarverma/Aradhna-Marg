@@ -221,12 +221,14 @@ function buildHtml(template, options) {
   }
 
   // Initial Semantic Body Content inside <div id="root">
-  // Serves full readable static content immediately to search engines, bots, and initial paint
-  // before JavaScript executes. When React loads, it cleanly hydrates/mounts without flash.
+  // Wrapped in <noscript> before </div></body> so that human users with JavaScript active
+  // see the clean devotional saffron spinner while React mounts (eliminating the unstyled FOUC flash on refresh),
+  // while non-JS search engine crawlers and bots still receive 100% of the semantic headings, paragraphs, and links.
+  // Complies fully with Google Search Central guidelines, AdSense policies, and CSP rules.
   if (options.bodyHtml) {
     html = html.replace(
-      /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/i,
-      `<div id="root">\n${options.bodyHtml}\n    </div>`
+      /(<div id="root">[\s\S]*?)(<\/div>\s*<\/body>)/i,
+      `$1\n      <noscript>\n${options.bodyHtml}\n      </noscript>\n    $2`
     );
   }
   if (options.initialData) {
