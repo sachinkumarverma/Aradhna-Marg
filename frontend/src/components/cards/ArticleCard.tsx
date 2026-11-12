@@ -5,6 +5,7 @@ import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useTranslation } from '@i18n/LanguageContext';
 import { useFavorites } from '@hooks/useFavorites';
 import { getOptimizedImageUrl } from '@utils/imageUrl';
+import { preloadRoute } from '@utils/routePreload';
 
 interface ArticleCardProps {
   id?: string | number;
@@ -76,6 +77,8 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     return (
       <Link
         to={articleUrl}
+        onMouseEnter={() => preloadRoute('article')}
+        onTouchStart={() => preloadRoute('article')}
         className={`group flex gap-4 p-4 rounded-xl bg-white hover:bg-amber-50/30 border border-gray-100 hover:border-saffron/40 shadow-xs hover:shadow-md transition-all overflow-hidden ${className}`}
       >
         {featuredImageUrl && (
@@ -117,7 +120,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     >
       {/* Featured Image (Strict 16:9 Aspect Ratio) */}
       <div className="relative w-full aspect-video overflow-hidden bg-gray-100 border-b border-black/5">
-        <Link to={articleUrl} className="block w-full h-full cursor-pointer">
+        <Link
+          to={articleUrl}
+          onMouseEnter={() => preloadRoute('article')}
+          onTouchStart={() => preloadRoute('article')}
+          className="block w-full h-full cursor-pointer"
+        >
           {featuredImageUrl ? (
             <img
               src={getOptimizedImageUrl(featuredImageUrl, 640)}
@@ -151,7 +159,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         </button>
       </div>
 
-      <Link to={articleUrl} className="flex flex-col flex-1 cursor-pointer">
+      <Link
+        to={articleUrl}
+        onMouseEnter={() => preloadRoute('article')}
+        onTouchStart={() => preloadRoute('article')}
+        className="flex flex-col flex-1 cursor-pointer"
+      >
         {/* Card Content */}
         <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
           <div>

@@ -31,6 +31,7 @@ import { IconText } from '@components/common/IconText';
 import { useFavorites } from '@hooks/useFavorites';
 
 import { CustomLoader } from '@components/common/CustomLoader';
+import { BhajanDetailSkeleton } from '@components/common/SkeletonLoader';
 import { SEOHead, buildBreadcrumbSchema, buildMusicCompositionSchema } from '@components/seo';
 import { getPrerenderedData } from '@utils/prerenderData';
 
@@ -145,20 +146,7 @@ export const BhajanDetail: React.FC = () => {
   const isHi = language === 'hi';
 
   if (loading) {
-    return (
-      <CustomLoader
-        fullScreen
-        text={
-          isVideo
-            ? isHi
-              ? 'वीडियो लोड हो रहा है...'
-              : 'Loading video...'
-            : isHi
-              ? 'भजन लोड हो रहा है...'
-              : 'Loading bhajan...'
-        }
-      />
-    );
+    return <BhajanDetailSkeleton />;
   }
 
   if (!bhajan) {

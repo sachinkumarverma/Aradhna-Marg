@@ -7,6 +7,7 @@ import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { useFavorites } from '@hooks/useFavorites';
 import { useTranslation } from '@i18n/LanguageContext';
 import { cn } from '@utils/cn';
+import { preloadRoute } from '@utils/routePreload';
 
 interface BhajanCardProps {
   id?: string | number;
@@ -61,7 +62,12 @@ export const BhajanCard: React.FC<BhajanCardProps> = ({
   };
 
   return (
-    <Link to={slug ? `/bhajans/${slug}` : '/bhajans'} className="block h-full select-none cursor-pointer">
+    <Link
+      to={slug ? `/bhajans/${slug}` : '/bhajans'}
+      onMouseEnter={() => preloadRoute('bhajan')}
+      onTouchStart={() => preloadRoute('bhajan')}
+      className="block h-full select-none cursor-pointer"
+    >
       <Card className="group p-0 relative isolate overflow-hidden flex flex-col h-full bg-gradient-to-b from-[#FFFDF9] via-white to-[#FFF9EE] border border-amber-100/90 hover:border-saffron/60 hover:shadow-xl hover:shadow-saffron/10 hover:-translate-y-1 transition-all duration-300 rounded-xl">
         {/* Devotional Thumbnail Header */}
         <div className="relative aspect-video w-full overflow-hidden bg-amber-950/90 border-b border-amber-100/40">

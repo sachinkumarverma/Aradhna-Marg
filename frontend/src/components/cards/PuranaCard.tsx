@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { BookOpen, Eye, Heart, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@i18n/LanguageContext';
 import { useFavorites } from '@hooks/useFavorites';
+import { preloadRoute } from '@utils/routePreload';
 
 import { IconText } from '@components/common/IconText';
 
@@ -64,7 +65,12 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
       <div>
         {/* Book Cover Container (Strict 3:4 Aspect Ratio) */}
         <div className="relative aspect-[3/4] w-full rounded-lg overflow-hidden bg-amber-50 mb-3 border border-amber-200/40">
-          <Link to={puranUrl} className="block w-full h-full cursor-pointer">
+          <Link
+            to={puranUrl}
+            onMouseEnter={() => preloadRoute('purana')}
+            onTouchStart={() => preloadRoute('purana')}
+            className="block w-full h-full cursor-pointer"
+          >
             {coverImage ? (
               <img
                 src={coverImage}
@@ -97,7 +103,12 @@ export const PuranaCard: React.FC<PuranaCardProps> = ({
           </button>
         </div>
 
-        <Link to={puranUrl} className="block cursor-pointer">
+        <Link
+          to={puranUrl}
+          onMouseEnter={() => preloadRoute('purana')}
+          onTouchStart={() => preloadRoute('purana')}
+          className="block cursor-pointer"
+        >
           {/* Title */}
           <h4
             className="font-bold text-sm text-darkBrown group-hover:text-saffron transition-colors font-hindi-heading leading-snug line-clamp-1 mb-1.5 overflow-hidden"

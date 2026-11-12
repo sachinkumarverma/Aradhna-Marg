@@ -10,6 +10,7 @@ import { useTranslation } from '@i18n/LanguageContext';
 
 import { AdUnit } from '@components/common/AdUnit';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { FestivalDetailSkeleton } from '@components/common/SkeletonLoader';
 import { SEOHead, buildBreadcrumbSchema, buildEventSchema } from '@components/seo';
 
 import { getPrerenderedData } from '@utils/prerenderData';
@@ -79,12 +80,7 @@ export const FestivalDetail: React.FC = () => {
   }, [festival?.slug, festivalIdOrSlug]);
 
   if (loading) {
-    return (
-      <CustomLoader
-        fullScreen
-        text={language === 'hi' ? 'त्योहार विवरण लोड हो रहा है...' : 'Loading festival details...'}
-      />
-    );
+    return <FestivalDetailSkeleton />;
   }
 
   if (!festival) {

@@ -10,6 +10,7 @@ import { useTranslation } from '@i18n/LanguageContext';
 
 import { AdUnit } from '@components/common/AdUnit';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { ArticleDetailSkeleton } from '@components/common/SkeletonLoader';
 import { SEOHead, buildBreadcrumbSchema, buildArticleSchema } from '@components/seo';
 
 import { getPrerenderedData } from '@utils/prerenderData';
@@ -76,7 +77,7 @@ export const ArticleDetail: React.FC = () => {
   }, [article?.id]);
 
   if (loading) {
-    return <CustomLoader fullScreen text={language === 'hi' ? 'धार्मिक लेख लोड हो रहा है...' : 'Loading article...'} />;
+    return <ArticleDetailSkeleton />;
   }
 
   if (!article) {

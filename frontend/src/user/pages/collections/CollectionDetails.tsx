@@ -7,6 +7,7 @@ import { Loader2, Music, BookOpen, Calendar } from 'lucide-react';
 import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
 import { useTranslation } from '@i18n/LanguageContext';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { CollectionDetailSkeleton } from '@components/common/SkeletonLoader';
 import { AdUnit } from '@components/common/AdUnit';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
 
@@ -89,7 +90,7 @@ export const CollectionDetails: React.FC = () => {
   }, [data?.slug, id, collectionType, targetCollection]);
 
   if (loading) {
-    return <CustomLoader fullScreen text={language === 'hi' ? 'संग्रह लोड हो रहा है...' : 'Loading collection...'} />;
+    return <CollectionDetailSkeleton />;
   }
 
   if (!data) {

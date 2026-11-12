@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useRef } from 'react';
-import { Outlet, useLocation, useNavigationType } from 'react-router-dom';
+import { Outlet, useLocation, useNavigationType, useNavigation } from 'react-router-dom';
 import { Navbar } from '@components/common/Navbar';
 import { Footer } from '@components/common/Footer';
 import { CustomLoader } from '@components/common/CustomLoader';
@@ -8,8 +8,46 @@ import { AdBanner } from '@components/common/AdBanner';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { MaintenancePage } from '@/user/pages/common/MaintenancePage';
 import { isAdExcludedPath, setAdSenseAutoAdsState } from '@/utils/adsense';
+import {
+  FestivalDetailSkeleton,
+  BhajanDetailSkeleton,
+  ArticleDetailSkeleton,
+  PuranaDetailSkeleton,
+  CollectionDetailSkeleton,
+  ListPageSkeleton
+} from '@components/common/SkeletonLoader';
 
-const PageLoader = () => <CustomLoader fullScreen />;
+const RouteTargetSkeleton: React.FC<{ pathname?: string }> = ({ pathname = '' }) => {
+  if (pathname.startsWith('/festivals/') && pathname !== '/festivals') return <FestivalDetailSkeleton />;
+  if (
+    (pathname.startsWith('/bhajans/') || pathname.startsWith('/videos/')) &&
+    pathname !== '/bhajans' &&
+    pathname !== '/videos'
+  )
+    return <BhajanDetailSkeleton />;
+  if (pathname.startsWith('/articles/') && pathname !== '/articles') return <ArticleDetailSkeleton />;
+  if (pathname.startsWith('/puranas/') && pathname !== '/puranas') return <PuranaDetailSkeleton />;
+  if (
+    (pathname.startsWith('/gods/') || pathname.startsWith('/deities/') || pathname.startsWith('/categories/')) &&
+    pathname !== '/gods' &&
+    pathname !== '/deities' &&
+    pathname !== '/categories'
+  ) {
+    return <CollectionDetailSkeleton />;
+  }
+  if (
+    pathname === '/festivals' ||
+    pathname === '/bhajans' ||
+    pathname === '/articles' ||
+    pathname === '/puranas' ||
+    pathname === '/videos' ||
+    pathname === '/gods' ||
+    pathname === '/categories'
+  ) {
+    return <ListPageSkeleton />;
+  }
+  return <CustomLoader fullScreen />;
+};
 
 // In-memory scroll position store keyed by location.key and pathname
 interface ScrollRecord {
@@ -21,10 +59,20 @@ const scrollPositions = new Map<string, ScrollRecord>();
 export const PublicLayout: React.FC = () => {
   const location = useLocation();
   const navigationType = useNavigationType();
+  const navigation = useNavigation();
+  const isNavigating = navigation.state === 'loading';
+  const targetPath = navigation.location?.pathname || '';
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isRestoringRef = useRef(false);
   const { settings } = usePublicSettings();
   const isExcludedFromAds = isAdExcludedPath(location.pathname);
+
+  // Immediately scroll container to top when user initiates forward navigation
+  useEffect(() => {
+    if (isNavigating && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    }
+  }, [isNavigating]);
 
   // Sync Google AdSense Auto Ads state with current route (pause on non-content / policy-excluded pages)
   useEffect(() => {
@@ -133,11 +181,20 @@ export const PublicLayout: React.FC = () => {
         )}
 
         <main className="flex-1 w-full relative z-0 flex flex-col">
+          {/* Top Saffron Navigation Progress Bar for Instant Visual Feedback */}
+          {isNavigating && (
+            <div className="fixed top-0 left-0 right-0 z-[99999] h-1 bg-gradient-to-r from-amber-400 via-saffron to-amber-600 animate-pulse shadow-sm" />
+          )}
+
           <div className="flex-1 w-full flex flex-col">
             <div className="flex-1 w-full">
-              <Suspense fallback={<PageLoader />}>
-                <Outlet key={location.pathname} />
-              </Suspense>
+              {isNavigating ? (
+                <RouteTargetSkeleton pathname={targetPath} />
+              ) : (
+                <Suspense fallback={<RouteTargetSkeleton pathname={location.pathname} />}>
+                  <Outlet key={location.pathname} />
+                </Suspense>
+              )}
             </div>
 
             {settings.enableAds && !isExcludedFromAds && settings.adFooter && (

@@ -44,6 +44,7 @@ import { SEOHead, buildWebSiteSchema, buildOrganizationSchema } from '@component
 
 import { getPrerenderedData } from '@utils/prerenderData';
 import { getOptimizedImageUrl } from '@utils/imageUrl';
+import { preloadRoute } from '@utils/routePreload';
 
 export const Home: React.FC = () => {
   const { t, getLocalizedField } = useTranslation();
@@ -290,6 +291,8 @@ export const Home: React.FC = () => {
                     >
                       <Link
                         to={videoUrl}
+                        onMouseEnter={() => preloadRoute('video')}
+                        onTouchStart={() => preloadRoute('video')}
                         className="group block bg-white rounded-xl p-3 sm:p-5 border border-gray-100 shadow-xs hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex flex-col justify-between relative cursor-pointer"
                       >
                         {/* Upper Section: Left Thumbnail + Right Content */}
@@ -446,6 +449,8 @@ export const Home: React.FC = () => {
                         <Link
                           key={bhajan.id}
                           to={`/bhajans/${bhajan.slug || bhajan.id}`}
+                          onMouseEnter={() => preloadRoute('bhajan')}
+                          onTouchStart={() => preloadRoute('bhajan')}
                           className="group flex items-center gap-3 p-2 rounded-lg hover:bg-amber-50/70 transition-all border border-transparent hover:border-amber-200/50 cursor-pointer"
                         >
                           {/* Thumbnail Image (16:9 aspect ratio) */}
@@ -684,6 +689,8 @@ export const Home: React.FC = () => {
                     >
                       <Link
                         to={`/festivals/${fest.slug || fest.id}`}
+                        onMouseEnter={() => preloadRoute('festival')}
+                        onTouchStart={() => preloadRoute('festival')}
                         className="group block bg-white rounded-xl p-4 border border-orange-100/80 shadow-sm hover:shadow-xl hover:border-saffron/40 transition-all duration-300 flex items-center gap-4 cursor-pointer"
                       >
                         {fest.banner_image ? (

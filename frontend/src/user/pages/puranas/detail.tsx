@@ -13,6 +13,7 @@ import { IconText } from '@components/common/IconText';
 import { SectionHeader } from '@components/common/SectionHeader';
 import { ArticleCard } from '@components/cards/ArticleCard';
 import { CustomLoader } from '@components/common/CustomLoader';
+import { PuranaDetailSkeleton } from '@components/common/SkeletonLoader';
 import { AdUnit } from '@components/common/AdUnit';
 import { SEOHead, buildBreadcrumbSchema, buildBookSchema } from '@components/seo';
 
@@ -149,7 +150,7 @@ export const PuranDetail: React.FC = () => {
   };
 
   if (isLoading) {
-    return <CustomLoader fullScreen text={t('common.loading')} />;
+    return <PuranaDetailSkeleton />;
   }
 
   if (!data) {
