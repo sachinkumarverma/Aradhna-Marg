@@ -14,6 +14,12 @@ export function getOptimizedImageUrl(source: string | null | undefined, width: n
       return source;
     }
 
+    // Images already compressed to WebP by the backend upload pipeline are served directly
+    // to avoid the 2-3s on-the-fly transform penalty and concurrent worker throttling.
+    if (url.pathname.endsWith('.webp')) {
+      return source;
+    }
+
     url.pathname = `/storage/v1/render/image/public/${match[1]}/${match[2]}`;
     url.searchParams.set('width', String(Math.max(1, Math.round(width))));
     url.searchParams.set('quality', String(Math.min(100, Math.max(1, Math.round(quality)))));

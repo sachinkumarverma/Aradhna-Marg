@@ -79,15 +79,19 @@ export class PublicController {
         ORDER BY display_order ASC, name ASC
       `;
 
-      // Featured YouTube Videos (excluding Shorts) - scan recent records with clean snippet so 5-10 full videos are always available
+      // Featured YouTube Videos (excluding Shorts) - scan recent long-form records with clean snippet so full videos are always available
       const videosQuery = `
         SELECT id, youtube_video_id, title, thumbnail, channel_name, duration, view_count, published_at,
                LEFT(description, 200) as description
         FROM youtube_videos
         WHERE import_status != 'IGNORED'
           AND title NOT ILIKE '%#short%'
+          AND (
+            duration ILIKE '%h%'
+            OR duration ~ '[3-9]m|[0-9]{2,}m'
+          )
         ORDER BY published_at DESC NULLS LAST, created_at DESC
-        LIMIT 200
+        LIMIT 25
       `;
 
       const [bhajans, articles, festivals, puranas, deities, categories, videos] = await Promise.all([

@@ -10,9 +10,9 @@ class DatabaseClient {
 
     this.pool = new Pool({
       connectionString: config.DATABASE_URL,
-      max: 10,
-      min: 1,
-      idleTimeoutMillis: 30000,
+      max: 15,
+      min: 5,
+      idleTimeoutMillis: 300000,
       connectionTimeoutMillis: 15000,
       statement_timeout: 30000,
       query_timeout: 30000,
