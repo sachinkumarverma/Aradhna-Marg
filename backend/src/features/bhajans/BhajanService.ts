@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { bhajanRepository } from './BhajanRepository';
 import { translationService } from '@features/translations';
-import { slugify } from '@utils/slugify';
+import { generateContentSlug } from '@utils/slugify';
 
 export class BhajanService {
   public async getList(query: any) {
@@ -58,8 +58,8 @@ export class BhajanService {
   public async create(data: any) {
     const { additionalDeities, bhajanData } = this.sanitizeData(data);
 
-    if (!bhajanData.slug && bhajanData.title) {
-      bhajanData.slug = randomUUID();
+    if (!bhajanData.slug && (bhajanData.english_title || bhajanData.title_en || bhajanData.title)) {
+      bhajanData.slug = generateContentSlug(bhajanData.english_title || bhajanData.title_en, bhajanData.title);
     }
 
     await translationService.translateRecordOnAdminSave('BHAJAN', bhajanData);

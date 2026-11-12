@@ -71,6 +71,13 @@ export const FestivalDetail: React.FC = () => {
     };
   }, [festivalIdOrSlug, language]);
 
+  // If user navigated via legacy UUID, seamlessly update address bar to clean canonical slug
+  useEffect(() => {
+    if (festival?.slug && festivalIdOrSlug !== festival.slug) {
+      window.history.replaceState(null, '', `/festivals/${festival.slug}`);
+    }
+  }, [festival?.slug, festivalIdOrSlug]);
+
   if (loading) {
     return (
       <CustomLoader

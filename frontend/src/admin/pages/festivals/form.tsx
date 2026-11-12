@@ -69,14 +69,18 @@ export const AdminFestivalForm = () => {
   });
 
   const nameValue = watch('name');
+  const nameEnValue = watch('name_en' as any);
   const slugValue = watch('slug');
 
-  // Auto slug generation
+  // Auto slug generation (English title prioritized, fallback to Hindi)
   useEffect(() => {
-    if (!isEditing && nameValue && !slugValue) {
-      setValue('slug', generateSlug(nameValue), { shouldValidate: true, shouldDirty: true });
+    if (!isEditing && !slugValue) {
+      const sourceForSlug = nameEnValue || nameValue;
+      if (sourceForSlug) {
+        setValue('slug', generateSlug(sourceForSlug), { shouldValidate: true, shouldDirty: true });
+      }
     }
-  }, [nameValue, isEditing, slugValue, setValue]);
+  }, [nameValue, nameEnValue, isEditing, slugValue, setValue]);
 
   // Fetch bhajans for multiselect
   const { data: bhajans, isLoading: isLoadingBhajans } = useQuery({

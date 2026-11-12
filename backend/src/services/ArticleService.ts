@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { articleRepository } from '@repositories/ArticleRepository';
 import { translationService } from '@features/translations';
-import { slugify } from '@utils/slugify';
+import { generateContentSlug } from '@utils/slugify';
 
 export class ArticleService {
   public async getList(query: any) {
@@ -68,8 +68,8 @@ export class ArticleService {
     articleData.category_id = this.sanitizeUuid(articleData.category_id);
     articleData.author_id = this.sanitizeUuid(articleData.author_id);
 
-    if (!articleData.slug && articleData.title) {
-      articleData.slug = randomUUID();
+    if (!articleData.slug && (articleData.title_en || articleData.title)) {
+      articleData.slug = generateContentSlug(articleData.title_en, articleData.title);
     }
     if (articleData.status === 'PUBLISHED') {
       articleData.publish_date = new Date().toISOString();

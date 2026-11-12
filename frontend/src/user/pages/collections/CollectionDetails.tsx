@@ -30,6 +30,7 @@ export const CollectionDetails: React.FC = () => {
           const res = await PublicApi.getDeityBySlug(id);
           const deity = res.deity;
           setData({
+            slug: deity?.slug,
             title: getLocalizedField(deity, 'name') || (language === 'hi' ? 'देवी-देवता' : 'Deity'),
             description:
               getLocalizedField(deity, 'short_description') ||
@@ -45,6 +46,7 @@ export const CollectionDetails: React.FC = () => {
           const res = await PublicApi.getCategoryBySlug(id);
           const cat = res.category;
           setData({
+            slug: cat?.slug,
             title: getLocalizedField(cat, 'name') || (language === 'hi' ? 'श्रेणी' : 'Category'),
             description:
               getLocalizedField(cat, 'description') ||
@@ -56,6 +58,7 @@ export const CollectionDetails: React.FC = () => {
         } else {
           const res = await PublicApi.getFestivalBySlug(id);
           setData({
+            slug: res.slug,
             title: res.displayName || getLocalizedField(res, 'name') || 'Festival',
             description:
               res.displayDescription ||
@@ -75,6 +78,15 @@ export const CollectionDetails: React.FC = () => {
     };
     fetchDetails();
   }, [id, collectionType, language, getLocalizedField]);
+
+  const targetCollection = collectionType === 'deities' ? 'gods' : collectionType;
+
+  // If user navigated via legacy UUID or alternate route, seamlessly update address bar to clean canonical slug
+  useEffect(() => {
+    if (data?.slug && (id !== data.slug || collectionType === 'deities')) {
+      window.history.replaceState(null, '', `/${targetCollection}/${data.slug}`);
+    }
+  }, [data?.slug, id, collectionType, targetCollection]);
 
   if (loading) {
     return <CustomLoader fullScreen text={language === 'hi' ? 'संग्रह लोड हो रहा है...' : 'Loading collection...'} />;
@@ -100,19 +112,15 @@ export const CollectionDetails: React.FC = () => {
       ? `${data.title} से संबंधित समस्त पावन भजन, आरती, चालीसा, धार्मिक लेख एवं कथाएं।`
       : `Explore devotional songs, bhajans, aarti, and spiritual articles for ${data.title} on Aradhna Marg.`);
 
-  const canonicalPath = `/${collectionType}/${id}`;
+  const canonicalSlug = data.slug || id;
+  const canonicalPath = `/${targetCollection}/${canonicalSlug}`;
+
   const breadcrumbSectionLabel =
-    collectionType === 'gods' || collectionType === 'deities'
-      ? isHi
-        ? 'देवी-देवता'
-        : 'Deities'
-      : isHi
-        ? 'श्रेणियां'
-        : 'Categories';
+    targetCollection === 'gods' ? (isHi ? 'देवी-देवता' : 'Deities') : isHi ? 'श्रेणियां' : 'Categories';
 
   const breadcrumbs = buildBreadcrumbSchema([
     { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
-    { name: breadcrumbSectionLabel, item: `/${collectionType}` },
+    { name: breadcrumbSectionLabel, item: `/${targetCollection}` },
     { name: data.title, item: canonicalPath }
   ]);
 

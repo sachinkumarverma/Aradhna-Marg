@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { puranRepository } from '@repositories/PuranRepository';
 import { backblazeStorageService } from '@services/storage/BackblazeStorageService';
 import { translationService } from '@features/translations';
-import { slugify } from '@utils/slugify';
+import { slugify, generateContentSlug } from '@utils/slugify';
 export class PuranService {
   public async getList(query: any) {
     return puranRepository.getList({
@@ -20,16 +20,16 @@ export class PuranService {
   }
 
   public async create(data: any) {
-    if (!data.slug && data.title) {
-      data.slug = randomUUID();
+    if (!data.slug && (data.title_en || data.title)) {
+      data.slug = generateContentSlug(data.title_en, data.title);
     }
     await translationService.translateRecordOnAdminSave('PURAN', data);
     return puranRepository.create(data);
   }
 
   public async update(id: string, data: any) {
-    if (data.title && !data.slug) {
-      data.slug = randomUUID();
+    if ((data.title_en || data.title) && !data.slug) {
+      data.slug = generateContentSlug(data.title_en, data.title);
     }
 
     await translationService.translateRecordOnAdminSave('PURAN', data);

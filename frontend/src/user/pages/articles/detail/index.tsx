@@ -58,6 +58,13 @@ export const ArticleDetail: React.FC = () => {
     fetchArticleData();
   }, [slug, language]);
 
+  // If user navigated via legacy UUID, seamlessly update address bar to clean canonical slug
+  useEffect(() => {
+    if (article?.slug && slug !== article.slug) {
+      window.history.replaceState(null, '', `/articles/${article.slug}`);
+    }
+  }, [article?.slug, slug]);
+
   // Track genuine user view (deduplicated per browser session so refreshes don't spam counts)
   useEffect(() => {
     if (!article?.id || typeof window === 'undefined') return;

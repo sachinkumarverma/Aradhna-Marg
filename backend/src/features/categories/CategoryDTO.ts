@@ -1,5 +1,6 @@
 export interface CreateCategoryDTO {
   name: string;
+  name_en?: string;
   slug?: string;
   description?: string;
   imageUrl?: string;

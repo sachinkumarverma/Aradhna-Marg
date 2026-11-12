@@ -9,6 +9,10 @@ export const RouteErrorBoundary: React.FC = () => {
   const isAdmin = isAdminHost();
   const [isAutoReloading, setIsAutoReloading] = useState(false);
 
+  useEffect(() => {
+    console.error('[RouteErrorBoundary caught]:', error);
+  }, [error]);
+
   const errorMessage =
     (error as any)?.message ||
     (error as any)?.statusText ||
@@ -82,6 +86,16 @@ export const RouteErrorBoundary: React.FC = () => {
                 : 'A newer version of this page is available. Please refresh to load the latest changes.'
               : 'We encountered an unexpected issue while rendering this section. Please try refreshing.'}
           </p>
+          {Boolean(import.meta.env.DEV && error) && (
+            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-left overflow-auto max-h-48">
+              <p className="text-xs font-mono font-bold text-red-700">{(error as any)?.message || String(error)}</p>
+              {(error as any)?.stack && (
+                <pre className="text-[10px] font-mono text-red-600 mt-2 whitespace-pre-wrap">
+                  {(error as any).stack}
+                </pre>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">

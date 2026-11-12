@@ -66,14 +66,18 @@ export const AdminPuranForm = () => {
   });
 
   const titleValue = watch('title');
+  const titleEnValue = watch('title_en' as any);
   const slugValue = watch('slug');
 
-  // Auto slug generation
+  // Auto slug generation (English title prioritized, fallback to Hindi)
   useEffect(() => {
-    if (!isEditing && titleValue && !slugValue) {
-      setValue('slug', generateSlug(titleValue), { shouldValidate: true, shouldDirty: true });
+    if (!isEditing && !slugValue) {
+      const sourceForSlug = titleEnValue || titleValue;
+      if (sourceForSlug) {
+        setValue('slug', generateSlug(sourceForSlug), { shouldValidate: true, shouldDirty: true });
+      }
     }
-  }, [titleValue, isEditing, slugValue, setValue]);
+  }, [titleValue, titleEnValue, isEditing, slugValue, setValue]);
 
   // Fetch data if editing
   const puranQuery = useQuery({

@@ -113,6 +113,2121 @@
       "source": "/donate",
       "destination": "/support-us",
       "permanent": true
+    },
+    {
+      "source": "/deities",
+      "destination": "/gods",
+      "permanent": true
+    },
+    {
+      "source": "/deities/:slug*",
+      "destination": "/gods/:slug*",
+      "permanent": true
+    },
+    {
+      "source": "/categories/ec609c2d-6abe-4bd5-b1b9-1410759817b6",
+      "destination": "/categories/morning-bhajans",
+      "permanent": true
+    },
+    {
+      "source": "/categories/3d4327b6-fcfa-486b-8be0-80f1c665ac90",
+      "destination": "/categories/morning-bhajans",
+      "permanent": true
+    },
+    {
+      "source": "/categories/7fc63afa-a531-4eaa-b2f2-cb7b24eb2d16",
+      "destination": "/categories/evening-bhajans",
+      "permanent": true
+    },
+    {
+      "source": "/categories/e4610956-2242-435d-8708-3006a6cbebf7",
+      "destination": "/categories/bhajan-collection",
+      "permanent": true
+    },
+    {
+      "source": "/categories/85696164-e375-4d41-be4c-d44543f9264d",
+      "destination": "/categories/aarti-collection",
+      "permanent": true
+    },
+    {
+      "source": "/categories/909a120e-3b97-4280-8158-8c276e505c15",
+      "destination": "/categories/chalisa-collection",
+      "permanent": true
+    },
+    {
+      "source": "/categories/cc154633-27b9-441a-a69f-3bf9852073a5",
+      "destination": "/categories/puranas-collection",
+      "permanent": true
+    },
+    {
+      "source": "/categories/cca6684a-8755-4e79-b726-9f414358b21e",
+      "destination": "/categories/mantras",
+      "permanent": true
+    },
+    {
+      "source": "/categories/9171a857-b844-488c-8d42-d4d27d2c6a99",
+      "destination": "/categories/stotra-collection",
+      "permanent": true
+    },
+    {
+      "source": "/categories/f3f04594-7115-4e41-8c39-d02ffff780a8",
+      "destination": "/categories/spiritual-articles",
+      "permanent": true
+    },
+    {
+      "source": "/categories/bf8dae30-a711-4d3e-b1ae-3bb5d2285044",
+      "destination": "/categories/festival-special",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/f12c9f8e-8947-482d-9293-b17eb716cdca",
+      "destination": "/puranas/vayu-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/9152ecf7-27ee-43d9-aaeb-b5872dd5b54c",
+      "destination": "/puranas/vayu-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/9fcc8ab3-de5e-4443-8b5e-9666581fd96b",
+      "destination": "/puranas/agni-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/68779696-2554-4039-bd9a-0775ac0537ce",
+      "destination": "/puranas/srimad-bhagwat-mahapuran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/255214f2-83c3-4aa2-aafa-e713244707b6",
+      "destination": "/puranas/brahma-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/df6dce2f-8fb2-4393-8511-8b40d946b1f8",
+      "destination": "/puranas/bhavishya-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/cb437fbe-9171-4235-8599-8f51f5e78a2d",
+      "destination": "/puranas/brahmanda-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/4df79b15-d934-43af-bc69-ca43390b9a99",
+      "destination": "/puranas/narada-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/f6445142-f1ab-4732-97ed-c344abde4371",
+      "destination": "/puranas/matsya-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/849c4c9b-f2ac-4615-8b0e-31d86472e9ad",
+      "destination": "/puranas/padma-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/7c5ce56c-104b-4d62-a7a6-b40a176592a8",
+      "destination": "/puranas/markandeya-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/fe1cbfcc-8563-420d-b889-69d78b66cc0e",
+      "destination": "/puranas/vamana-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/0c0bda18-04d4-4b47-bc79-a65e17370f35",
+      "destination": "/puranas/vishnu-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/3729172d-eb5b-436c-9265-c27efda5bafc",
+      "destination": "/puranas/varaha-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/76fa80af-f267-455c-a71d-ce80417f86bd",
+      "destination": "/puranas/skanda-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/fefedbfb-153f-4fde-9e28-73484c2ef852",
+      "destination": "/puranas/shiva-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/b048f88a-d0e9-4563-a5f1-757a901ffbfb",
+      "destination": "/puranas/narasimha-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/4eabf840-a590-4dee-ba44-9334bb2e5a67",
+      "destination": "/puranas/atharvaveda",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/f4132094-23af-4e09-a085-a77f51163b7a",
+      "destination": "/puranas/samaveda",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/f8e0d4bc-a11c-4c75-bc00-9a2d662754b9",
+      "destination": "/puranas/yajurveda",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/4af7f7f9-9d13-409f-9d17-374d4ef1f214",
+      "destination": "/puranas/linga-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/a214993b-4076-4e7a-81b7-abccb1b8e7e9",
+      "destination": "/puranas/kurma-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/6188afa8-612e-40d4-9186-71ade32f6a6b",
+      "destination": "/puranas/rigveda",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/069ac0db-c4ab-4c26-aecb-7c91cb989627",
+      "destination": "/puranas/garuda-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/ca427e9f-132b-459c-b29d-2af6c120785d",
+      "destination": "/puranas/ramcharitmanas",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/19a692a8-f9d8-4f8f-bb35-5708906ceffa",
+      "destination": "/puranas/devi-bhagwat-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/b1e38e9b-8b24-4f16-9abd-2ffb289b6d40",
+      "destination": "/puranas/mahabharata",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/99fea9d5-614f-4a65-a6dc-f336a7e76c44",
+      "destination": "/puranas/ramayana",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/687d887e-76ea-4f42-99e8-7909deda6897",
+      "destination": "/puranas/kalki-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/8c9a68b1-8b7d-45e5-9745-96ff2a2403f9",
+      "destination": "/puranas/bhagavad-gita",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/89deb397-9826-4020-ac38-4131d4904121",
+      "destination": "/puranas/brahmavaivarta-puran",
+      "permanent": true
+    },
+    {
+      "source": "/puranas/b423a0f0-ecd5-4dc2-b334-cff47f9fc7d2",
+      "destination": "/puranas/narayan-kavach",
+      "permanent": true
+    },
+    {
+      "source": "/gods/1cc41780-00d2-4ff0-85e9-a5b91383b42e",
+      "destination": "/gods/lord-ganesh",
+      "permanent": true
+    },
+    {
+      "source": "/gods/fa2b7c5a-5c7c-4e0b-b092-c2e3bbdf3e33",
+      "destination": "/gods/maa-durga",
+      "permanent": true
+    },
+    {
+      "source": "/gods/6b7e0cdd-3753-4392-a1de-3d1f1b6c457c",
+      "destination": "/gods/lord-vishnu",
+      "permanent": true
+    },
+    {
+      "source": "/gods/86f1dffa-a68b-454d-8b85-099e3138105c",
+      "destination": "/gods/lord-krishna",
+      "permanent": true
+    },
+    {
+      "source": "/gods/9f3d2546-a3f4-4cdc-a399-1ec6987d8d18",
+      "destination": "/gods/lord-ram",
+      "permanent": true
+    },
+    {
+      "source": "/gods/2aaef81a-75ae-46bf-b879-f2634aa2ae05",
+      "destination": "/gods/lord-shiva",
+      "permanent": true
+    },
+    {
+      "source": "/gods/42acc383-0442-494c-92e7-dd5e7d09cc80",
+      "destination": "/gods/shri-radha-rani",
+      "permanent": true
+    },
+    {
+      "source": "/gods/316a9b8c-9708-42c2-b96a-4cf6b2eae172",
+      "destination": "/gods/lord-hanuman",
+      "permanent": true
+    },
+    {
+      "source": "/gods/88b75e78-335b-4dec-bdf6-ad7c7756b995",
+      "destination": "/gods/yamuna-maiya",
+      "permanent": true
+    },
+    {
+      "source": "/gods/346b8bbe-dbca-4060-a484-b67efc96a899",
+      "destination": "/gods/surya-dev",
+      "permanent": true
+    },
+    {
+      "source": "/gods/05d5562d-af2c-4507-ae3a-52563502d544",
+      "destination": "/gods/chhathi-maiya",
+      "permanent": true
+    },
+    {
+      "source": "/gods/01502558-d171-4476-9353-9a8e9064cb0f",
+      "destination": "/gods/maa-saraswati",
+      "permanent": true
+    },
+    {
+      "source": "/gods/8a5edff2-d553-433a-9288-e32c982323ee",
+      "destination": "/gods/mata-lakshmi",
+      "permanent": true
+    },
+    {
+      "source": "/gods/13c7f4f1-36cf-4827-8599-639c1f3c2a0b",
+      "destination": "/gods/mata-parvati",
+      "permanent": true
+    },
+    {
+      "source": "/articles/bd10d971-360c-4e72-afef-6b1e3ab5768f",
+      "destination": "/articles/what-are-the-nine-forms-of-goddess-durga-importance-of-navdurga-in-navratri",
+      "permanent": true
+    },
+    {
+      "source": "/articles/fb308e8a-87d0-4bb5-b9a7-01dece0982eb",
+      "destination": "/articles/what-are-the-nine-forms-of-goddess-durga-importance-of-navdurga-in-navratri",
+      "permanent": true
+    },
+    {
+      "source": "/articles/b95c27c3-72ea-4e0a-b52b-bd1f78ee8d84",
+      "destination": "/articles/what-does-mahabharata-teach-us-important-lessons-of-religion-karma-and-life",
+      "permanent": true
+    },
+    {
+      "source": "/articles/d7c7da65-8ae6-47c2-8e8a-e97dd6fd5fa6",
+      "destination": "/articles/what-does-mahabharata-teach-us-important-lessons-of-religion-karma-and-life",
+      "permanent": true
+    },
+    {
+      "source": "/articles/diwali-mahatva-puja-vidhi",
+      "destination": "/articles/significance-of-diwali-puja-vidhi-and-spiritual-importance",
+      "permanent": true
+    },
+    {
+      "source": "/articles/e072558e-952b-42c6-a6d5-922ccc57f0d0",
+      "destination": "/articles/significance-of-diwali-puja-vidhi-and-spiritual-importance",
+      "permanent": true
+    },
+    {
+      "source": "/articles/c7dad0bc-975f-4967-ad12-45be20aa3708",
+      "destination": "/articles/what-is-the-real-meaning-of-fasting-and-fasting-fasting-is-not-just-skipping",
+      "permanent": true
+    },
+    {
+      "source": "/articles/befd10b7-eeac-4fe3-b050-55d60a7c9455",
+      "destination": "/articles/what-is-the-real-meaning-of-fasting-and-fasting-fasting-is-not-just-skipping",
+      "permanent": true
+    },
+    {
+      "source": "/articles/1e44187a-b670-477d-9802-866a1c272b63",
+      "destination": "/articles/what-is-the-full-story-of-samudra-manthan-know-the-role-of-amrit-halahal-poison",
+      "permanent": true
+    },
+    {
+      "source": "/articles/d7e2128c-ea9c-4035-9fa6-f6e3d83644b6",
+      "destination": "/articles/what-is-the-full-story-of-samudra-manthan-know-the-role-of-amrit-halahal-poison",
+      "permanent": true
+    },
+    {
+      "source": "/articles/c37157c5-5e6d-4f9f-be5a-108bc0b242fe",
+      "destination": "/articles/what-does-ramayana-teach-us-10-lessons-from-the-life-of-lord-shri-ram",
+      "permanent": true
+    },
+    {
+      "source": "/articles/80cb3337-96c8-4e01-b95f-d026b6ce9fb8",
+      "destination": "/articles/what-does-ramayana-teach-us-10-lessons-from-the-life-of-lord-shri-ram",
+      "permanent": true
+    },
+    {
+      "source": "/articles/c89c00b6-98c4-42cb-9634-79cda7f07c0c",
+      "destination": "/articles/why-is-lord-ganesha-considered-the-first-worshipper-know-the-story-of-ganpati",
+      "permanent": true
+    },
+    {
+      "source": "/articles/db774969-82ae-4afb-ae30-f310d6ccebb1",
+      "destination": "/articles/why-is-lord-ganesha-considered-the-first-worshipper-know-the-story-of-ganpati",
+      "permanent": true
+    },
+    {
+      "source": "/articles/6bdd49b8-0967-449f-935a-16641f20a653",
+      "destination": "/articles/test-article-uuid-sanitization-1791715377070",
+      "permanent": true
+    },
+    {
+      "source": "/articles/68836558-b6e6-4975-9a4b-9cbfb2424655",
+      "destination": "/articles/test-article-uuid-sanitization-1791715377070",
+      "permanent": true
+    },
+    {
+      "source": "/articles/8eb1c0c6-a1ed-430f-b4e5-a1aa801ac9fb",
+      "destination": "/articles/dsfgh",
+      "permanent": true
+    },
+    {
+      "source": "/articles/afff793d-2c3f-44fe-886f-492e99692064",
+      "destination": "/articles/dsfgh",
+      "permanent": true
+    },
+    {
+      "source": "/articles/84b88343-7717-491f-8725-41582ac317b7",
+      "destination": "/articles/what-is-the-importance-of-shivalinga-spiritual-meaning-of-worshiping-shivalinga",
+      "permanent": true
+    },
+    {
+      "source": "/articles/96d97990-bf04-4e14-a0ad-76eebfdebd7d",
+      "destination": "/articles/what-is-the-importance-of-shivalinga-spiritual-meaning-of-worshiping-shivalinga",
+      "permanent": true
+    },
+    {
+      "source": "/articles/4f04c5c5-9544-42b3-985a-8c924b717da5",
+      "destination": "/articles/what-does-the-love-of-radha-rani-and-shri-krishna-teach-understand-from",
+      "permanent": true
+    },
+    {
+      "source": "/articles/b65c0753-e926-4c10-b96f-b5fb6476cb4a",
+      "destination": "/articles/what-does-the-love-of-radha-rani-and-shri-krishna-teach-understand-from",
+      "permanent": true
+    },
+    {
+      "source": "/articles/42583bd0-9ef0-4afe-8b4d-41fbf725472d",
+      "destination": "/articles/life-and-teachings-of-lord-shri-krishna-from-birth-to-teachings-of-geeta",
+      "permanent": true
+    },
+    {
+      "source": "/articles/7c232baa-7d75-4614-ad0d-f7b48e24de47",
+      "destination": "/articles/life-and-teachings-of-lord-shri-krishna-from-birth-to-teachings-of-geeta",
+      "permanent": true
+    },
+    {
+      "source": "/articles/3f4fd0cd-cd97-4360-9073-92d1f544a625",
+      "destination": "/articles/what-is-the-religious-significance-of-ganga-bath-and-pilgrimage",
+      "permanent": true
+    },
+    {
+      "source": "/articles/ee5ad3a2-0409-4656-aa62-7a11678d33d3",
+      "destination": "/articles/what-is-the-religious-significance-of-ganga-bath-and-pilgrimage",
+      "permanent": true
+    },
+    {
+      "source": "/articles/c318a2cf-51da-4530-9c9c-e43ba567caff",
+      "destination": "/articles/importance-of-guru-and-guru-disciple-tradition-in-sanatan-dharma",
+      "permanent": true
+    },
+    {
+      "source": "/articles/ef5536cc-7de3-4e1a-b6b4-764b06f2a5ba",
+      "destination": "/articles/importance-of-guru-and-guru-disciple-tradition-in-sanatan-dharma",
+      "permanent": true
+    },
+    {
+      "source": "/articles/bfdd8061-6500-4e4f-ab9f-bf96896a764b",
+      "destination": "/articles/why-is-hanuman-ji-called-the-troubleshooter-know-their-devotion-and-power",
+      "permanent": true
+    },
+    {
+      "source": "/articles/0da2522c-bf82-41cd-a486-70c8c6a5d34c",
+      "destination": "/articles/why-is-hanuman-ji-called-the-troubleshooter-know-their-devotion-and-power",
+      "permanent": true
+    },
+    {
+      "source": "/articles/1bab9b73-d4e0-4b07-ac34-b110901fcee8",
+      "destination": "/articles/what-is-ekadashi-fast-know-the-religious-and-spiritual-importance-of-ekadashi",
+      "permanent": true
+    },
+    {
+      "source": "/articles/4c1f01c2-91d6-4ce9-ab7e-5fbdfe6e5d24",
+      "destination": "/articles/what-is-ekadashi-fast-know-the-religious-and-spiritual-importance-of-ekadashi",
+      "permanent": true
+    },
+    {
+      "source": "/articles/266daaff-7850-4edf-b4b1-f569f772a3e0",
+      "destination": "/articles/what-is-sanatan-dharma-know-its-tradition-principles-and-philosophy-of-life",
+      "permanent": true
+    },
+    {
+      "source": "/articles/93589a60-4af2-49d2-8aa7-54be0fa19281",
+      "destination": "/articles/what-is-sanatan-dharma-know-its-tradition-principles-and-philosophy-of-life",
+      "permanent": true
+    },
+    {
+      "source": "/articles/879d57fd-8c93-4970-90ab-c0a9833e9ebc",
+      "destination": "/articles/why-is-sun-god-worshipped-importance-of-sun-worship-in-sanatan-dharma",
+      "permanent": true
+    },
+    {
+      "source": "/articles/74883044-b007-49dd-ad53-313c9d462bab",
+      "destination": "/articles/why-is-sun-god-worshipped-importance-of-sun-worship-in-sanatan-dharma",
+      "permanent": true
+    },
+    {
+      "source": "/articles/1ca9446a-0149-4f34-87fb-f44245ebf960",
+      "destination": "/articles/what-are-the-dashavatars-of-lord-vishnu-know-the-story-of-ten-incarnations",
+      "permanent": true
+    },
+    {
+      "source": "/articles/c850681a-520c-4006-8725-956fc8fb57cd",
+      "destination": "/articles/what-are-the-dashavatars-of-lord-vishnu-know-the-story-of-ten-incarnations",
+      "permanent": true
+    },
+    {
+      "source": "/articles/90dae05f-24b0-40c4-8ed4-43595c5dd9a5",
+      "destination": "/articles/why-is-mother-saraswati-considered-the-goddess-of-knowledge-and-wisdom",
+      "permanent": true
+    },
+    {
+      "source": "/articles/72c4995c-648a-4346-9399-09674780806d",
+      "destination": "/articles/why-is-mother-saraswati-considered-the-goddess-of-knowledge-and-wisdom",
+      "permanent": true
+    },
+    {
+      "source": "/articles/2a9646ad-df39-4b59-88a3-c547a64d3e95",
+      "destination": "/articles/why-is-lord-shiva-called-mahadev-know-the-secret-of-shiva-element",
+      "permanent": true
+    },
+    {
+      "source": "/articles/9728cceb-7055-4fcd-9bd4-c916e42b9526",
+      "destination": "/articles/why-is-lord-shiva-called-mahadev-know-the-secret-of-shiva-element",
+      "permanent": true
+    },
+    {
+      "source": "/articles/b19cb4c5-1c5e-499a-9fb8-6a606284bc2e",
+      "destination": "/articles/what-is-salvation-the-path-of-salvation-and-its-importance-in-sanatan-dharma",
+      "permanent": true
+    },
+    {
+      "source": "/articles/9a89ba64-be53-4a37-abfe-dfce4141d748",
+      "destination": "/articles/what-is-salvation-the-path-of-salvation-and-its-importance-in-sanatan-dharma",
+      "permanent": true
+    },
+    {
+      "source": "/articles/a326f642-7bf3-46a4-9d74-3a0e22a05fd6",
+      "destination": "/articles/why-are-lamps-lit-in-puja-spiritual-significance-of-lamp",
+      "permanent": true
+    },
+    {
+      "source": "/articles/a9ba8fd4-ed2b-49a4-aa1d-4477e3a555f0",
+      "destination": "/articles/why-are-lamps-lit-in-puja-spiritual-significance-of-lamp",
+      "permanent": true
+    },
+    {
+      "source": "/articles/2b94fcf4-fd41-4dac-8d4e-704cb43c3feb",
+      "destination": "/articles/what-to-do-on-diwali-to-get-the-blessings-of-goddess-lakshmi",
+      "permanent": true
+    },
+    {
+      "source": "/articles/62916526-cc9e-4ecf-8935-f69b8770a2fb",
+      "destination": "/articles/what-to-do-on-diwali-to-get-the-blessings-of-goddess-lakshmi",
+      "permanent": true
+    },
+    {
+      "source": "/articles/c212a651-b08f-45bd-a7f0-7399b3a0429a",
+      "destination": "/articles/religious-importance-of-tulsi-plant-and-tradition-of-planting-tulsi-at-home",
+      "permanent": true
+    },
+    {
+      "source": "/articles/211a95f9-ae6c-45d9-b9c7-7c634729d0ab",
+      "destination": "/articles/religious-importance-of-tulsi-plant-and-tradition-of-planting-tulsi-at-home",
+      "permanent": true
+    },
+    {
+      "source": "/articles/2feda338-9589-4d77-8885-bde94b2dbd21",
+      "destination": "/articles/why-is-jagannath-rath-yatra-taken-out-know-the-religious-importance-of-lord",
+      "permanent": true
+    },
+    {
+      "source": "/articles/7385f5ba-ed2e-4fb0-8997-2db7a6faa5e1",
+      "destination": "/articles/why-is-jagannath-rath-yatra-taken-out-know-the-religious-importance-of-lord",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/fca366a5-8a60-402b-893e-a87f2872b0bb",
+      "destination": "/festivals/diwali",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/1bde0f6d-eeb0-4fda-90b1-8a222eca8376",
+      "destination": "/festivals/diwali",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/ddec19c3-eb4e-4ff0-948b-e3d3c150fa8e",
+      "destination": "/festivals/holi",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/cab7e6a6-3b36-4b03-85ed-398473938332",
+      "destination": "/festivals/holi",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/2c2a13e6-f1fa-4c04-873c-94e78a011546",
+      "destination": "/festivals/navratri",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/5e5a36f1-dd02-4c93-b341-803d830b8a47",
+      "destination": "/festivals/navratri",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/e2edd8bd-118e-4c3d-bbb1-2e619bc78272",
+      "destination": "/festivals/ganesh-chaturthi",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/9fade811-a411-4eab-ae82-853a5b7259c3",
+      "destination": "/festivals/ganesh-chaturthi",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/dcabcb6a-ed97-42a7-8bf0-2f061f0caf5b",
+      "destination": "/festivals/radha-ashtami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/ac415552-0d7a-40a2-aa92-ff87c5ed4145",
+      "destination": "/festivals/radha-ashtami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/54555426-57b4-45b3-8642-d6ae3acf0c1d",
+      "destination": "/festivals/ram-navami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/617c48ff-5c08-42b2-b797-ec417c1cecb5",
+      "destination": "/festivals/ram-navami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/542c8116-f3a8-47c6-aee8-f1cc062e9ff3",
+      "destination": "/festivals/dussehra",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/32a29034-8d9a-4eff-b50d-8ee967e7e136",
+      "destination": "/festivals/dussehra",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/1e17f33c-b423-4d3b-a76c-d17dc92a181d",
+      "destination": "/festivals/shri-krishna-janmashtami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/d7a40e81-5600-4e7d-a0ac-29a1b92ecf87",
+      "destination": "/festivals/shri-krishna-janmashtami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/c88c0ed8-6c48-4c6c-993f-e97ca7c6bad6",
+      "destination": "/festivals/hariyali-teej",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/bfb85d02-a466-47b3-b55e-bbcebea30bd4",
+      "destination": "/festivals/hariyali-teej",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/82208b75-11d9-46e2-9a87-3045ded665cc",
+      "destination": "/festivals/nag-panchami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/359149da-8782-409b-ab9f-3bf16ec1aa50",
+      "destination": "/festivals/nag-panchami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/b79a3684-2362-4ce8-aa94-88246acc4a71",
+      "destination": "/festivals/mahashivratri",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/31849a42-7e99-475b-8f3a-35036c020d9b",
+      "destination": "/festivals/mahashivratri",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/ec3a1ab1-5bdb-486f-b20e-a25bccaf04ad",
+      "destination": "/festivals/raksha-bandhan",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/e02f1f06-eee3-4ad7-8c21-7b72d0808623",
+      "destination": "/festivals/raksha-bandhan",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/38a7232e-0946-4a46-87cb-654b0fb22acb",
+      "destination": "/festivals/hanuman-jayanti",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/a900f9cf-3617-46f3-afb9-1d61be565657",
+      "destination": "/festivals/hanuman-jayanti",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/a2c215a1-d254-49f3-92b1-c7d9a8d2a039",
+      "destination": "/festivals/bhai-dooj",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/498433a3-73db-47d2-b665-a925c5d7ef39",
+      "destination": "/festivals/bhai-dooj",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/c3a7b15d-fe7d-4847-ad53-1ec183b0962d",
+      "destination": "/festivals/makar-sankranti",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/3c4b749a-2428-4852-a6b0-c1b1e9c44993",
+      "destination": "/festivals/makar-sankranti",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/daeb31b6-650a-4321-a1f0-3c5fe8a84974",
+      "destination": "/festivals/basant-panchami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/e8d65d51-58fb-497c-9e3c-47c684ef5398",
+      "destination": "/festivals/basant-panchami",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/9f8ba046-5598-415e-8977-16b8faffdb9b",
+      "destination": "/festivals/karva-chauth",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/44442d81-a56f-4f8d-bfb9-ce2babd81c3a",
+      "destination": "/festivals/karva-chauth",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/aae864e5-62d5-46e5-9cc5-e74cafccbd86",
+      "destination": "/festivals/chhath-puja",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/101ec834-ff40-433b-b928-52aa26bc40d2",
+      "destination": "/festivals/chhath-puja",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/98ddd45e-27d3-4089-8ab0-50614a3a699f",
+      "destination": "/festivals/guru-purnima",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/65b51424-2ae6-47e6-9b9a-8859c89e7fdc",
+      "destination": "/festivals/guru-purnima",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/23c78af8-e307-4677-8faa-d00068b99995",
+      "destination": "/festivals/govardhan-puja",
+      "permanent": true
+    },
+    {
+      "source": "/festivals/a691789f-9b7b-4c1d-84ab-72a220ceccf9",
+      "destination": "/festivals/govardhan-puja",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a8d7ffd9-f3ab-43dc-bdd9-8c3c729a6874",
+      "destination": "/bhajans/barsane-ki-chhori-radha-gori-gori",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/385005ac-f39a-408e-84a3-b767116ce832",
+      "destination": "/bhajans/barsane-ki-chhori-radha-gori-gori",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/f38cb129-a7cc-4dd7-940e-b1ec09d56c6e",
+      "destination": "/bhajans/shyama-pyari-kunj-bihari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/39234ca4-0152-49cc-80f8-04c71b91edbd",
+      "destination": "/bhajans/shyama-pyari-kunj-bihari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4043d2b0-35d9-4a84-98a4-2037c3a5fa57",
+      "destination": "/bhajans/radha-raman-hare-hare",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/e5677f6b-b660-45be-9171-1df3a1bbabac",
+      "destination": "/bhajans/radha-raman-hare-hare",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4959cfd9-eff7-4c91-b799-5063577cf9fa",
+      "destination": "/bhajans/radha-meri-swamini-radha",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0fc18f05-8cc7-457d-8ab6-a77309fd93da",
+      "destination": "/bhajans/radha-meri-swamini-radha",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a4e6eecb-8505-4baf-9c2b-9e1228a4e933",
+      "destination": "/bhajans/mero-man-girdhar-chhavi-par-atko",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/02a50cd8-026f-4452-8e79-cb125d0296f0",
+      "destination": "/bhajans/mero-man-girdhar-chhavi-par-atko",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/f8ea996f-a3da-450d-9f38-bf08248336b3",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791706613782",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/17ed4ffc-f7ce-4c03-a9fa-432be55245c8",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791706613782",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/09b7ea5c-eecd-4b81-923c-a42d6c4349ad",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791707329324",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9a0a9727-34e8-4e82-8817-2c1093ecf881",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791707329324",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/c6cac9a7-ab64-4ddb-840b-ffcf2d3a90e8",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791708195144",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/c0a54c6e-e10f-4cc2-afd9-3c1c95646913",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791708195144",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/1f7ec063-c0ef-428c-8785-8ea629f08a14",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791710136671",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3a974e63-a846-4b04-9834-b08d6cb0518c",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791710136671",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d6f37b73-24d4-4766-a361-e657b409de1b",
+      "destination": "/bhajans/jiski-rachna-itni-sundar-wo-kitna-sundar-hoga",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/e1c2cd87-56a1-4777-a1bf-848dcbe88d15",
+      "destination": "/bhajans/jiski-rachna-itni-sundar-wo-kitna-sundar-hoga",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/fe9cd6b7-ff96-49d8-813c-dd75b8d32038",
+      "destination": "/bhajans/mere-to-girdhar-gopal-doosro-na-koi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/2723b104-aff1-481e-93b4-79229e4c3c7f",
+      "destination": "/bhajans/mere-to-girdhar-gopal-doosro-na-koi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/e9abbd23-3119-4286-88fb-4579855e208f",
+      "destination": "/bhajans/mero-man-vrindavan-me-atko",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/8c553a9d-434c-40c0-aafb-992b5028cd05",
+      "destination": "/bhajans/mero-man-vrindavan-me-atko",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b4a9c8ae-7ede-4617-9c5b-44fe2bd12ef2",
+      "destination": "/bhajans/shri-devkinandan-thakur-ji-maharaj",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/31621210-21a9-4a5e-866a-d5ec970d4bff",
+      "destination": "/bhajans/shri-devkinandan-thakur-ji-maharaj",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/55c356bb-1fa8-478f-bd0f-6e48a3e2ab5a",
+      "destination": "/bhajans/mero-mukh-niko-ki-tero-shyama-pyaari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a8ce250f-8963-4b81-abc7-953483208c5f",
+      "destination": "/bhajans/mero-mukh-niko-ki-tero-shyama-pyaari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d19be49e-702c-4313-9681-d74d5054d1a3",
+      "destination": "/bhajans/chalo-re-man-shri-vrindavan-dham-rateinge-radhe-radhe-naam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a68222c2-83fe-4a6b-87e3-0bae8dfbb13e",
+      "destination": "/bhajans/chalo-re-man-shri-vrindavan-dham-rateinge-radhe-radhe-naam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ab2e0ef5-c946-45bd-966b-455560521f6d",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791706646807",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/e99c2990-1993-4172-b651-6c81a4fdf909",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791706646807",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/72f2b69b-33be-438b-97aa-5f900246563e",
+      "destination": "/bhajans/gopi-geet",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/e06e6377-e1af-4673-9887-7d7680c2096b",
+      "destination": "/bhajans/gopi-geet",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3e283fc9-7ba3-45ff-8d80-3c27cfffef8d",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791708581742",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/2cab1f95-fd8a-462a-953c-434b3e5ce355",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791708581742",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d456d506-ee3d-4cf5-92ac-9c798639a6ef",
+      "destination": "/bhajans/tu-hai-sakhi-badbhagi-badi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ddedb4a6-6eee-4088-b767-ffb722ab23f6",
+      "destination": "/bhajans/tu-hai-sakhi-badbhagi-badi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9a211fa5-5586-4710-a05f-aee72d9754b2",
+      "destination": "/bhajans/murli-bajane-wale-main-daas-hoon-tumhara",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0986408e-4390-4250-ba33-5e3d8160cd65",
+      "destination": "/bhajans/murli-bajane-wale-main-daas-hoon-tumhara",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/1e63843c-4b4b-4eb6-9100-c94ac33accab",
+      "destination": "/bhajans/he-sun-radhika-dulari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/1001175c-1752-4826-85a4-4eea48754c8a",
+      "destination": "/bhajans/he-sun-radhika-dulari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/c07f2d65-274a-4f16-9ce8-555e326c5e9e",
+      "destination": "/bhajans/moko-la-de-dulhaniya-jamunapar-ki",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/dc7aa7d8-47ad-4873-8413-dfc63eb7f860",
+      "destination": "/bhajans/moko-la-de-dulhaniya-jamunapar-ki",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/f6465bbf-5cb3-4682-96e7-3f6f0f929b95",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791708125833",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/40e2417b-ece8-4524-9514-a9e11f941484",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791708125833",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/879c299b-0328-487e-8e53-288f5ac716a3",
+      "destination": "/bhajans/indresh-ji-maharaj",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ad7d50e8-161d-49a8-8744-1c0e90696368",
+      "destination": "/bhajans/indresh-ji-maharaj",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/fc25e6f0-64b3-4f41-aaa7-02acd7deeff0",
+      "destination": "/bhajans/indresh-ji-maharaj-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7082a09d-7b49-4156-a750-e8000d8367b9",
+      "destination": "/bhajans/indresh-ji-maharaj-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/20cb1a3d-13b6-4270-ad16-586ad8c24415",
+      "destination": "/bhajans/7-august",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4ff8c0d2-6e09-4d69-a24d-4a017148eba4",
+      "destination": "/bhajans/7-august",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0b4163ea-81e1-4867-b356-19bef7c3dfb2",
+      "destination": "/bhajans/indresh-ji-maharaj-3",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b6bccf90-09e5-409c-b8ac-452fd1206c8c",
+      "destination": "/bhajans/indresh-ji-maharaj-3",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/15a18922-7f91-439c-a9ec-dde0b5f8721a",
+      "destination": "/bhajans/sab-dukh-door-hue-jab-tera-naam-liya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b9a73285-3ffe-4224-b4eb-3e62ace1f7de",
+      "destination": "/bhajans/sab-dukh-door-hue-jab-tera-naam-liya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/56147aa7-1590-412f-b743-f839a9b4f951",
+      "destination": "/bhajans/sdfgh",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/f1b0c132-0333-4ddf-98ea-deb4c688c5df",
+      "destination": "/bhajans/sdfgh",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d042608c-56c8-43f1-8c1f-d2c3b2599698",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791706703790",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d9f28814-f989-40f3-84eb-8a1d911b67f8",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791706703790",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3aef6388-8202-4f8f-818e-6946049e4681",
+      "destination": "/bhajans/kanhaiya-kanhaiya-pukara-karenge",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a4edadac-f4c7-45d4-bc56-0be08d33277c",
+      "destination": "/bhajans/kanhaiya-kanhaiya-pukara-karenge",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/e3d22363-53ac-4e90-b5f2-4a375d492e0f",
+      "destination": "/bhajans/indresh-ji-maharaj-4",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/071a8e9a-57f5-4895-8d8e-b9f964991696",
+      "destination": "/bhajans/indresh-ji-maharaj-4",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/fd45b882-ca44-4c8b-a2cc-776574f3cb26",
+      "destination": "/bhajans/sfdghj",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d3addea5-fc05-42ac-a793-940021fb93c2",
+      "destination": "/bhajans/sfdghj",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/57ee6c22-c041-40e5-8d51-66f24705e3e3",
+      "destination": "/bhajans/girdhar-laal-bano-hai-rasiya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/25a31302-2953-4b12-9b7b-c573aae3fe95",
+      "destination": "/bhajans/girdhar-laal-bano-hai-rasiya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/cc9be2ad-0786-431a-90ae-09db8b263a52",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791710191652",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a96f6a66-a61a-436e-89e9-541e9238dd48",
+      "destination": "/bhajans/phase-4a-test-bhajan-1791710191652",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/04991cf7-dccf-460d-8f6d-2798d92689fa",
+      "destination": "/bhajans/mujhko-radharaman-kar-do-aisa-magan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7b33a0ee-2af6-4f7c-afa7-ed112ec8d4fe",
+      "destination": "/bhajans/mujhko-radharaman-kar-do-aisa-magan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/170ef02a-3822-4cc7-80a8-1578509f7ed0",
+      "destination": "/bhajans/mera-nath-tu-hai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/feb27202-fe8b-4715-8b78-9ac77124302b",
+      "destination": "/bhajans/mera-nath-tu-hai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/fde9d56b-d952-4f3a-a4ed-de3569e94331",
+      "destination": "/bhajans/hamaro-murli-walo-shyam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/2a6098ef-c38c-4566-95cc-4ba8ba8e7a7a",
+      "destination": "/bhajans/hamaro-murli-walo-shyam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a67da804-2eae-442c-be6a-548907a03e4e",
+      "destination": "/bhajans/mangal-murti-maruti-nandan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/c7b275da-e61c-42bc-b9c8-2e79b72c479c",
+      "destination": "/bhajans/mangal-murti-maruti-nandan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/04a5a53c-8fe2-4b76-9be8-817a20aa5f41",
+      "destination": "/bhajans/wo-pehli-baar-vrindavan-ka-jana-yaad-aata-hai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/5ec4e982-4395-4570-8b09-e464d50369be",
+      "destination": "/bhajans/wo-pehli-baar-vrindavan-ka-jana-yaad-aata-hai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ca99ee58-ee53-4d75-aacc-d748c2821a81",
+      "destination": "/bhajans/kanhaiya-kanhaiya-pukara-karenge-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/50873899-478c-418d-80ef-3cb5dd694fcc",
+      "destination": "/bhajans/kanhaiya-kanhaiya-pukara-karenge-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9906f05a-d96c-49de-a346-78583d125646",
+      "destination": "/bhajans/chalo-re-man-vrindavan-ki-or",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/576d246f-e5fc-49a3-a1c0-4e42b975141c",
+      "destination": "/bhajans/chalo-re-man-vrindavan-ki-or",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b24f13c3-5765-4370-bfb7-872a70614ac5",
+      "destination": "/bhajans/mero-man-vrindavan-mein-atko",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/530166d8-44b1-4928-b9fd-007d50e6c237",
+      "destination": "/bhajans/mero-man-vrindavan-mein-atko",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ce2b3fe4-867f-41da-bfcd-ba4bf8c7ac46",
+      "destination": "/bhajans/teri-sharan-mein-aake-main-dhanya-ho-gaya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9f8ab919-09a2-4148-bda3-181ba14d6b78",
+      "destination": "/bhajans/teri-sharan-mein-aake-main-dhanya-ho-gaya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/eb3b79e4-3737-44aa-ae3e-d57dbb4dd0ff",
+      "destination": "/bhajans/kab-barsoge-aay-shyam-ghan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b0c793bc-2484-4de8-a7e2-4b897392a6e8",
+      "destination": "/bhajans/kab-barsoge-aay-shyam-ghan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/fde29dde-5367-4810-a1d5-f49e64597ea4",
+      "destination": "/bhajans/kabhu-mile-piya-mora-govind",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a9236263-bde2-4917-b729-f5450a7c57a7",
+      "destination": "/bhajans/kabhu-mile-piya-mora-govind",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/45cf0e23-e577-4209-b746-c8342aa73fe2",
+      "destination": "/bhajans/geet-govind-by-jaydev-mahaprabhu",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/38089c19-b7f5-4779-b58f-682fff2b06b7",
+      "destination": "/bhajans/geet-govind-by-jaydev-mahaprabhu",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7893d39f-cc3e-47ef-ac68-a523da40dc9b",
+      "destination": "/bhajans/shyama-hriday-kamal-se-pragtyo",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/60919c3f-e3da-405f-b282-35b6603b9a9b",
+      "destination": "/bhajans/shyama-hriday-kamal-se-pragtyo",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b44f4da0-3496-4b4e-a317-d49f23c01f62",
+      "destination": "/bhajans/main-to-govind-ra-gun-gaasu",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/568deaa3-af25-4d7e-951a-1ee354de1a12",
+      "destination": "/bhajans/main-to-govind-ra-gun-gaasu",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/1c0d4761-6c1c-4142-aa21-6e296eec81c2",
+      "destination": "/bhajans/hamare-mai-shyama-ju-ko-raaj",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7ae07765-9e77-4d0b-b108-99a30a63b406",
+      "destination": "/bhajans/hamare-mai-shyama-ju-ko-raaj",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/026793d8-09ea-4017-91ea-b73103f296e5",
+      "destination": "/bhajans/govardhan-wasi-sanware",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ba2cb1a5-6b78-4834-8029-0d47fb2541b7",
+      "destination": "/bhajans/govardhan-wasi-sanware",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/69519442-f013-4f74-a75b-ccb55fbd5944",
+      "destination": "/bhajans/teri-sharan-mein-aake-main-dhanya-ho-gaya-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/668b2dfe-09ac-4c70-a1b9-6936ff41b5c5",
+      "destination": "/bhajans/teri-sharan-mein-aake-main-dhanya-ho-gaya-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/be9e85c4-40ff-4f74-a2bb-657c83f13ecf",
+      "destination": "/bhajans/fdgh",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/59887c18-f7b8-4585-aaab-f8cd196106a9",
+      "destination": "/bhajans/fdgh",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/334eb1d2-0311-4fb6-a409-344d2cac7569",
+      "destination": "/bhajans/hamaro-dhan-radha-shri-radha-shri-radha",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/15dec1ae-83d5-4a04-a307-776f3021ab4e",
+      "destination": "/bhajans/hamaro-dhan-radha-shri-radha-shri-radha",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/75d81bbd-641a-4b4f-83ef-851f13cb09ce",
+      "destination": "/bhajans/radha-ramanam-hare-hare",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a04c1a3f-c181-4c38-9181-7e5042670ebe",
+      "destination": "/bhajans/radha-ramanam-hare-hare",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3f10d57d-7d9f-44f5-8fef-b747b5dcd42f",
+      "destination": "/bhajans/radhika-rani-ji-sun-lo-araj-hamari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/87b23a7b-4f4a-4f4c-9f58-73b92a3920ec",
+      "destination": "/bhajans/radhika-rani-ji-sun-lo-araj-hamari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/abf11550-5d75-4472-9143-2df7b69a4140",
+      "destination": "/bhajans/gurudev-daya-karke-mujhko-apna-lena",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/fb389a08-1f16-4eae-8da2-61277d803cb4",
+      "destination": "/bhajans/gurudev-daya-karke-mujhko-apna-lena",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7205292d-1f8b-48ca-98d8-875687300370",
+      "destination": "/bhajans/talhati-govardhan-ki-mein",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/11ce8799-a425-4e48-b9f4-65b3d63c889d",
+      "destination": "/bhajans/talhati-govardhan-ki-mein",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7070f4d0-2764-4a77-90d9-a931c2372786",
+      "destination": "/bhajans/kar-vrindavan-vaas-re-man",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/359bcfca-2d63-4d93-8962-f7bab3b370ac",
+      "destination": "/bhajans/kar-vrindavan-vaas-re-man",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/242bf85f-98dd-4d7b-81e6-da7dd40945b8",
+      "destination": "/bhajans/tere-bagair-saanwariya-jiya-nahi-jaaye",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/c1ee9a6c-35e2-4dce-8025-8b00b108b8aa",
+      "destination": "/bhajans/tere-bagair-saanwariya-jiya-nahi-jaaye",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/fa0286d5-9831-4753-a970-e7f09b211366",
+      "destination": "/bhajans/shiv-kailasho-ke-vasi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/fa0d6980-66ca-4593-bb2b-b40e95e3ab65",
+      "destination": "/bhajans/shiv-kailasho-ke-vasi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/940e9494-deb0-416c-a9ee-5ed89dcd60f0",
+      "destination": "/bhajans/indresh-ji-maharaj-5",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4fade86b-5651-45d7-ab65-fdcb80575949",
+      "destination": "/bhajans/indresh-ji-maharaj-5",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7611f119-90ca-4e8e-8fca-09d583e5eb39",
+      "destination": "/bhajans/suno-dil-jaani-mere-dil-ki-kahani",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/6aa0243e-1eed-40e3-9a30-900d6efb4ce5",
+      "destination": "/bhajans/suno-dil-jaani-mere-dil-ki-kahani",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0a030820-194f-4bee-ac78-fe1f9fe08bb3",
+      "destination": "/bhajans/tumhari-yaad-aati-hai-batao-kya-karein-mohan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/31fe43f4-7a2e-4edb-9d72-be283b451e4b",
+      "destination": "/bhajans/tumhari-yaad-aati-hai-batao-kya-karein-mohan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ad8e6f77-9305-4b70-aae0-d8329da30233",
+      "destination": "/bhajans/kaun-kutil-khal-kaami-mo-sam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b902ab56-825a-4308-9d70-e0ad8d68c2bc",
+      "destination": "/bhajans/kaun-kutil-khal-kaami-mo-sam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/946c71a1-0260-41bd-9f34-4e64f759a6a4",
+      "destination": "/bhajans/payo-ji-maine-ram-ratan-dhan-payo",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3d9ee3e1-7ee5-435b-a06d-ffb251e5c278",
+      "destination": "/bhajans/payo-ji-maine-ram-ratan-dhan-payo",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/af77565f-1102-4637-9441-e7a57398974b",
+      "destination": "/bhajans/ae-ri-sakhi-mangal-gao-ri",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4c9d893d-23bf-4f25-8317-da00bfdda8f9",
+      "destination": "/bhajans/ae-ri-sakhi-mangal-gao-ri",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/088e7e98-f815-4f4a-b562-fa7b4fc47ed9",
+      "destination": "/bhajans/daas-raghunath-ka-nand-sut-ka-sakha",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/08f593e6-87c8-4568-8d99-0cd72a2b9ea9",
+      "destination": "/bhajans/daas-raghunath-ka-nand-sut-ka-sakha",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/00b5af2c-719a-4c1a-8c48-7058f749eb42",
+      "destination": "/bhajans/paag-tedhi-si-dhare",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/378fecc0-ea09-4f7b-9dac-83da660dcb45",
+      "destination": "/bhajans/paag-tedhi-si-dhare",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/cb3a355a-290c-47e1-b3b3-9204e36f71f7",
+      "destination": "/bhajans/jogi-rang-bhi-na-aaya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4b63bea4-0216-4385-b113-f68b1883e6e4",
+      "destination": "/bhajans/jogi-rang-bhi-na-aaya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/2ea1ad4a-5d04-443c-82be-ead5d33fe16b",
+      "destination": "/bhajans/radha-bol-vrindavan-ki-galiyan-dol",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/52af01b5-3c01-42cf-b645-cc73182dc948",
+      "destination": "/bhajans/radha-bol-vrindavan-ki-galiyan-dol",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/67b4627d-a930-45ae-addf-057b5991e38d",
+      "destination": "/bhajans/aho-vidhna-tope-anchra-paasari-maangu",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/974e646d-ab79-44d3-b5a6-17b00cfc5678",
+      "destination": "/bhajans/aho-vidhna-tope-anchra-paasari-maangu",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3a051b86-de79-4868-92c8-184008053ede",
+      "destination": "/bhajans/baithe-yugal-bihari-naav-mein",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/6fbe3b2d-5982-47b4-811d-e19a5a3983ee",
+      "destination": "/bhajans/baithe-yugal-bihari-naav-mein",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/1a69a52f-3330-460a-8e5a-436932edec0b",
+      "destination": "/bhajans/mohe-to-bharoso-hai-tero-ri-kishori-radhe",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/84fbfff8-3c5b-497b-9753-62641b78ec4a",
+      "destination": "/bhajans/mohe-to-bharoso-hai-tero-ri-kishori-radhe",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/81de651e-6302-4f2f-9c32-34a4a64a0da3",
+      "destination": "/bhajans/kanha-tori-johat-rah-gayi-baat",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/be938b10-0e71-4679-a895-a3ff04069ed6",
+      "destination": "/bhajans/kanha-tori-johat-rah-gayi-baat",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d43b8e90-0f2a-435b-87f3-068629128a8b",
+      "destination": "/bhajans/trishna-na-jaye-man-se-krishna-na-aaye-man-mein",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/766b9093-a7ec-4c99-ac0b-a2c7606edcb9",
+      "destination": "/bhajans/trishna-na-jaye-man-se-krishna-na-aaye-man-mein",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0e460ec2-c47e-46be-9c18-bc2d56ff54ff",
+      "destination": "/bhajans/vrindavan-sancho-dhan-bhaiya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/e79309da-d9e0-421e-b48e-c1e577d00675",
+      "destination": "/bhajans/vrindavan-sancho-dhan-bhaiya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9c4adade-8a02-4a5a-8f55-22707676d813",
+      "destination": "/bhajans/chhum-chhum-baaje-payaliya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/41f48881-1175-4e78-b00c-dc6315f074a4",
+      "destination": "/bhajans/chhum-chhum-baaje-payaliya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b7d32549-a4a0-44df-a271-671ee0d8a3e0",
+      "destination": "/bhajans/dar-laagai-aur-haansi-aavai-ajab-zamana-aaya-re",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/69582814-b84f-4423-a458-0b62345fb795",
+      "destination": "/bhajans/dar-laagai-aur-haansi-aavai-ajab-zamana-aaya-re",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/80c61411-e223-4eff-b2a5-84ef0f4d8ff0",
+      "destination": "/bhajans/bhagya-bado-vrindavan-payo",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/bb4a421f-f387-402d-bf91-967b1805dea4",
+      "destination": "/bhajans/bhagya-bado-vrindavan-payo",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/27c863ed-d987-4cd1-99b5-576898d4d083",
+      "destination": "/bhajans/maine-liyo-ri-govinda-mol-re",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/eb613c29-4e90-448d-8ef2-d65f7ecf3d2d",
+      "destination": "/bhajans/maine-liyo-ri-govinda-mol-re",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/64c5e75b-2d7d-4933-ab1d-7d9bbbb967b2",
+      "destination": "/bhajans/shyam-sundar-sada-humko-pyare-rahe",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ba5cb420-b8b5-49f5-a22d-59c382232e34",
+      "destination": "/bhajans/shyam-sundar-sada-humko-pyare-rahe",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/30f777f9-f5bc-44a5-a5d0-3626686bcc59",
+      "destination": "/bhajans/shiv-tandav-stotram",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9deb4f42-09dd-4883-aa5a-73b762f23a25",
+      "destination": "/bhajans/shiv-tandav-stotram",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/cb167568-b3d2-407a-9dce-2b44e4402ae5",
+      "destination": "/bhajans/kai-janmo-se-bula-rahe-ho",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/2ae10867-78f9-48d7-bf0d-b3f33b8e2cae",
+      "destination": "/bhajans/kai-janmo-se-bula-rahe-ho",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ddd93f33-4219-4d88-8238-4a42083f99d8",
+      "destination": "/bhajans/madhurashtakam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/816463f9-16a5-4993-b63d-7cfc2f657c5b",
+      "destination": "/bhajans/madhurashtakam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/06a03787-2199-4f44-b3c2-0554ca31d4f0",
+      "destination": "/bhajans/he-sun-radhika-dulari-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ae61be9e-0190-4c60-b731-53b93cf25c01",
+      "destination": "/bhajans/he-sun-radhika-dulari-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/81b9d4f6-d6ba-4e8f-9e2a-1068e534e652",
+      "destination": "/bhajans/mero-mukh-neeko-ki-tero-radha-pyaari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/6bf5f028-032d-4da0-b01f-1fca2761b349",
+      "destination": "/bhajans/mero-mukh-neeko-ki-tero-radha-pyaari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/1ad1e192-bd13-4ee5-88fa-345d0c53643f",
+      "destination": "/bhajans/jaise-rakho-waise-rahungi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/cec96017-fb8d-48c5-ab8c-790739339155",
+      "destination": "/bhajans/jaise-rakho-waise-rahungi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0e8c8016-53bd-4c46-97f0-508ffb8da673",
+      "destination": "/bhajans/hari-darshan-ki-pyasi-ankhiyaan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/79d11284-1a84-43a8-91d4-335c1bfd59ff",
+      "destination": "/bhajans/hari-darshan-ki-pyasi-ankhiyaan",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7a4121a3-8d08-4d8b-b9db-6657f965fe58",
+      "destination": "/bhajans/man-re-krishna-naam-kah-lije",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3efb674e-efee-4b4e-b5f3-49db770b52f0",
+      "destination": "/bhajans/man-re-krishna-naam-kah-lije",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/06e90cc9-ad2b-43d0-8e42-d01f087d4691",
+      "destination": "/bhajans/bhishma-stuti",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/46b721f7-2f9a-4c9f-8f84-d20a816a4aed",
+      "destination": "/bhajans/bhishma-stuti",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/01e81c4f-61b5-4bce-bb67-410c2002f6f0",
+      "destination": "/bhajans/aali-ri-mohe-lage-vrindavan-neeko",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/46e72102-baf6-43a3-98d5-c50adda515f4",
+      "destination": "/bhajans/aali-ri-mohe-lage-vrindavan-neeko",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/93bc55f7-ee2a-440c-9e0a-fd7dff81ff27",
+      "destination": "/bhajans/manmohan-tujhe-rijhaun",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a5142637-6a64-43d5-ba12-7dd836f98149",
+      "destination": "/bhajans/manmohan-tujhe-rijhaun",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4aad9fab-e802-423e-a33e-bee122178481",
+      "destination": "/bhajans/ban-nache-natni-ko-aali-nand-ke-kishor",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7d946451-f25c-4511-b988-5c8b058f2961",
+      "destination": "/bhajans/ban-nache-natni-ko-aali-nand-ke-kishor",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/357dcdb7-f836-4e84-957f-7d8d55da3494",
+      "destination": "/bhajans/mohan-jaag-hau-bali-jai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ea3789f2-b504-41da-bba8-91bdebea59c7",
+      "destination": "/bhajans/mohan-jaag-hau-bali-jai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/369cf24c-c933-4bc6-9291-42b4dbe09423",
+      "destination": "/bhajans/manmohan-tujhe-rijhaun-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/6c41a9db-790c-47d9-ba04-5fa4aed0d3f6",
+      "destination": "/bhajans/manmohan-tujhe-rijhaun-2",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3a72ade1-e07a-4f14-aec6-2a1616893317",
+      "destination": "/bhajans/kanhaiya-kanhaiya-pukara-karenge-3",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/47a0b850-37f0-466a-bf59-d6c5e314e071",
+      "destination": "/bhajans/kanhaiya-kanhaiya-pukara-karenge-3",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a6ff9200-5ea6-4056-9ce9-447d20cb3e19",
+      "destination": "/bhajans/girdhar-janam-janam-ka-sathi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/f2aa2654-5ff3-4b1c-8fba-c85262dfc09e",
+      "destination": "/bhajans/girdhar-janam-janam-ka-sathi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/507dfc7e-b4c4-4550-944c-84215a4a0f18",
+      "destination": "/bhajans/girija-stuti",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/5573c72f-bc27-422d-bd9c-774d1b70e32d",
+      "destination": "/bhajans/girija-stuti",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/f9b1114e-5226-4613-a630-51399a7a6b7f",
+      "destination": "/bhajans/sobhita-kar-navneet-liye",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/714e51f3-ebc5-4d7c-b035-81e90dff1b26",
+      "destination": "/bhajans/sobhita-kar-navneet-liye",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9a3d8cf4-7cbf-4acd-b2c0-0fc66b494542",
+      "destination": "/bhajans/aiso-chatak-matak-so-thakur",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d8f3a70e-f1e6-4e62-8ccd-d2e53f19d2a9",
+      "destination": "/bhajans/aiso-chatak-matak-so-thakur",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/6537aa4f-163f-4e52-9e2e-8d828ff70b82",
+      "destination": "/bhajans/mhara-girdhar-lal",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9b33890c-d75d-4119-ace7-870513a382e9",
+      "destination": "/bhajans/mhara-girdhar-lal",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/2eabcc94-d3ad-489e-bee8-41f0c7ccce2d",
+      "destination": "/bhajans/hum-prem-deewani-hain-woh-prem-deewana",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ac94e90f-9282-4477-a717-6a02594ed3fe",
+      "destination": "/bhajans/hum-prem-deewani-hain-woh-prem-deewana",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9e2f7146-0c6d-4008-a1de-df3a29de06fe",
+      "destination": "/bhajans/hanuman-chalisa",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/646e28cb-1ba1-441b-b1d8-763059d1913f",
+      "destination": "/bhajans/hanuman-chalisa",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/8ea8c86b-049a-4b2b-9489-0019d199296e",
+      "destination": "/bhajans/joi-joi-pyaaro-karai-soi-mohi-bhaavai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9030b56f-7b46-453c-a554-0360ac914bf2",
+      "destination": "/bhajans/joi-joi-pyaaro-karai-soi-mohi-bhaavai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0df0f4f0-88dd-4132-936c-2c2e3e1bbb07",
+      "destination": "/bhajans/har-saans-mein-ho-sumiran-tera",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/361823fd-427c-46ae-8546-8033e297c596",
+      "destination": "/bhajans/har-saans-mein-ho-sumiran-tera",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3e257ca3-8fac-4aed-b245-5d9d91e6e837",
+      "destination": "/bhajans/haun-to-daasi-nitya-tihari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9d4a9f9a-ed70-484c-b348-7c2ffe39ba7e",
+      "destination": "/bhajans/haun-to-daasi-nitya-tihari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/14d5180d-4571-4b82-aed7-d9f38e831241",
+      "destination": "/bhajans/aaj-dadhi-meetho-madan-gopal",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/e3a36f9f-178d-47b2-a218-466ca6422d92",
+      "destination": "/bhajans/aaj-dadhi-meetho-madan-gopal",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0ab84dad-b79c-4edb-9e81-3a512936be63",
+      "destination": "/bhajans/shiv-kailashon-ke-vasi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/7dcf3994-5420-456e-bb93-8b02a4e275ac",
+      "destination": "/bhajans/shiv-kailashon-ke-vasi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/24da0bfb-c98d-451b-8cb0-b4b7136f33f3",
+      "destination": "/bhajans/tero-sankat-harengi-karengi-bhali-vrishabhanu-ki-lali",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/85c24080-9425-47c4-adff-4fa0198ad25e",
+      "destination": "/bhajans/tero-sankat-harengi-karengi-bhali-vrishabhanu-ki-lali",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/f10db0ec-270b-434b-9710-882d8a4b2c7c",
+      "destination": "/bhajans/mohan-aao-to-sahi-girdhar-aao-to-sahi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b7122551-397d-493a-a8c7-507a2591e581",
+      "destination": "/bhajans/mohan-aao-to-sahi-girdhar-aao-to-sahi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/aaab6c7e-7d37-4b87-ab53-d7a6413cf77f",
+      "destination": "/bhajans/holi-khele-to-aa-jaiyo-barsane-rasiya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/6dd4fe4c-b9c8-409d-8b6b-2ecc9ac9567f",
+      "destination": "/bhajans/holi-khele-to-aa-jaiyo-barsane-rasiya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/c2d58328-c1e8-4337-88d4-e92464135862",
+      "destination": "/bhajans/mat-ja-re-rangeele-fagun-rasiya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/08fe2191-de7f-4d76-8523-b81cd20d01d3",
+      "destination": "/bhajans/mat-ja-re-rangeele-fagun-rasiya",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/221ea3b4-5889-4f48-8d0d-ec589f679627",
+      "destination": "/bhajans/sajan-jyon-jano-sudh-lije",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0f73066c-ab8b-412a-b1fe-2a352a851898",
+      "destination": "/bhajans/sajan-jyon-jano-sudh-lije",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/f035b07e-bc6d-409c-8523-43db92a54ab5",
+      "destination": "/bhajans/o-rani-tero-chirjivo-gopal",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/991d80f2-6580-4119-bafb-4f0adc004c5b",
+      "destination": "/bhajans/o-rani-tero-chirjivo-gopal",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4ad94739-dbfa-4740-85f8-f0fcbe2d3053",
+      "destination": "/bhajans/shankaram-sampradam-sajjananandadam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/089eb9f7-9baa-4063-9e02-c326b6c7df1e",
+      "destination": "/bhajans/shankaram-sampradam-sajjananandadam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3ceb0aec-3f65-4661-8023-4279d226363d",
+      "destination": "/bhajans/hamaro-daan-deja-ri-dahi-bechne-wari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a32966d5-a84a-4654-b08d-a9e3feb3a113",
+      "destination": "/bhajans/hamaro-daan-deja-ri-dahi-bechne-wari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b8f72edf-0131-48a8-a49c-dbd2eaacc7e1",
+      "destination": "/bhajans/patiyan-main-kaise-likhun-likhyo-ri-na-jaay",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3a1a79f7-922d-4473-b634-e24b62ed42e1",
+      "destination": "/bhajans/patiyan-main-kaise-likhun-likhyo-ri-na-jaay",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d65e7be5-a519-4456-b504-e6ec0c9632dd",
+      "destination": "/bhajans/radha-raman-vrindavan-ware",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/045b1f66-5a18-410c-8fe7-bfa1db217627",
+      "destination": "/bhajans/radha-raman-vrindavan-ware",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/441f81f7-b844-43e3-b873-67f7a63134cd",
+      "destination": "/bhajans/girdhar-ke-ghar-jaun-main-to",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/d87bcfc1-4022-40ad-9177-ad22583d45b4",
+      "destination": "/bhajans/girdhar-ke-ghar-jaun-main-to",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/af6f1c5e-83f3-44d4-b535-16eb78bdad08",
+      "destination": "/bhajans/yah-maangu-gopi-jan-vallabh",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3dcc6961-d956-409a-b01a-8b2d2b00c22c",
+      "destination": "/bhajans/yah-maangu-gopi-jan-vallabh",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ed680cc0-5f9e-4780-bf2e-dbeb69b723c8",
+      "destination": "/bhajans/o-bala-main-bairagan-hongi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/2e1faa0e-7f8d-4e33-9e0a-8cec5b088f9f",
+      "destination": "/bhajans/o-bala-main-bairagan-hongi",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/50cc4a8e-5f41-41ec-aafa-62cb0378707c",
+      "destination": "/bhajans/jaduvar-lagat-hai-mohe-pyaaro",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/48d1056a-1434-486f-96a3-bcf076c96431",
+      "destination": "/bhajans/jaduvar-lagat-hai-mohe-pyaaro",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/876f32e4-b9ad-4be4-8487-620c97886337",
+      "destination": "/bhajans/hari-apnai-aangan-kachhu-gaavat",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/5a84beb9-0a89-4d7b-96f4-1d84ba3659b2",
+      "destination": "/bhajans/hari-apnai-aangan-kachhu-gaavat",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/74cb84e0-39a3-4817-bd12-5bc48a193fc5",
+      "destination": "/bhajans/udho-maiya-ku-sunaiyo-tero-lala-dukh-paavai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/900a83fc-bffa-4c96-957c-7cb3e2f8439b",
+      "destination": "/bhajans/udho-maiya-ku-sunaiyo-tero-lala-dukh-paavai",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/9d1886d0-0b49-47ca-a525-1eff720c2b5c",
+      "destination": "/bhajans/udho-mat-aaiyo-samjhane",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0736e78b-1ed2-4024-889b-8c14bc646cd0",
+      "destination": "/bhajans/udho-mat-aaiyo-samjhane",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/045df31e-f7f3-4788-a0f4-d5692623c2c2",
+      "destination": "/bhajans/chandra-kiran-sa-shyam-salona",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/3c3c2fb0-ee11-4454-999a-fcbd5489b527",
+      "destination": "/bhajans/chandra-kiran-sa-shyam-salona",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/5c7015d3-7c61-4f71-83b4-f6b50fa52093",
+      "destination": "/bhajans/mero-man-lagyo-barsane-mein-jahan-viraje-radha-rani",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0ec328d9-d86e-41a6-8564-c67fb83a55d1",
+      "destination": "/bhajans/mero-man-lagyo-barsane-mein-jahan-viraje-radha-rani",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/a108212c-239a-4b94-ac9f-ebc8c66c2ef9",
+      "destination": "/bhajans/kaise-aaun-main-kanhaiya-teri-gokul-nagari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/5cd93903-6bfa-4924-803d-1917c8c9d8df",
+      "destination": "/bhajans/kaise-aaun-main-kanhaiya-teri-gokul-nagari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4cc6ab3b-68d4-44ee-913c-61c45765853f",
+      "destination": "/bhajans/vrindavan-kyon-na-bhaye-hum-mor",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/5ead43f5-97b1-4517-900d-f7be33f2ad72",
+      "destination": "/bhajans/vrindavan-kyon-na-bhaye-hum-mor",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/582e56b2-0e6b-4d5a-a882-2278afbfdd51",
+      "destination": "/bhajans/jagannath-chaka-nain",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/84ad3986-36ff-44ce-9d16-3ffa96073103",
+      "destination": "/bhajans/jagannath-chaka-nain",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/af6a60e2-6649-4e69-8b7c-6fe5bbaba9c1",
+      "destination": "/bhajans/prem-nagar-mat-ja-ae-musafir",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/cb726afd-d992-455e-86ae-1a5f7c8ece63",
+      "destination": "/bhajans/prem-nagar-mat-ja-ae-musafir",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/4135d43a-0657-48c8-88e8-c8ee6007d91a",
+      "destination": "/bhajans/gopal-ashtakam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/2dc35805-9771-47d4-9d85-3324d5ad84f9",
+      "destination": "/bhajans/gopal-ashtakam",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/346423cb-0012-4207-a76a-f4d815f76b9d",
+      "destination": "/bhajans/radhavallabh-lal-man-rakhiye-apne-charnan-mein",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/b04b971a-09b7-4a28-b32a-3cfabfb872e8",
+      "destination": "/bhajans/radhavallabh-lal-man-rakhiye-apne-charnan-mein",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/ff5ba325-53fd-4c28-97c3-c72018704fdc",
+      "destination": "/bhajans/radhe-radhe-karunamayi-krishna-pyari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0afca0b1-1c09-4ce8-a425-9224d8ae805a",
+      "destination": "/bhajans/radhe-radhe-karunamayi-krishna-pyari",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/1a515990-b7fb-4761-b9c3-6b72b291f696",
+      "destination": "/bhajans/jaadu-karke",
+      "permanent": true
+    },
+    {
+      "source": "/bhajans/0f06c756-f104-40b1-918e-8959ca93e546",
+      "destination": "/bhajans/jaadu-karke",
+      "permanent": true
     }
   ],
   "rewrites": [

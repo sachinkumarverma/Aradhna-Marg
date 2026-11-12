@@ -124,6 +124,14 @@ export const BhajanDetail: React.FC = () => {
     fetchBhajanData();
   }, [slug]);
 
+  // If user navigated via legacy UUID or video ID, seamlessly update address bar to clean canonical slug
+  useEffect(() => {
+    if (bhajan?.slug && slug !== bhajan.slug) {
+      const targetPath = isVideo ? `/videos/${bhajan.slug}` : `/bhajans/${bhajan.slug}`;
+      window.history.replaceState(null, '', targetPath);
+    }
+  }, [bhajan?.slug, slug, isVideo]);
+
   // Track genuine user view (deduplicated per browser session so refreshes don't spam counts)
   useEffect(() => {
     if (!bhajan?.id || typeof window === 'undefined') return;

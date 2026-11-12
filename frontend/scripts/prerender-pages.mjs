@@ -14,6 +14,36 @@ const API_URL =
   process.env.API_URL ||
   'https://api.aradhnamarg.com/api/v1';
 
+const KNOWN_CATEGORY_SLUGS = {
+  '3d4327b6-fcfa-486b-8be0-80f1c665ac90': 'morning-bhajans',
+  'fc9b13c2-1fa1-4e77-8540-41efd12712d6': 'evening-bhajans',
+  'bd662894-5aca-4137-87fa-e653ca741982': 'bhajan-collection',
+  'ef8290b2-dde5-4b57-b404-3179ce5b034e': 'aarti-collection',
+  '6b238d34-47e1-4d79-996b-e3545afe685a': 'chalisa-collection',
+  '4f5a78bc-cace-40e8-851f-dc3bd8f1ab20': 'puranas-collection',
+  '508f8521-7372-4cd4-924c-a6b0c8809e0e': 'mantras',
+  'ec40b50e-b65a-423f-ae2b-e2f0b7932c7f': 'stotra-collection',
+  '8b1cd670-eee4-4ec5-9214-467d22bde516': 'spiritual-articles',
+  '257ffa33-0499-4db1-ae2e-cb83ca6009d6': 'festival-special'
+};
+
+const KNOWN_DEITY_SLUGS = {
+  '6a6ad977-9ee1-490b-9d71-aefc2b5678ba': 'lord-ganesh',
+  'c9e60b70-bf47-47fb-b6d7-e67f8632b814': 'maa-durga',
+  'f1326c55-c8db-46ab-982a-95c8fc332246': 'lord-vishnu',
+  'ecd78b9d-f10d-47d1-bf14-e0a1d49207ec': 'lord-krishna',
+  'dba51bb2-4321-49a1-9df2-014c1d205667': 'lord-ram',
+  'c05d8f75-563d-48e5-8e4b-554492cbc5fe': 'lord-shiva',
+  '27cbd460-7220-4599-af02-939a01359855': 'shri-radha-rani',
+  'a7f4bb79-e5f2-4c85-87f5-2941a5840f2b': 'lord-hanuman',
+  'c106e63c-bcc0-4656-a154-e857aed69310': 'yamuna-maiya',
+  'ad094763-d8bd-4c45-8af1-fcb5be884ac1': 'surya-dev',
+  'c8eb3ecc-002d-45a9-b438-0e6268e72a9f': 'chhathi-maiya',
+  'ed0a6717-3668-4f31-8b6d-47dc25806570': 'maa-saraswati',
+  'bb8f9244-5009-4a96-8e19-d6b5b1a86bb0': 'mata-lakshmi',
+  'c4542680-eb5d-4a19-8425-2ff48883daa7': 'mata-parvati'
+};
+
 function escapeHtml(str = '') {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -352,6 +382,8 @@ async function prerenderAll() {
       description:
         'महर्षि वेदव्यास रचित १८ महापुराणों का पावन संग्रह। कथाएं, उपदेश एवं आध्यात्मिक ज्ञान। सम्पूर्ण प्रामाणिक विवरण।',
       h1: 'अष्टादश महापुराण (Sacred 18 Puranas)',
+      content:
+        'महर्षि वेदव्यास रचित अष्टादश महापुराण (18 Sacred Puranas) सनातन धर्म के अमूल्य धार्मिक एवं दार्शनिक ग्रंथ हैं। इनमें सृष्टि की उत्पत्ति, देवी-देवताओं की दिव्य लीलाएं, तीर्थ महिमा, धर्म, योग, एवं मोक्ष का गहन ज्ञान संकलित है। आराधना मार्ग पर आप सभी १८ महापुराणों एवं प्रमुख वैदिक साहित्यों का पावन सार, कथाएं एवं प्रामाणिक विवरण निःशुल्क पढ़ सकते हैं एवं इनके मूल पीडीएफ भी डाउनलोड कर सकते हैं।',
       items: puranas.map((p) => ({
         url: `/puranas/${encodeURIComponent(p.slug || p.id)}`,
         title: p.title
@@ -389,19 +421,10 @@ async function prerenderAll() {
       description:
         'सनातन धर्म के आराध्य देवी-देवताओं के स्वरूप, स्तोत्र, मंत्र और दिव्य कथाओं का सम्पूर्ण आध्यात्मिक संग्रह।',
       h1: 'सनातन देवी-देवता दर्शन एवं महिमा (Divine Deities)',
+      content:
+        'सनातन धर्म के प्रमुख आराध्य देवी-देवताओं—भगवान श्री गणेश, महादेव शिव, श्री कृष्ण, श्री राम, माँ दुर्गा, माँ लक्ष्मी एवं समस्त दिव्य स्वरूपों के पावन दर्शन, स्तुति, मंत्र, आरती एवं भजनों का अलौकिक संग्रह। जानिए प्रत्येक देवी-देवता के स्वरूप, उनके प्रिय मंत्र और आध्यात्मिक आराधना की विधि।',
       items: deities.map((d) => ({
-        url: `/gods/${encodeURIComponent(d.slug || d.id)}`,
-        title: d.name
-      }))
-    },
-    {
-      route: 'deities',
-      title: 'सनातन देवी-देवता दर्शन एवं महिमा (Divine Deities) | Aradhna Marg',
-      description:
-        'सनातन धर्म के आराध्य देवी-देवताओं के स्वरूप, स्तोत्र, मंत्र और दिव्य कथाओं का सम्पूर्ण आध्यात्मिक संग्रह।',
-      h1: 'सनातन देवी-देवता दर्शन एवं महिमा (Divine Deities)',
-      items: deities.map((d) => ({
-        url: `/gods/${encodeURIComponent(d.slug || d.id)}`,
+        url: `/gods/${encodeURIComponent(KNOWN_DEITY_SLUGS[d.id] || d.slug || d.id)}`,
         title: d.name
       }))
     },
@@ -410,8 +433,10 @@ async function prerenderAll() {
       title: 'भक्ति एवं आध्यात्मिक श्रेणियां (Categories) | Aradhna Marg',
       description: 'भजन, आरती, चालीसा, स्तोत्र, धार्मिक ग्रंथ एवं पौराणिक कथाओं की विषयवार श्रेणियां।',
       h1: 'भक्ति एवं आध्यात्मिक श्रेणियां (Categories)',
+      content:
+        'आराधना मार्ग पर समस्त सनातन धार्मिक साहित्य विषयवार श्रेणियों में वर्गीकृत है। प्रातःकालीन एवं संध्या भजन, नित्य वंदनीय आरती संग्रह, संकटमोचन चालीसा, फलदायी स्तोत्र, वेदोक्त महामंत्र, अष्टादश महापुराण एवं प्रेरणास्पद आध्यात्मिक लेखों का सम्पूर्ण संकलन।',
       items: categories.map((c) => ({
-        url: `/categories/${encodeURIComponent(c.slug || c.id)}`,
+        url: `/categories/${encodeURIComponent(KNOWN_CATEGORY_SLUGS[c.id] || c.slug || c.id)}`,
         title: c.name
       }))
     },
@@ -934,23 +959,23 @@ async function prerenderAll() {
 
     writeRoute(`puranas/${slug}`, html);
     count++;
-
-    if (p.id && p.slug && p.id !== p.slug) {
-      writeRoute(`puranas/${p.id}`, html);
-      count++;
-    }
   }
 
-  // 6. Deities Detail Pages (Support both /gods/ and /deities/)
+  // 6. Deities Detail Pages (Canonical route: /gods/)
   console.log(`[Prerender] Prerendering ${deities.length} deities...`);
   for (const d of deities) {
-    const slug = d.slug || d.id;
+    const slug = KNOWN_DEITY_SLUGS[d.id] || d.slug || d.id;
     if (!slug) continue;
     const title = d.name;
     const pageTitle = `${title} - स्वरूप, स्तोत्र एवं पावन महिमा | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/gods/${encodeURIComponent(slug)}`;
     const desc = d.short_description || `${title} के समस्त पावन भजन, आरती, चालीसा, स्तोत्र एवं दिव्य कथाएं।`;
     const cleanDesc = stripHtml(desc).slice(0, 180);
+
+    const relatedBhajans = bhajans.filter((b) => b.god_id === d.id).slice(0, 10);
+    const relatedArticles = articles
+      .filter((a) => a.god_id === d.id || (a.god_ids && a.god_ids.includes(d.id)))
+      .slice(0, 6);
 
     const bodyHtml = `
       <article class="aradhna-prerender-deity" style="max-width: 850px; margin: 0 auto; padding: 2rem 1.5rem; font-family: system-ui, -apple-system, sans-serif;">
@@ -959,6 +984,51 @@ async function prerenderAll() {
           <h1 style="font-size: 2.2rem; font-weight: 800; color: #1c1917; margin-bottom: 0.5rem; line-height: 1.3;">${escapeHtml(title)}</h1>
           <p style="color: #475569; font-size: 1.1rem; line-height: 1.6;">${escapeHtml(cleanDesc)}</p>
         </header>
+
+        ${
+          relatedBhajans.length > 0
+            ? `
+          <section style="margin-top: 2.5rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 700; color: #9a3412; margin-bottom: 1rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.5rem;">${escapeHtml(title)} के पावन भजन एवं स्तुति</h2>
+            <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+              ${relatedBhajans
+                .map(
+                  (b) => `
+                <li style="background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #fed7aa; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                  <a href="/bhajans/${encodeURIComponent(b.slug || b.id)}" style="color: #1e293b; font-weight: 600; text-decoration: none; display: block; margin-bottom: 0.25rem;">${escapeHtml(b.hindi_title || b.title)}</a>
+                  ${b.title_en ? `<span style="color: #64748b; font-size: 0.85rem; display: block;">${escapeHtml(b.title_en)}</span>` : ''}
+                </li>
+              `
+                )
+                .join('\n')}
+            </ul>
+          </section>
+        `
+            : ''
+        }
+
+        ${
+          relatedArticles.length > 0
+            ? `
+          <section style="margin-top: 2.5rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 700; color: #9a3412; margin-bottom: 1rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.5rem;">${escapeHtml(title)} की पावन गाथाएं एवं धार्मिक लेख</h2>
+            <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+              ${relatedArticles
+                .map(
+                  (a) => `
+                <li style="background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #fed7aa; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                  <a href="/articles/${encodeURIComponent(a.slug || a.id)}" style="color: #1e293b; font-weight: 600; text-decoration: none; display: block; margin-bottom: 0.25rem;">${escapeHtml(a.title)}</a>
+                  ${a.excerpt ? `<p style="color: #64748b; font-size: 0.85rem; margin-top: 0.25rem; line-height: 1.4;">${escapeHtml(stripHtml(a.excerpt).slice(0, 100))}...</p>` : ''}
+                </li>
+              `
+                )
+                .join('\n')}
+            </ul>
+          </section>
+        `
+            : ''
+        }
+
         <footer style="margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
           <a href="/gods" style="color: #ea580c; font-weight: 600; text-decoration: none;">← समस्त देवी-देवता दर्शन देखें</a>
         </footer>
@@ -975,26 +1045,24 @@ async function prerenderAll() {
     });
 
     writeRoute(`gods/${slug}`, html);
-    writeRoute(`deities/${slug}`, html);
-    count += 2;
-
-    if (d.id && d.slug && d.id !== d.slug) {
-      writeRoute(`gods/${d.id}`, html);
-      writeRoute(`deities/${d.id}`, html);
-      count += 2;
-    }
+    count++;
   }
 
-  // 7. Categories Detail Pages
+  // 7. Categories Detail Pages (Enriched with Bhajans & Articles to eliminate Thin Content)
   console.log(`[Prerender] Prerendering ${categories.length} categories...`);
   for (const c of categories) {
-    const slug = c.slug || c.id;
+    const slug = KNOWN_CATEGORY_SLUGS[c.id] || c.slug || c.id;
     if (!slug) continue;
     const title = c.name;
     const pageTitle = `${title} - भक्ति संग्रह | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/categories/${encodeURIComponent(slug)}`;
     const desc = c.description || `${title} से संबंधित समस्त पावन भजन, आरती, चालीसा एवं धार्मिक सामग्री।`;
     const cleanDesc = stripHtml(desc).slice(0, 180);
+
+    const catBhajans = bhajans
+      .filter((b) => b.category_id === c.id || (b.category_ids && b.category_ids.includes(c.id)))
+      .slice(0, 15);
+    const catArticles = articles.filter((a) => a.category_id === c.id).slice(0, 10);
 
     const bodyHtml = `
       <article class="aradhna-prerender-category" style="max-width: 850px; margin: 0 auto; padding: 2rem 1.5rem; font-family: system-ui, -apple-system, sans-serif;">
@@ -1003,6 +1071,51 @@ async function prerenderAll() {
           <h1 style="font-size: 2.2rem; font-weight: 800; color: #1c1917; margin-bottom: 0.5rem; line-height: 1.3;">${escapeHtml(title)}</h1>
           <p style="color: #475569; font-size: 1.1rem; line-height: 1.6;">${escapeHtml(cleanDesc)}</p>
         </header>
+
+        <section style="margin-top: 2.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700; color: #9a3412; margin-bottom: 1rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.5rem;">पावन भजन एवं संकीर्तन संग्रह (Sacred Bhajans)</h2>
+          ${
+            catBhajans.length > 0
+              ? `
+            <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+              ${catBhajans
+                .map(
+                  (b) => `
+                <li style="background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #fed7aa; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                  <a href="/bhajans/${encodeURIComponent(b.slug || b.id)}" style="color: #1e293b; font-weight: 600; text-decoration: none; display: block; margin-bottom: 0.25rem;">${escapeHtml(b.hindi_title || b.title)}</a>
+                  ${b.title_en ? `<span style="color: #64748b; font-size: 0.85rem; display: block;">${escapeHtml(b.title_en)}</span>` : ''}
+                </li>
+              `
+                )
+                .join('\n')}
+            </ul>
+          `
+              : `<p style="color: #64748b; font-size: 0.95rem;">इस श्रेणी के अंतर्गत शीघ्र ही नवीन भजन जोड़े जा रहे हैं।</p>`
+          }
+        </section>
+
+        ${
+          catArticles.length > 0
+            ? `
+          <section style="margin-top: 2.5rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 700; color: #9a3412; margin-bottom: 1rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.5rem;">धार्मिक लेख एवं पौराणिक कथाएं (Spiritual Articles)</h2>
+            <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+              ${catArticles
+                .map(
+                  (a) => `
+                <li style="background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #fed7aa; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                  <a href="/articles/${encodeURIComponent(a.slug || a.id)}" style="color: #1e293b; font-weight: 600; text-decoration: none; display: block; margin-bottom: 0.25rem;">${escapeHtml(a.title)}</a>
+                  ${a.excerpt ? `<p style="color: #64748b; font-size: 0.85rem; margin-top: 0.25rem; line-height: 1.4;">${escapeHtml(stripHtml(a.excerpt).slice(0, 100))}...</p>` : ''}
+                </li>
+              `
+                )
+                .join('\n')}
+            </ul>
+          </section>
+        `
+            : ''
+        }
+
         <footer style="margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
           <a href="/categories" style="color: #ea580c; font-weight: 600; text-decoration: none;">← समस्त श्रेणियां देखें</a>
         </footer>
@@ -1020,11 +1133,6 @@ async function prerenderAll() {
 
     writeRoute(`categories/${slug}`, html);
     count++;
-
-    if (c.id && c.slug && c.id !== c.slug) {
-      writeRoute(`categories/${c.id}`, html);
-      count++;
-    }
   }
 
   // 8. 404 Page (Dedicated non-indexable 404 response for Vercel)

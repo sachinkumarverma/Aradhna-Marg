@@ -71,6 +71,13 @@ export const PuranDetail: React.FC = () => {
     }
   }, [data?.id, data?.pdf_file]);
 
+  // If user navigated via legacy UUID, seamlessly update address bar to clean canonical slug
+  useEffect(() => {
+    if (data?.slug && slug !== data.slug) {
+      window.history.replaceState(null, '', `/puranas/${data.slug}`);
+    }
+  }, [data?.slug, slug]);
+
   const handleReadPdf = () => {
     if (!pdfUrl) return;
     window.open(pdfUrl, '_blank', 'noopener,noreferrer');

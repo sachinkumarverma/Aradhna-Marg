@@ -1,4 +1,4 @@
-import { Navigate, type RouteObject } from 'react-router-dom';
+import { Navigate, useParams, type RouteObject } from 'react-router-dom';
 import { PublicLayout } from '@user/layouts/PublicLayout';
 import { ENABLE_DONATIONS } from '@/constants';
 import { lazyWithRetry } from '@utils/lazyWithRetry';
@@ -29,6 +29,11 @@ const CategoriesList = lazyWithRetry(() =>
   import('@user/pages/categories').then((m) => ({ default: m.CategoriesList }))
 );
 const DeitiesList = lazyWithRetry(() => import('@user/pages/deities').then((m) => ({ default: m.DeitiesList })));
+
+const DeitiesSlugRedirect: React.FC = () => {
+  const { id } = useParams();
+  return <Navigate to={id ? `/gods/${id}` : '/gods'} replace />;
+};
 const TermsPage = lazyWithRetry(() => import('@user/pages/legal').then((m) => ({ default: m.TermsPage })));
 const DisclaimerPage = lazyWithRetry(() => import('@user/pages/legal').then((m) => ({ default: m.DisclaimerPage })));
 const PrivacyPolicyPage = lazyWithRetry(() =>
@@ -142,7 +147,7 @@ export const userRoutes: RouteObject[] = [
       },
       {
         path: 'deities',
-        element: <DeitiesList />
+        element: <Navigate to="/gods" replace />
       },
       {
         path: 'gods/:id',
@@ -150,7 +155,7 @@ export const userRoutes: RouteObject[] = [
       },
       {
         path: 'deities/:id',
-        element: <CollectionDetails />
+        element: <DeitiesSlugRedirect />
       },
       {
         path: 'about',

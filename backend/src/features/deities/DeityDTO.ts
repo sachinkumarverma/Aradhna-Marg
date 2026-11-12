@@ -1,5 +1,6 @@
 export interface CreateDeityDTO {
   name: string;
+  name_en?: string;
   slug?: string;
   shortDescription?: string;
   image?: string;

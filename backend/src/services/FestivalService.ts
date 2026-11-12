@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { festivalRepository } from '@repositories/FestivalRepository';
 import { CreateFestivalDTO, UpdateFestivalDTO, Festival } from '@models/Festival';
 import { translationService } from '@features/translations';
-import { slugify } from '@utils/slugify';
+import { generateContentSlug } from '@utils/slugify';
 
 export class FestivalService {
   async getList(query: any): Promise<{ data: Festival[]; count: number }> {
@@ -25,13 +25,13 @@ export class FestivalService {
     return festival;
   }
 
-  private generateSlug(): string {
-    return randomUUID();
+  private generateSlug(nameEn?: string, name?: string): string {
+    return generateContentSlug(nameEn, name);
   }
 
   async create(data: CreateFestivalDTO): Promise<Festival> {
     if (!data.slug) {
-      data.slug = this.generateSlug();
+      data.slug = this.generateSlug(data.name_en, data.name);
     }
     await translationService.translateRecordOnAdminSave('FESTIVAL', data);
     return festivalRepository.create(data);
@@ -39,7 +39,7 @@ export class FestivalService {
 
   async update(id: string, data: UpdateFestivalDTO): Promise<Festival> {
     if (data.name && !data.slug) {
-      data.slug = this.generateSlug();
+      data.slug = this.generateSlug(data.name_en, data.name);
     }
     await translationService.translateRecordOnAdminSave('FESTIVAL', data);
     return festivalRepository.update(id, data);
