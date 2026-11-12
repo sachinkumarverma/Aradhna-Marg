@@ -2270,6 +2270,10 @@
         }
       ],
       "destination": "/index.html"
+    },
+    {
+      "source": "/((?!assets/|.*\\..*).*)",
+      "destination": "/index.html"
     }
   ]
 }

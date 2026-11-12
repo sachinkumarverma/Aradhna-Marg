@@ -287,12 +287,12 @@ async function prerenderAll() {
 
   // Fetch all published data
   const [bhajans, articles, festivals, puranas, deities, categories, homeData] = await Promise.all([
-    fetchFromApi('/public/bhajans?limit=100'),
-    fetchFromApi('/public/articles?limit=100'),
-    fetchFromApi('/public/festivals?limit=100'),
-    fetchFromApi('/public/puranas?limit=100'),
-    fetchFromApi('/public/deities'),
-    fetchFromApi('/public/categories'),
+    fetchFromApi('/public/bhajans?limit=1000'),
+    fetchFromApi('/public/articles?limit=1000'),
+    fetchFromApi('/public/festivals?limit=1000'),
+    fetchFromApi('/public/puranas?limit=1000'),
+    fetchFromApi('/public/deities?limit=1000'),
+    fetchFromApi('/public/categories?limit=1000'),
     fetchDetailFromApi('/public/home')
   ]);
 
