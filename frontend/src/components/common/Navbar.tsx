@@ -170,9 +170,9 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
 
                 {/* Favorites Heart Navigation Button (Hidden on mobile, visible from sm up) */}
                 <Link
-                  to="/favourite"
+                  to="/favorites"
                   className={`hidden sm:flex relative w-8 h-8 sm:w-10 sm:h-10 rounded-full items-center justify-center transition-all border shadow-2xs cursor-pointer active:scale-95 group shrink-0 ${
-                    location.pathname === '/favourite' || location.pathname === '/favorites'
+                    location.pathname === '/favorites' || location.pathname === '/favourite'
                       ? 'bg-rose-500 text-white border-rose-600 shadow-sm'
                       : 'bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border-gray-200/80'
                   }`}
@@ -181,17 +181,17 @@ export const Navbar: React.FC<NavbarProps> = ({ containerRef }) => {
                 >
                   <Heart
                     className={`w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 transition-transform group-hover:scale-110 ${
-                      location.pathname === '/favourite' || location.pathname === '/favorites'
+                      location.pathname === '/favorites' || location.pathname === '/favourite'
                         ? 'fill-white text-white'
-                        : favoritesCount > 0
+                        : isAuthenticated && favoritesCount > 0
                           ? 'fill-rose-500 text-rose-500'
                           : 'text-slate-700'
                     }`}
                   />
-                  {favoritesCount > 0 && (
+                  {isAuthenticated && favoritesCount > 0 && (
                     <span
                       className={`absolute -top-1 -right-1 min-w-3.5 h-3.5 sm:min-w-4 sm:h-4 px-0.5 sm:px-1 rounded-full font-bold text-[8.5px] sm:text-[10px] flex items-center justify-center shadow-xs ${
-                        location.pathname === '/favourite' || location.pathname === '/favorites'
+                        location.pathname === '/favorites' || location.pathname === '/favourite'
                           ? 'bg-white text-rose-600'
                           : 'bg-rose-500 text-white'
                       }`}

@@ -23,6 +23,7 @@ interface UserAuthContextType {
   setDirectToken: (token: string) => Promise<void>;
   logout: () => void;
   syncLocalFavoritesToCloud: () => Promise<void>;
+  fetchCloudFavorites: () => Promise<void>;
 }
 
 const UserAuthContext = createContext<UserAuthContextType | undefined>(undefined);
@@ -90,6 +91,66 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, []);
 
+  const fetchCloudFavorites = useCallback(async () => {
+    try {
+      const res = await UserAuthApi.getWishlist();
+      if (res?.data && Array.isArray(res.data)) {
+        const existing = StorageService.getFavorites();
+        const items = [...existing];
+        let hasChanges = false;
+
+        res.data.forEach((w: any) => {
+          const thumb =
+            w.thumbnail_url ||
+            (w.item_type === 'video' && w.slug && w.slug.length === 11
+              ? `https://i.ytimg.com/vi/${w.slug}/hqdefault.jpg`
+              : undefined);
+
+          // Find existing item by id, slug, url, or title
+          const existingIdx = items.findIndex(
+            (f) =>
+              f.id === String(w.item_id) ||
+              (w.slug && f.id === String(w.slug)) ||
+              (w.slug && f.url && (f.url.endsWith(`/${w.slug}`) || f.url === w.slug)) ||
+              (w.title && f.title && f.title.trim().toLowerCase() === w.title.trim().toLowerCase())
+          );
+
+          if (existingIdx !== -1) {
+            const current = items[existingIdx];
+            if (thumb && current.thumbnailUrl !== thumb) {
+              current.thumbnailUrl = thumb;
+              hasChanges = true;
+            }
+            if (current.id !== String(w.item_id)) {
+              current.id = String(w.item_id);
+              hasChanges = true;
+            }
+          } else {
+            items.unshift({
+              id: String(w.item_id),
+              type: (w.item_type as any) || 'bhajan',
+              title: w.title,
+              englishTitle: w.hindi_title || w.title,
+              thumbnailUrl: thumb,
+              url: w.slug
+                ? `/${w.item_type === 'article' ? 'articles' : w.item_type === 'purana' ? 'puranas' : w.item_type === 'video' ? 'videos' : 'bhajans'}/${w.slug}`
+                : `/${w.item_type || 'bhajans'}/${w.item_id}`,
+              addedAt: Date.now()
+            });
+            hasChanges = true;
+          }
+        });
+
+        if (hasChanges) {
+          StorageService.setFavorites(items);
+          window.dispatchEvent(new Event('aradhnamarg_favorites_change'));
+        }
+      }
+    } catch (err) {
+      console.warn('[UserAuth] Failed to load cloud wishlists:', err);
+    }
+  }, []);
+
   // Verify session on mount
   useEffect(() => {
     async function initSession() {
@@ -103,7 +164,8 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const res = await UserAuthApi.getMe();
         if (res?.data) {
           setUser(res.data);
-          syncLocalFavoritesToCloud();
+          await syncLocalFavoritesToCloud();
+          await fetchCloudFavorites();
         } else {
           UserAuthApi.clearSession();
           setUser(null);
@@ -119,7 +181,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     initSession();
-  }, [syncLocalFavoritesToCloud]);
+  }, [syncLocalFavoritesToCloud, fetchCloudFavorites]);
 
   const openAuthModal = (reason?: string, mode: AuthModalMode = 'login') => {
     if (typeof window !== 'undefined') {
@@ -137,38 +199,6 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setAuthModalOpen(false);
     setAuthModalReason('');
   };
-
-  const fetchCloudFavorites = useCallback(async () => {
-    try {
-      const res = await UserAuthApi.getWishlist();
-      if (res?.data && Array.isArray(res.data)) {
-        const existing = StorageService.getFavorites();
-        const existingIds = new Set(existing.map((f) => f.id));
-        const newItems: FavoriteItem[] = [];
-
-        res.data.forEach((w: any) => {
-          if (!existingIds.has(w.item_id)) {
-            newItems.push({
-              id: w.item_id,
-              type: (w.item_type as any) || 'bhajan',
-              title: w.title,
-              englishTitle: w.title,
-              url: w.slug ? `/${w.item_type || 'bhajans'}/${w.slug}` : `/${w.item_type || 'bhajans'}/${w.item_id}`,
-              addedAt: Date.now()
-            });
-            existingIds.add(w.item_id);
-          }
-        });
-
-        if (newItems.length > 0) {
-          StorageService.setFavorites([...newItems, ...existing]);
-          window.dispatchEvent(new Event('aradhnamarg_favorites_change'));
-        }
-      }
-    } catch (err) {
-      console.warn('[UserAuth] Failed to load cloud wishlists:', err);
-    }
-  }, []);
 
   const handlePostAuth = async (resUser: UserProfile, resToken: string) => {
     setUser(resUser);
@@ -267,7 +297,8 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         googleAuth,
         setDirectToken,
         logout,
-        syncLocalFavoritesToCloud
+        syncLocalFavoritesToCloud,
+        fetchCloudFavorites
       }}
     >
       {children}

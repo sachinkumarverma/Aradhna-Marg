@@ -96,17 +96,20 @@ export const useFavorites = () => {
   };
 
   const isFavorite = (id: string | number) => {
+    if (!isAuthenticated) return false;
     const stringId = String(id);
     return favorites.some((fav) => fav.id === stringId);
   };
 
+  const activeFavorites = isAuthenticated ? favorites : [];
+
   return {
-    favorites,
+    favorites: activeFavorites,
     isFavorite,
     toggleFavorite,
     removeFavorite,
     clearAllFavorites,
-    favoritesCount: favorites.length
+    favoritesCount: activeFavorites.length
   };
 };
 

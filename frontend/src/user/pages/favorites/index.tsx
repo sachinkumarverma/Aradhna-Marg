@@ -46,6 +46,104 @@ interface FavoriteSectionRowProps {
   onRemove: (item: FavoriteItem, e: React.MouseEvent) => void;
 }
 
+interface FavoriteCardItemProps {
+  item: FavoriteItem;
+  config: SectionConfig;
+  isHi: boolean;
+  onRemove: (item: FavoriteItem, e: React.MouseEvent) => void;
+}
+
+const FavoriteCardItem: React.FC<FavoriteCardItemProps> = ({ item, config, isHi, onRemove }) => {
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [item.thumbnailUrl, (item as any).thumbnail_url, (item as any).cover_image]);
+
+  // Extract clean thumbnail with fallbacks (thumbnailUrl, thumbnail_url, cover_image, youtube thumbnail)
+  const resolvedThumb = useMemo(() => {
+    if (imgError) return null;
+    const direct =
+      item.thumbnailUrl ||
+      (item as any).thumbnail_url ||
+      (item as any).image_url ||
+      (item as any).cover_image ||
+      (item as any).featured_image_url;
+    if (direct) {
+      return direct.replace('klplpflfjgqfyuccymgg', 'avdmfuedqyyzfzoyndoo');
+    }
+
+    // If it's a YouTube video or has video URL/slug
+    if (item.type === 'video' || (item as any).item_type === 'video') {
+      const parts = (item.url || '').split('/');
+      const lastPart = parts[parts.length - 1];
+      if (lastPart && (lastPart.length === 11 || lastPart.startsWith('vi/'))) {
+        const videoId = lastPart.replace('vi/', '');
+        return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+      }
+    }
+    return null;
+  }, [item, imgError]);
+
+  return (
+    <Link
+      to={item.url}
+      className="group relative flex flex-col justify-between bg-white hover:bg-amber-50/20 rounded-lg border border-amber-200/70 hover:border-saffron/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden isolate min-w-[270px] w-[270px] sm:min-w-[300px] sm:w-[300px] lg:min-w-[320px] lg:w-[320px] shrink-0 snap-start cursor-pointer select-none"
+    >
+      {/* Card Thumbnail Area */}
+      <div className="relative aspect-video w-full overflow-hidden bg-slate-900 border-b border-amber-100">
+        {resolvedThumb ? (
+          <img
+            src={resolvedThumb}
+            alt={item.title}
+            loading="lazy"
+            onError={() => setImgError(true)}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#2a1309] to-[#120803] text-amber-300">
+            {config.icon}
+            <span className="text-[11px] font-bold mt-1 text-amber-200/80 font-hindi-heading">Aradhna Marg</span>
+          </div>
+        )}
+
+        {/* Top Right: Remove From Favorites Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onRemove(item, e);
+          }}
+          title={isHi ? 'पसंदीदा से हटाएं' : 'Remove from favorites'}
+          className="absolute top-2.5 right-2.5 z-20 w-8 h-8 rounded-full bg-white/95 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer group/btn"
+        >
+          <Heart className="w-4 h-4 fill-rose-500 group-hover/btn:fill-white transition-colors" />
+        </button>
+
+        {/* Category Badge if available */}
+        {item.subtitle && (
+          <div className="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-white font-medium sm:font-bold text-[10px] uppercase font-hindi-heading border border-white/10">
+            {item.subtitle}
+          </div>
+        )}
+      </div>
+
+      {/* Card Body */}
+      <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-center">
+        <h3 className="font-semibold sm:font-bold text-sm sm:text-base text-slate-900 font-hindi-heading leading-snug line-clamp-2 group-hover:text-saffron transition-colors">
+          {item.title}
+        </h3>
+        {item.englishTitle && item.englishTitle.toLowerCase() !== item.title.toLowerCase() && (
+          <p className="text-xs text-slate-500 font-sans font-normal sm:font-medium line-clamp-1 mt-1">
+            {item.englishTitle}
+          </p>
+        )}
+      </div>
+    </Link>
+  );
+};
+
 const FavoriteSectionRow: React.FC<FavoriteSectionRowProps> = ({ config, items, isHi, onRemove }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -147,61 +245,7 @@ const FavoriteSectionRow: React.FC<FavoriteSectionRowProps> = ({ config, items, 
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {items.map((item) => (
-          <Link
-            key={item.id}
-            to={item.url}
-            className="group relative flex flex-col justify-between bg-white hover:bg-amber-50/20 rounded-lg border border-amber-200/70 hover:border-saffron/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden isolate min-w-[270px] w-[270px] sm:min-w-[300px] sm:w-[300px] lg:min-w-[320px] lg:w-[320px] shrink-0 snap-start cursor-pointer select-none"
-          >
-            {/* Card Thumbnail Area */}
-            <div className="relative aspect-video w-full overflow-hidden bg-slate-900 border-b border-amber-100">
-              {item.thumbnailUrl ? (
-                <img
-                  src={item.thumbnailUrl}
-                  alt={item.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#2a1309] to-[#120803] text-amber-300">
-                  {config.icon}
-                  <span className="text-[11px] font-bold mt-1 text-amber-200/80 font-hindi-heading">Aradhna Marg</span>
-                </div>
-              )}
-
-              {/* Top Right: Remove From Favorites Button */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onRemove(item, e);
-                }}
-                title={isHi ? 'पसंदीदा से हटाएं' : 'Remove from favorites'}
-                className="absolute top-2.5 right-2.5 z-20 w-8 h-8 rounded-full bg-white/95 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer group/btn"
-              >
-                <Heart className="w-4 h-4 fill-rose-500 group-hover/btn:fill-white transition-colors" />
-              </button>
-
-              {/* Category Badge if available */}
-              {item.subtitle && (
-                <div className="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-white font-medium sm:font-bold text-[10px] uppercase font-hindi-heading border border-white/10">
-                  {item.subtitle}
-                </div>
-              )}
-            </div>
-
-            {/* Card Body */}
-            <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-center">
-              <h3 className="font-semibold sm:font-bold text-sm sm:text-base text-slate-900 font-hindi-heading leading-snug line-clamp-2 group-hover:text-saffron transition-colors">
-                {item.title}
-              </h3>
-              {item.englishTitle && item.englishTitle.toLowerCase() !== item.title.toLowerCase() && (
-                <p className="text-xs text-slate-500 font-sans font-normal sm:font-medium line-clamp-1 mt-1">
-                  {item.englishTitle}
-                </p>
-              )}
-            </div>
-          </Link>
+          <FavoriteCardItem key={item.id} item={item} config={config} isHi={isHi} onRemove={onRemove} />
         ))}
       </div>
     </motion.section>
@@ -213,8 +257,15 @@ export const FavoritesPage: React.FC = () => {
   const isHi = language === 'hi';
   const navigate = useNavigate();
   const { favorites, removeFavorite, clearAllFavorites, favoritesCount } = useFavorites();
-  const { isAuthenticated, openAuthModal } = useUserAuth();
+  const { isAuthenticated, openAuthModal, fetchCloudFavorites } = useUserAuth();
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Always sync cloud wishlist on mount when authenticated to ensure thumbnails are fresh
+  useEffect(() => {
+    if (isAuthenticated && fetchCloudFavorites) {
+      fetchCloudFavorites();
+    }
+  }, [isAuthenticated, fetchCloudFavorites]);
 
   // Section Configurations
   const sectionConfigs: Record<string, SectionConfig> = {
@@ -416,155 +467,179 @@ export const FavoritesPage: React.FC = () => {
             </div>
 
             {/* Quick Action Stats & Clear Button */}
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="h-10 px-4 rounded-full bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center gap-2">
-                <span className="text-sm sm:text-base font-black text-amber-300 font-hindi-heading leading-none">
-                  {favoritesCount}
-                </span>
-                <span className="text-xs sm:text-sm text-slate-200 font-semibold font-hindi-heading whitespace-nowrap leading-none">
-                  {isHi ? 'सहेजी गई सामग्री' : 'Saved Items'}
-                </span>
-              </div>
+            {isAuthenticated && (
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="h-10 px-4 rounded-full bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center gap-2">
+                  <span className="text-sm sm:text-base font-black text-amber-300 font-hindi-heading leading-none">
+                    {favoritesCount}
+                  </span>
+                  <span className="text-xs sm:text-sm text-slate-200 font-semibold font-hindi-heading whitespace-nowrap leading-none">
+                    {isHi ? 'सहेजी गई सामग्री' : 'Saved Items'}
+                  </span>
+                </div>
 
-              {favoritesCount > 0 && (
-                <button
-                  type="button"
-                  onClick={handleClearAll}
-                  className="h-10 px-4 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 hover:text-white border border-rose-500/30 hover:border-rose-500/50 text-xs sm:text-sm font-bold font-hindi-heading flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 leading-none"
-                  title={isHi ? 'सभी हटाएं' : 'Clear All'}
-                >
-                  <Trash2 className="w-4 h-4 text-rose-400 shrink-0" />
-                  <span className="whitespace-nowrap leading-none">{isHi ? 'सभी हटाएं' : 'Clear All'}</span>
-                </button>
-              )}
-            </div>
+                {favoritesCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearAll}
+                    className="h-10 px-4 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 hover:text-white border border-rose-500/30 hover:border-rose-500/50 text-xs sm:text-sm font-bold font-hindi-heading flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 leading-none"
+                    title={isHi ? 'सभी हटाएं' : 'Clear All'}
+                  >
+                    <Trash2 className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span className="whitespace-nowrap leading-none">{isHi ? 'सभी हटाएं' : 'Clear All'}</span>
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Sync / Login Prompt for Guests */}
-      {!isAuthenticated && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-          <div className="bg-gradient-to-r from-amber-50 via-orange-50/50 to-amber-50 border border-amber-200/90 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-saffron/15 text-saffron flex items-center justify-center shrink-0">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-darkBrown text-sm sm:text-base font-hindi-heading">
-                  {isHi ? 'अपनी पसंद सूची को सभी डिवाइस पर सिंक करें' : 'Sync & Protect Your Wishlist'}
-                </h3>
-                <p className="text-xs text-slate-600 font-hindi-body">
-                  {isHi
-                    ? 'खाता बनाने या लॉग इन करने पर आपके पसंदीदा भजन हमेशा सुरक्षित रहेंगे।'
-                    : 'Log in to securely save and access your favorite devotional bhajans across all your devices.'}
-                </p>
-              </div>
-            </div>
-            <Link
-              to="/auth?mode=login&redirect=/favorites"
-              className="px-5 py-2.5 bg-saffron hover:bg-saffron-dark text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs hover:shadow-sm transition-all shrink-0 cursor-pointer font-hindi-heading inline-block text-center"
-            >
-              {isHi ? 'लॉग इन / साइन अप करें ➜' : 'Sign In / Sign Up ➜'}
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {/* 2. SEARCH BAR & CONTROLS */}
-      {favoritesCount > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
-          <div className="p-2 sm:p-2.5 bg-white rounded-2xl shadow-lg border border-amber-200/80 flex items-center gap-3">
-            <Search className="w-5 h-5 text-saffron ml-3 shrink-0" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={isHi ? 'पसंदीदा में खोजें (भजन, ग्रंथ, त्यौहार या लेख)...' : 'Search your favorites...'}
-              className="flex-1 bg-transparent pt-2 pb-1 sm:pt-2.5 sm:pb-1.5 text-sm sm:text-base text-slate-800 placeholder:text-slate-400 outline-none font-hindi-body leading-normal translate-y-[1px]"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-700 bg-slate-100 mr-1 cursor-pointer"
-              >
-                {isHi ? 'हटाएं' : 'Clear'}
-              </button>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* 3. FAVORITES CONTENT AREA */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 space-y-6 sm:space-y-8">
-        {/* EMPTY STATE */}
-        {favorites.length === 0 ? (
+      {!isAuthenticated ? (
+        /* Dedicated Devotional Auth Prompt for Guests */
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-8 relative z-20 pb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="py-16 sm:py-24 px-6 text-center max-w-2xl mx-auto flex flex-col items-center bg-white rounded-xl border border-amber-200/80 shadow-sm"
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-3xl border border-amber-200/90 shadow-xl p-8 sm:p-12 text-center flex flex-col items-center relative overflow-hidden"
           >
-            <div className="w-20 h-20 rounded-2xl bg-rose-50 border border-rose-200/70 flex items-center justify-center text-rose-500 mb-6 shadow-inner">
-              <Heart className="w-10 h-10" />
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-rose-500/10 via-saffron/15 to-amber-500/10 border border-saffron/30 flex items-center justify-center text-rose-500 mb-6 shadow-inner">
+              <Heart className="w-10 h-10 fill-rose-500 text-rose-500" />
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 font-hindi-heading mb-6">
-              {isHi ? 'कोई पसंदीदा सामग्री नहीं है' : 'Your Favorites list is empty'}
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 font-hindi-heading mb-3">
+              {isHi ? 'कृपया पसंदीदा सूची देखने के लिए लॉग इन करें' : 'Sign In to Access Your Saved Favorites'}
             </h2>
 
-            {/* Quick Explore Navigation Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl">
+            <p className="text-slate-600 text-sm sm:text-base max-w-xl font-hindi-body leading-relaxed mb-8">
+              {isHi
+                ? 'आपके द्वारा सहेजे गए पावन भजन, आरती, चालीसा, 18 महापुराण एवं लेखों का संग्रह आपके खाते में सुरक्षित रहता है। अपनी सूची देखने के लिए कृपया लॉग इन या साइन अप करें।'
+                : 'Your sacred collection of saved bhajans, aartis, scriptures, and spiritual articles is secured under your account. Please sign in or register to access and manage your wishlist.'}
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md">
               <Link
-                to="/bhajans"
-                className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
+                to="/auth?mode=login&redirect=/favorites"
+                className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-saffron to-amber-600 hover:from-saffron-dark hover:to-amber-700 text-white font-bold text-sm sm:text-base rounded-2xl shadow-lg shadow-saffron/25 hover:shadow-xl hover:scale-[1.02] active:scale-98 transition-all flex items-center justify-center gap-2 font-hindi-heading"
               >
-                <Music className="w-4 h-4 text-saffron group-hover:scale-110 transition-transform shrink-0" />
-                <span className="whitespace-nowrap">{isHi ? 'भजन संग्रह' : 'Explore Bhajans'}</span>
+                <Sparkles className="w-4 h-4" />
+                <span>{isHi ? 'लॉग इन / साइन अप करें' : 'Sign In / Sign Up'}</span>
               </Link>
+
               <Link
-                to="/puranas"
-                className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
+                to="/"
+                className="w-full sm:w-auto px-6 py-3.5 bg-amber-50/80 hover:bg-amber-100/90 text-darkBrown font-bold text-sm sm:text-base rounded-2xl border border-amber-200/80 hover:border-amber-300 transition-all flex items-center justify-center font-hindi-heading"
               >
-                <BookOpen className="w-4 h-4 text-orange-600 group-hover:scale-110 transition-transform shrink-0" />
-                <span className="whitespace-nowrap">{isHi ? '18 महापुराण' : '18 Puranas'}</span>
-              </Link>
-              <Link
-                to="/festivals"
-                className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
-              >
-                <Calendar className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform shrink-0" />
-                <span className="whitespace-nowrap">{isHi ? 'पर्व व त्यौहार' : 'Festivals'}</span>
+                {isHi ? 'मुख्य पृष्ठ पर जाएं' : 'Go to Home'}
               </Link>
             </div>
           </motion.div>
-        ) : filteredFavorites.length === 0 ? (
-          /* NO SEARCH MATCHES */
-          <div className="py-16 text-center max-w-md mx-auto bg-white rounded-xl border border-amber-100 p-8 shadow-sm">
-            <Search className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-xl font-bold text-slate-800 font-hindi-heading mb-1">
-              {isHi ? 'कोई मेल नहीं मिला' : 'No matching items found'}
-            </h3>
-            <p className="text-sm text-slate-500 font-hindi-body mb-4">
-              {isHi
-                ? `"${searchQuery}" से मेल खाती कोई पसंदीदा सामग्री नहीं मिली।`
-                : `No saved items matching "${searchQuery}".`}
-            </p>
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="px-4 py-2 rounded-xl bg-saffron text-white text-xs font-bold font-hindi-heading cursor-pointer hover:bg-orange-600 transition-colors"
-            >
-              {isHi ? 'खोज रीसेट करें' : 'Reset Search'}
-            </button>
-          </div>
-        ) : (
-          /* ONLY RENDER SECTIONS THAT HAVE FAVORITED ITEMS */
-          groupedSections.map(({ config, items }) => (
-            <FavoriteSectionRow key={config.type} config={config} items={items} isHi={isHi} onRemove={handleRemove} />
-          ))
-        )}
-      </main>
+        </main>
+      ) : (
+        <>
+          {/* 2. SEARCH BAR & CONTROLS */}
+          {favoritesCount > 0 && (
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
+              <div className="p-2 sm:p-2.5 bg-white rounded-2xl shadow-lg border border-amber-200/80 flex items-center gap-3">
+                <Search className="w-5 h-5 text-saffron ml-3 shrink-0" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={isHi ? 'पसंदीदा में खोजें (भजन, ग्रंथ, त्यौहार या लेख)...' : 'Search your favorites...'}
+                  className="flex-1 bg-transparent pt-2 pb-1 sm:pt-2.5 sm:pb-1.5 text-sm sm:text-base text-slate-800 placeholder:text-slate-400 outline-none font-hindi-body leading-normal translate-y-[1px]"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-700 bg-slate-100 mr-1 cursor-pointer"
+                  >
+                    {isHi ? 'हटाएं' : 'Clear'}
+                  </button>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* 3. FAVORITES CONTENT AREA */}
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 space-y-6 sm:space-y-8">
+            {/* EMPTY STATE */}
+            {favorites.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="py-16 sm:py-24 px-6 text-center max-w-2xl mx-auto flex flex-col items-center bg-white rounded-xl border border-amber-200/80 shadow-sm"
+              >
+                <div className="w-20 h-20 rounded-2xl bg-rose-50 border border-rose-200/70 flex items-center justify-center text-rose-500 mb-6 shadow-inner">
+                  <Heart className="w-10 h-10" />
+                </div>
+
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 font-hindi-heading mb-6">
+                  {isHi ? 'कोई पसंदीदा सामग्री नहीं है' : 'Your Favorites list is empty'}
+                </h2>
+
+                {/* Quick Explore Navigation Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl">
+                  <Link
+                    to="/bhajans"
+                    className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
+                  >
+                    <Music className="w-4 h-4 text-saffron group-hover:scale-110 transition-transform shrink-0" />
+                    <span className="whitespace-nowrap">{isHi ? 'भजन संग्रह' : 'Explore Bhajans'}</span>
+                  </Link>
+                  <Link
+                    to="/puranas"
+                    className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
+                  >
+                    <BookOpen className="w-4 h-4 text-orange-600 group-hover:scale-110 transition-transform shrink-0" />
+                    <span className="whitespace-nowrap">{isHi ? '18 महापुराण' : '18 Puranas'}</span>
+                  </Link>
+                  <Link
+                    to="/festivals"
+                    className="px-4 py-3.5 rounded-lg bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-slate-800 font-bold text-sm font-hindi-heading flex items-center justify-center gap-2 transition-all group whitespace-nowrap"
+                  >
+                    <Calendar className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform shrink-0" />
+                    <span className="whitespace-nowrap">{isHi ? 'पर्व व त्यौहार' : 'Festivals'}</span>
+                  </Link>
+                </div>
+              </motion.div>
+            ) : filteredFavorites.length === 0 ? (
+              /* NO SEARCH MATCHES */
+              <div className="py-16 text-center max-w-md mx-auto bg-white rounded-xl border border-amber-100 p-8 shadow-sm">
+                <Search className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-slate-800 font-hindi-heading mb-1">
+                  {isHi ? 'कोई मेल नहीं मिला' : 'No matching items found'}
+                </h3>
+                <p className="text-sm text-slate-500 font-hindi-body mb-4">
+                  {isHi
+                    ? `"${searchQuery}" से मेल खाती कोई पसंदीदा सामग्री नहीं मिली।`
+                    : `No saved items matching "${searchQuery}".`}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="px-4 py-2 rounded-xl bg-saffron text-white text-xs font-bold font-hindi-heading cursor-pointer hover:bg-orange-600 transition-colors"
+                >
+                  {isHi ? 'खोज रीसेट करें' : 'Reset Search'}
+                </button>
+              </div>
+            ) : (
+              /* ONLY RENDER SECTIONS THAT HAVE FAVORITED ITEMS */
+              groupedSections.map(({ config, items }) => (
+                <FavoriteSectionRow
+                  key={config.type}
+                  config={config}
+                  items={items}
+                  isHi={isHi}
+                  onRemove={handleRemove}
+                />
+              ))
+            )}
+          </main>
+        </>
+      )}
     </div>
   );
 };

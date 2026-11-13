@@ -66,6 +66,7 @@ export interface WishlistItemDTO {
   title: string;
   hindi_title?: string | null;
   slug?: string | null;
+  thumbnail_url?: string | null;
   created_at: string;
 }
 

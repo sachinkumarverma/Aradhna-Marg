@@ -445,7 +445,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
               {/* Favorites Action Link */}
               <div className="pb-2">
                 <Link
-                  to="/favourite"
+                  to="/favorites"
                   onClick={onClose}
                   className="w-full flex items-center gap-3.5 p-3.5 rounded-xl border border-rose-100 bg-rose-50/40 hover:bg-rose-50 shadow-xs hover:shadow-sm transition-all group cursor-pointer text-left"
                 >
@@ -457,7 +457,7 @@ export const RightNavDrawer: React.FC<RightNavDrawerProps> = ({ isOpen, onClose,
                       <p className="font-bold text-sm text-slate-900 font-hindi-heading leading-tight">
                         {isHi ? 'पसंदीदा संग्रह' : 'Saved Favorites'}
                       </p>
-                      {favoritesCount > 0 && (
+                      {isAuthenticated && favoritesCount > 0 && (
                         <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] font-sans leading-none">
                           {favoritesCount}
                         </span>

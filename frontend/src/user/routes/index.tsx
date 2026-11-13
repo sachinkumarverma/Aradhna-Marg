@@ -183,7 +183,7 @@ export const userRoutes: RouteObject[] = [
       },
       {
         path: 'favourite',
-        element: <FavoritesPage />
+        element: <Navigate to="/favorites" replace />
       },
       {
         path: 'favorites',
