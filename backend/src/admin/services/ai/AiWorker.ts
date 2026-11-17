@@ -9,6 +9,7 @@ import { puranRepository } from '@repositories/PuranRepository';
 import { categoryRepository } from '@features/categories/CategoryRepository';
 import { translationService } from '@features/translations/TranslationService';
 import { ContentSafetyValidator } from '@/agents/utils/ContentSafetyValidator';
+import { formatSeoDescription, stripMarkdownAndHtml } from '@utils/stripMarkdown';
 
 export function cleanDevotionalMeaning(raw: string): string {
   if (!raw) return '';
@@ -316,8 +317,8 @@ export class AiWorker {
       };
     }
 
-    const newTitle = item.seo_title || parsedSeo.seo_title || item.title || item.name;
-    const newDesc = item.seo_description || parsedSeo.seo_description || '';
+    const newTitle = stripMarkdownAndHtml(item.seo_title || parsedSeo.seo_title || item.title || item.name);
+    const newDesc = formatSeoDescription(item.seo_description || parsedSeo.seo_description || '');
 
     await updater(item.id, newTitle, newDesc);
     await aiJobRepository.updateProgress(job.id, 1, 100);
@@ -375,8 +376,8 @@ export class AiWorker {
         } catch {
           // ignore parse failure
         }
-        const updatedTitle = b.seo_title || parsed.seo_title || b.title;
-        const updatedDesc = b.seo_description || parsed.seo_description || '';
+        const updatedTitle = stripMarkdownAndHtml(b.seo_title || parsed.seo_title || b.title);
+        const updatedDesc = formatSeoDescription(b.seo_description || parsed.seo_description || '');
         await bhajanRepository.updateSeo(b.id, updatedTitle, updatedDesc);
       } catch (err: any) {
         logger.warn({ id: b.id, err: err.message }, 'Failed single bhajan bulk SEO item');
@@ -396,8 +397,8 @@ export class AiWorker {
         } catch {
           // ignore
         }
-        const updatedTitle = a.seo_title || parsed.seo_title || a.title;
-        const updatedDesc = a.seo_description || parsed.seo_description || '';
+        const updatedTitle = stripMarkdownAndHtml(a.seo_title || parsed.seo_title || a.title);
+        const updatedDesc = formatSeoDescription(a.seo_description || parsed.seo_description || '');
         await articleRepository.updateSeo(a.id, updatedTitle, updatedDesc);
       } catch (err: any) {
         logger.warn({ id: a.id, err: err.message }, 'Failed single article bulk SEO item');

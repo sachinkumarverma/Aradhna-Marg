@@ -207,30 +207,83 @@ export const AboutPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Section 3 - Editorial Values & Reverence */}
+          {/* Section 3 - Who Operates & Maintains Aradhna Marg */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
             <h2
               className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
             >
-              {isHi ? 'हमारी संपादकीय मर्यादा व संतों के प्रति आदर' : 'Our Editorial Values & Reverence'}
+              {isHi
+                ? 'संचालन एवं सम्पादकीय व्यवस्था (Who Operates Aradhna Marg)'
+                : 'Who Operates & Maintains Aradhna Marg'}
             </h2>
             <div
               className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
             >
               <p>
                 {isHi
-                  ? 'हम सनातन परंपरा के सभी ऋषि-मुनियों, भक्त कवियों (जैसे सूरदास, तुलसीदास, मीराबाई, कबीरदास आदि) तथा आधुनिक संगीतकारों की रचनाओं का हृदय से सम्मान करते हैं। जहाँ भी प्रामाणिक स्रोत उपलब्ध होते हैं, हम मूल रचनाकार व गायक को उचित श्रेय प्रदान करते हैं।'
-                  : 'We hold the highest reverence for saint-poets, classical composers (such as Tulsidas, Surdas, Mirabai, Kabir, and Adi Shankaracharya), and modern devotional artists. We strive to provide proper attribution and context for every work featured on our platform.'}
+                  ? 'आराधना मार्ग (aradhnamarg.com) का संचालन एवं तकनीकी प्रबंधन सनातन धर्म के समर्पित स्वयंसेवकों एवं सम्पादकीय दल (Aradhna Marg Editorial Team) द्वारा गांधीनगर, गुजरात (भारत) से किया जाता है। यह एक स्वतंत्र, गैर-व्यावसायिक एवं आध्यात्मिक सेवा मंच है जिसका मुख्य ध्येय सनातन साहित्य का संरक्षण एवं जन-जन तक सुलभ प्रसार है।'
+                  : 'Aradhna Marg (aradhnamarg.com) is operated and maintained by a dedicated group of Sanatan Dharma sevaks and the Aradhna Marg Editorial Team, based in Gandhinagar, Gujarat, India. It is an independent devotional platform created with the singular objective of preserving, organizing, and respectfully sharing authentic sacred literature.'}
               </p>
               <p>
                 {isHi
-                  ? 'हमारा मंच शुद्ध, निष्पक्ष एवं विज्ञापन-मुक्त सहज अनुभव प्रदान करने के लिए निरंतर प्रयत्नशील है।'
-                  : 'We are committed to delivering an elegant, distraction-free reading experience that honors the sacred sanctity of devotional worship.'}
+                  ? 'हमारी टीम में धर्मशास्त्रों के अध्येता, भाषा-विद् तथा तकनीकी स्वयंसेवक सम्मिलित हैं जो सामग्री की वर्तनी, प्रमाणिकता और पवित्रता सुनिश्चित करने के लिए निरन्तर सेवारत रहते हैं।'
+                  : 'Our team includes students of Hindu scriptures, language enthusiasts, and software engineers who volunteer their time to ensure textual accuracy, reverent presentation, and a clean reading experience for devotees worldwide.'}
               </p>
             </div>
           </div>
 
-          {/* Section 4 - Community & Devotee Engagement */}
+          {/* Section 4 - Editorial Process, Texts & Selection */}
+          <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
+              {isHi ? 'शास्त्र चयन, अनुवाद एवं सम्पादकीय प्रक्रिया' : 'Editorial Process & Scripture Selection'}
+            </h2>
+            <div
+              className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
+            >
+              <p>
+                {isHi
+                  ? '१. मूल पावन रचनाओं की शुद्धि: हम सनातन परंपरा के सभी प्रामाणिक भजनों, स्तोत्रों, चालीसा और 18 महापुराणों के मूल पाठ को प्रतिष्ठित पारंपरिक प्रकाशनों (जैसे गीताप्रेस गोरखपुर, पारंपरिक संस्कृत ग्रंथ) से मिलान कर प्रस्तुत करते हैं। मूल संस्कृत व अवधी/ब्रज छंदों में कोई मनमाना परिवर्तन नहीं किया जाता।'
+                  : '1. Preservation of Original Scriptures: All sacred shlokas, stotras, chalisas, and 18 Mahapuranas are cross-verified against established classical publications (such as Gita Press Gorakhpur and traditional Vedic recensions). Sacred poetic verses are preserved in their original Devanagari script without alteration.'}
+              </p>
+              <p>
+                {isHi
+                  ? '२. अनुवाद व भावार्थ नीति: नए साधकों और द्विभाषी पाठकों की सुगमता के लिए हम सरल हिंदी व अंग्रेजी भावार्थ प्रस्तुत करते हैं। प्रत्येक भावार्थ को आराधना मार्ग सम्पादकीय दल द्वारा प्रामाणिक धर्मग्रंथों एवं प्रतिष्ठित टीकाओं के संदर्भ से सूक्ष्मता से तैयार, समीक्षित और सम्पादित किया जाता है ताकि मूल भक्ति-रस और आध्यात्मिक गरिमा अक्षुण्ण रहे।'
+                  : '2. Translations & Devotional Commentary: To assist bilingual readers and younger seekers, we provide accessible Hindi and English meanings (Bhavarth). Every explanation is thoroughly researched, cross-referenced with traditional commentaries, and refined by the Aradhna Marg Editorial Team to ensure strict theological accuracy and devotional reverence.'}
+              </p>
+              <p>
+                {isHi
+                  ? '३. सार्वजनिक डोमेन एवं कॉपीराइट मर्यादा: हमारे द्वारा संकलित पारंपरिक वैदिक मंत्र, स्तोत्र, और प्राचीन संतों (तुलसीदास, सूरदास, मीराबाई, कबीरदास आदि) के भजन सार्वजनिक डोमेन (Public Domain) में हैं। आधुनिक गायकों व संगीतकारों के वीडियो केवल आधिकारिक यूट्यूब एम्बेडिंग के माध्यम से श्रेय सहित जोड़े जाते हैं।'
+                  : '3. Public Domain & Attribution: Traditional Vedic mantras, stotras, and hymns composed by historical saint-poets (Tulsidas, Surdas, Mirabai, Kabir, Adi Shankaracharya) are in the public domain. Devotional YouTube videos and recordings are integrated solely via official embed players with full attribution to original artists and channels.'}
+              </p>
+            </div>
+          </div>
+
+          {/* Section 5 - Correction & Update Policy */}
+          <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
+              {isHi ? 'त्रुटि-सुधार, अद्यतन एवं सर्वाधिकार नीति' : 'Corrections, Updates & Rights Policy'}
+            </h2>
+            <div
+              className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
+            >
+              <p>
+                {isHi
+                  ? 'आराधना मार्ग विनम्रता और सतत सुधार के सिद्धांत पर विश्वास करता है। यद्यपि हम सामग्री के सत्यापन में पूर्ण सावधानी बरतते हैं, फिर भी यदि किसी पाठक को किसी पद, मात्रा, शब्द अथवा भावार्थ में त्रुटि दिखाई दे, तो वह हमें तत्काल सूचित कर सकता है।'
+                  : 'We operate with humility and a continuous commitment to accuracy. Despite our rigorous review, should any devotee, scholar, or researcher spot a typographical error, missing verse, or translation nuance, we warmly encourage bringing it to our attention.'}
+              </p>
+              <p>
+                {isHi
+                  ? 'हमारी सम्पादकीय टीम प्राप्त सुझावों की 48 घंटे के भीतर समीक्षा कर आवश्यक संशोधन प्रकाशित करती है। किसी भी कॉपीराइट या अधिकार संबंधी समीक्षा के लिए अधिकार धारक सीधे support@aradhnamarg.com पर संपर्क कर सकते हैं।'
+                  : 'Our editorial board investigates all correction reports within 48 hours and updates the public record promptly. For any rights inquiries, licensing discussions, or permission reviews, rights holders may reach our editorial desk at support@aradhnamarg.com.'}
+              </p>
+            </div>
+          </div>
+
+          {/* Section 6 - Community & Devotee Engagement */}
           <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
             <h2
               className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}

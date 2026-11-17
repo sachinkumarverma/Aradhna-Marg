@@ -35,12 +35,21 @@ export function loadAdSenseScript(publisherId: string): Promise<void> {
       return resolve();
     }
 
+    const hostname = (window.location.hostname || '').toLowerCase();
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
+    if (isLocal) {
+      // Never load AdSense in local development (prevents browser adblocker ERR_BLOCKED_BY_CLIENT errors)
+      return resolve();
+    }
+
     if (!isValidPublisherId(publisherId)) {
       return resolve();
     }
 
-    // Check if script already exists
-    const existingScript = document.querySelector('script[src*="pagead2.googlesyndication.com"]');
+    // Check if script already exists in head/DOM or is already initialized
+    const existingScript =
+      document.getElementById('google-adsense-script') ||
+      document.querySelector('script[src*="pagead2.googlesyndication.com"]');
     if (existingScript) {
       return resolve();
     }

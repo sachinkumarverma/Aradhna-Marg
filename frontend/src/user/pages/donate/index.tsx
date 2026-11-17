@@ -232,15 +232,14 @@ export const DonatePage: React.FC = () => {
         'Precise astrological calculations, tithi alerts, festive rituals, and spiritual significance for global devotees.'
     },
     {
-      icon: Bot,
+      icon: BookOpen,
       color: 'from-red-500 to-amber-600',
       bgColor: 'bg-red-50',
       borderColor: 'border-red-200',
-      titleHi: 'वैदिक AI सहायक एवं ज्ञान मार्गदर्शन',
-      titleEn: 'Vedic AI Dharma Guide',
-      descHi: 'नई पीढ़ी को धर्मग्रंथों व संशय निवारण से जोड़ने हेतु आधुनिक AI तकनीक से शास्त्रों का सुलभ संवाद।',
-      descEn:
-        'Empowering the younger generation with instant, scripture-grounded answers to spiritual and philosophical queries.'
+      titleHi: 'वैदिक ज्ञानकोश एवं आध्यात्मिक मार्गदर्शन',
+      titleEn: 'Vedic Knowledge & Spiritual Guidance',
+      descHi: 'नई पीढ़ी को धर्मग्रंथों व संशय निवारण से जोड़ने हेतु शास्त्रों का सरल एवं सुलभ संवाद।',
+      descEn: 'Empowering seekers with authentic, scripture-grounded answers to spiritual and philosophical queries.'
     }
   ];
 

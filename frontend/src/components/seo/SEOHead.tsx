@@ -9,6 +9,7 @@ import {
   TWITTER_HANDLE
 } from '@/constants/seo';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { formatSeoDescription, stripMarkdownAndHtml } from '@/utils/stripMarkdown';
 
 export interface SEOHeadProps {
   title?: string;
@@ -24,14 +25,6 @@ export interface SEOHeadProps {
   noIndex?: boolean;
   schema?: Record<string, any> | Array<Record<string, any>>;
   lang?: 'hi' | 'en';
-}
-
-function stripHtml(html?: string): string {
-  if (!html) return '';
-  return html
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
 }
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
@@ -66,9 +59,9 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     finalTitle = `${title.trim()} | ${siteName}`;
   }
 
-  // Compute clean description (clean HTML tags if present)
+  // Compute clean description (clean Markdown and HTML markers to ensure pure plain text)
   const rawDesc = description || defaultMeta.description;
-  const cleanDescription = stripHtml(rawDesc).slice(0, 200);
+  const cleanDescription = formatSeoDescription(rawDesc, 160);
 
   // Compute canonical URL
   let resolvedCanonical = canonicalUrl;

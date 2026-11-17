@@ -16,8 +16,9 @@ import { CustomLoader } from '@components/common/CustomLoader';
 import { PuranaDetailSkeleton } from '@components/common/SkeletonLoader';
 import { AdUnit } from '@components/common/AdUnit';
 import { SEOHead, buildBreadcrumbSchema, buildBookSchema } from '@components/seo';
-
 import { getPrerenderedData } from '@utils/prerenderData';
+import { formatSeoDescription } from '@utils/stripMarkdown';
+import { DevotionalProvenanceCard } from '@components/common/DevotionalProvenanceCard';
 
 export const PuranDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -180,12 +181,13 @@ export const PuranDetail: React.FC = () => {
   const isHi = language === 'hi';
 
   const pageTitle = data.seo_title || title;
-  const pageDesc =
+  const rawPageDesc =
     data.seo_description ||
     descriptionContent ||
     (isHi
       ? `${title} - पवित्र हिन्दू महापुराण का सम्पूर्ण सार, अध्याय, कथाएं व विवरण पढ़ें एवं पीडीएफ डाउनलोड करें।`
       : `Read sacred text, chapters, divine teachings, and download PDF for ${title} on Aradhna Marg.`);
+  const pageDesc = formatSeoDescription(rawPageDesc, 160);
 
   const puranSchemas = [
     buildBookSchema({
@@ -327,6 +329,18 @@ export const PuranDetail: React.FC = () => {
             <SafeHtmlContent content={descriptionContent} />
           </div>
         )}
+
+        {/* Truthful Scriptural Provenance & Editorial Review Card */}
+        <DevotionalProvenanceCard
+          type="purana"
+          title={title}
+          slug={data.slug}
+          authorName={data.author || 'Aradhna Marg Editorial Team'}
+          traditionalSource={
+            isHi ? 'महर्षि वेदव्यास विरचित अष्टादश महापुराण परंपरा' : 'Maharshi Ved Vyasa Classical 18 Mahapuranas'
+          }
+          publishedDate={data.created_at}
+        />
 
         {/* Ad Unit Placeholder */}
         <div className="my-6">

@@ -34,6 +34,8 @@ import { CustomLoader } from '@components/common/CustomLoader';
 import { BhajanDetailSkeleton } from '@components/common/SkeletonLoader';
 import { SEOHead, buildBreadcrumbSchema, buildMusicCompositionSchema } from '@components/seo';
 import { getPrerenderedData } from '@utils/prerenderData';
+import { formatSeoDescription } from '@utils/stripMarkdown';
+import { DevotionalProvenanceCard } from '@components/common/DevotionalProvenanceCard';
 
 function formatDevotionalText(rawText: string): string[] {
   if (!rawText) return [];
@@ -252,16 +254,22 @@ export const BhajanDetail: React.FC = () => {
   const pageTitle =
     bhajan.seo_title ||
     `${displayTitle} ${isHi ? (isVideo ? '- पावन वीडियो दर्शन' : '- लिरिक्स व वीडियो') : isVideo ? '- Devotional Video' : '- Lyrics & Video'}`;
-  const pageDescription =
+  const rawPageDescription =
     bhajan.seo_description ||
-    bhajan.description ||
-    (isHi
-      ? isVideo
-        ? `${displayTitle} दिव्य भक्तिमय वीडियो का आनंद लें।`
-        : `${displayTitle} भजन के पावन लिरिक्स, अर्थ, कथा एवं भक्तिमय वीडियो का आनंद लें।`
-      : isVideo
-        ? `Watch sacred devotional video for ${displayTitle} on Aradhna Marg.`
-        : `Read sacred lyrics, meaning, and watch devotional video for ${displayTitle} on Aradhna Marg.`);
+    (bhajan.slug === 'hanuman-chalisa'
+      ? isHi
+        ? 'हनुमान चालीसा का शुद्ध पाठ, सरल हिंदी अर्थ, आध्यात्मिक संदेश और पाठ का महत्व।'
+        : 'Read authentic Hanuman Chalisa lyrics, verse-by-verse English translation, spiritual meaning, and recitation benefits.'
+      : bhajan.short_description ||
+        bhajan.description ||
+        (isHi
+          ? isVideo
+            ? `${displayTitle} दिव्य भक्तिमय वीडियो का आनंद लें।`
+            : `${displayTitle} भजन के पावन लिरिक्स, सरल हिंदी अर्थ, आध्यात्मिक संदेश और सम्पूर्ण भावार्थ।`
+          : isVideo
+            ? `Watch sacred devotional video for ${displayTitle} on Aradhna Marg.`
+            : `Read sacred lyrics, meaning, and spiritual significance of ${displayTitle} on Aradhna Marg.`));
+  const pageDescription = formatSeoDescription(rawPageDescription, 160);
 
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: isHi ? 'मुख्य पृष्ठ' : 'Home', item: '/' },
@@ -754,6 +762,15 @@ export const BhajanDetail: React.FC = () => {
                 </div>
               </motion.div>
             )}
+
+            {/* Truthful Devotional Provenance & Editorial Review Card */}
+            <DevotionalProvenanceCard
+              type="bhajan"
+              title={displayTitle}
+              slug={bhajan.slug}
+              authorName={bhajan.author_name}
+              publishedDate={bhajan.publish_date || bhajan.created_at}
+            />
 
             {/* Ad Unit Placeholder */}
             <AdUnit slot="banner" label="ADVERTISEMENT • विज्ञापन" />

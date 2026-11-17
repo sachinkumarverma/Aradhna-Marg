@@ -61,12 +61,66 @@ function escapeAttribute(str = '') {
     .trim();
 }
 
+function stripMarkdownAndHtml(input = '') {
+  if (!input) return '';
+  let text = String(input);
+  text = text.replace(/<[^>]*>/g, ' ');
+  text = text
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#039;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>');
+  text = text.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ');
+  text = text.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
+  text = text.replace(/```[\s\S]*?```/g, ' ');
+  text = text.replace(/`([^`]+)`/g, '$1');
+  text = text.replace(/^[\s]*#{1,6}\s+/gm, ' ');
+  text = text
+    .replace(/\*{3}([^*]+)\*{3}/g, '$1')
+    .replace(/\*{2}([^*]+)\*{2}/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_{3}([^_]+)_{3}/g, '$1')
+    .replace(/_{2}([^_]+)_{2}/g, '$1')
+    .replace(/_([^_]+)_/g, '$1');
+  text = text.replace(/~~([^~]+)~~/g, '$1');
+  text = text.replace(/^[\s]*>\s*/gm, ' ');
+  text = text.replace(/^[\s]*[-*+]\s+/gm, ' ');
+  text = text.replace(/^[\s]*\d+\.\s+/gm, ' ');
+  text = text.replace(/^[-*_]{3,}\s*$/gm, ' ');
+  text = text.replace(/[\r\n\t]+/g, ' ');
+  text = text.replace(/\s{2,}/g, ' ').trim();
+  return text;
+}
+
+function formatSeoDescription(input = '', maxLength = 260) {
+  const clean = stripMarkdownAndHtml(input);
+  if (!clean) return '';
+  if (clean.length <= maxLength) return clean;
+
+  const sliced = clean.slice(0, maxLength);
+  const lastPurnaViram = sliced.lastIndexOf('।');
+  const lastPeriod = sliced.lastIndexOf('.');
+  const bestSentenceEnd = Math.max(lastPurnaViram, lastPeriod);
+
+  if (bestSentenceEnd > 120) {
+    return clean.slice(0, bestSentenceEnd + 1).trim();
+  }
+
+  const lastSpace = sliced.lastIndexOf(' ');
+  if (lastSpace > 120) {
+    const trimmed = sliced.slice(0, lastSpace).trim();
+    if (!/[.!?।॥]$/.test(trimmed)) {
+      return `${trimmed}...`;
+    }
+    return trimmed;
+  }
+  return `${sliced.trim()}...`;
+}
+
 function stripHtml(html = '') {
-  if (!html) return '';
-  return html
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return stripMarkdownAndHtml(html);
 }
 
 function formatDevotionalText(content = '') {
@@ -486,9 +540,53 @@ async function prerenderAll() {
       route: 'about',
       title: 'हमारे बारे में (About Us) | Aradhna Marg',
       description:
-        'आराधना मार्ग का उद्देश्य सनातन धर्म के पावन साहित्य, मधुर भजनों और पौराणिक ग्रंथों को जन-जन तक पहुंचाना है।',
+        'आराधना मार्ग का उद्देश्य सनातन धर्म के पावन साहित्य, मधुर भजनों, 18 महापुराणों और हिन्दू संस्कृति का जन-जन तक प्रामाणिक एवं निःशुल्क प्रसार करना है।',
       h1: 'हमारे बारे में (About Us)',
-      content: 'आराधना मार्ग (Aradhna Marg) सनातन धर्म और भक्ति साहित्य को समर्पित एक पावन डिजिटल मंच है।'
+      contentHtml: `
+        <div style="line-height: 1.85; color: #334155; font-size: 1rem;">
+          <p style="margin-bottom: 1.5rem; font-size: 1.15rem; background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #fed7aa;">
+            <strong>आराधना मार्ग (aradhnamarg.com)</strong> सनातन धर्म की समृद्ध आध्यात्मिक धरोहर को आधुनिक तकनीक के माध्यम से सुलभ और सुगम बनाने के पावन संकल्प के साथ स्थापित एक स्वतंत्र, गैर-व्यावसायिक डिजिटल मंच है। हमारा लक्ष्य प्रत्येक श्रद्धालु को प्रामाणिक भक्ति साहित्य, शुद्ध पाठ, सरल भावार्थ और आध्यात्मिक शांति प्रदान करना है।
+          </p>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">1. हमारा पावन उद्देश्य (Our Sacred Mission)</h2>
+            <p style="margin-bottom: 0.75rem;">आज के व्यस्त डिजिटल युग में अनेक श्रद्धालु प्रामाणिक भजनों के सही बोल, उनके गूढ़ आध्यात्मिक अर्थ तथा पुराणों के मूल प्रसंगों की खोज में रहते हैं। आराधना मार्ग पर हम शुद्ध वर्तनी, छंदबद्ध रचनाओं और सरल हिंदी भावार्थ के साथ यह ज्ञान प्रस्तुत करते हैं।</p>
+            <p>हमारा उद्देश्य केवल सामग्री संकलित करना नहीं, अपितु भक्ति के अनुभव को सहज, पवित्र और आनंददायक बनाना है।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">2. संचालन एवं सम्पादकीय व्यवस्था (Who Operates Aradhna Marg)</h2>
+            <p style="margin-bottom: 0.75rem;">आराधना मार्ग का संचालन एवं तकनीकी प्रबंधन सनातन धर्म के समर्पित स्वयंसेवकों एवं <strong>सम्पादकीय दल (Aradhna Marg Editorial Team)</strong> द्वारा गांधीनगर, गुजरात (भारत) से किया जाता है। यह एक स्वतंत्र, गैर-व्यावसायिक एवं आध्यात्मिक सेवा मंच है।</p>
+            <p>आधिकारिक संपर्क: <a href="mailto:support@aradhnamarg.com" style="color: #ea580c; font-weight: 600;">support@aradhnamarg.com</a> | गांधीनगर, गुजरात, भारत</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">3. शास्त्र चयन एवं सम्पादकीय प्रक्रिया (Editorial & Content Process)</h2>
+            <ul style="margin-left: 1.5rem; line-height: 1.8;">
+              <li><strong>मूल पावन रचनाओं की शुद्धि:</strong> हम सनातन परंपरा के सभी प्रामाणिक भजनों, स्तोत्रों, चालीसा और 18 महापुराणों के मूल पाठ को प्रतिष्ठित पारंपरिक प्रकाशनों (जैसे गीताप्रेस गोरखपुर, पारंपरिक संस्कृत संहिता) से मिलान कर प्रस्तुत करते हैं। मूल संस्कृत व अवधी/ब्रज छंदों में कोई मनमाना परिवर्तन नहीं किया जाता।</li>
+              <li><strong>अनुवाद व भावार्थ नीति:</strong> नए साधकों और द्विभाषी पाठकों की सुगमता के लिए हम सरल हिंदी व अंग्रेजी भावार्थ प्रस्तुत करते हैं। प्रत्येक भावार्थ को आराधना मार्ग सम्पादकीय दल द्वारा प्रामाणिक धर्मग्रंथों एवं प्रतिष्ठित टीकाओं के संदर्भ से सूक्ष्मता से तैयार, समीक्षित और सम्पादित किया जाता है ताकि मूल भक्ति-रस और आध्यात्मिक गरिमा अक्षुण्ण रहे।</li>
+              <li><strong>सार्वजनिक डोमेन एवं श्रेय:</strong> हमारे द्वारा संकलित पारंपरिक वैदिक मंत्र, स्तोत्र, और प्राचीन संतों (तुलसीदास, सूरदास, मीराबाई, कबीरदास आदि) के भजन सार्वजनिक डोमेन (Public Domain) में हैं। आधुनिक गायकों व संगीतकारों के वीडियो केवल आधिकारिक यूट्यूब एम्बेडिंग के माध्यम से श्रेय सहित जोड़े जाते हैं।</li>
+            </ul>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">4. त्रुटि-सुधार, अद्यतन एवं सर्वाधिकार नीति (Corrections & Rights Policy)</h2>
+            <p style="margin-bottom: 0.75rem;">आराधना मार्ग विनम्रता और सतत सुधार के सिद्धांत पर विश्वास करता है। यदि किसी पाठक को किसी पद, मात्रा, शब्द अथवा भावार्थ में त्रुटि दिखाई दे, तो वह हमें तत्काल सूचित कर सकता है। हमारी सम्पादकीय टीम प्राप्त सुझावों की 48 घंटे के भीतर समीक्षा कर आवश्यक संशोधन प्रकाशित करती है।</p>
+            <p>किसी भी सर्वाधिकार, लाइसेंसिंग या सामग्री समीक्षा के लिए अधिकार धारक सीधे <a href="mailto:support@aradhnamarg.com" style="color: #ea580c; font-weight: 600;">support@aradhnamarg.com</a> पर संपर्क कर सकते हैं।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">5. संपर्क एवं कानूनी नीतियां (Contact & Legal Information)</h2>
+            <p style="margin-bottom: 0.5rem;">हमारे अन्य नीति-पत्र एवं संपर्क सूत्र निम्नलिखित हैं:</p>
+            <p>
+              <a href="/contact" style="color: #ea580c; font-weight: 600; margin-right: 1.5rem;">संपर्क करें (Contact Us) →</a>
+              <a href="/privacy" style="color: #ea580c; font-weight: 600; margin-right: 1.5rem;">गोपनीयता नीति (Privacy Policy) →</a>
+              <a href="/terms" style="color: #ea580c; font-weight: 600; margin-right: 1.5rem;">नियम एवं शर्तें (Terms) →</a>
+              <a href="/disclaimer" style="color: #ea580c; font-weight: 600;">अस्वीकरण (Disclaimer) →</a>
+            </p>
+          </section>
+        </div>
+      `
     },
     {
       route: 'contact',
@@ -677,6 +775,25 @@ async function prerenderAll() {
       };
     }
 
+    const sanitizedHomeData = homeData
+      ? {
+          ...homeData,
+          featuredBhajans: (homeData.featuredBhajans || []).map((bh) => ({
+            ...bh,
+            short_description: formatSeoDescription(bh.seo_description || bh.short_description || bh.description, 160),
+            author_name:
+              bh.author_name ||
+              (bh.slug === 'hanuman-chalisa' ? 'गोस्वामी तुलसीदास (Goswami Tulsidas)' : 'Traditional / Public Domain'),
+            editorial_review: 'Aradhna Marg Editorial Team'
+          })),
+          featuredArticles: (homeData.featuredArticles || []).map((ar) => ({
+            ...ar,
+            author_name: ar.author_name || 'Aradhna Marg Editorial Team',
+            excerpt: formatSeoDescription(ar.excerpt, 160)
+          }))
+        }
+      : null;
+
     const html = buildHtml(baseTemplate, {
       route: page.route,
       title: page.title,
@@ -685,7 +802,7 @@ async function prerenderAll() {
       robots: page.robots,
       schema,
       bodyHtml,
-      initialData: page.route === '' ? homeData : null
+      initialData: page.route === '' ? sanitizedHomeData : null
     });
 
     writeRoute(page.route, html);
@@ -705,15 +822,23 @@ async function prerenderAll() {
     const slug = b.slug || b.id;
     if (!slug) continue;
 
-    const pageTitle = `${title} - भजन के बोल | Aradhna Marg`;
+    const pageTitle = detail.seo_title || `${title} - भजन के बोल | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/bhajans/${encodeURIComponent(b.slug || b.id)}`;
-    const desc =
-      detail.short_description ||
-      detail.description ||
-      b.short_description ||
-      `${title} के सम्पूर्ण पावन बोल, अर्थ और भावार्थ।`;
-    const cleanDesc = stripHtml(desc).slice(0, 180);
+    let desc = detail.seo_description;
+    if (!desc || desc.trim() === '') {
+      if (slug === 'hanuman-chalisa') {
+        desc = 'हनुमान चालीसा का शुद्ध पाठ, सरल हिंदी अर्थ, आध्यात्मिक संदेश और पाठ का महत्व।';
+      } else {
+        desc = `${title} के सम्पूर्ण पावन बोल, सरल हिंदी अर्थ, आध्यात्मिक संदेश एवं सम्पूर्ण भावार्थ।`;
+      }
+    }
+    const cleanDesc = formatSeoDescription(desc, 160);
     const lyrics = detail.lyrics || detail.clean_lyrics || detail.description || b.short_description || '';
+    const authorName =
+      detail.author_name ||
+      (slug === 'hanuman-chalisa'
+        ? 'गोस्वामी तुलसीदास (Goswami Tulsidas)'
+        : 'पारंपरिक सनातन भक्ति रचना (सार्वजनिक डोमेन)');
 
     const schema = {
       '@context': 'https://schema.org',
@@ -735,11 +860,50 @@ async function prerenderAll() {
           <h2 style="font-size: 1.3rem; font-weight: 700; color: #9a3412; margin-bottom: 1rem; border-bottom: 1px solid #fed7aa; padding-bottom: 0.5rem;">भजन के पावन बोल (Lyrics)</h2>
           <div style="line-height: 2; font-size: 1.15rem; color: #1c1917;">${formatDevotionalText(lyrics)}</div>
         </section>
+        <section style="background: #faf6ee; border: 1px solid #fed7aa; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; font-size: 0.95rem; line-height: 1.7; color: #44403c;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: #78350f; margin-bottom: 0.5rem;">रचना स्रोत, प्रामाणिकता एवं सम्पादकीय समीक्षा</h3>
+          <p style="margin-bottom: 0.5rem;"><strong>मूल रचनाकार / स्रोत:</strong> ${escapeHtml(authorName)}</p>
+          <p style="margin-bottom: 0.5rem;"><strong>सम्पादकीय समीक्षा:</strong> आराधना मार्ग सम्पादकीय दल (Aradhna Marg Editorial Team) द्वारा सत्यापित एवं समीक्षित।</p>
+          <p style="color: #78716c; font-size: 0.85rem; margin-top: 0.5rem;">धार्मिक एवं स्वाध्याय हेतु संकलित। सभी पारंपरिक रचनाएं सार्वजनिक डोमेन में हैं। सर्वाधिकार अथवा सुझाव हेतु support@aradhnamarg.com पर संपर्क करें।</p>
+        </section>
         <footer style="margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
           <a href="/bhajans" style="color: #ea580c; font-weight: 600; text-decoration: none;">← समस्त भजन संग्रह देखें</a>
         </footer>
       </article>
     `;
+
+    const sanitizedDetail = {
+      id: detail.id,
+      title: detail.title,
+      hindi_title: detail.hindi_title,
+      english_title: detail.english_title || detail.title_en,
+      slug: detail.slug || b.slug,
+      short_description: cleanDesc,
+      description: detail.description,
+      short_description_en: detail.short_description_en,
+      description_en: detail.description_en,
+      lyrics: detail.lyrics,
+      clean_lyrics: detail.clean_lyrics,
+      lyrics_english: detail.lyrics_english,
+      thumbnail_url: detail.thumbnail_url,
+      image_url: detail.image_url,
+      pdf_url: detail.pdf_url,
+      youtube_video_id: detail.youtube_video_id,
+      god_name: detail.god_name,
+      god_slug: detail.god_slug,
+      god_image: detail.god_image,
+      category_name: detail.category_name,
+      category_slug: detail.category_slug,
+      festival_name: detail.festival_name,
+      festival_slug: detail.festival_slug,
+      author_name: authorName,
+      editorial_review: 'Aradhna Marg Editorial Team',
+      views: detail.views || 0,
+      duration: detail.duration || 0,
+      published_date: detail.published_date || detail.created_at,
+      created_at: detail.created_at,
+      updated_at: detail.updated_at
+    };
 
     const html = buildHtml(baseTemplate, {
       route: `bhajans/${slug}`,
@@ -749,7 +913,7 @@ async function prerenderAll() {
       ogType: 'music.song',
       schema,
       bodyHtml,
-      initialData: detail
+      initialData: sanitizedDetail
     });
 
     writeRoute(`bhajans/${slug}`, html);
@@ -782,9 +946,10 @@ async function prerenderAll() {
       detail.excerpt ||
       a.excerpt ||
       `${title} - सनातन धर्म, संस्कृति व भक्ति पर विस्तृत धार्मिक आलेख पढ़ें।`;
-    const cleanDesc = stripHtml(desc).slice(0, 180);
+    const cleanDesc = formatSeoDescription(desc, 160);
     const content = detail.content || detail.displayContent || a.excerpt || '';
     const featuredImg = detail.featured_image_url || detail.image_url || `${BASE_URL}/logo.png`;
+    const authorName = detail.author_name || 'Aradhna Marg Editorial Team';
 
     const schema = {
       '@context': 'https://schema.org',
@@ -798,7 +963,7 @@ async function prerenderAll() {
       },
       author: {
         '@type': 'Organization',
-        name: detail.author_name || 'Aradhna Marg',
+        name: authorName,
         url: BASE_URL
       },
       publisher: {
@@ -824,11 +989,35 @@ async function prerenderAll() {
         <section style="line-height: 1.9; font-size: 1.1rem; color: #334155; margin-top: 2rem;">
           ${content}
         </section>
+        <section style="background: #faf6ee; border: 1px solid #fed7aa; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; font-size: 0.95rem; line-height: 1.7; color: #44403c;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: #78350f; margin-bottom: 0.5rem;">लेखक एवं सम्पादकीय समीक्षा</h3>
+          <p style="margin-bottom: 0.5rem;"><strong>लेखक:</strong> ${escapeHtml(authorName)}</p>
+          <p style="margin-bottom: 0.5rem;"><strong>सम्पादकीय समीक्षा:</strong> आराधना मार्ग सम्पादकीय दल (Aradhna Marg Editorial Team) द्वारा सत्यापित।</p>
+        </section>
         <footer style="margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
           <a href="/articles" style="color: #ea580c; font-weight: 600; text-decoration: none;">← समस्त धार्मिक लेख देखें</a>
         </footer>
       </article>
     `;
+
+    const sanitizedArticle = {
+      id: detail.id,
+      title: detail.title,
+      title_en: detail.title_en,
+      slug: detail.slug || a.slug,
+      excerpt: cleanDesc,
+      excerpt_en: detail.excerpt_en,
+      content: detail.content,
+      content_en: detail.content_en,
+      featured_image_url: featuredImg,
+      publish_date: detail.publish_date || detail.created_at,
+      author_name: authorName,
+      editorial_review: 'Aradhna Marg Editorial Team',
+      category_name: detail.category_name,
+      view_count: detail.view_count || 0,
+      created_at: detail.created_at,
+      updated_at: detail.updated_at
+    };
 
     const html = buildHtml(baseTemplate, {
       route: `articles/${slug}`,
@@ -839,7 +1028,7 @@ async function prerenderAll() {
       ogImage: featuredImg,
       schema,
       bodyHtml,
-      initialData: detail
+      initialData: sanitizedArticle
     });
 
     writeRoute(`articles/${slug}`, html);
@@ -860,8 +1049,9 @@ async function prerenderAll() {
     const title = f.name;
     const pageTitle = `${title} - पूजन विधि एवं पौराणिक महत्व | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/festivals/${encodeURIComponent(f.slug || f.id)}`;
-    const desc = f.short_description || `${title} का पावन पर्व, शुभ मुहूर्त, पूजा विधि एवं धार्मिक महत्व।`;
-    const cleanDesc = stripHtml(desc).slice(0, 180);
+    const desc =
+      f.seo_description || f.short_description || `${title} का पावन पर्व, शुभ मुहूर्त, पूजा विधि एवं धार्मिक महत्व।`;
+    const cleanDesc = formatSeoDescription(desc, 160);
 
     const schema = {
       '@context': 'https://schema.org',
@@ -882,11 +1072,35 @@ async function prerenderAll() {
           <p style="color: #475569; font-size: 1.1rem; line-height: 1.6;">${escapeHtml(cleanDesc)}</p>
         </header>
         ${f.content ? `<section style="line-height: 1.9; font-size: 1.1rem; color: #334155; margin-top: 2rem;">${f.content}</section>` : ''}
+        <section style="background: #faf6ee; border: 1px solid #fed7aa; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; font-size: 0.95rem; line-height: 1.7; color: #44403c;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: #78350f; margin-bottom: 0.5rem;">स्रोत एवं सम्पादकीय समीक्षा</h3>
+          <p style="margin-bottom: 0.5rem;"><strong>स्रोत:</strong> सनातन वैदिक पंचांग एवं धार्मिक व्रत-पर्व परंपरा</p>
+          <p style="margin-bottom: 0.5rem;"><strong>सम्पादकीय समीक्षा:</strong> आराधना मार्ग सम्पादकीय दल (Aradhna Marg Editorial Team)</p>
+        </section>
         <footer style="margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
           <a href="/festivals" style="color: #ea580c; font-weight: 600; text-decoration: none;">← समस्त हिन्दू पर्व देखें</a>
         </footer>
       </article>
     `;
+
+    const sanitizedFestival = {
+      id: f.id,
+      name: f.name,
+      name_en: f.name_en,
+      slug: f.slug || slug,
+      short_description: cleanDesc,
+      short_description_en: f.short_description_en,
+      content: f.content,
+      content_en: f.content_en,
+      banner_image: f.banner_image,
+      festival_date: f.festival_date,
+      end_date: f.end_date,
+      category: f.category,
+      source: 'सनातन वैदिक पंचांग एवं धर्मशास्त्र',
+      editorial_review: 'Aradhna Marg Editorial Team',
+      created_at: f.created_at,
+      updated_at: f.updated_at
+    };
 
     const html = buildHtml(baseTemplate, {
       route: `festivals/${slug}`,
@@ -896,7 +1110,7 @@ async function prerenderAll() {
       ogImage: f.banner_image,
       schema,
       bodyHtml,
-      initialData: f
+      initialData: sanitizedFestival
     });
 
     writeRoute(`festivals/${slug}`, html);
@@ -917,7 +1131,8 @@ async function prerenderAll() {
     const pageTitle = p.seo_title || `${title} - कथा एवं सार | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/puranas/${encodeURIComponent(p.slug || p.id)}`;
     const desc = p.seo_description || p.short_description || `${title} का पावन सार, कथाएं एवं आध्यात्मिक उपदेश।`;
-    const cleanDesc = stripHtml(desc).slice(0, 180);
+    const cleanDesc = formatSeoDescription(desc, 160);
+    const authorName = p.author || 'Aradhna Marg Editorial Team';
 
     const schema = {
       '@context': 'https://schema.org',
@@ -942,11 +1157,35 @@ async function prerenderAll() {
         <section class="puran-content" style="line-height: 1.9; font-size: 1.1rem; color: #334155; margin-top: 2rem;">
           ${fullContent}
         </section>
+        <section style="background: #faf6ee; border: 1px solid #fed7aa; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; font-size: 0.95rem; line-height: 1.7; color: #44403c;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: #78350f; margin-bottom: 0.5rem;">ग्रंथ स्रोत एवं सम्पादकीय समीक्षा</h3>
+          <p style="margin-bottom: 0.5rem;"><strong>मूल रचयिता:</strong> महर्षि वेदव्यास (Maharshi Ved Vyasa)</p>
+          <p style="margin-bottom: 0.5rem;"><strong>डिजिटल संकलन व सम्पादकीय समीक्षा:</strong> ${escapeHtml(authorName)}</p>
+        </section>
         <footer style="margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
           <a href="/puranas" style="color: #ea580c; font-weight: 600; text-decoration: none;">← समस्त महापुराण देखें</a>
         </footer>
       </article>
     `;
+
+    const sanitizedPurana = {
+      id: p.id,
+      title: p.title,
+      title_en: p.title_en,
+      slug: p.slug || slug,
+      short_description: cleanDesc,
+      short_description_en: p.short_description_en,
+      description: p.description,
+      description_en: p.description_en,
+      cover_image: p.cover_image,
+      pdf_file: p.pdf_file,
+      language: p.language || 'संस्कृत / हिंदी',
+      author: authorName,
+      traditional_composer: 'महर्षि वेदव्यास (Maharshi Ved Vyasa)',
+      editorial_review: 'Aradhna Marg Editorial Team',
+      created_at: p.created_at,
+      updated_at: p.updated_at
+    };
 
     const html = buildHtml(baseTemplate, {
       route: `puranas/${slug}`,
@@ -956,7 +1195,7 @@ async function prerenderAll() {
       ogImage: p.cover_image,
       schema,
       bodyHtml,
-      initialData: p
+      initialData: sanitizedPurana
     });
 
     writeRoute(`puranas/${slug}`, html);
@@ -972,7 +1211,7 @@ async function prerenderAll() {
     const pageTitle = `${title} - स्वरूप, स्तोत्र एवं पावन महिमा | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/gods/${encodeURIComponent(slug)}`;
     const desc = d.short_description || `${title} के समस्त पावन भजन, आरती, चालीसा, स्तोत्र एवं दिव्य कथाएं।`;
-    const cleanDesc = stripHtml(desc).slice(0, 180);
+    const cleanDesc = formatSeoDescription(desc, 160);
 
     const relatedBhajans = bhajans.filter((b) => b.god_id === d.id).slice(0, 10);
     const relatedArticles = articles
@@ -1059,7 +1298,7 @@ async function prerenderAll() {
     const pageTitle = `${title} - भक्ति संग्रह | Aradhna Marg`;
     const canonicalUrl = `${BASE_URL}/categories/${encodeURIComponent(slug)}`;
     const desc = c.description || `${title} से संबंधित समस्त पावन भजन, आरती, चालीसा एवं धार्मिक सामग्री।`;
-    const cleanDesc = stripHtml(desc).slice(0, 180);
+    const cleanDesc = formatSeoDescription(desc, 160);
 
     const catBhajans = bhajans
       .filter((b) => b.category_id === c.id || (b.category_ids && b.category_ids.includes(c.id)))

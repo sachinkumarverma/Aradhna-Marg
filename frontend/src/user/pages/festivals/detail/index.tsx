@@ -12,8 +12,9 @@ import { AdUnit } from '@components/common/AdUnit';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { FestivalDetailSkeleton } from '@components/common/SkeletonLoader';
 import { SEOHead, buildBreadcrumbSchema, buildEventSchema } from '@components/seo';
-
 import { getPrerenderedData } from '@utils/prerenderData';
+import { formatSeoDescription } from '@utils/stripMarkdown';
+import { DevotionalProvenanceCard } from '@components/common/DevotionalProvenanceCard';
 
 export const FestivalDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -108,12 +109,13 @@ export const FestivalDetail: React.FC = () => {
   const isHi = language === 'hi';
 
   const pageTitle = festival.seo_title || name;
-  const pageDesc =
+  const rawPageDesc =
     festival.seo_description ||
     description ||
     (isHi
       ? `${name} - सनातन धर्म के पावन पर्व का शुभ मुहूर्त, व्रत विधि, कथा एवं महत्व।`
       : `Learn about ${name} festival, rituals, significance, and auspicious timings on Aradhna Marg.`);
+  const pageDesc = formatSeoDescription(rawPageDesc, 160);
 
   const festivalSchemas = [
     buildEventSchema({
@@ -209,6 +211,19 @@ export const FestivalDetail: React.FC = () => {
               <div className="mt-2 font-hindi-body">
                 <SafeHtmlContent content={content} />
               </div>
+
+              {/* Truthful Source Attribution & Editorial Review Card */}
+              <DevotionalProvenanceCard
+                type="festival"
+                title={name}
+                slug={festival.slug}
+                traditionalSource={
+                  isHi
+                    ? 'सनातन वैदिक पंचांग एवं धार्मिक व्रत-पर्व परंपरा'
+                    : 'Vedic Panchang & Traditional Sanatan Vrats'
+                }
+                publishedDate={festival.created_at}
+              />
 
               {/* Content Ad Unit */}
               <div className="mt-8">

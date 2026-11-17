@@ -27,10 +27,23 @@
         'analytics_storage': 'granted',
         'wait_for_update': 500
       });
-      // Immediately pause ad requests on policy-excluded non-content pages
+      // AdSense initialization: pauses ad requests on policy-excluded pages and skips localhost
       (function () {
         try {
+          var h = (window.location.hostname || '').toLowerCase();
+          var isLocal = h === 'localhost' || h === '127.0.0.1' || h.indexOf('192.168.') === 0;
           var p = (window.location.pathname || '').toLowerCase();
+          var s = (window.location.search || '').toLowerCase();
+          var isAdmin =
+            h === 'admin.aradhnamarg.com' ||
+            h.indexOf('admin.') === 0 ||
+            h.indexOf('admin-') === 0 ||
+            h.indexOf('-admin.') !== -1 ||
+            h.indexOf('-admin.vercel.app') !== -1 ||
+            p === '/admin' ||
+            p.indexOf('/admin/') === 0 ||
+            s.indexOf('app=admin') !== -1 ||
+            s.indexOf('mode=admin') !== -1;
           var excluded = [
             '/privacy',
             '/terms',
@@ -43,9 +56,26 @@
             '/favorites',
             '/admin'
           ];
-          if (excluded.some(function (prefix) { return p === prefix || p.indexOf(prefix + '/') === 0; })) {
+
+          if (isLocal) {
+            // Do not load AdSense on local development (prevents adblocker ERR_BLOCKED_BY_CLIENT)
+            return;
+          }
+
+          if (isAdmin || excluded.some(function (prefix) { return p === prefix || p.indexOf(prefix + '/') === 0; })) {
             window.adsbygoogle = window.adsbygoogle || [];
             window.adsbygoogle.pauseAdRequests = 1;
+            return;
+          }
+
+          // Single Head Script for production public pages
+          if (!document.getElementById('google-adsense-script')) {
+            var sEl = document.createElement('script');
+            sEl.id = 'google-adsense-script';
+            sEl.async = true;
+            sEl.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8463841061449912';
+            sEl.crossOrigin = 'anonymous';
+            document.head.appendChild(sEl);
           }
         } catch (_) {}
       })();

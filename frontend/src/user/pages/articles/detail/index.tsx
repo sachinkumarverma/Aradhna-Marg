@@ -12,8 +12,9 @@ import { AdUnit } from '@components/common/AdUnit';
 import { CustomLoader } from '@components/common/CustomLoader';
 import { ArticleDetailSkeleton } from '@components/common/SkeletonLoader';
 import { SEOHead, buildBreadcrumbSchema, buildArticleSchema } from '@components/seo';
-
 import { getPrerenderedData } from '@utils/prerenderData';
+import { formatSeoDescription } from '@utils/stripMarkdown';
+import { DevotionalProvenanceCard } from '@components/common/DevotionalProvenanceCard';
 
 export const ArticleDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -103,13 +104,14 @@ export const ArticleDetail: React.FC = () => {
   const isHi = language === 'hi';
 
   const pageTitle = article.seo_title || article.displaySeoTitle || title;
-  const pageDesc =
+  const rawPageDesc =
     article.seo_description ||
     article.displaySeoDescription ||
     excerpt ||
     (isHi
       ? `${title} - सनातन धर्म, संस्कृति व भक्ति पर विस्तृत धार्मिक आलेख पढ़ें।`
       : `Read detailed spiritual article on ${title} on Aradhna Marg.`);
+  const pageDesc = formatSeoDescription(rawPageDesc, 160);
 
   const articleSchemas = [
     buildArticleSchema({
@@ -217,6 +219,15 @@ export const ArticleDetail: React.FC = () => {
               <div className="mt-4 font-hindi-body">
                 <SafeHtmlContent content={content} />
               </div>
+
+              {/* Truthful Authorship & Editorial Verification Card */}
+              <DevotionalProvenanceCard
+                type="article"
+                title={title}
+                slug={article.slug}
+                authorName={article.author_name || 'Aradhna Marg Editorial Team'}
+                publishedDate={article.publish_date || article.created_at}
+              />
 
               {/* Content Ad Unit */}
               <div className="my-8">
