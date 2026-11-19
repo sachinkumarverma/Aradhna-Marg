@@ -298,6 +298,8 @@ function buildHtml(template, options) {
     'privacy',
     'terms',
     'disclaimer',
+    'refund-policy',
+    'refund-and-cancellation-policy',
     'contact',
     'support-us',
     'donate',
@@ -582,7 +584,8 @@ async function prerenderAll() {
               <a href="/contact" style="color: #ea580c; font-weight: 600; margin-right: 1.5rem;">संपर्क करें (Contact Us) →</a>
               <a href="/privacy" style="color: #ea580c; font-weight: 600; margin-right: 1.5rem;">गोपनीयता नीति (Privacy Policy) →</a>
               <a href="/terms" style="color: #ea580c; font-weight: 600; margin-right: 1.5rem;">नियम एवं शर्तें (Terms) →</a>
-              <a href="/disclaimer" style="color: #ea580c; font-weight: 600;">अस्वीकरण (Disclaimer) →</a>
+              <a href="/disclaimer" style="color: #ea580c; font-weight: 600; margin-right: 1.5rem;">अस्वीकरण (Disclaimer) →</a>
+              <a href="/refund-policy" style="color: #ea580c; font-weight: 600;">वापसी नीति (Refund Policy) →</a>
             </p>
           </section>
         </div>
@@ -675,6 +678,68 @@ async function prerenderAll() {
       description: 'आराधना मार्ग का विधिक अस्वीकरण।',
       h1: 'अस्वीकरण (Disclaimer)',
       content: 'इस वेबसाइट पर प्रस्तुत सभी धार्मिक सामग्री व भजन केवल भक्ति एवं ज्ञानवर्धन के उद्देश्य से हैं।'
+    },
+    {
+      route: 'refund-policy',
+      title: 'वापसी नीति (Refund Policy) | Aradhna Marg',
+      description:
+        'आराधना मार्ग पर स्वैच्छिक सहयोग, अंशदान, वापसी एवं रद्दीकरण से संबंधित आधिकारिक नीति एवं दिशानिर्देश।',
+      h1: 'वापसी नीति (Refund Policy)',
+      contentHtml: `
+        <div style="line-height: 1.85; color: #334155; font-size: 1rem;">
+          <p style="margin-bottom: 1.5rem; font-size: 1.1rem; background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #fed7aa;">
+            <strong>आराधना मार्ग (aradhnamarg.com)</strong> सनातन धर्म का एक व्यक्तिगत रूप से संचालित एवं सर्वसुलभ आध्यात्मिक मंच है। हमारा संपूर्ण भक्ति साहित्य जन-जन के लिए निःशुल्क उपलब्ध है। मंच के संचालन, सर्वर व्यय एवं सनातन शोध कार्य हेतु आगंतुक स्वेच्छा से "Support Aradhna Marg" के माध्यम से सहयोग राशि दे सकते हैं।
+          </p>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">1. स्वैच्छिक सहयोग के संबंध में (About Contributions)</h2>
+            <p>आराधना मार्ग एक निःशुल्क सनातन भक्ति एवं आध्यात्मिक ज्ञान मंच है। आगंतुक वेबसाइट के रखरखाव, तकनीकी विकास एवं परिचालन खर्चों में सहयोग हेतु स्वेच्छा से अपना योगदान दे सकते हैं।</p>
+            <p style="margin-top: 0.75rem; padding: 1rem; background: #fffbeb; border-radius: 8px; border: 1px solid #fde68a;"><strong>महत्वपूर्ण:</strong> वेबसाइट पर किए जाने वाले सभी योगदान पूर्णतः स्वैच्छिक हैं और ये किसी भी उत्पाद, सदस्यता (Subscription) अथवा सशुल्क सेवा की खरीद के बदले किया गया भुगतान नहीं हैं।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">2. सहयोग की प्रकृति एवं स्वरूप (Nature of Contributions)</h2>
+            <p>"Support Aradhna Marg" सुविधा के माध्यम से किया जाने वाला प्रत्येक योगदान पूर्णतः स्वैच्छिक प्रकृति का है। सहयोग करके आगंतुक यह स्वीकार करते हैं कि यह भुगतान केवल आराधना मार्ग के सुचारु संचालन, डिजिटल अवसंरचना और निरंतर विकास में सहायता प्रदान करने के उद्देश्य से किया जा रहा है। किसी भी योगदान के बदले में किसी भौतिक उत्पाद, डिजिटल उत्पाद, एक्सक्लूसिव सदस्यता या सशुल्क सेवा का कोई वादा नहीं किया जाता है।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">3. वापसी नीति (Refund Policy)</h2>
+            <p style="margin-bottom: 0.75rem;">चूँकि सभी योगदान स्वैच्छिक होते हैं, इसलिए सफलतापूर्वक संपन्न हो चुके योगदान सामान्यतः अप्रतिदेय (Non-refundable) होते हैं। तथापि, निम्नलिखित विशिष्ट परिस्थितियों में वापसी (Refund) के अनुरोधों पर विचार किया जा सकता है:</p>
+            <ul style="margin-left: 1.5rem; line-height: 1.8;">
+              <li>एक ही सहयोग अनजाने में एक से अधिक बार प्रोसेस (Duplicate Payment) हो गया हो।</li>
+              <li>तकनीकी त्रुटि के कारण खाते से राशि कट गई हो, किंतु सहयोग सफलतापूर्वक दर्ज न हुआ हो।</li>
+              <li>किसी अनधिकृत लेन-देन (Unauthorised Transaction) की सूचना दी गई हो।</li>
+              <li>सत्यापित पेमेंट-प्रोसेसिंग त्रुटि के कारण गलत अथवा अतिरिक्त राशि काटी गई हो।</li>
+            </ul>
+            <p style="margin-top: 0.75rem; font-style: italic;">प्रत्येक प्राप्त अनुरोध की व्यक्तिगत रूप से निष्पक्ष जांच और समीक्षा की जाएगी।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">4. रद्दीकरण नीति (Cancellation Policy)</h2>
+            <p>चूँकि योगदान स्वैच्छिक होते हैं और भुगतान गेटवे के माध्यम से तत्काल प्रोसेस किए जाते हैं, इसलिए सफलतापूर्वक संपन्न हो चुके योगदान को सामान्यतः रद्द (Cancel) नहीं किया जा सकता है। यदि कोई आगंतुक भुगतान पूरा करने से पहले अपना विचार बदलते हैं, तो वे बिना आगे बढ़े भुगतान विंडो को आसानी से बंद कर सकते हैं।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">5. विफल एवं लंबित लेन-देन (Failed and Pending Transactions)</h2>
+            <p>यदि बैंक खाते से धनराशि कट जाती है किंतु पेमेंट गेटवे द्वारा विफल अथवा लंबित लेन-देन की सूचना मिलती है, तो कृपया पहले अपने बैंक स्टेटमेंट की जांच करें। अनेक मामलों में, विफल राशियां पेमेंट प्रदाता या बैंक द्वारा स्वतः ही वापस (Auto-reversed) कर दी जाती हैं। यदि निर्धारित समयावधि में राशि वापस नहीं होती, तो लेन-देन विवरण के साथ हमसे संपर्क करें।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">6. वापसी का अनुरोध कैसे करें (How to Request a Refund)</h2>
+            <p>पात्र वापसी अनुरोधों के लिए, योगदानकर्ता हमारे आधिकारिक संपर्क पृष्ठ (<a href="/contact" style="color: #ea580c; font-weight: 600;">/contact</a>) अथवा सहायता ईमेल (<a href="mailto:support@aradhnamarg.com" style="color: #ea580c; font-weight: 600;">support@aradhnamarg.com</a>) पर पूरा नाम, पंजीकृत ईमेल, ट्रांजेक्शन आईडी, तिथि, राशि, कारण एवं भुगतान प्रमाण भेजें।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">7. वापसी प्रक्रिया की समयावधि (Refund Processing Time)</h2>
+            <p>रिफंड स्वीकृत होने के बाद, धनराशि के योगदानकर्ता के खाते में दिखने का वास्तविक समय पेमेंट गेटवे, संबंधित बैंक अथवा भुगतान पद्धति (सामान्यतः 5 से 7 बैंकिंग कार्यदिवस) पर निर्भर करता है। जहां भी संभव होगा, हम आपको रिफंड की स्थिति की जानकारी ईमेल के माध्यम से उपलब्ध कराएंगे।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">8. संपर्क एवं सहायता सूत्र (Contact Us)</h2>
+            <p>स्वैच्छिक सहयोग, वापसी अथवा भुगतान से संबंधित किसी भी प्रश्न या चिंता के समाधान के लिए आगंतुक आराधना मार्ग के आधिकारिक <a href="/contact" style="color: #ea580c; font-weight: 600;">संपर्क पृष्ठ (/contact)</a> अथवा सहायता ईमेल (<a href="mailto:support@aradhnamarg.com" style="color: #ea580c; font-weight: 600;">support@aradhnamarg.com</a>) के माध्यम से संपर्क कर सकते हैं।</p>
+          </section>
+        </div>
+      `
     }
   ];
 

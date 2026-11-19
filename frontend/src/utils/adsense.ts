@@ -87,6 +87,8 @@ export const AD_EXCLUDED_PATH_PREFIXES = [
   '/privacy',
   '/terms',
   '/disclaimer',
+  '/refund-policy',
+  '/refund-and-cancellation-policy',
   '/contact',
   '/search',
   '/favourite',

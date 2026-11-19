@@ -337,6 +337,10 @@ export const Footer: React.FC = () => {
               {isHi ? 'गोपनीयता नीति (Privacy)' : 'Privacy Policy'}
             </Link>
             <span>•</span>
+            <Link to="/refund-policy" className="hover:text-white transition-colors">
+              {isHi ? 'वापसी नीति (Refund Policy)' : 'Refund Policy'}
+            </Link>
+            <span>•</span>
             <button
               type="button"
               onClick={() => {

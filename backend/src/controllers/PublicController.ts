@@ -174,10 +174,10 @@ export class PublicController {
         );
       }
 
-      let orderBy = 'ORDER BY b.created_at DESC';
-      if (sort === 'views') orderBy = 'ORDER BY b.views DESC';
-      if (sort === 'popular') orderBy = 'ORDER BY b.popularity_score DESC';
-      if (sort === 'oldest') orderBy = 'ORDER BY b.created_at ASC';
+      let orderBy = 'ORDER BY b.created_at DESC, b.slug ASC';
+      if (sort === 'views') orderBy = 'ORDER BY b.views DESC, b.slug ASC';
+      if (sort === 'popular') orderBy = 'ORDER BY b.popularity_score DESC, b.slug ASC';
+      if (sort === 'oldest') orderBy = 'ORDER BY b.created_at ASC, b.slug ASC';
 
       const whereStr = `WHERE ${whereClauses.join(' AND ')}`;
 

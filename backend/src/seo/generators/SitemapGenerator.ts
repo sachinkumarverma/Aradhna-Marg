@@ -35,7 +35,8 @@ export class SitemapGenerator {
       { loc: `${this.baseUrl}/support-us`, priority: '0.4', changefreq: 'monthly' },
       { loc: `${this.baseUrl}/terms`, priority: '0.3', changefreq: 'monthly' },
       { loc: `${this.baseUrl}/privacy`, priority: '0.3', changefreq: 'monthly' },
-      { loc: `${this.baseUrl}/disclaimer`, priority: '0.3', changefreq: 'monthly' }
+      { loc: `${this.baseUrl}/disclaimer`, priority: '0.3', changefreq: 'monthly' },
+      { loc: `${this.baseUrl}/refund-policy`, priority: '0.3', changefreq: 'monthly' }
     ];
 
     let entries = staticRoutes
@@ -54,22 +55,34 @@ export class SitemapGenerator {
     try {
       const [bhajans, articles, festivals, puranas, categories, deities] = await Promise.all([
         db
-          .query(`SELECT slug, updated_at FROM bhajans WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL`)
+          .query(
+            `SELECT slug, updated_at FROM bhajans WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL ORDER BY created_at DESC, slug ASC`
+          )
           .catch(() => ({ rows: [] })),
         db
-          .query(`SELECT slug, updated_at FROM articles WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL`)
+          .query(
+            `SELECT slug, updated_at FROM articles WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL ORDER BY created_at DESC, slug ASC`
+          )
           .catch(() => ({ rows: [] })),
         db
-          .query(`SELECT slug, id, updated_at FROM festivals WHERE UPPER(status::text) = 'PUBLISHED'`)
+          .query(
+            `SELECT slug, id, updated_at FROM festivals WHERE UPPER(status::text) = 'PUBLISHED' ORDER BY created_at DESC, slug ASC`
+          )
           .catch(() => ({ rows: [] })),
         db
-          .query(`SELECT slug, updated_at FROM puranas WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL`)
+          .query(
+            `SELECT slug, updated_at FROM puranas WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL ORDER BY display_order ASC, slug ASC`
+          )
           .catch(() => ({ rows: [] })),
         db
-          .query(`SELECT slug, id, updated_at FROM categories WHERE UPPER(status::text) = 'PUBLISHED'`)
+          .query(
+            `SELECT slug, id, updated_at FROM categories WHERE UPPER(status::text) = 'PUBLISHED' ORDER BY slug ASC`
+          )
           .catch(() => ({ rows: [] })),
         db
-          .query(`SELECT slug, id, updated_at FROM deities WHERE UPPER(status::text) = 'ACTIVE' AND deleted_at IS NULL`)
+          .query(
+            `SELECT slug, id, updated_at FROM deities WHERE UPPER(status::text) = 'ACTIVE' AND deleted_at IS NULL ORDER BY slug ASC`
+          )
           .catch(() => ({ rows: [] }))
       ]);
 
@@ -129,7 +142,7 @@ export class SitemapGenerator {
   public async generateBhajansSitemap(): Promise<string> {
     try {
       const { rows: bhajans } = await db.query(
-        `SELECT slug, updated_at FROM bhajans WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL`
+        `SELECT slug, updated_at FROM bhajans WHERE UPPER(status::text) = 'PUBLISHED' AND deleted_at IS NULL ORDER BY created_at DESC, slug ASC`
       );
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
