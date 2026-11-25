@@ -41,7 +41,8 @@ const STATIC_ROUTES = [
   { path: 'terms', changefreq: 'monthly', priority: '0.3' },
   { path: 'privacy', changefreq: 'monthly', priority: '0.3' },
   { path: 'disclaimer', changefreq: 'monthly', priority: '0.3' },
-  { path: 'refund-policy', changefreq: 'monthly', priority: '0.3' }
+  { path: 'refund-policy', changefreq: 'monthly', priority: '0.3' },
+  { path: 'shipping-policy', changefreq: 'monthly', priority: '0.3' }
 ];
 
 const KNOWN_CATEGORY_SLUGS = {

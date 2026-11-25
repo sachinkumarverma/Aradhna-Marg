@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Sparkles, Send, Mail, BookOpen, Calendar, ShieldCheck, CheckCircle2, HandHeart } from 'lucide-react';
+import {
+  Heart,
+  Sparkles,
+  Send,
+  Mail,
+  Phone,
+  BookOpen,
+  Calendar,
+  ShieldCheck,
+  CheckCircle2,
+  HandHeart
+} from 'lucide-react';
 import { useTranslation } from '@i18n/LanguageContext';
 import toast from 'react-hot-toast';
 
@@ -315,59 +326,81 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* 3. Bottom Legal & Copyright Bar */}
-        <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <p className="text-center md:text-left">
-            © {new Date().getFullYear()} <strong className="text-white font-bold">Aradhna Marg</strong>.{' '}
-            {isHi
-              ? 'समस्त अधिकार सुरक्षित। सनातन धर्म सेवा हेतु समर्पित।'
-              : 'All rights reserved. Dedicated to Sanatan Dharma.'}
-          </p>
+        {/* 3. Bottom Legal & Copyright Bar - Structured 2-Line Desktop Layout */}
+        <div className="pt-6 border-t border-white/10 space-y-3.5 text-xs text-slate-400">
+          {/* Line 1: Copyright & Legal Policy Links */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+            <p className="shrink-0">
+              © {new Date().getFullYear()} <strong className="text-white font-bold">Aradhna Marg</strong>.{' '}
+              {isHi ? 'समस्त अधिकार सुरक्षित।' : 'All rights reserved.'}
+            </p>
 
-          <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-5 text-slate-400">
-            <Link to="/disclaimer" className="hover:text-white transition-colors">
-              {isHi ? 'अस्वीकरण (Disclaimer)' : 'Disclaimer'}
-            </Link>
-            <span>•</span>
-            <Link to="/terms" className="hover:text-white transition-colors">
-              {isHi ? 'नियम व शर्तें (Terms)' : 'Terms of Service'}
-            </Link>
-            <span>•</span>
-            <Link to="/privacy" className="hover:text-white transition-colors">
-              {isHi ? 'गोपनीयता नीति (Privacy)' : 'Privacy Policy'}
-            </Link>
-            <span>•</span>
-            <Link to="/refund-policy" className="hover:text-white transition-colors">
-              {isHi ? 'वापसी नीति (Refund Policy)' : 'Refund Policy'}
-            </Link>
-            <span>•</span>
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  const w = window as any;
-                  if (w.googlefc && typeof w.googlefc.showRevocationMessage === 'function') {
-                    w.googlefc.showRevocationMessage();
-                  } else {
-                    window.location.href = '/privacy#ad-settings';
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-2.5 sm:gap-4 text-slate-400">
+              <Link to="/disclaimer" className="hover:text-white transition-colors">
+                {isHi ? 'अस्वीकरण (Disclaimer)' : 'Disclaimer'}
+              </Link>
+              <span className="text-slate-600">•</span>
+              <Link to="/terms" className="hover:text-white transition-colors">
+                {isHi ? 'नियम व शर्तें (Terms)' : 'Terms of Service'}
+              </Link>
+              <span className="text-slate-600">•</span>
+              <Link to="/privacy" className="hover:text-white transition-colors">
+                {isHi ? 'गोपनीयता नीति (Privacy)' : 'Privacy Policy'}
+              </Link>
+              <span className="text-slate-600">•</span>
+              <Link to="/refund-policy" className="hover:text-white transition-colors">
+                {isHi ? 'वापसी नीति (Refund)' : 'Refund Policy'}
+              </Link>
+              <span className="text-slate-600">•</span>
+              <Link to="/shipping-policy" className="hover:text-white transition-colors">
+                {isHi ? 'शिपिंग नीति (Shipping)' : 'Shipping Policy'}
+              </Link>
+              <span className="text-slate-600">•</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    const w = window as any;
+                    if (w.googlefc && typeof w.googlefc.showRevocationMessage === 'function') {
+                      w.googlefc.showRevocationMessage();
+                    } else {
+                      window.location.href = '/privacy#ad-settings';
+                    }
                   }
-                }
-              }}
-              className="hover:text-white transition-colors cursor-pointer"
-            >
-              {isHi ? 'कुकी सेटिंग्स (Cookies)' : 'Cookie Settings'}
-            </button>
-            {settings.contactEmail && (
-              <>
-                <span>•</span>
-                <a
-                  href={`mailto:${settings.contactEmail}`}
-                  className="text-amber-400 hover:text-amber-300 font-medium transition-colors"
-                >
-                  {settings.contactEmail}
-                </a>
-              </>
-            )}
+                }}
+                className="hover:text-white transition-colors cursor-pointer"
+              >
+                {isHi ? 'कुकीज (Cookies)' : 'Cookie Settings'}
+              </button>
+            </div>
+          </div>
+
+          {/* Line 2: Merchant Operator, Address & Direct Helpline */}
+          <div className="pt-2 flex flex-col md:flex-row items-center justify-between gap-2 text-center md:text-left text-[11px] sm:text-xs text-slate-400">
+            <p className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
+              <span>{isHi ? 'संचालक:' : 'Operated by:'}</span>
+              <strong className="text-slate-200 font-semibold">Sachin Kumar Verma</strong>
+              <span className="text-slate-600">•</span>
+              <span>Sector 24, Gandhinagar, Gujarat - 382016</span>
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 text-slate-400">
+              <a
+                href="tel:+917000646227"
+                className="hover:text-amber-300 font-medium transition-colors inline-flex items-center gap-1.5"
+              >
+                <Phone className="w-3.5 h-3.5 text-saffron shrink-0" />
+                <span>+91 7000646227</span>
+              </a>
+              <span className="text-slate-600">•</span>
+              <a
+                href={`mailto:${settings.contactEmail || 'support@aradhnamarg.com'}`}
+                className="text-amber-400 hover:text-amber-300 font-medium transition-colors inline-flex items-center gap-1.5"
+              >
+                <Mail className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>{settings.contactEmail || 'support@aradhnamarg.com'}</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

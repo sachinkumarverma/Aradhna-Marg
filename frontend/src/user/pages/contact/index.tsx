@@ -402,29 +402,34 @@ export const ContactPage: React.FC = () => {
                 </a>
               </div>
 
-              {settings.contactPhone && (
-                <div className="pt-3 border-t border-gray-100">
-                  <p className="text-xs text-slate-500 font-medium mb-1.5">{isHi ? 'दूरभाष (Phone):' : 'Telephone:'}</p>
-                  <a
-                    href={`tel:${settings.contactPhone}`}
-                    className="inline-flex items-center gap-2 text-slate-700 hover:text-saffron font-bold text-sm transition-colors"
-                  >
-                    <Phone className="w-4 h-4 text-saffron" />
-                    <span>{settings.contactPhone}</span>
-                  </a>
-                </div>
-              )}
+              <div className="pt-3 border-t border-gray-100">
+                <p className="text-xs text-slate-500 font-medium mb-1">
+                  {isHi ? 'संचालक / विधिक नाम:' : 'Operating Entity / Legal Name:'}
+                </p>
+                <p className="text-xs sm:text-sm text-slate-800 font-bold leading-relaxed">Sachin Kumar Verma</p>
+              </div>
 
-              {settings.contactAddress && (
-                <div className="pt-3 border-t border-gray-100">
-                  <p className="text-xs text-slate-500 font-medium mb-1">
-                    {isHi ? 'पता (Address):' : 'Office Address:'}
-                  </p>
-                  <p className="text-xs text-slate-600 whitespace-pre-line leading-relaxed">
-                    {settings.contactAddress}
-                  </p>
-                </div>
-              )}
+              <div className="pt-3 border-t border-gray-100">
+                <p className="text-xs text-slate-500 font-medium mb-1">
+                  {isHi ? 'पंजीकृत पता (Registered Address):' : 'Registered Postal Address:'}
+                </p>
+                <p className="text-xs text-slate-600 whitespace-pre-line leading-relaxed font-medium">
+                  {settings.contactAddress || 'Sector 24, Gandhinagar, Gujarat - 382016, India'}
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-gray-100">
+                <p className="text-xs text-slate-500 font-medium mb-1.5">
+                  {isHi ? 'दूरभाष (Phone):' : 'Telephone / Helpline:'}
+                </p>
+                <a
+                  href={`tel:${settings.contactPhone || '+917000646227'}`}
+                  className="inline-flex items-center gap-2 text-slate-700 hover:text-saffron font-bold text-sm transition-colors"
+                >
+                  <Phone className="w-4 h-4 text-saffron" />
+                  <span>{settings.contactPhone || '+91 7000646227'}</span>
+                </a>
+              </div>
             </div>
 
             {/* Official Social Media Channels */}

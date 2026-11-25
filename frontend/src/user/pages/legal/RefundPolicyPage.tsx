@@ -410,6 +410,18 @@ export const RefundPolicyPage: React.FC = () => {
                   <strong className="text-darkBrown font-bold">{isHi ? 'वेबसाइट:' : 'Website:'}</strong>{' '}
                   <span className="text-slate-700">https://aradhnamarg.com</span>
                 </p>
+                <p>
+                  <strong className="text-darkBrown font-bold">
+                    {isHi ? 'संचालक / विधिक नाम:' : 'Operating Entity / Legal Name:'}
+                  </strong>{' '}
+                  <span className="text-slate-800 font-semibold">Sachin Kumar Verma</span>
+                </p>
+                <p>
+                  <strong className="text-darkBrown font-bold">
+                    {isHi ? 'पंजीकृत पता (Registered Address):' : 'Registered Postal Address:'}
+                  </strong>{' '}
+                  <span className="text-slate-700">Sector 24, Gandhinagar, Gujarat - 382016, India</span>
+                </p>
                 {contactEmail && (
                   <p>
                     <strong className="text-darkBrown font-bold">{isHi ? 'सहायता ईमेल:' : 'Email:'}</strong>{' '}
@@ -418,6 +430,14 @@ export const RefundPolicyPage: React.FC = () => {
                     </a>
                   </p>
                 )}
+                <p>
+                  <strong className="text-darkBrown font-bold">
+                    {isHi ? 'दूरभाष (Helpline):' : 'Phone / Helpline:'}
+                  </strong>{' '}
+                  <a href="tel:+917000646227" className="font-medium text-saffron hover:underline">
+                    +91 7000646227
+                  </a>
+                </p>
               </div>
             </div>
           </div>
@@ -454,6 +474,14 @@ export const RefundPolicyPage: React.FC = () => {
               className="inline-flex items-center justify-center gap-2 h-12 px-7 bg-white border border-orange-200 text-gray-800 rounded-full font-bold text-base sm:text-lg hover:bg-orange-50/50 transition-all shadow-xs"
             >
               <span className="inline-flex items-center">{isHi ? 'नियम व शर्तें (Terms)' : 'Terms of Service'}</span>
+              <ArrowRight className="w-5 h-5 text-saffron shrink-0" />
+            </Link>
+
+            <Link
+              to="/shipping-policy"
+              className="inline-flex items-center justify-center gap-2 h-12 px-7 bg-white border border-orange-200 text-gray-800 rounded-full font-bold text-base sm:text-lg hover:bg-orange-50/50 transition-all shadow-xs"
+            >
+              <span className="inline-flex items-center">{isHi ? 'शिपिंग नीति (Shipping)' : 'Shipping Policy'}</span>
               <ArrowRight className="w-5 h-5 text-saffron shrink-0" />
             </Link>
 

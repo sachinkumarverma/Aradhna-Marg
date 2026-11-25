@@ -36,7 +36,8 @@ export class SitemapGenerator {
       { loc: `${this.baseUrl}/terms`, priority: '0.3', changefreq: 'monthly' },
       { loc: `${this.baseUrl}/privacy`, priority: '0.3', changefreq: 'monthly' },
       { loc: `${this.baseUrl}/disclaimer`, priority: '0.3', changefreq: 'monthly' },
-      { loc: `${this.baseUrl}/refund-policy`, priority: '0.3', changefreq: 'monthly' }
+      { loc: `${this.baseUrl}/refund-policy`, priority: '0.3', changefreq: 'monthly' },
+      { loc: `${this.baseUrl}/shipping-policy`, priority: '0.3', changefreq: 'monthly' }
     ];
 
     let entries = staticRoutes

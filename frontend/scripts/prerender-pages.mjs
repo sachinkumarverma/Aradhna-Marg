@@ -300,6 +300,7 @@ function buildHtml(template, options) {
     'disclaimer',
     'refund-policy',
     'refund-and-cancellation-policy',
+    'shipping-policy',
     'contact',
     'support-us',
     'donate',
@@ -596,7 +597,21 @@ async function prerenderAll() {
       title: 'संपर्क करें (Contact Us) | Aradhna Marg',
       description: 'आराधना मार्ग टीम से संपर्क करें। अपने सुझाव, प्रश्न और भक्ति संदेश हमें भेजें।',
       h1: 'संपर्क करें (Contact Us)',
-      content: 'आराधना मार्ग से जुड़ने अथवा किसी भी प्रकार की सहायता के लिए आप हमसे संपर्क कर सकते हैं।'
+      contentHtml: `
+        <div style="line-height: 1.85; color: #334155; font-size: 1rem;">
+          <p style="margin-bottom: 1.5rem; font-size: 1.1rem; background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #fed7aa;">
+            आराधना मार्ग से जुड़ने, सुझाव भेजने अथवा किसी भी प्रकार की सहायता व विधिक जानकारी हेतु आप हमसे संपर्क कर सकते हैं।
+          </p>
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">संचालक एवं आधिकारिक संपर्क सूत्र (Contact & Legal Disclosures)</h2>
+            <p style="margin-bottom: 0.5rem;"><strong>संचालक / विधिक नाम (Legal Name):</strong> Sachin Kumar Verma</p>
+            <p style="margin-bottom: 0.5rem;"><strong>पंजीकृत डाक पता (Registered Address):</strong> Sector 24, Gandhinagar, Gujarat - 382016, India</p>
+            <p style="margin-bottom: 0.5rem;"><strong>दूरभाष (Helpline):</strong> <a href="tel:+917000646227" style="color: #ea580c; font-weight: 600;">+91 7000646227</a></p>
+            <p style="margin-bottom: 0.5rem;"><strong>सहायता ईमेल (Support Email):</strong> <a href="mailto:support@aradhnamarg.com" style="color: #ea580c; font-weight: 600;">support@aradhnamarg.com</a></p>
+            <p style="margin-bottom: 0.5rem;"><strong>वेबसाइट:</strong> https://aradhnamarg.com</p>
+          </section>
+        </div>
+      `
     },
     {
       route: 'terms',
@@ -737,6 +752,44 @@ async function prerenderAll() {
           <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
             <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">8. संपर्क एवं सहायता सूत्र (Contact Us)</h2>
             <p>स्वैच्छिक सहयोग, वापसी अथवा भुगतान से संबंधित किसी भी प्रश्न या चिंता के समाधान के लिए आगंतुक आराधना मार्ग के आधिकारिक <a href="/contact" style="color: #ea580c; font-weight: 600;">संपर्क पृष्ठ (/contact)</a> अथवा सहायता ईमेल (<a href="mailto:support@aradhnamarg.com" style="color: #ea580c; font-weight: 600;">support@aradhnamarg.com</a>) के माध्यम से संपर्क कर सकते हैं।</p>
+          </section>
+        </div>
+      `
+    },
+    {
+      route: 'shipping-policy',
+      title: 'शिपिंग एवं डिलीवरी नीति (Shipping & Delivery Policy) | Aradhna Marg',
+      description:
+        'आराधना मार्ग की आधिकारिक शिपिंग एवं डिलीवरी नीति। हमारे 100% डिजिटल भक्ति साहित्य एवं स्वैच्छिक सहयोग की तात्कालिक इलेक्ट्रॉनिक डिलीवरी की जानकारी।',
+      h1: 'शिपिंग एवं डिलीवरी नीति (Shipping & Delivery Policy)',
+      contentHtml: `
+        <div style="line-height: 1.85; color: #334155; font-size: 1rem;">
+          <p style="margin-bottom: 1.5rem; font-size: 1.1rem; background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #fed7aa;">
+            <strong>आराधना मार्ग (aradhnamarg.com)</strong> सनातन धर्म का एक व्यक्तिगत रूप से संचालित एवं सर्वसुलभ आध्यात्मिक मंच है। हमारा संपूर्ण भक्ति साहित्य जन-जन के लिए 100% डिजिटल एवं निःशुल्क उपलब्ध है। हम किसी भी प्रकार के भौतिक उत्पाद (Physical Goods) की बिक्री अथवा कूरियर शिपिंग नहीं करते हैं।
+          </p>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">1. शत-प्रतिशत डिजिटल सामग्री एवं त्वरित उपलब्धता (100% Digital Access)</h2>
+            <p>आराधना मार्ग पर उपलब्ध सभी भजन, 18 महापुराण, आरती, चालीसा, स्तोत्र एवं पर्व-कथाएं डिजिटल रूप में हैं। उपयोगकर्ता जैसे ही वेबसाइट खोलते हैं, वे तुरंत इन्हें बिना किसी प्रतीक्षा अथवा शिपिंग शुल्क के पढ़ व सुन सकते हैं।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">2. भौतिक शिपिंग एवं कूरियर से छूट (Physical Shipping Exemption)</h2>
+            <p>हम किसी भी प्रकार की भौतिक पुस्तक, मूर्ति, पूजा सामग्री अथवा हार्ड-कॉपी उत्पाद नहीं बेचते या कूरियर से नहीं भेजते। इसलिए कोई शिपिंग शुल्क, कूरियर ट्रैकिंग नंबर (AWB) अथवा पार्सल डिलीवरी लागू नहीं होती है।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">3. स्वैच्छिक सहयोग एवं डिजिटल पावती (Voluntary Contributions)</h2>
+            <p>"Support Aradhna Marg" के अंतर्गत किया गया सहयोग पूर्णतः स्वैच्छिक है। इसके बदले कोई भौतिक वस्तु डिलीवर नहीं की जाती। सफल सहयोग के उपरांत स्क्रीन पर तात्कालिक रसीद और ईमेल पर पावती प्रेषित की जाती है।</p>
+          </section>
+
+          <section style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid #fed7aa; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #1c1917; margin-bottom: 0.75rem;">4. संचालक एवं विधिक जानकारी (Operator & Contact)</h2>
+            <p><strong>संचालक / विधिक नाम:</strong> Sachin Kumar Verma<br />
+            <strong>पंजीकृत पता:</strong> Sector 24, Gandhinagar, Gujarat - 382016, India<br />
+            <strong>दूरभाष (Helpline):</strong> <a href="tel:+917000646227" style="color: #ea580c; font-weight: 600;">+91 7000646227</a><br />
+            <strong>सहायता ईमेल:</strong> <a href="mailto:support@aradhnamarg.com" style="color: #ea580c; font-weight: 600;">support@aradhnamarg.com</a><br />
+            <strong>संपर्क प्रपत्र:</strong> <a href="/contact" style="color: #ea580c; font-weight: 600;">/contact</a></p>
           </section>
         </div>
       `

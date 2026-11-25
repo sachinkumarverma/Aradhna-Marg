@@ -123,6 +123,7 @@ describe('AdSense & Devotional SEO Readiness Audit', () => {
       assert.ok(footerContent.includes('/terms'), 'Must link to /terms');
       assert.ok(footerContent.includes('/disclaimer'), 'Must link to /disclaimer');
       assert.ok(footerContent.includes('/refund-policy'), 'Must link to /refund-policy');
+      assert.ok(footerContent.includes('/shipping-policy'), 'Must link to /shipping-policy');
     });
   });
 
@@ -162,6 +163,7 @@ describe('AdSense & Devotional SEO Readiness Audit', () => {
       assert.ok(indexHtml.includes('/terms'));
       assert.ok(indexHtml.includes('/disclaimer'));
       assert.ok(indexHtml.includes('/refund-policy'));
+      assert.ok(indexHtml.includes('/shipping-policy'));
       assert.ok(indexHtml.includes('/contact'));
       assert.ok(indexHtml.includes('/favorites'));
       assert.ok(indexHtml.includes('/admin'));

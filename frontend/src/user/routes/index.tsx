@@ -42,6 +42,9 @@ const PrivacyPolicyPage = lazyWithRetry(() =>
 const RefundPolicyPage = lazyWithRetry(() =>
   import('@user/pages/legal').then((m) => ({ default: m.RefundPolicyPage }))
 );
+const ShippingPolicyPage = lazyWithRetry(() =>
+  import('@user/pages/legal').then((m) => ({ default: m.ShippingPolicyPage }))
+);
 const AboutPage = lazyWithRetry(() => import('@user/pages/legal').then((m) => ({ default: m.AboutPage })));
 const DonatePage = lazyWithRetry(() => import('@user/pages/donate').then((m) => ({ default: m.DonatePage })));
 const ContactPage = lazyWithRetry(() => import('@user/pages/contact').then((m) => ({ default: m.ContactPage })));
@@ -179,6 +182,10 @@ export const userRoutes: RouteObject[] = [
       {
         path: 'refund-policy',
         element: <RefundPolicyPage />
+      },
+      {
+        path: 'shipping-policy',
+        element: <ShippingPolicyPage />
       },
       {
         path: 'refund-and-cancellation-policy',

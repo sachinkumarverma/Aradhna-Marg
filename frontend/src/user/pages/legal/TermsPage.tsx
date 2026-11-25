@@ -369,6 +369,70 @@ export const TermsPage: React.FC = () => {
               </p>
             </div>
           </div>
+
+          {/* Section 10: Operator & Legal Information */}
+          <div className="bg-white rounded-2xl p-6 sm:p-10 border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
+            <h2
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold text-darkBrown mb-4 tracking-tight font-hindi-heading`}
+            >
+              {isHi ? '10. संचालक एवं विधिक सूचना (Operator & Legal Information)' : '10. Operator & Legal Information'}
+            </h2>
+            <div
+              className={`text-gray-700 space-y-4 text-[18px] sm:text-[19px] md:text-[20px] leading-[1.85] font-normal ${isHi ? 'font-hindi-body' : 'font-legal'}`}
+            >
+              <p>
+                {isHi
+                  ? 'आराधना मार्ग (aradhnamarg.com) एक व्यक्तिगत रूप से संचालित सनातन भक्ति मंच है। विधिक संपर्क एवं सेवा शर्तों से संबंधित विवरण निम्नलिखित हैं:'
+                  : 'Aradhna Marg (aradhnamarg.com) is an individually operated devotional platform. Legal entity and operating disclosures are provided below:'}
+              </p>
+              <div className="pt-2 space-y-2.5">
+                <p>
+                  <strong className="text-darkBrown font-bold">
+                    {isHi ? 'संचालक / विधिक नाम:' : 'Operating Entity / Legal Name:'}
+                  </strong>{' '}
+                  <span className="text-slate-800 font-semibold">Sachin Kumar Verma</span>
+                </p>
+                <p>
+                  <strong className="text-darkBrown font-bold">
+                    {isHi ? 'पंजीकृत पता (Registered Address):' : 'Registered Postal Address:'}
+                  </strong>{' '}
+                  <span className="text-slate-700">Sector 24, Gandhinagar, Gujarat - 382016, India</span>
+                </p>
+                <p>
+                  <strong className="text-darkBrown font-bold">{isHi ? 'सहायता ईमेल:' : 'Official Email:'}</strong>{' '}
+                  <a href="mailto:support@aradhnamarg.com" className="font-medium text-saffron hover:underline">
+                    support@aradhnamarg.com
+                  </a>
+                </p>
+                <p>
+                  <strong className="text-darkBrown font-bold">
+                    {isHi ? 'दूरभाष (Helpline):' : 'Phone / Helpline:'}
+                  </strong>{' '}
+                  <a href="tel:+917000646227" className="font-medium text-saffron hover:underline">
+                    +91 7000646227
+                  </a>
+                </p>
+                <p>
+                  <strong className="text-darkBrown font-bold">
+                    {isHi ? 'संबंधित नीतियां:' : 'Related Policies:'}
+                  </strong>{' '}
+                  <span className="text-slate-700">
+                    <Link to="/privacy" className="text-saffron hover:underline">
+                      Privacy Policy
+                    </Link>{' '}
+                    •{' '}
+                    <Link to="/refund-policy" className="text-saffron hover:underline">
+                      Refund Policy
+                    </Link>{' '}
+                    •{' '}
+                    <Link to="/shipping-policy" className="text-saffron hover:underline">
+                      Shipping & Delivery Policy
+                    </Link>
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Contact & Navigation Footer Card */}
@@ -396,12 +460,18 @@ export const TermsPage: React.FC = () => {
             </Link>
 
             <Link
-              to="/disclaimer"
+              to="/shipping-policy"
               className="inline-flex items-center justify-center gap-2 h-12 px-7 bg-white border border-orange-200 text-gray-800 rounded-full font-bold text-base sm:text-lg hover:bg-orange-50/50 transition-all shadow-xs"
             >
-              <span className="inline-flex items-center">
-                {isHi ? 'अस्वीकरण पढ़ें (Disclaimer)' : 'Read Disclaimer'}
-              </span>
+              <span className="inline-flex items-center">{isHi ? 'शिपिंग नीति (Shipping)' : 'Shipping Policy'}</span>
+              <ArrowRight className="w-5 h-5 text-saffron shrink-0" />
+            </Link>
+
+            <Link
+              to="/refund-policy"
+              className="inline-flex items-center justify-center gap-2 h-12 px-7 bg-white border border-orange-200 text-gray-800 rounded-full font-bold text-base sm:text-lg hover:bg-orange-50/50 transition-all shadow-xs"
+            >
+              <span className="inline-flex items-center">{isHi ? 'वापसी नीति (Refund)' : 'Refund Policy'}</span>
               <ArrowRight className="w-5 h-5 text-saffron shrink-0" />
             </Link>
 
