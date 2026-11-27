@@ -10,6 +10,7 @@ import { CustomLoader } from '@components/common/CustomLoader';
 import { CollectionDetailSkeleton } from '@components/common/SkeletonLoader';
 import { AdUnit } from '@components/common/AdUnit';
 import { SEOHead, buildBreadcrumbSchema } from '@components/seo';
+import { isNotFoundError } from '@utils/isNotFoundError';
 
 export const CollectionDetails: React.FC = () => {
   const { id } = useParams();
@@ -21,15 +22,22 @@ export const CollectionDetails: React.FC = () => {
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
       if (!id) return;
       setLoading(true);
+      setIsNotFound(false);
       try {
         if (collectionType === 'gods' || collectionType === 'deities') {
           const res = await PublicApi.getDeityBySlug(id);
-          const deity = res.deity;
+          const deity = res?.deity;
+          if (!deity) {
+            setIsNotFound(true);
+            setData(null);
+            return;
+          }
           setData({
             slug: deity?.slug,
             title: getLocalizedField(deity, 'name') || (language === 'hi' ? 'देवी-देवता' : 'Deity'),
@@ -45,7 +53,12 @@ export const CollectionDetails: React.FC = () => {
           });
         } else if (collectionType === 'categories') {
           const res = await PublicApi.getCategoryBySlug(id);
-          const cat = res.category;
+          const cat = res?.category;
+          if (!cat) {
+            setIsNotFound(true);
+            setData(null);
+            return;
+          }
           setData({
             slug: cat?.slug,
             title: getLocalizedField(cat, 'name') || (language === 'hi' ? 'श्रेणी' : 'Category'),
@@ -58,6 +71,11 @@ export const CollectionDetails: React.FC = () => {
           });
         } else {
           const res = await PublicApi.getFestivalBySlug(id);
+          if (!res) {
+            setIsNotFound(true);
+            setData(null);
+            return;
+          }
           setData({
             slug: res.slug,
             title: res.displayName || getLocalizedField(res, 'name') || 'Festival',
@@ -73,6 +91,9 @@ export const CollectionDetails: React.FC = () => {
         }
       } catch (err) {
         console.error('Failed to load collection details:', err);
+        if (isNotFoundError(err)) {
+          setIsNotFound(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -96,8 +117,10 @@ export const CollectionDetails: React.FC = () => {
   if (!data) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-24 text-center px-4">
-        <SEOHead title="Collection Not Found" noIndex={true} />
-        <h2 className="text-3xl font-black text-darkBrown mb-4">{t('errors.contentNotAvailable')}</h2>
+        <SEOHead title={isNotFound ? 'Collection Not Found' : 'Temporarily Unavailable'} noIndex={isNotFound} />
+        <h2 className="text-3xl font-black text-darkBrown mb-4">
+          {isNotFound ? t('errors.contentNotAvailable') : t('errors.failedToLoad')}
+        </h2>
         <Link to="/" className="px-6 py-3 bg-saffron text-white rounded-full font-bold shadow-md hover:brightness-90">
           {t('errors.returnHome')}
         </Link>

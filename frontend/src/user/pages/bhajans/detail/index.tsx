@@ -22,6 +22,7 @@ import { SafeHtmlContent } from '@components/common/SafeHtmlContent';
 import { RelatedContentSection } from '@components/common/RelatedContentSection';
 import { Breadcrumb } from '@components/common/Breadcrumb';
 import { PublicApi } from '@api/publicApi';
+import { isNotFoundError } from '@utils/isNotFoundError';
 import { useClipboard } from '@hooks/useClipboard';
 import { SocialShareButtons } from '@components/common/SocialShareButtons';
 import { AdUnit } from '@components/common/AdUnit';
@@ -95,6 +96,7 @@ export const BhajanDetail: React.FC = () => {
   });
   const [relatedData, setRelatedData] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(() => !bhajan);
+  const [isNotFound, setIsNotFound] = useState<boolean>(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [isEnglishLyricsExpanded, setIsEnglishLyricsExpanded] = useState(false);
   const [englishCopied, setEnglishCopied] = useState(false);
@@ -108,6 +110,7 @@ export const BhajanDetail: React.FC = () => {
       if (!bhajan) {
         setLoading(true);
       }
+      setIsNotFound(false);
       try {
         const [bhajanRes, relatedRes] = await Promise.all([
           PublicApi.getBhajanBySlug(slug),
@@ -116,10 +119,15 @@ export const BhajanDetail: React.FC = () => {
 
         if (bhajanRes) {
           setBhajan(bhajanRes);
+        } else {
+          setIsNotFound(true);
         }
         setRelatedData(relatedRes || {});
       } catch (error) {
         console.error('Failed to fetch bhajan detail:', error);
+        if (isNotFoundError(error)) {
+          setIsNotFound(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -164,7 +172,7 @@ export const BhajanDetail: React.FC = () => {
                 ? 'Video Not Found'
                 : 'Bhajan Not Found'
           }
-          noIndex={true}
+          noIndex={isNotFound}
         />
         <h2 className="text-3xl font-black text-darkBrown mb-4">
           {isHi

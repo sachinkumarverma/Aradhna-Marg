@@ -15,6 +15,7 @@ import { SEOHead, buildBreadcrumbSchema, buildArticleSchema } from '@components/
 import { getPrerenderedData } from '@utils/prerenderData';
 import { formatSeoDescription } from '@utils/stripMarkdown';
 import { DevotionalProvenanceCard } from '@components/common/DevotionalProvenanceCard';
+import { isNotFoundError } from '@utils/isNotFoundError';
 
 export const ArticleDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -28,6 +29,7 @@ export const ArticleDetail: React.FC = () => {
   });
   const [relatedData, setRelatedData] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(() => !article);
+  const [isNotFound, setIsNotFound] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchArticleData = async () => {
@@ -35,10 +37,16 @@ export const ArticleDetail: React.FC = () => {
       if (!article) {
         setLoading(true);
       }
+      setIsNotFound(false);
+      let fetchFailed = false;
       try {
         const [articleRes, relatedRes] = await Promise.all([
           PublicApi.getArticleBySlug(slug, language).catch((err) => {
             console.error('Failed to fetch article by slug:', err);
+            fetchFailed = true;
+            if (isNotFoundError(err)) {
+              setIsNotFound(true);
+            }
             return null;
           }),
           PublicApi.getArticleRelated(slug).catch((err) => {
@@ -49,10 +57,15 @@ export const ArticleDetail: React.FC = () => {
 
         if (articleRes) {
           setArticle(articleRes);
+        } else if (!fetchFailed) {
+          setIsNotFound(true);
         }
         setRelatedData(relatedRes || {});
       } catch (error) {
         console.error('Failed to fetch article detail:', error);
+        if (isNotFoundError(error)) {
+          setIsNotFound(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -84,7 +97,16 @@ export const ArticleDetail: React.FC = () => {
   if (!article) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4">
-        <SEOHead title={language === 'hi' ? 'धार्मिक लेख उपलब्ध नहीं है' : 'Article Not Found'} noIndex={true} />
+        <SEOHead
+          title={
+            isNotFound
+              ? language === 'hi'
+                ? 'धार्मिक लेख उपलब्ध नहीं है'
+                : 'Article Not Found'
+              : 'Temporarily Unavailable'
+          }
+          noIndex={isNotFound}
+        />
         <h2 className="text-2xl font-bold text-darkBrown mb-4 font-hindi-heading">{t('errors.contentNotAvailable')}</h2>
         <p className="text-slate-600 mb-6 font-hindi-body">{t('errors.failedToLoad')}</p>
         <Link

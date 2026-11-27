@@ -19,13 +19,14 @@ import { SEOHead, buildBreadcrumbSchema, buildBookSchema } from '@components/seo
 import { getPrerenderedData } from '@utils/prerenderData';
 import { formatSeoDescription } from '@utils/stripMarkdown';
 import { DevotionalProvenanceCard } from '@components/common/DevotionalProvenanceCard';
+import { isNotFoundError } from '@utils/isNotFoundError';
 
 export const PuranDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
   const { slug } = useParams();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['puran-public', slug, language],
     queryFn: async () => {
       const res = await apiClient.get(`/v1/puranas/${slug}`);
@@ -155,9 +156,15 @@ export const PuranDetail: React.FC = () => {
   }
 
   if (!data) {
+    const isNotFound = isNotFoundError(error) || (!error && !isLoading);
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] p-4 font-hindi-body">
-        <SEOHead title={language === 'hi' ? 'पुराण उपलब्ध नहीं है' : 'Purana Not Found'} noIndex={true} />
+        <SEOHead
+          title={
+            isNotFound ? (language === 'hi' ? 'पुराण उपलब्ध नहीं है' : 'Purana Not Found') : 'Temporarily Unavailable'
+          }
+          noIndex={isNotFound}
+        />
         <BookOpen className="w-16 h-16 text-saffron mb-4" />
         <h2 className="text-2xl font-black text-darkBrown mb-2 font-hindi-heading">{t('empty.noPuranas')}</h2>
         <p className="text-slate-600 mb-6 text-sm">{t('errors.contentNotAvailable')}</p>

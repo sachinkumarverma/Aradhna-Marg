@@ -15,6 +15,7 @@ import { SEOHead, buildBreadcrumbSchema, buildEventSchema } from '@components/se
 import { getPrerenderedData } from '@utils/prerenderData';
 import { formatSeoDescription } from '@utils/stripMarkdown';
 import { DevotionalProvenanceCard } from '@components/common/DevotionalProvenanceCard';
+import { isNotFoundError } from '@utils/isNotFoundError';
 
 export const FestivalDetail: React.FC = () => {
   const { language, t, getLocalizedField } = useTranslation();
@@ -29,6 +30,7 @@ export const FestivalDetail: React.FC = () => {
   });
   const [relatedData, setRelatedData] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(() => !festival);
+  const [isNotFound, setIsNotFound] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -41,10 +43,16 @@ export const FestivalDetail: React.FC = () => {
       if (!festival) {
         setLoading(true);
       }
+      setIsNotFound(false);
+      let fetchFailed = false;
       try {
         const [festRes, relatedRes] = await Promise.all([
           PublicApi.getFestivalBySlug(festivalIdOrSlug, language).catch((err) => {
             console.error('Failed to fetch festival by slug:', err);
+            fetchFailed = true;
+            if (isMounted && isNotFoundError(err)) {
+              setIsNotFound(true);
+            }
             return null;
           }),
           PublicApi.getFestivalRelated(festivalIdOrSlug).catch((err) => {
@@ -54,11 +62,18 @@ export const FestivalDetail: React.FC = () => {
         ]);
 
         if (isMounted) {
-          setFestival(festRes);
+          if (festRes) {
+            setFestival(festRes);
+          } else if (!fetchFailed) {
+            setIsNotFound(true);
+          }
           setRelatedData(relatedRes || {});
         }
       } catch (error) {
         console.error('Failed to fetch festival detail:', error);
+        if (isMounted && isNotFoundError(error)) {
+          setIsNotFound(true);
+        }
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -87,7 +102,16 @@ export const FestivalDetail: React.FC = () => {
   if (!festival) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F9F7F3] pt-28 text-center px-4 font-hindi-body">
-        <SEOHead title={language === 'hi' ? 'त्योहार विवरण उपलब्ध नहीं है' : 'Festival Not Found'} noIndex={true} />
+        <SEOHead
+          title={
+            isNotFound
+              ? language === 'hi'
+                ? 'त्योहार विवरण उपलब्ध नहीं है'
+                : 'Festival Not Found'
+              : 'Temporarily Unavailable'
+          }
+          noIndex={isNotFound}
+        />
         <h2 className="text-3xl font-black text-darkBrown mb-4 font-hindi-heading">
           {t('errors.contentNotAvailable')}
         </h2>
